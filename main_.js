@@ -1,24 +1,20 @@
-import MapManager from './mapManager.js';
-import PlayerManager from './playerManager.js';
-import CollisionManager from './collisionManager.js';
-
-class Game extends Phaser.Scene {
+class GameScene extends Phaser.Scene {
     constructor() {
         super({ key: 'GameScene' });
     }
 
     preload() {
-        MapManager.loadAssets(this);
+        loadMapAssets(this);
     }
 
     create() {
         this.debugEnabled = true;
         this.physics.world.debugGraphic.setVisible(this.debugEnabled);
 
-        if (!MapManager.createMap(this)) return;
-        if (!PlayerManager.createPlayer(this)) return;
-        CollisionManager.setupCollisions(this);
-        PlayerManager.setupInput(this);
+        createMap(this);
+        createPlayer(this);
+        setupCollisions(this);
+        setupInput(this);
         if (this.player) {
             this.cameras.main.startFollow(this.player);
             this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
@@ -35,7 +31,7 @@ class Game extends Phaser.Scene {
     }
 
     update() {
-        PlayerManager.handlePlayerMovement(this);
+        handlePlayerMovement(this);
     }
 }
 
@@ -51,7 +47,7 @@ const config = {
             debug: true
         }
     },
-    scene: Game
+    scene: GameScene
 };
 
 const game = new Phaser.Game(config);

@@ -173,8 +173,9 @@
    </objectgroup>
   </tile>
  </tileset>
- <layer id="1" name="floor" width="30" height="20">
+ <layer id="1" name="floor" class="tileLayer" width="30" height="20">
   <properties>
+   <property name="collidable" type="bool" value="false"/>
    <property name="depth" type="int" value="0"/>
   </properties>
   <data encoding="csv">
@@ -200,9 +201,9 @@
 26,27,26,27,26,27,26,27,26,27,26,27,26,27,26,27,26,27,26,27,26,27,26,27,26,27,26,27,26,27
 </data>
  </layer>
- <layer id="2" name="tables" width="30" height="20">
+ <layer id="2" name="tables" class="tileLayer" width="30" height="20">
   <properties>
-   <property name="depth" type="int" value="16"/>
+   <property name="depth" type="int" value="1"/>
   </properties>
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -235,7 +236,7 @@
    <point/>
   </object>
  </objectgroup>
- <layer id="5" name="tabletops" width="30" height="20">
+ <layer id="5" name="tabletops" class="tileLayer" width="30" height="20">
   <properties>
    <property name="depth" type="int" value="3"/>
   </properties>
