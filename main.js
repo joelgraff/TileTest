@@ -35,6 +35,10 @@ class Game extends Phaser.Scene {
             if (this.npcDebugGraphics) this.npcDebugGraphics.setVisible(this.debugEnabled);
             console.log('Debug visuals:', this.debugEnabled ? 'enabled' : 'disabled');
         });
+
+        this.versionText = this.add.text(10, this.cameras.main.height - 30, 'Version 1.0', {
+            fontSize:'16px', fill: '#fff'
+        }).setScrollFactor(0);
     }
 
     update() {
