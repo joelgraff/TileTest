@@ -1,4 +1,3 @@
-// InputManager.js
 class InputManager {
     constructor(scene) {
         this.scene = scene;
@@ -7,35 +6,45 @@ class InputManager {
         this.touchEnd = { x: 0, y: 0 };
         this.threshold = 20; // Min drag distance
         this.direction = { x: 0, y: 0 };
+        this.isDragging = false; // Track if drag is active
 
-        // Touch events
+        // Touch and mouse events
         scene.input.on('pointerdown', (pointer) => {
             this.touchStart.x = pointer.x;
+            this.touchEnd.x = pointer.x;
             this.touchStart.y = pointer.y;
+            this.touchEnd.y = pointer.y;
+            this.isDragging = true;
+            this.updateDirection(pointer); // Initial direction
         });
         scene.input.on('pointermove', (pointer) => {
-            if (pointer.isDown) {
+            if (this.isDragging) {
                 this.touchEnd.x = pointer.x;
                 this.touchEnd.y = pointer.y;
-                this.updateTouchDirection();
+                this.updateDirection(pointer); // Update direction continuously
             }
         });
-        scene.input.on('pointerup', () => {
+        scene.input.on('pointerup', (pointer) => {
+            this.touchEnd.x = pointer.x;
+            this.touchEnd.y = pointer.y;
+            this.isDragging = false;
             this.direction = { x: 0, y: 0 };
+            console.log('Pointer Up, Direction Reset:', this.direction); // Debug
         });
     }
 
-    updateTouchDirection() {
-        const dx = this.touchEnd.x - this.touchStart.x;
-        const dy = this.touchEnd.y - this.touchStart.y;
+    updateDirection(pointer) {
+        const dx = pointer.x - this.scene.player.x; // Distance from player to cursor
+        const dy = pointer.y - this.scene.player.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
+
         if (dist > this.threshold) {
-            const angle = Math.atan2(dy, dx);
-            this.direction.x = Math.cos(angle);
-            this.direction.y = Math.sin(angle);
+            this.direction.x = dx / dist; // Normalize to unit vector
+            this.direction.y = dy / dist;
         } else {
             this.direction = { x: 0, y: 0 };
         }
+        console.log('Direction Updated:', this.direction); // Debug
     }
 
     getDirection() {
@@ -47,8 +56,8 @@ class InputManager {
         if (this.cursors.up.isDown) dir.y = -1;
         else if (this.cursors.down.isDown) dir.y = 1;
 
-        // Touch if no keyboard
-        if (dir.x === 0 && dir.y === 0) {
+        // Touch or drag if no keyboard
+        if (dir.x === 0 && dir.y === 0 && this.isDragging) {
             dir = this.direction;
         }
 

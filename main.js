@@ -2,6 +2,7 @@ import MapManager from './mapManager.js';
 import PlayerManager from './playerManager.js';
 import CollisionManager from './collisionManager.js';
 import NPCManager from './npcManager.js';
+import InputManager from './inputManager.js';
 
 class Game extends Phaser.Scene {
     constructor() {
@@ -19,8 +20,8 @@ class Game extends Phaser.Scene {
         if (!MapManager.createMap(this)) return;
         if (!PlayerManager.createPlayer(this)) return;
         CollisionManager.setupCollisions(this);
-        NPCManager.createNPCs(this); // Add this line
-        PlayerManager.setupInput(this);
+        NPCManager.createNPCs(this);
+        PlayerManager.setupInput(this); // Initialize InputManager
         if (this.player) {
             this.cameras.main.startFollow(this.player);
             this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
@@ -36,14 +37,14 @@ class Game extends Phaser.Scene {
             console.log('Debug visuals:', this.debugEnabled ? 'enabled' : 'disabled');
         });
 
-        this.versionText = this.add.text(10, this.cameras.main.height - 30, 'Version 1.0', {
+        this.versionText = this.add.text(10, this.cameras.main.height - 30, 'Version 1.2', {
             fontSize:'16px', fill: '#fff'
         }).setScrollFactor(0);
     }
 
     update() {
         PlayerManager.handlePlayerMovement(this);
-        NPCManager.handleNPCMovements(this); // Add this line
+        NPCManager.handleNPCMovements(this);
     }
 }
 
