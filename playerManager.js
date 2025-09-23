@@ -1,4 +1,4 @@
-import InputManager from './inputManager.js';
+import InputManager from './input_Manager.js';
 
 class PlayerManager {
     static createPlayer(scene) {

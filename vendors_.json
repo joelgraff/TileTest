@@ -1,0 +1,424 @@
+{
+  "vendors": [
+    {
+      "id": "vendor_a",
+      "name": "Apple Vintage Collection",
+      "booth": "A",
+      "description": "Early Apple computers, peripherals, and rare prototypes from Cupertino",
+      "x": 112,
+      "y": 96,
+      "items": [
+        {
+          "id": "apple_ii_plus",
+          "name": "Apple II Plus",
+          "description": "Complete Apple II Plus system with monitor and disk drives",
+          "value": 45
+        },
+        {
+          "id": "apple_lisa_mouse",
+          "name": "Apple Lisa Mouse",
+          "description": "Original Lisa mouse - predecessor to the Macintosh mouse",
+          "value": 35
+        }
+      ],
+      "dialog": {
+        "greeting": "Welcome to Apple Vintage Collection! Step into the early days of personal computing with authentic Apple hardware.",
+        "responses": [
+          { "text": "Show me your Apple collection", "action": "show_items" },
+          { "text": "Tell me about early Apple history", "action": "booth_info" },
+          { "text": "Thanks, I'll browse around", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_b",
+      "name": "Byte Shop Classics",
+      "booth": "B",
+      "description": "Authentic vintage computers from the legendary Byte Shop retail chain",
+      "x": 304,
+      "y": 96,
+      "items": [
+        {
+          "id": "altair_8800",
+          "name": "MITS Altair 8800",
+          "description": "The computer that started the microcomputer revolution",
+          "value": 85
+        },
+        {
+          "id": "imsai_8080",
+          "name": "IMSAI 8080",
+          "description": "Popular Altair competitor featured in WarGames movie",
+          "value": 65
+        }
+      ],
+      "dialog": {
+        "greeting": "Greetings! Byte Shop Classics brings you computers from the store that launched the PC industry!",
+        "responses": [
+          { "text": "What classics do you have?", "action": "show_items" },
+          { "text": "Tell me about the Byte Shop", "action": "booth_info" },
+          { "text": "I'll check out other vendors", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_c",
+      "name": "Commodore Corner",
+      "booth": "C",
+      "description": "Complete line of Commodore computers from PET to Amiga",
+      "x": 496,
+      "y": 96,
+      "items": [
+        {
+          "id": "commodore_pet_2001",
+          "name": "Commodore PET 2001",
+          "description": "One of the 1977 trinity of personal computers",
+          "value": 55
+        },
+        {
+          "id": "commodore_64",
+          "name": "Commodore 64",
+          "description": "Best-selling single computer model of all time",
+          "value": 25
+        }
+      ],
+      "dialog": {
+        "greeting": "Hello! Commodore Corner has the complete evolution of Commodore business machines!",
+        "responses": [
+          { "text": "Show me your Commodore systems", "action": "show_items" },
+          { "text": "Why was Commodore so popular?", "action": "booth_info" },
+          { "text": "Interesting, I'll keep looking", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_d",
+      "name": "Digital Equipment Depot",
+      "booth": "D",
+      "description": "Professional DEC minicomputers and terminals from the enterprise era",
+      "x": 688,
+      "y": 96,
+      "items": [
+        {
+          "id": "dec_pdp11",
+          "name": "DEC PDP-11/70",
+          "description": "Legendary minicomputer that ran early Unix systems",
+          "value": 125
+        },
+        {
+          "id": "vt100_terminal",
+          "name": "DEC VT100 Terminal",
+          "description": "The terminal that defined computer interfaces",
+          "value": 40
+        }
+      ],
+      "dialog": {
+        "greeting": "Welcome to Digital Equipment Depot! Experience the power of professional minicomputers!",
+        "responses": [
+          { "text": "Show me your DEC equipment", "action": "show_items" },
+          { "text": "What made DEC special?", "action": "booth_info" },
+          { "text": "Very impressive, I'll return", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_e",
+      "name": "Early Electronics",
+      "booth": "E",
+      "description": "Electronic components and kits from the homebrew computer era",
+      "x": 880,
+      "y": 96,
+      "items": [
+        {
+          "id": "intel_8008_chip",
+          "name": "Intel 8008 CPU",
+          "description": "First 8-bit microprocessor from Intel",
+          "value": 95
+        },
+        {
+          "id": "heathkit_computer",
+          "name": "Heathkit H8 Kit",
+          "description": "Build-it-yourself computer kit from Heath Company",
+          "value": 75
+        }
+      ],
+      "dialog": {
+        "greeting": "Greetings electronics enthusiast! Early Electronics has components from computing's DIY roots!",
+        "responses": [
+          { "text": "What components do you have?", "action": "show_items" },
+          { "text": "Tell me about homebrew computing", "action": "booth_info" },
+          { "text": "Fascinating, I'll explore more", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_f",
+      "name": "Fairchild & Friends",
+      "booth": "F",
+      "description": "Semiconductor history from Fairchild and other Silicon Valley pioneers",
+      "x": 1072,
+      "y": 96,
+      "items": [
+        {
+          "id": "fairchild_f8_cpu",
+          "name": "Fairchild F8 CPU",
+          "description": "Early microprocessor used in Channel F game console",
+          "value": 115
+        },
+        {
+          "id": "silicon_wafer",
+          "name": "Historic Silicon Wafer",
+          "description": "Actual silicon wafer from 1970s chip production",
+          "value": 85
+        }
+      ],
+      "dialog": {
+        "greeting": "Welcome! Fairchild & Friends celebrates the semiconductor revolution that made computing possible!",
+        "responses": [
+          { "text": "Show me your semiconductor collection", "action": "show_items" },
+          { "text": "How did Silicon Valley begin?", "action": "booth_info" },
+          { "text": "Amazing history, I'll continue browsing", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_g",
+      "name": "Gaming Legends",
+      "booth": "G",
+      "description": "Classic arcade machines and early gaming consoles from the golden age",
+      "x": 112,
+      "y": 256,
+      "items": [
+        {
+          "id": "pong_console",
+          "name": "Atari Pong Console",
+          "description": "The original home video game console that started it all",
+          "value": 150
+        },
+        {
+          "id": "space_invaders_pcb",
+          "name": "Space Invaders PCB",
+          "description": "Original arcade board from the legendary Space Invaders",
+          "value": 200
+        }
+      ],
+      "dialog": {
+        "greeting": "Welcome to Gaming Legends! Experience the birth of video gaming with authentic arcade history!",
+        "responses": [
+          { "text": "Show me your gaming artifacts", "action": "show_items" },
+          { "text": "Tell me about early arcade games", "action": "booth_info" },
+          { "text": "Amazing collection, I'll return", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_h",
+      "name": "Homebrew Heritage",
+      "booth": "H",
+      "description": "DIY computer kits and homebrew systems from the maker community",
+      "x": 304,
+      "y": 256,
+      "items": [
+        {
+          "id": "sol_20_computer",
+          "name": "Sol-20 Computer",
+          "description": "Popular S-100 bus computer from Processor Technology",
+          "value": 180
+        },
+        {
+          "id": "altair_expansion_cards",
+          "name": "Altair Expansion Cards",
+          "description": "Collection of S-100 bus expansion cards for Altair systems",
+          "value": 120
+        }
+      ],
+      "dialog": {
+        "greeting": "Greetings maker! Homebrew Heritage celebrates the DIY spirit of early computing!",
+        "responses": [
+          { "text": "What homebrew systems do you have?", "action": "show_items" },
+          { "text": "How did the homebrew movement start?", "action": "booth_info" },
+          { "text": "Inspiring story, I'll explore more", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_i",
+      "name": "IBM & Intel Archives",
+      "booth": "I",
+      "description": "Professional computing equipment from industry giants IBM and Intel",
+      "x": 496,
+      "y": 256,
+      "items": [
+        {
+          "id": "ibm_pc_5150",
+          "name": "IBM PC Model 5150",
+          "description": "The computer that defined the PC standard in 1981",
+          "value": 300
+        },
+        {
+          "id": "intel_4004_chip",
+          "name": "Intel 4004 CPU",
+          "description": "The world's first commercial microprocessor from 1971",
+          "value": 500
+        }
+      ],
+      "dialog": {
+        "greeting": "Welcome to IBM & Intel Archives! Witness the corporate power that built the PC industry!",
+        "responses": [
+          { "text": "Show me your corporate computing collection", "action": "show_items" },
+          { "text": "How did IBM change computing?", "action": "booth_info" },
+          { "text": "Incredible history, I'll be back", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_j",
+      "name": "Japanese Computing",
+      "booth": "J",
+      "description": "Classic computers and electronics from Japanese manufacturers",
+      "x": 688,
+      "y": 256,
+      "items": [
+        {
+          "id": "nec_pc8001",
+          "name": "NEC PC-8001",
+          "description": "Popular Japanese home computer from NEC",
+          "value": 220
+        },
+        {
+          "id": "sharp_mz80",
+          "name": "Sharp MZ-80K",
+          "description": "Distinctive computer with built-in green monitor",
+          "value": 190
+        }
+      ],
+      "dialog": {
+        "greeting": "Konnichiwa! Japanese Computing showcases the innovative computers from the Land of the Rising Sun!",
+        "responses": [
+          { "text": "What Japanese computers do you have?", "action": "show_items" },
+          { "text": "Tell me about Japanese computing history", "action": "booth_info" },
+          { "text": "Arigato, I'll continue exploring", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_k",
+      "name": "Keyboard Kingdom",
+      "booth": "K",
+      "description": "Vintage keyboards, input devices, and peripherals from computing history",
+      "x": 880,
+      "y": 256,
+      "items": [
+        {
+          "id": "model_m_keyboard",
+          "name": "IBM Model M Keyboard",
+          "description": "The legendary buckling spring keyboard from IBM",
+          "value": 80
+        },
+        {
+          "id": "teletype_asr33",
+          "name": "Teletype ASR-33",
+          "description": "Classic teleprinter terminal from the early computing era",
+          "value": 350
+        }
+      ],
+      "dialog": {
+        "greeting": "Welcome to Keyboard Kingdom! Feel the satisfying click of vintage input devices!",
+        "responses": [
+          { "text": "Show me your keyboard collection", "action": "show_items" },
+          { "text": "Why are old keyboards so special?", "action": "booth_info" },
+          { "text": "Great tactile experience, I'll return", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_l",
+      "name": "Laptop Legacy",
+      "booth": "L",
+      "description": "Early portable computers and laptops from the dawn of mobile computing",
+      "x": 1072,
+      "y": 256,
+      "items": [
+        {
+          "id": "osborne_1",
+          "name": "Osborne 1",
+          "description": "First successful portable computer, weighing 24.5 pounds",
+          "value": 280
+        },
+        {
+          "id": "compaq_portable",
+          "name": "Compaq Portable",
+          "description": "IBM PC-compatible luggable computer that launched Compaq",
+          "value": 240
+        }
+      ],
+      "dialog": {
+        "greeting": "Welcome to Laptop Legacy! Experience the heavy beginnings of portable computing!",
+        "responses": [
+          { "text": "Show me your portable computers", "action": "show_items" },
+          { "text": "How did portable computing begin?", "action": "booth_info" },
+          { "text": "Heavy but historic, I'll check back", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_m",
+      "name": "Microprocessor Museum",
+      "booth": "M",
+      "description": "Historic CPUs and microprocessors that powered the computer revolution",
+      "x": 1264,
+      "y": 256,
+      "items": [
+        {
+          "id": "motorola_6800",
+          "name": "Motorola 6800 CPU",
+          "description": "Influential 8-bit processor used in many early computers",
+          "value": 140
+        },
+        {
+          "id": "zilog_z80",
+          "name": "Zilog Z80 CPU",
+          "description": "Popular 8-bit processor that powered CP/M systems",
+          "value": 110
+        }
+      ],
+      "dialog": {
+        "greeting": "Welcome to Microprocessor Museum! These tiny chips changed the world forever!",
+        "responses": [
+          { "text": "Show me your processor collection", "action": "show_items" },
+          { "text": "How did microprocessors revolutionize computing?", "action": "booth_info" },
+          { "text": "Fascinating technology, I'll return", "action": "end" }
+        ]
+      }
+    },
+    {
+      "id": "vendor_n",
+      "name": "Networking Nostalgia",
+      "booth": "N",
+      "description": "Early networking equipment and protocols from the dawn of connectivity",
+      "x": 1456,
+      "y": 256,
+      "items": [
+        {
+          "id": "ethernet_card",
+          "name": "3Com Ethernet Card",
+          "description": "Early network interface card for PC networking",
+          "value": 90
+        },
+        {
+          "id": "arpanet_terminal",
+          "name": "ARPANET Terminal",
+          "description": "Terminal used to access the predecessor to the Internet",
+          "value": 400
+        }
+      ],
+      "dialog": {
+        "greeting": "Welcome to Networking Nostalgia! Explore the roots of our connected world!",
+        "responses": [
+          { "text": "Show me your networking artifacts", "action": "show_items" },
+          { "text": "How did computer networking begin?", "action": "booth_info" },
+          { "text": "Connected history, I'll be back", "action": "end" }
+        ]
+      }
+    }
+  ]
+}

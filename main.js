@@ -2,7 +2,7 @@ import MapManager from './mapManager.js';
 import PlayerManager from './playerManager.js';
 import CollisionManager from './collisionManager.js';
 import NPCManager from './npcManager.js';
-import InputManager from './inputManager.js';
+import InputManager from './input_Manager.js';
 
 class Game extends Phaser.Scene {
     constructor() {
@@ -37,7 +37,7 @@ class Game extends Phaser.Scene {
             console.log('Debug visuals:', this.debugEnabled ? 'enabled' : 'disabled');
         });
 
-        this.versionText = this.add.text(10, this.cameras.main.height - 30, 'Version 1.2', {
+        this.versionText = this.add.text(10, this.cameras.main.height - 30, 'Version 1.3', {
             fontSize:'16px', fill: '#fff'
         }).setScrollFactor(0);
     }
