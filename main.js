@@ -1,6 +1,7 @@
 import MapManager from './mapManager.js';
 import PlayerManager from './playerManager.js';
 import CollisionManager from './collisionManager.js';
+import NPCManager from './npcManager.js';
 
 class Game extends Phaser.Scene {
     constructor() {
@@ -18,6 +19,7 @@ class Game extends Phaser.Scene {
         if (!MapManager.createMap(this)) return;
         if (!PlayerManager.createPlayer(this)) return;
         CollisionManager.setupCollisions(this);
+        NPCManager.createNPCs(this); // Add this line
         PlayerManager.setupInput(this);
         if (this.player) {
             this.cameras.main.startFollow(this.player);
@@ -30,12 +32,14 @@ class Game extends Phaser.Scene {
         this.input.keyboard.on('keydown-BACKTICK', () => {
             this.debugEnabled = !this.debugEnabled;
             this.physics.world.debugGraphic.setVisible(this.debugEnabled);
+            if (this.npcDebugGraphics) this.npcDebugGraphics.setVisible(this.debugEnabled);
             console.log('Debug visuals:', this.debugEnabled ? 'enabled' : 'disabled');
         });
     }
 
     update() {
         PlayerManager.handlePlayerMovement(this);
+        NPCManager.handleNPCMovements(this); // Add this line
     }
 }
 

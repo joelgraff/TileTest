@@ -8,6 +8,12 @@ class MapManager {
             frameWidth: CONFIG.PLAYER.FRAME_WIDTH,
             frameHeight: CONFIG.PLAYER.FRAME_HEIGHT
         });
+        CONFIG.NPC.SPRITES.forEach(key => {
+            scene.load.spritesheet(key, `${key}.png${cacheBuster}`, {
+                frameWidth: CONFIG.PLAYER.FRAME_WIDTH,
+                frameHeight: CONFIG.PLAYER.FRAME_HEIGHT
+            });
+        });
         scene.load.tilemapTiledJSON(CONFIG.ASSETS.MAP, `map.json${cacheBuster}`);
     }
 

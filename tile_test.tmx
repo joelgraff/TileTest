@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="3">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="10">
  <editorsettings>
   <export target="map.json" format="json"/>
  </editorsettings>
@@ -70,7 +70,7 @@
   <image source="player.png" width="128" height="192"/>
   <tile id="0">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="4.25" y="29.875" width="23.5" height="11.25"/>
+    <object id="2" x="3.75" y="30.625" width="24" height="13"/>
    </objectgroup>
    <animation>
     <frame tileid="0" duration="100"/>
@@ -81,17 +81,17 @@
   </tile>
   <tile id="1">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="3.75" y="30.375" width="23.5" height="11.25"/>
+    <object id="2" x="3.75" y="30.375" width="24" height="13.25"/>
    </objectgroup>
   </tile>
   <tile id="2">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="4.25" y="30.625" width="23.5" height="11.25"/>
+    <object id="2" x="4.25" y="30.625" width="24" height="13"/>
    </objectgroup>
   </tile>
   <tile id="3">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="5" y="30.375" width="23.5" height="11.25"/>
+    <object id="2" x="4.25" y="30.125" width="24" height="13"/>
    </objectgroup>
   </tile>
   <tile id="4">
@@ -148,7 +148,7 @@
   </tile>
   <tile id="12">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="4" y="29.375" width="23.5" height="10.25"/>
+    <object id="2" x="4.5" y="27.125" width="23" height="14"/>
    </objectgroup>
    <animation>
     <frame tileid="12" duration="100"/>
@@ -159,17 +159,207 @@
   </tile>
   <tile id="13">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="2.75" y="29.875" width="23.5" height="10.25"/>
+    <object id="1" x="4.75" y="26.25" width="23" height="14"/>
    </objectgroup>
   </tile>
   <tile id="14">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="4.25" y="31.875" width="23.5" height="10.25"/>
+    <object id="3" x="4.75" y="28" width="23" height="14"/>
    </objectgroup>
   </tile>
   <tile id="15">
    <objectgroup draworder="index" id="2">
-    <object id="1" x="5.75" y="29.625" width="23.5" height="10.25"/>
+    <object id="2" x="4" y="26" width="23" height="14"/>
+   </objectgroup>
+  </tile>
+ </tileset>
+ <tileset firstgid="273" name="npc1" tilewidth="32" tileheight="48" tilecount="16" columns="4">
+  <image source="npc1.png" width="128" height="192"/>
+  <tile id="0">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="4" y="33.75" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="1">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="1.75" y="33.5" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="2">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3.75" y="33.5" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="3">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="4" y="34.25" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="4">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="4" y="33.25" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="5">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="2.25" y="32.5" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="6">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3.75" y="33.5" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="7">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3.5" y="32.25" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="8">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3" y="34" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="9">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="4" y="32" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="10">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3.25" y="33.5" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="11">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3.75" y="32" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="12">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="4.75" y="33.75" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="13">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="5" y="33.5" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="14">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="5.25" y="33.75" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+  <tile id="15">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="6.25" y="33.5" width="24" height="10"/>
+   </objectgroup>
+  </tile>
+ </tileset>
+ <tileset firstgid="289" name="npc2" tilewidth="32" tileheight="48" tilecount="16" columns="4">
+  <image source="npc2.png" width="128" height="192"/>
+  <tile id="0">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3" y="30.375" width="24" height="11.75"/>
+   </objectgroup>
+   <animation>
+    <frame tileid="0" duration="100"/>
+    <frame tileid="1" duration="100"/>
+    <frame tileid="2" duration="100"/>
+    <frame tileid="3" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="1">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3" y="31.5" width="24" height="11.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="2">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3" y="31.125" width="24" height="11.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="3">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="2.75" y="31.375" width="24" height="11.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="4">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3.25" y="30.625" width="24" height="11.75"/>
+   </objectgroup>
+   <animation>
+    <frame tileid="4" duration="100"/>
+    <frame tileid="5" duration="100"/>
+    <frame tileid="6" duration="100"/>
+    <frame tileid="7" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="5">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3.25" y="29.625" width="24" height="11.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="6">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3.25" y="30.375" width="24" height="11.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="7">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="2.75" y="29.375" width="24" height="11.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="8">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="4.25" y="29.375" width="24" height="11.75"/>
+   </objectgroup>
+   <animation>
+    <frame tileid="8" duration="100"/>
+    <frame tileid="9" duration="100"/>
+    <frame tileid="10" duration="100"/>
+    <frame tileid="11" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="9">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3.5" y="29.625" width="24" height="11.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="10">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3" y="29.375" width="24" height="11.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="11">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="2.75" y="29.375" width="24" height="11.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="12">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="4" y="30.125" width="24" height="11.75"/>
+   </objectgroup>
+   <animation>
+    <frame tileid="12" duration="100"/>
+    <frame tileid="13" duration="100"/>
+    <frame tileid="14" duration="100"/>
+    <frame tileid="15" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="13">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="4.25" y="29.625" width="24" height="11.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="14">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3.25" y="30.125" width="24" height="11.75"/>
+   </objectgroup>
+  </tile>
+  <tile id="15">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="3.25" y="29.625" width="24" height="11.75"/>
    </objectgroup>
   </tile>
  </tileset>
@@ -233,6 +423,23 @@
    <property name="depth" type="int" value="2"/>
   </properties>
   <object id="1" name="start" x="465.333" y="582.667">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="6" name="npc_area">
+  <object id="5" type="point" x="367" y="406">
+   <point/>
+  </object>
+  <object id="6" type="point" x="432" y="466">
+   <point/>
+  </object>
+  <object id="7" type="point" x="589" y="459">
+   <point/>
+  </object>
+  <object id="8" type="point" x="433" y="366">
+   <point/>
+  </object>
+  <object id="9" type="point" x="562" y="366">
    <point/>
   </object>
  </objectgroup>
