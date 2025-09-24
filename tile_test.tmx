@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="10">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="11">
  <editorsettings>
   <export target="map.json" format="json"/>
  </editorsettings>
@@ -442,6 +442,7 @@
   <object id="9" type="point" x="562" y="366">
    <point/>
   </object>
+  <object id="10" name="npc_rect" type="rect" x="353" y="347" width="255" height="127.5"/>
  </objectgroup>
  <layer id="5" name="tabletops" class="tileLayer" width="30" height="20">
   <properties>
