@@ -3,6 +3,8 @@ import PlayerManager from './playerManager.js';
 import CollisionManager from './collisionManager.js';
 import NPCManager from './npcManager.js';
 import InputManager from './input_Manager.js';
+import UIManager from './uiManager.js';
+import VendorManager from './vendorManager.js';
 
 class Game extends Phaser.Scene {
     constructor() {
@@ -22,6 +24,13 @@ class Game extends Phaser.Scene {
         CollisionManager.setupCollisions(this);
         NPCManager.createNPCs(this);
         PlayerManager.setupInput(this); // Initialize InputManager
+        
+        // Initialize UI Manager
+        this.uiManager = new UIManager(this);
+        
+        // Initialize Vendor Manager  
+        this.vendorManager = new VendorManager(this);
+        
         if (this.player) {
             this.cameras.main.startFollow(this.player);
             this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
@@ -29,6 +38,19 @@ class Game extends Phaser.Scene {
         } else {
             console.error('Camera cannot follow player: player not created.');
         }
+
+        // UI keyboard shortcuts
+        this.input.keyboard.on('keydown-I', () => {
+            this.uiManager.toggleInventory();
+        });
+
+        this.input.keyboard.on('keydown-ESC', () => {
+            if (this.uiManager.isDialogOpen) {
+                this.uiManager.closeDialog();
+            } else if (this.uiManager.isInventoryOpen) {
+                this.uiManager.toggleInventory();
+            }
+        });
 
         this.input.keyboard.on('keydown-BACKTICK', () => {
             this.debugEnabled = !this.debugEnabled;
@@ -45,6 +67,11 @@ class Game extends Phaser.Scene {
     update() {
         PlayerManager.handlePlayerMovement(this);
         NPCManager.handleNPCMovements(this);
+        
+        // Update vendor interactions
+        if (this.vendorManager) {
+            this.vendorManager.update();
+        }
     }
 }
 
