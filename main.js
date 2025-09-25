@@ -24,13 +24,13 @@ class Game extends Phaser.Scene {
         CollisionManager.setupCollisions(this);
         NPCManager.createNPCs(this);
         PlayerManager.setupInput(this); // Initialize InputManager
-        
+
         // Initialize UI Manager
         this.uiManager = new UIManager(this);
-        
-        // Initialize Vendor Manager  
+
+        // Initialize Vendor Manager
         this.vendorManager = new VendorManager(this);
-        
+
         if (this.player) {
             this.cameras.main.startFollow(this.player);
             this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
@@ -67,7 +67,7 @@ class Game extends Phaser.Scene {
     update() {
         PlayerManager.handlePlayerMovement(this);
         NPCManager.handleNPCMovements(this);
-        
+
         // Update vendor interactions
         if (this.vendorManager) {
             this.vendorManager.update();
@@ -87,6 +87,7 @@ const config = {
             debug: true
         }
     },
+    render: { antialias: false, pixelArt: true},
     scene: Game
 };
 
