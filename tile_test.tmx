@@ -70,7 +70,7 @@
   <image source="player.png" width="128" height="192"/>
   <tile id="0">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="3.75" y="30.625" width="24" height="13"/>
+    <object id="2" x="3.75" y="25.7649" width="24" height="17.8601"/>
    </objectgroup>
    <animation>
     <frame tileid="0" duration="100"/>
@@ -81,22 +81,22 @@
   </tile>
   <tile id="1">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="3.75" y="30.375" width="24" height="13.25"/>
+    <object id="2" x="3.75" y="26.0651" width="24" height="17.5599"/>
    </objectgroup>
   </tile>
   <tile id="2">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="4.25" y="30.625" width="24" height="13"/>
+    <object id="2" x="4.25" y="25.8566" width="24" height="17.7684"/>
    </objectgroup>
   </tile>
   <tile id="3">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="4.25" y="30.125" width="24" height="13"/>
+    <object id="2" x="4.25" y="26.0902" width="24" height="17.0348"/>
    </objectgroup>
   </tile>
   <tile id="4">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="4.25" y="30.375" width="23.5" height="10.25"/>
+    <object id="2" x="4.25" y="25.9734" width="23.5" height="14.6516"/>
    </objectgroup>
    <animation>
     <frame tileid="4" duration="100"/>
@@ -107,22 +107,22 @@
   </tile>
   <tile id="5">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="3.5" y="30.125" width="23.5" height="10.25"/>
+    <object id="2" x="3.5" y="25.9985" width="23.5" height="14.3765"/>
    </objectgroup>
   </tile>
   <tile id="6">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="3.75" y="30.125" width="23.5" height="10.25"/>
+    <object id="2" x="3.75" y="25.9985" width="23.5" height="14.3765"/>
    </objectgroup>
   </tile>
   <tile id="7">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="5.25" y="30.125" width="23.5" height="10.25"/>
+    <object id="2" x="5.25" y="25.9068" width="23.5" height="14.4682"/>
    </objectgroup>
   </tile>
   <tile id="8">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="4.25" y="31.125" width="23.5" height="10.25"/>
+    <object id="2" x="4.25" y="25.8064" width="23.5" height="15.5686"/>
    </objectgroup>
    <animation>
     <frame tileid="8" duration="100"/>
@@ -133,22 +133,22 @@
   </tile>
   <tile id="9">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="4.25" y="30.375" width="23.5" height="10.25"/>
+    <object id="2" x="4.25" y="25.8817" width="23.5" height="14.7433"/>
    </objectgroup>
   </tile>
   <tile id="10">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="3.75" y="30.875" width="23.5" height="10.25"/>
+    <object id="2" x="3.75" y="25.8315" width="23.5" height="15.2935"/>
    </objectgroup>
   </tile>
   <tile id="11">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="3.75" y="29.625" width="23.5" height="10.25"/>
+    <object id="2" x="3.75" y="26.0487" width="23.5" height="13.8263"/>
    </objectgroup>
   </tile>
   <tile id="12">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="4.5" y="27.125" width="23" height="14"/>
+    <object id="2" x="4.5" y="24.0989" width="23" height="17.0261"/>
    </objectgroup>
    <animation>
     <frame tileid="12" duration="100"/>
@@ -159,17 +159,17 @@
   </tile>
   <tile id="13">
    <objectgroup draworder="index" id="2">
-    <object id="1" x="4.75" y="26.25" width="23" height="14"/>
+    <object id="1" x="4.75" y="9.37733" width="23" height="30.8727"/>
    </objectgroup>
   </tile>
   <tile id="14">
    <objectgroup draworder="index" id="2">
-    <object id="3" x="4.75" y="28" width="23" height="14"/>
+    <object id="3" x="4.75" y="24.5154" width="23" height="17.4846"/>
    </objectgroup>
   </tile>
   <tile id="15">
    <objectgroup draworder="index" id="2">
-    <object id="2" x="4" y="26" width="23" height="14"/>
+    <object id="2" x="4" y="21.9652" width="23" height="18.0348"/>
    </objectgroup>
   </tile>
  </tileset>
