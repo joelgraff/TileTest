@@ -101,6 +101,23 @@ function update(time, delta) {
     CollisionManager.update?.(scene, time, delta);
     MapManager.update?.(scene, time, delta);
     scene.inputManager?.update?.(scene, time, delta);
+
+    // Check for NPC interaction
+    if (scene.input.keyboard.checkDown('SPACE') && scene.npcGroup) {
+        const interactableNPC = scene.npcGroup.getChildren().find(npc => npc.interactable);
+        if (interactableNPC) {
+            // Trigger interaction (e.g., show dialog)
+            scene.uiManager.showDialog({
+                text: "Hello! I'm a vendor. What can I do for you?",
+                buttons: [
+                    { text: "Buy", action: () => console.log("Buy action") },
+                    { text: "Sell", action: () => console.log("Sell action") },
+                    { text: "Talk", action: () => console.log("Talk action") },
+                    { text: "Close", action: () => scene.uiManager.closeDialog() }
+                ]
+            });
+        }
+    }
 }
 const game = new Phaser.Game(config);
 

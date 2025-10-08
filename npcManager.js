@@ -41,7 +41,62 @@ class NPCManager {
     }
 
     static update(scene, time, delta) {
-        // NPCs are static; no update logic needed
+        if (!scene.player || !scene.npcGroup) return;
+
+        scene.npcGroup.getChildren().forEach(npc => {
+
+            //check vertical first for performance
+            const dy = Math.abs(npc.y - scene.player.y);
+
+            // If under 96 pixels, check full distance, otherwise clear interactable, if set
+            if (dy < 96) {
+                const dx = Math.abs(npc.x - scene.player.x);
+
+                npc.interactable = (dx + dy < 96);
+
+                if (npc.interactable) {
+                    // Add exclamation mark
+                    if (!npc.exclamation) {
+                        npc.exclamation = scene.add.text(npc.x, npc.y - 32, '!', {
+                            fontFamily: 'Arial',
+                            fontSize: '32px',
+                            fill: '#FF0000',
+                            stroke: '#FFFFFF',
+                            strokeThickness: 3,
+                            align: 'center'
+                        }).setOrigin(0.5).setDepth(npc.depth + 1);
+                    }
+                    npc.setInteractive();
+                    npc.on('pointerdown', () => {
+                        if (npc.interactable) {
+                            scene.uiManager.showDialog({
+                                text: "Hello! I'm a vendor. What can I do for you?",
+                                buttons: [
+                                    { text: "Buy", action: () => console.log("Buy action") },
+                                    { text: "Sell", action: () => console.log("Sell action") },
+                                    { text: "Talk", action: () => console.log("Talk action") },
+                                    { text: "Close", action: () => scene.uiManager.closeDialog() }
+                                ]
+                            });
+                        }
+                    });
+                } else {
+                    if (npc.exclamation) {
+                        npc.exclamation.destroy();
+                        npc.exclamation = null;
+                    }
+                    npc.disableInteractive();
+                }
+
+            } else if (npc.interactable) {
+                npc.interactable = false;
+                if (npc.exclamation) {
+                    npc.exclamation.destroy();
+                    npc.exclamation = null;
+                }
+                npc.disableInteractive();
+            }
+        });
     }
 
     // --- Helper Functions ---
