@@ -39,10 +39,14 @@ function preload() {
     MapManager.preload(this);
     PlayerManager.preload?.(this);
     NPCManager.preload?.(this);
+    this.load.json('vendors', 'vendors.json');
 }
 
 function create() {
     scene = this;
+
+    // Load vendors data
+    scene.vendors = scene.cache.json.get('vendors');
 
     // Set scale mode based on device
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -60,7 +64,7 @@ function create() {
     }
 
     PlayerManager.create(scene);
-    NPCManager.create(scene);
+    NPCManager.create(scene, scene.vendors);
 
     // Instance UIManager and attach to scene
     scene.uiManager = new UIManager(scene);

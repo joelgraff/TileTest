@@ -11,11 +11,6 @@ class InputManager {
 
         // Touch and mouse events
         scene.input.on('pointerdown', (pointer) => {
-            console.log('[InputManager] pointerdown', pointer.x, pointer.y);
-            console.log('[InputManager] scene.uiManager:', scene.uiManager);
-            if (scene.uiManager) {
-                console.log('[InputManager] uiManager keys:', Object.keys(scene.uiManager));
-            }
             this.touchStart.x = pointer.x;
             this.touchEnd.x = pointer.x;
             this.touchStart.y = pointer.y;
@@ -23,10 +18,7 @@ class InputManager {
             this.target = scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
             this.isDragging = false;
             if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
-                console.log('[InputManager] calling uiManager.handlePointerMove (down)', pointer.x, pointer.y);
                 scene.uiManager.handlePointerMove(pointer.x, pointer.y, true);
-            } else {
-                console.warn('[InputManager] uiManager.handlePointerMove not found');
             }
         });
         scene.input.on('pointermove', (pointer) => {
@@ -41,35 +33,19 @@ class InputManager {
                 }
             }
             if (this.isDragging) {
-                console.log('[InputManager] pointermove', pointer.x, pointer.y);
-                console.log('[InputManager] scene.uiManager:', scene.uiManager);
-                if (scene.uiManager) {
-                    console.log('[InputManager] uiManager keys:', Object.keys(scene.uiManager));
-                }
                 this.target = scene.cameras.main.getWorldPoint(pointer.x, pointer.y); // Update target during drag
                 if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
-                    console.log('[InputManager] calling uiManager.handlePointerMove (move)', pointer.x, pointer.y);
                     scene.uiManager.handlePointerMove(pointer.x, pointer.y, true);
-                } else {
-                    console.warn('[InputManager] uiManager.handlePointerMove not found');
                 }
             }
         });
         scene.input.on('pointerup', (pointer) => {
-            console.log('[InputManager] pointerup', pointer.x, pointer.y);
-            console.log('[InputManager] scene.uiManager:', scene.uiManager);
-            if (scene.uiManager) {
-                console.log('[InputManager] uiManager keys:', Object.keys(scene.uiManager));
-            }
             if (this.isDragging) {
                 this.direction = { x: 0, y: 0 };
             }
             this.isDragging = false;
             if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
-                console.log('[InputManager] calling uiManager.handlePointerMove (up)', pointer.x, pointer.y);
                 scene.uiManager.handlePointerMove(pointer.x, pointer.y, false);
-            } else {
-                console.warn('[InputManager] uiManager.handlePointerMove not found');
             }
         });
     }

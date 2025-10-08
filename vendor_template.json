@@ -1,0 +1,89 @@
+{
+  "vendors": [
+    {
+      "id": "vendor_100",
+      "name": "Ben Armstrong",
+      "booth": "K05/K06",
+      "url": "",
+      "description": "Sales assorted computers, phones, and other related electronics",
+      "x": 400,  // Placeholder coordinates based on booth location mapping
+      "y": 200,
+      "items": [
+        {
+          "id": "computer_assortment",
+          "name": "Assorted Vintage Computers",
+          "description": "Collection of various vintage computers from different eras",
+          "value": 100
+        },
+        {
+          "id": "phone_collection",
+          "name": "Retro Phones and Electronics",
+          "description": "Selection of vintage phones and electronic devices",
+          "value": 75
+        }
+      ],
+      "dialog": {
+        "greeting": "Welcome to Ben Armstrong's booth! Sales assorted computers, phones, and other related electronics.",
+        "responses": [
+          { "text": "Show me your inventory", "action": "show_items" },
+          { "text": "Tell me about your booth", "action": "booth_info" },
+          { "text": "Share some tech facts", "action": "tech_facts" },
+          { "text": "Thanks, I'll check other vendors", "action": "end" }
+        ]
+      },
+      "facts": [
+        "The first personal computer, the Altair 8800, was released in 1975 and cost $397.",
+        "The first mobile phone call was made in 1973 by Martin Cooper using a Motorola DynaTAC.",
+        "Transistors revolutionized electronics by replacing bulky vacuum tubes in the 1950s."
+      ],
+      "puzzle_items": [],  // For special puzzle-specific inventory
+      "puzzle_dialog": {}  // For special puzzle-specific dialogue
+    },
+    {
+      "id": "vendor_101",
+      "name": "2TailedFox",
+      "booth": "M08/M09/M10",
+      "url": "None",
+      "description": "A bit of everything. Commodore machines. Atari machines. IBM compatible machines and accessories. A few games pc and console. Etc.",
+      "x": 500,
+      "y": 250,
+      "items": [
+        {
+          "id": "commodore_machine",
+          "name": "Commodore Computer",
+          "description": "Classic Commodore home computer system",
+          "value": 150
+        },
+        {
+          "id": "atari_machine",
+          "name": "Atari Computer",
+          "description": "Vintage Atari computer with accessories",
+          "value": 120
+        },
+        {
+          "id": "ibm_compatible",
+          "name": "IBM Compatible PC",
+          "description": "Early IBM-compatible personal computer",
+          "value": 200
+        }
+      ],
+      "dialog": {
+        "greeting": "Greetings! 2TailedFox offers a bit of everything - Commodore, Atari, IBM compatibles, and more!",
+        "responses": [
+          { "text": "Show me your collection", "action": "show_items" },
+          { "text": "Tell me about your booth", "action": "booth_info" },
+          { "text": "Share some tech facts", "action": "tech_facts" },
+          { "text": "Thanks, I'll browse around", "action": "end" }
+        ]
+      },
+      "facts": [
+        "Commodore's Amiga was released in 1985 and was ahead of its time with multitasking capabilities.",
+        "Atari's 2600 console, released in 1977, helped popularize home video gaming.",
+        "IBM's PC, introduced in 1981, set the standard for personal computing with its open architecture."
+      ],
+      "puzzle_items": [],
+      "puzzle_dialog": {}
+    }
+    // Additional vendors follow the same structure...
+  ]
+}

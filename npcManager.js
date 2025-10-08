@@ -7,7 +7,7 @@ class NPCManager {
         });
     }
 
-    static create(scene) {
+    static create(scene, vendors) {
         const npcAreaLayer = NPCManager.getNPCAreaLayer(scene);
         if (!npcAreaLayer) return;
 
@@ -34,6 +34,9 @@ class NPCManager {
 
             const npc = scene.add.sprite(point.x, point.y, spriteKey, frame);
             scene.npcGroup.add(npc);
+
+            // Assign random vendor data
+            npc.vendorData = vendors[Math.floor(Math.random() * vendors.length)];
 
             // Set progressive depth for NPC (reversed gradient)
             NPCManager.setNPCDepth(npc, rect, tablesLayerDepth);
@@ -75,26 +78,34 @@ class NPCManager {
 
                             if (npc.vendorData) {
                                 // Use vendor-specific data
-                                dialogData = {
+                                const originalDialogData = {
                                     imageKey: npc.vendorData.imageKey || 'npc1',
-                                    text: `Welcome to ${npc.vendorData.name}!\n${npc.vendorData.description || ''}`,
-                                    buttons: [
-                                        ...(npc.vendorData.items && npc.vendorData.items.length > 0
-                                            ? [{
-                                                label: `Buy ${npc.vendorData.items[0].name}`,
-                                                onClick: () => {
-                                                    if (scene.uiManager.addItem(npc.vendorData.items[0])) {
-                                                        console.log(`Added ${npc.vendorData.items[0].name} to inventory`);
-                                                    }
-                                                }
-                                            }]
-                                            : []),
-                                        {
-                                            label: 'Leave',
-                                            onClick: () => scene.uiManager.closeDialog()
+                                    text: npc.vendorData.dialog.greeting,
+                                    buttons: npc.vendorData.dialog.responses.map(response => ({
+                                        label: response.text,
+                                        onClick: () => {
+                                            let newText = '';
+                                            if (response.action === 'show_items') {
+                                                newText = npc.vendorData.items.map(i => `${i.name}: ${i.description} (${i.value})`).join('\n');
+                                            } else if (response.action === 'booth_info') {
+                                                newText = `Booth: ${npc.vendorData.booth}\nDescription: ${npc.vendorData.description}`;
+                                            } else if (response.action === 'tech_facts') {
+                                                newText = npc.vendorData.facts.join('\n');
+                                            } else if (response.action === 'end') {
+                                                scene.uiManager.closeDialog();
+                                                return;
+                                            }
+                                            scene.uiManager.showDialog({
+                                                text: newText,
+                                                buttons: [{
+                                                    label: 'Back',
+                                                    onClick: () => scene.uiManager.showDialog(originalDialogData)
+                                                }]
+                                            });
                                         }
-                                    ]
+                                    }))
                                 };
+                                scene.uiManager.showDialog(originalDialogData);
                             } else {
                                 // Fallback generic dialog
                                 dialogData = {

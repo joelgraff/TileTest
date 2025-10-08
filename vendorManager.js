@@ -12,9 +12,7 @@ class VendorManager {
 
     async loadVendors() {
         try {
-            const response = await fetch('./vendors_.json');
-            const data = await response.json();
-            this.vendors = data.vendors;
+            this.vendors = this.scene.vendors;
             this.tryAssignVendorData();
         } catch (error) {
             console.error('Failed to load vendor data:', error);

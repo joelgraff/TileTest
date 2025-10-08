@@ -100,8 +100,8 @@ class PlayerManager {
         // Check if stuck trying to reach target
         if (scene.inputManager.target) {
             const deltas = { x: Math.abs(scene.player.x - PlayerManager.lastX), y: Math.abs(scene.player.y - PlayerManager.lastY) };
-            console.log ( deltas.x, deltas.y);
-            if (deltas.x + deltas.y < .1) {
+
+            if (deltas.x + deltas.y < .2) {
             //if (scene.player.x === PlayerManager.lastX && scene.player.y === PlayerManager.lastY) {
                 PlayerManager.stuckCounter++;
                 if (PlayerManager.stuckCounter > 1) {
