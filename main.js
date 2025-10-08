@@ -66,7 +66,7 @@ function create() {
         const isMobile = window.innerWidth < 768 || window.innerHeight < 768;
         if (isMobile) {
             // Apply zoom for mobile devices
-            scene.cameras.main.setZoom(2);
+            scene.cameras.main.setZoom(1.5);
         }
     } else {
         console.error('Player not created. Check playerManager.js and asset paths.');
