@@ -23,6 +23,56 @@ class UIManager {
 
         // DialogManager instance
         this.dialogManager = new DialogManager(scene);
+
+        // Movement indicator (reticle)
+        this.movementIndicator = this.scene.add.graphics();
+        this.movementIndicator.setDepth(999);
+        this.movementIndicator.setVisible(false);
+        this.movementIndicator.alpha = 1;
+        this.movementIndicatorFadeTween = null;
+    }
+    // Movement indicator (reticle)
+    showMovementIndicator(x, y) {
+        this.movementIndicator.clear();
+        // Draw reticle: circle + crosshair
+        this.movementIndicator.lineStyle(4, 0xFFFF00, 1);
+        this.movementIndicator.strokeCircle(x, y, 16);
+        this.movementIndicator.lineStyle(2, 0xFFFFFF, 1);
+        this.movementIndicator.beginPath();
+        this.movementIndicator.moveTo(x - 12, y);
+        this.movementIndicator.lineTo(x + 12, y);
+        this.movementIndicator.moveTo(x, y - 12);
+        this.movementIndicator.lineTo(x, y + 12);
+        this.movementIndicator.strokePath();
+        this.movementIndicator.setVisible(true);
+        this.movementIndicator.alpha = 1;
+        if (this.movementIndicatorFadeTween) {
+            this.movementIndicatorFadeTween.stop();
+            this.movementIndicatorFadeTween = null;
+        }
+    }
+
+    hideMovementIndicator() {
+        if (this.movementIndicatorFadeTween) {
+            this.movementIndicatorFadeTween.stop();
+        }
+        this.movementIndicatorFadeTween = this.scene.tweens.add({
+            targets: this.movementIndicator,
+            alpha: 0,
+            duration: 200,
+            onComplete: () => {
+                this.movementIndicator.setVisible(false);
+            }
+        });
+    }
+
+    // Call this from InputManager after pointerdown/up events
+    handlePointerMove(x, y, isDown) {
+        if (isDown) {
+            this.showMovementIndicator(x, y);
+        } else {
+            this.hideMovementIndicator();
+        }
     }
 
     createUI() {

@@ -44,6 +44,12 @@ function create() {
     PlayerManager.create(scene);
     NPCManager.create(scene);
 
+    // Instance UIManager and attach to scene
+    import('./uiManager.js').then(({ default: UIManager }) => {
+        scene.uiManager = new UIManager(scene);
+        console.log('[main.js] UIManager instanced and attached to scene:', scene.uiManager);
+    });
+
     scene.inputManager = new InputManager(scene);
     CollisionManager.create(scene);
 

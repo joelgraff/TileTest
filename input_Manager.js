@@ -10,25 +10,58 @@ class InputManager {
 
         // Touch and mouse events
         scene.input.on('pointerdown', (pointer) => {
+            console.log('[InputManager] pointerdown', pointer.x, pointer.y);
+            console.log('[InputManager] scene.uiManager:', scene.uiManager);
+            if (scene.uiManager) {
+                console.log('[InputManager] uiManager keys:', Object.keys(scene.uiManager));
+            }
             this.touchStart.x = pointer.x;
             this.touchEnd.x = pointer.x;
             this.touchStart.y = pointer.y;
             this.touchEnd.y = pointer.y;
             this.isDragging = true;
             this.updateDirection(pointer); // Initial direction
+            if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
+                console.log('[InputManager] calling uiManager.handlePointerMove (down)', pointer.x, pointer.y);
+                scene.uiManager.handlePointerMove(pointer.x, pointer.y, true);
+            } else {
+                console.warn('[InputManager] uiManager.handlePointerMove not found');
+            }
         });
         scene.input.on('pointermove', (pointer) => {
             if (this.isDragging) {
+                console.log('[InputManager] pointermove', pointer.x, pointer.y);
+                console.log('[InputManager] scene.uiManager:', scene.uiManager);
+                if (scene.uiManager) {
+                    console.log('[InputManager] uiManager keys:', Object.keys(scene.uiManager));
+                }
                 this.touchEnd.x = pointer.x;
                 this.touchEnd.y = pointer.y;
                 this.updateDirection(pointer); // Update direction continuously
+                if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
+                    console.log('[InputManager] calling uiManager.handlePointerMove (move)', pointer.x, pointer.y);
+                    scene.uiManager.handlePointerMove(pointer.x, pointer.y, true);
+                } else {
+                    console.warn('[InputManager] uiManager.handlePointerMove not found');
+                }
             }
         });
         scene.input.on('pointerup', (pointer) => {
+            console.log('[InputManager] pointerup', pointer.x, pointer.y);
+            console.log('[InputManager] scene.uiManager:', scene.uiManager);
+            if (scene.uiManager) {
+                console.log('[InputManager] uiManager keys:', Object.keys(scene.uiManager));
+            }
             this.touchEnd.x = pointer.x;
             this.touchEnd.y = pointer.y;
             this.isDragging = false;
             this.direction = { x: 0, y: 0 };
+            if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
+                console.log('[InputManager] calling uiManager.handlePointerMove (up)', pointer.x, pointer.y);
+                scene.uiManager.handlePointerMove(pointer.x, pointer.y, false);
+            } else {
+                console.warn('[InputManager] uiManager.handlePointerMove not found');
+            }
         });
     }
 
