@@ -56,6 +56,17 @@ function create() {
     if (scene.player) {
         scene.cameras.main.startFollow(scene.player);
         scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
+
+        // Zoom in on mobile for better visibility
+        if (!scene.sys.game.device.os.desktop) {
+            if (window.innerHeight > window.innerWidth) {
+                // Vertical orientation: substantial zoom
+                scene.cameras.main.setZoom(2.5);
+            } else {
+                // Horizontal orientation: moderate zoom
+                scene.cameras.main.setZoom(1.8);
+            }
+        }
     } else {
         console.error('Player not created. Check playerManager.js and asset paths.');
     }
