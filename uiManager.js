@@ -224,7 +224,7 @@ class UIManager {
     }
 
     createVersionDisplay() {
-        this.versionText = this.scene.add.text(10, 620, 'Version 1.5', {
+        this.versionText = this.scene.add.text(10, 620, 'Version 1.6', {
             fontFamily: 'Courier New, monospace',
             fontSize: '12px',
             fill: '#FFFFFF',

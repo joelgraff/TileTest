@@ -13,7 +13,7 @@ const config = {
     height: 640,
     parent: 'game-container',
     scale: {
-        mode: isMobile ? Phaser.Scale.FIT : Phaser.Scale.FIT,
+        mode: isMobile ? Phaser.Scale.ENVELOP : Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     physics: {
