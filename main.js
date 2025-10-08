@@ -4,13 +4,16 @@ import NPCManager from './npcManager.js';
 import CollisionManager from './collisionManager.js';
 import InputManager from './input_Manager.js';
 
+// Determine device type for scaling
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
 const config = {
     type: Phaser.AUTO,
     width: 960,
     height: 640,
     parent: 'game-container',
     scale: {
-        mode: Phaser.Scale.ENVELOP,
+        mode: isMobile ? Phaser.Scale.ENVELOP : Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     physics: {
@@ -38,6 +41,15 @@ function preload() {
 
 function create() {
     scene = this;
+
+    // Set scale mode based on device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+        scene.scale.scaleMode = Phaser.Scale.ENVELOP;
+    } else {
+        scene.scale.scaleMode = Phaser.Scale.NONE;
+    }
+    scene.scale.refresh();
     MapManager.create(scene);
 
     if (!scene.map) {
