@@ -1,12 +1,11 @@
-// Vendor Manager for handling vendor interactions and dialog in VCF Quest
 class VendorManager {
     constructor(scene) {
         this.scene = scene;
         this.vendors = [];
-        this.vendorSprites = [];
+        this.interactionRange = 60;
         this.nearbyVendor = null;
-        this.interactionRange = 60; // Distance for interaction
-        
+        this.vendorAssignmentDone = false;
+
         this.loadVendors();
         this.setupInteractionPrompt();
     }
@@ -16,41 +15,98 @@ class VendorManager {
             const response = await fetch('./vendors_.json');
             const data = await response.json();
             this.vendors = data.vendors;
-            this.createVendorSprites();
+            this.tryAssignVendorData();
         } catch (error) {
             console.error('Failed to load vendor data:', error);
         }
     }
 
-    createVendorSprites() {
-        this.vendors.forEach((vendor, index) => {
-            // Create vendor sprite at specified location
-            const sprite = this.scene.add.sprite(vendor.x, vendor.y, 'npc1', 0);
-            sprite.setDepth(1);
-            sprite.vendorData = vendor;
-            sprite.vendorId = vendor.id;
-            
-            // Add booth label above vendor
-            const label = this.scene.add.text(vendor.x, vendor.y - 40, vendor.booth, {
-                fontFamily: 'Courier New, monospace',
-                fontSize: '14px',
-                fill: '#FFFF00',
-                backgroundColor: '#000080',
-                padding: { x: 4, y: 2 }
-            })
-            .setOrigin(0.5)
-            .setDepth(2);
+    tryAssignVendorData() {
+        if (this.vendorAssignmentDone) return;
+        if (!this.scene.npcGroup || !this.vendors.length) return;
 
-            // Store references
-            sprite.boothLabel = label;
-            this.vendorSprites.push(sprite);
+        const availableVendors = [...this.vendors];
+        this.scene.npcGroup.getChildren().forEach(npcSprite => {
+            let vendor;
+            if (availableVendors.length > 0) {
+                const idx = Math.floor(Math.random() * availableVendors.length);
+                vendor = availableVendors.splice(idx, 1)[0];
+            } else {
+                vendor = this.vendors[Math.floor(Math.random() * this.vendors.length)];
+            }
+            npcSprite.vendorData = vendor;
+
+            // Always assign pulsing glow effect
+            npcSprite.interactionEffect = 1;
+
+            // Create a graphics object for the pulsing glow
+            if (npcSprite.glowGraphic) {
+                npcSprite.glowGraphic.destroy();
+            }
+            const glow = this.scene.add.graphics();
+            glow.setDepth(npcSprite.depth ? npcSprite.depth - 1 : 0);
+            glow.setVisible(false);
+            npcSprite.glowGraphic = glow;
+            npcSprite.glowPulse = 0;
         });
-
-        console.log(`Created ${this.vendorSprites.length} vendor sprites`);
+        this.vendorAssignmentDone = true;
     }
 
+    update() {
+        this.tryAssignVendorData();
+
+        if (!this.scene.player || !this.scene.npcGroup) return;
+
+        this.nearbyVendor = null;
+
+        this.scene.npcGroup.getChildren().forEach(npcSprite => {
+            if (!npcSprite.vendorData) {
+                npcSprite.clearTint && npcSprite.clearTint();
+                if (npcSprite.glowGraphic) npcSprite.glowGraphic.setVisible(false);
+                npcSprite.setScale && npcSprite.setScale(1);
+                return;
+            }
+
+            const distance = Phaser.Math.Distance.Between(
+                this.scene.player.x,
+                this.scene.player.y,
+                npcSprite.x,
+                npcSprite.y
+            );
+
+            if (distance >= this.interactionRange) {
+                npcSprite.clearTint && npcSprite.clearTint();
+                if (npcSprite.glowGraphic) npcSprite.glowGraphic.setVisible(false);
+                npcSprite.setScale && npcSprite.setScale(1);
+                return;
+            }
+
+            this.nearbyVendor = npcSprite;
+            this.interactionPrompt.x = npcSprite.x - this.scene.cameras.main.scrollX;
+            this.interactionPrompt.y = npcSprite.y - this.scene.cameras.main.scrollY - 40;
+
+            // Pulsing circular glow effect
+            if (npcSprite.glowGraphic) {
+                npcSprite.glowPulse = (npcSprite.glowPulse || 0) + 0.08;
+                const pulse = 0.7 + 0.3 * Math.sin(npcSprite.glowPulse);
+                npcSprite.glowGraphic.clear();
+                npcSprite.glowGraphic.fillStyle(0x00FFFF, 0.25 + 0.25 * pulse); // Cyan, pulsing alpha
+                npcSprite.glowGraphic.fillCircle(
+                    npcSprite.x,
+                    npcSprite.y,
+                    (npcSprite.displayWidth * 0.7) + (npcSprite.displayWidth * 0.3 * pulse)
+                );
+                npcSprite.glowGraphic.setVisible(true);
+            }
+        });
+
+        if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
+            this.interactionPrompt.setVisible(true);
+        } else {
+            this.interactionPrompt.setVisible(false);
+        }
+    }
     setupInteractionPrompt() {
-        // Create interaction prompt (initially hidden)
         this.interactionPrompt = this.scene.add.text(400, 100, 'PRESS SPACE TO TALK', {
             fontFamily: 'Courier New, monospace',
             fontSize: '12px',
@@ -63,88 +119,101 @@ class VendorManager {
         .setDepth(150)
         .setVisible(false);
 
-        // Setup space key for interaction
         this.scene.input.keyboard.on('keydown-SPACE', () => {
             if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
-                this.interactWithVendor(this.nearbyVendor);
+                this.interactWithVendor(this.nearbyVendor.vendorData);
             }
         });
     }
-
+/*
     update() {
-        if (!this.scene.player) return;
+        this.tryAssignVendorData();
 
-        // Check for nearby vendors
-        const previousNearbyVendor = this.nearbyVendor;
+        if (!this.scene.player || !this.scene.npcGroup) return;
+
         this.nearbyVendor = null;
 
-        this.vendorSprites.forEach(vendorSprite => {
+        this.scene.npcGroup.getChildren().forEach(npcSprite => {
+            if (!npcSprite.vendorData) {
+                // Remove all effects if not a vendor
+                npcSprite.clearTint && npcSprite.clearTint();
+                if (npcSprite.outlineGraphic) npcSprite.outlineGraphic.setVisible(false);
+                npcSprite.setScale && npcSprite.setScale(1);
+                return;
+            }
+
             const distance = Phaser.Math.Distance.Between(
-                this.scene.player.x, 
+                this.scene.player.x,
                 this.scene.player.y,
-                vendorSprite.x, 
-                vendorSprite.y
+                npcSprite.x,
+                npcSprite.y
             );
 
-            if (distance < this.interactionRange) {
-                this.nearbyVendor = vendorSprite.vendorData;
-                
-                // Position prompt above player
-                this.interactionPrompt.x = this.scene.player.x;
-                this.interactionPrompt.y = this.scene.player.y - 60;
+            // Remove effects if not in range
+            if (distance >= this.interactionRange) {
+                npcSprite.clearTint && npcSprite.clearTint();
+                if (npcSprite.outlineGraphic) npcSprite.outlineGraphic.setVisible(false);
+                npcSprite.setScale && npcSprite.setScale(1);
+                return;
+            }
+
+            // Apply effect if in range
+            this.nearbyVendor = npcSprite;
+            this.interactionPrompt.x = npcSprite.x - this.scene.cameras.main.scrollX;
+            this.interactionPrompt.y = npcSprite.y - this.scene.cameras.main.scrollY - 40;
+
+            switch (npcSprite.interactionEffect) {
+                case 0: // Tint
+                    npcSprite.setTint(0xFFFF00);
+                    break;
+                case 1: // Outline
+                    if (npcSprite.outlineGraphic) {
+                        npcSprite.outlineGraphic.setVisible(true);
+                        npcSprite.outlineGraphic.x = npcSprite.x - npcSprite.displayWidth / 2 - 2;
+                        npcSprite.outlineGraphic.y = npcSprite.y - npcSprite.displayHeight / 2 - 2;
+                    }
+                    break;
+                case 2: // Bounce/scale
+                    npcSprite.setScale(1.2);
+                    break;
             }
         });
 
-        // Show/hide interaction prompt
         if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
             this.interactionPrompt.setVisible(true);
         } else {
             this.interactionPrompt.setVisible(false);
         }
-
-        // Update prompt to follow camera
-        if (this.nearbyVendor) {
-            const camera = this.scene.cameras.main;
-            this.interactionPrompt.x = this.scene.player.x - camera.scrollX;
-            this.interactionPrompt.y = this.scene.player.y - camera.scrollY - 60;
-        }
     }
-
+*/
     interactWithVendor(vendorData) {
-        console.log(`Interacting with vendor: ${vendorData.name}`);
-        
-        // Hide interaction prompt
+        if (!vendorData) return;
         this.interactionPrompt.setVisible(false);
-        
-        // Show vendor dialog through UI manager
-        this.scene.uiManager.showDialog(vendorData);
-        
-        // Add a sample item to test inventory system
-        if (vendorData.items && vendorData.items.length > 0) {
-            // For demo purposes, add first item to inventory
-            const item = vendorData.items[0];
-            if (this.scene.uiManager.addItem(item)) {
-                console.log(`Added ${item.name} to inventory`);
-            }
-        }
-    }
 
-    getVendorById(vendorId) {
-        return this.vendors.find(vendor => vendor.id === vendorId);
-    }
+        const dialogData = {
+            imageKey: vendorData.imageKey || 'npc1',
+            text: `Welcome to ${vendorData.name}!\n${vendorData.description || ''}`,
+            buttons: [
+                ...(vendorData.items && vendorData.items.length > 0
+                    ? [{
+                        label: `Buy ${vendorData.items[0].name}`,
+                        onClick: () => {
+                            if (this.scene.uiManager.addItem(vendorData.items[0])) {
+                                console.log(`Added ${vendorData.items[0].name} to inventory`);
+                            }
+                        }
+                    }]
+                    : []),
+                {
+                    label: 'Leave',
+                    onClick: () => {
+                        this.scene.uiManager.closeDialog();
+                    }
+                }
+            ]
+        };
 
-    getVendorByBooth(boothLetter) {
-        return this.vendors.find(vendor => vendor.booth === boothLetter);
-    }
-
-    // Get all vendor locations for map purposes
-    getVendorLocations() {
-        return this.vendors.map(vendor => ({
-            x: vendor.x,
-            y: vendor.y,
-            booth: vendor.booth,
-            name: vendor.name
-        }));
+        this.scene.uiManager.showDialog(dialogData);
     }
 }
 

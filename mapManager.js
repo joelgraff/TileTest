@@ -1,74 +1,41 @@
-import CONFIG from './config.js';
-
 class MapManager {
-    static loadAssets(scene) {
-        const cacheBuster = `?v=${Date.now()}`;
-        scene.load.image(CONFIG.ASSETS.TILES, `tiles.png${cacheBuster}`);
-        scene.load.spritesheet(CONFIG.ASSETS.PLAYER, `player.png${cacheBuster}`, {
-            frameWidth: CONFIG.PLAYER.FRAME_WIDTH,
-            frameHeight: CONFIG.PLAYER.FRAME_HEIGHT
-        });
-        CONFIG.NPC.SPRITES.forEach(key => {
-            scene.load.spritesheet(key, `${key}.png${cacheBuster}`, {
-                frameWidth: CONFIG.PLAYER.FRAME_WIDTH,
-                frameHeight: CONFIG.PLAYER.FRAME_HEIGHT
-            });
-        });
-        scene.load.tilemapTiledJSON(CONFIG.ASSETS.MAP, `map.json${cacheBuster}`);
+    static preload(scene) {
+        scene.load.tilemapTiledJSON('map', 'assets/map.json');
+        scene.load.image('tiles', 'assets/tiles.png');
     }
 
-    static createMap(scene) {
-        let map;
-        try {
-            map = scene.make.tilemap({ key: CONFIG.ASSETS.MAP });
-            console.log('Loaded map with', map.layers.length, 'layers:', map.layers.map(layer => layer.name));
-        } catch (error) {
-            console.error('Failed to create tilemap from map.json:', error);
-            return null;
-        }
+    static create(scene) {
+        scene.map = scene.make.tilemap({ key: 'map' });
+        const tileset = scene.map.addTilesetImage('tiles');
+        const mapHeight = scene.map.heightInPixels;
 
-        const tileset = map.addTilesetImage(CONFIG.ASSETS.TILES, CONFIG.ASSETS.TILES);
-        if (!tileset) {
-            console.error('Failed to load tileset "tiles". Check map.json tileset name or image loading.');
-            return null;
-        }
-
-        const playerTileset = map.addTilesetImage(CONFIG.ASSETS.PLAYER, CONFIG.ASSETS.PLAYER);
-        if (!playerTileset) {
-            console.error('Failed to load player tileset "player". Check map.json tileset name or player.png loading.');
-            return null;
-        }
-
-        const layers = {};
-        map.layers.forEach(layerData => {
-            if (layerData.data && !layerData.objects) {
-                if (!layers[layerData.name]) {
-                    layers[layerData.name] = map.createLayer(layerData.name, tileset, 0, 0);
-                    if (!layers[layerData.name]) {
-                        console.error(`Failed to create ${layerData.name} layer. Check layer names in map.json or tileset association.`);
-                        return;
-                    }
-                    const depthProp = layerData.properties && layerData.properties.find(prop => prop.name === 'depth');
-                    if (!depthProp || typeof depthProp.value !== 'number') {
-                        console.error(`Missing or invalid depth property for ${layerData.name} layer. Depth is required.`);
-                        return;
-                    }
-                    layers[layerData.name].setDepth(depthProp.value);
-                    scene[`${layerData.name}Layer`] = layers[layerData.name];
+        // Build a lookup for layer depth values from map.json
+        const layerDepths = {};
+        if (scene.map.layers) {
+            scene.map.layers.forEach(layerData => {
+                let depthValue = 0;
+                if (layerData.properties) {
+                    const depthProp = layerData.properties.find(p => p.name === 'depth');
+                    if (depthProp) depthValue = parseInt(depthProp.value, 10) || 0;
+                } else if (typeof layerData.depth === 'number') {
+                    depthValue = layerData.depth;
                 }
-            }
-        });
-
-        if (Object.keys(layers).length === 0) {
-            console.error('No tile layers found in map.json. Check for layers with "data" field (tile layers) and valid tileset association.');
-            return null;
+                layerDepths[layerData.name] = depthValue;
+            });
         }
 
-        scene.map = map;
-        scene.playerTileset = playerTileset;
-        scene.tilesTileset = tileset;
+        // Create each layer and set its depth once
+        scene.map.layers.forEach((layerData, i) => {
+            const layer = scene.map.createLayer(layerData.name, tileset, 0, 0);
+            // Calculate layer depth: base + offset
+            let baseDepth = Math.floor((i / scene.map.layers.length) * (2 * mapHeight));
+            let offset = layerDepths[layerData.name] * scene.map.tileHeight;
+            let finalDepth = Phaser.Math.Clamp(baseDepth + offset, 0, 2 * mapHeight);
+            layer.setDepth(finalDepth);
 
-        return map;
+            // Store reference for other managers if needed
+            scene[layerData.name + 'Layer'] = layer;
+        });
     }
 }
 

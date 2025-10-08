@@ -1,68 +1,106 @@
-import InputManager from './input_Manager.js';
-
 class PlayerManager {
-    static createPlayer(scene) {
-        const spawnPoint = { x: 100, y: 100 }; // Default spawn, adjust as needed
-        scene.player = scene.physics.add.sprite(spawnPoint.x, spawnPoint.y, 'player', 0);
-        scene.player.setDepth(1);
-        scene.player.setCollideWorldBounds(true);
-        scene.player.setBounce(0);
-        scene.player.setDrag(0);
+    static preload(scene) {
+        scene.load.spritesheet('player', 'assets/player.png', { frameWidth: 32, frameHeight: 48 });
+    }
 
-        // Define animation frames (assuming a spritesheet layout)
+    static create(scene) {
+        const { x: startX, y: startY } = PlayerManager.getPlayerStartPosition(scene);
+        scene.player = PlayerManager.createPlayerSprite(scene, startX, startY);
+        PlayerManager.setPlayerCollisionBox(scene);
+        PlayerManager.createPlayerAnimations(scene);
+    }
+
+    static update(scene, time, delta) {
+        if (!scene.player || !scene.inputManager) return;
+        PlayerManager.handlePlayerMovement(scene);
+        PlayerManager.handlePlayerAnimation(scene);
+        PlayerManager.updatePlayerDepth(scene); // Progressive depth
+        PlayerManager.drawPlayerDebug(scene);
+    }
+
+    // --- Helper Functions ---
+
+    static getPlayerStartPosition(scene) {
+        const playerLayer = scene.map.getObjectLayer('player');
+        let x = 100, y = 100;
+        if (playerLayer && playerLayer.objects && playerLayer.objects.length > 0) {
+            const startObj = playerLayer.objects.find(obj => obj.name === 'start');
+            if (startObj) {
+                x = startObj.x;
+                y = startObj.y;
+            }
+        }
+        return { x, y };
+    }
+
+    static createPlayerSprite(scene, x, y) {
+        const sprite = scene.physics.add.sprite(x, y, 'player', 0);
+        sprite.setCollideWorldBounds(true);
+        return sprite;
+    }
+
+    static setPlayerCollisionBox(scene) {
+        const playerTileset = scene.map.tilesets.find(ts => ts.name === 'player');
+        if (!playerTileset || !playerTileset.tileData) return;
+
+        let frameIndex = scene.player.frame.name ?? scene.player.frame.index ?? 0;
+        if (typeof frameIndex === 'string') frameIndex = parseInt(frameIndex, 10) || 0;
+        if (playerTileset.firstgid && frameIndex >= playerTileset.firstgid) {
+            frameIndex = frameIndex - playerTileset.firstgid;
+        }
+
+        const tileData = playerTileset.tileData[frameIndex];
+        if (
+            tileData &&
+            tileData.objectgroup &&
+            tileData.objectgroup.objects &&
+            tileData.objectgroup.objects.length > 0
+        ) {
+            const obj = tileData.objectgroup.objects[0];
+            scene.player.setSize(obj.width, obj.height);
+            scene.player.setOffset(obj.x, obj.y);
+        }
+    }
+
+    static createPlayerAnimations(scene) {
         scene.anims.create({
             key: 'down',
-            frames: scene.anims.generateFrameNumbers('player', { frames: [0, 1, 2, 3] }),
-            frameRate: 6,
+            frames: scene.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+            frameRate: 8,
             repeat: -1
         });
         scene.anims.create({
             key: 'left',
-            frames: scene.anims.generateFrameNumbers('player', { frames: [4, 5, 6, 7] }),
-            frameRate: 6,
+            frames: scene.anims.generateFrameNumbers('player', { start: 4, end: 7 }),
+            frameRate: 8,
             repeat: -1
         });
         scene.anims.create({
             key: 'right',
-            frames: scene.anims.generateFrameNumbers('player', { frames: [8, 9, 10, 11] }),
-            frameRate: 6,
+            frames: scene.anims.generateFrameNumbers('player', { start: 8, end: 11 }),
+            frameRate: 8,
             repeat: -1
         });
         scene.anims.create({
             key: 'up',
-            frames: scene.anims.generateFrameNumbers('player', { frames: [12, 13, 14, 15] }),
-            frameRate: 6,
+            frames: scene.anims.generateFrameNumbers('player', { start: 12, end: 15 }),
+            frameRate: 8,
             repeat: -1
         });
-
-        // Add collision boxes (example)
-        scene.player.collisionBoxes = [
-            { width: 16, height: 16, x: 8, y: 8 }, // Adjust based on sprite
-        ];
-
-        return !!scene.player;
-    }
-
-    static setupInput(scene) {
-        scene.inputManager = new InputManager(scene); // Initialize InputManager
     }
 
     static handlePlayerMovement(scene) {
-        if (!scene.player) return;
-
         const direction = scene.inputManager.getDirection();
-        const speed = 200; // Adjust speed as needed
-
-        // Apply velocity based on direction
+        const speed = 200;
         scene.player.setVelocity(direction.x * speed, direction.y * speed);
+    }
 
-        // Stop movement if no direction
+    static handlePlayerAnimation(scene) {
+        const direction = scene.inputManager.getDirection();
         if (direction.x === 0 && direction.y === 0) {
-            scene.player.setVelocity(0, 0);
             scene.player.anims.stop();
             scene.player.setFrame(0); // Idle frame (down)
         } else {
-            // Determine animation direction
             let animKey = 'down';
             if (Math.abs(direction.x) > Math.abs(direction.y)) {
                 animKey = direction.x > 0 ? 'right' : 'left';
@@ -71,16 +109,48 @@ class PlayerManager {
             }
             scene.player.anims.play(animKey, true);
         }
+    }
 
-        // Update collision box based on current frame
-        const frameIndex = scene.player.anims.currentFrame ? scene.player.anims.currentFrame.index : 0;
-        if (scene.player.collisionBoxes && scene.player.collisionBoxes[frameIndex]) {
-            const obj = scene.player.collisionBoxes[frameIndex];
-            scene.player.setSize(Math.round(obj.width), Math.round(obj.height));
-            scene.player.setOffset(Math.round(obj.x), Math.round(obj.y));
-        } else {
-            scene.player.setSize(16, 16); // Default size, adjust as needed
-            scene.player.setOffset(8, 8); // Default offset, adjust as needed
+    static updatePlayerDepth(scene) {
+        // Progressive depth: 0 (top) to 2*map.height (bottom)
+        const mapHeight = scene.map.heightInPixels;
+        const y = Phaser.Math.Clamp(scene.player.y, 0, mapHeight);
+        const depth = Math.floor((y / mapHeight) * (2 * mapHeight));
+        scene.player.setDepth(depth);
+
+    }
+
+    static drawPlayerDebug(scene) {
+        const direction = scene.inputManager.getDirection();
+        if (scene.debugEnabled) {
+            if (!scene.playerDebugGraphics) {
+                scene.playerDebugGraphics = scene.add.graphics().setDepth(999);
+            }
+            scene.playerDebugGraphics.clear();
+            // Draw direction vector
+            scene.playerDebugGraphics.lineStyle(2, 0xff0000, 1);
+            scene.playerDebugGraphics.strokeLineShape(
+                new Phaser.Geom.Line(
+                    scene.player.x,
+                    scene.player.y,
+                    scene.player.x + direction.x * 32,
+                    scene.player.y + direction.y * 32
+                )
+            );
+            // Draw custom collision box
+            const body = scene.player.body;
+            if (body) {
+                scene.playerDebugGraphics.lineStyle(2, 0x00ff00, 1);
+                scene.playerDebugGraphics.strokeRect(
+                    body.x,
+                    body.y,
+                    body.width,
+                    body.height
+                );
+            }
+        } else if (scene.playerDebugGraphics) {
+            scene.playerDebugGraphics.destroy();
+            scene.playerDebugGraphics = null;
         }
     }
 }
