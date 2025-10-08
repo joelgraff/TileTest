@@ -57,8 +57,9 @@ function create() {
         scene.cameras.main.startFollow(scene.player);
         scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
 
-        // Zoom in on mobile for better visibility
-        if (!scene.sys.game.device.os.desktop) {
+        // Zoom in on mobile/small screens for better visibility
+        const isMobile = window.innerWidth < 768 || window.innerHeight < 768;
+        if (isMobile) {
             if (window.innerHeight > window.innerWidth) {
                 // Vertical orientation: substantial zoom
                 scene.cameras.main.setZoom(2.5);
