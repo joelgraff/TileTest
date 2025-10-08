@@ -84,6 +84,9 @@ class UIManager {
 
         // Create inventory panel (initially hidden)
         this.createInventoryPanel();
+
+        // Create version display
+        this.createVersionDisplay();
     }
 
     createScoreDisplay() {
@@ -216,6 +219,18 @@ class UIManager {
             this.invTitle, this.invCloseButton, this.invCloseText,
             ...this.inventorySlots
         ]);
+    }
+
+    createVersionDisplay() {
+        this.versionText = this.scene.add.text(10, 620, 'Version 0.9', {
+            fontFamily: 'Courier New, monospace',
+            fontSize: '12px',
+            fill: '#FFFFFF',
+            align: 'left'
+        })
+        .setOrigin(0)
+        .setScrollFactor(0)
+        .setDepth(100);
     }
 
     // Inventory Management
