@@ -3,6 +3,8 @@ import PlayerManager from './playerManager.js';
 import NPCManager from './npcManager.js';
 import CollisionManager from './collisionManager.js';
 import InputManager from './input_Manager.js';
+import VendorManager from './vendorManager.js';
+import UIManager from './uiManager.js';
 
 // Determine device type for scaling
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -61,11 +63,10 @@ function create() {
     NPCManager.create(scene);
 
     // Instance UIManager and attach to scene
-    import('./uiManager.js').then(({ default: UIManager }) => {
-        scene.uiManager = new UIManager(scene);
-        console.log('[main.js] UIManager instanced and attached to scene:', scene.uiManager);
-    });
+    scene.uiManager = new UIManager(scene);
+    console.log('[main.js] UIManager instanced and attached to scene:', scene.uiManager);
 
+    scene.vendorManager = new VendorManager(scene);
     scene.inputManager = new InputManager(scene);
     CollisionManager.create(scene);
 
@@ -98,26 +99,10 @@ function create() {
 function update(time, delta) {
     PlayerManager.update?.(scene, time, delta);
     NPCManager.update?.(scene, time, delta);
+    scene.vendorManager?.update();
     CollisionManager.update?.(scene, time, delta);
     MapManager.update?.(scene, time, delta);
     scene.inputManager?.update?.(scene, time, delta);
-
-    // Check for NPC interaction
-    if (scene.input.keyboard.checkDown('SPACE') && scene.npcGroup) {
-        const interactableNPC = scene.npcGroup.getChildren().find(npc => npc.interactable);
-        if (interactableNPC) {
-            // Trigger interaction (e.g., show dialog)
-            scene.uiManager.showDialog({
-                text: "Hello! I'm a vendor. What can I do for you?",
-                buttons: [
-                    { text: "Buy", action: () => console.log("Buy action") },
-                    { text: "Sell", action: () => console.log("Sell action") },
-                    { text: "Talk", action: () => console.log("Talk action") },
-                    { text: "Close", action: () => scene.uiManager.closeDialog() }
-                ]
-            });
-        }
-    }
 }
 const game = new Phaser.Game(config);
 

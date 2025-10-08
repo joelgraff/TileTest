@@ -16,25 +16,26 @@ class DialogManager {
 
         // Main container centered near bottom
         this.dialogContainer = this.scene.add.container(cam.width / 2, cam.height - dialogHeight / 2 - 16);
-        const leftColumn = { 
+
+        const leftColumn = {
             x: 32 -dialogWidth / 2,
             y: -dialogHeight / 2,
-            width: dialogWidth / 4, 
+            width: dialogWidth / 4,
             height: dialogHeight,
         };
-        
-        const rightTopColumn = { 
-            x: 8 - dialogWidth / 4, 
-            y: 16 - dialogHeight / 2,
-            width: -8 + (dialogWidth * 3 / 4),
-            height: dialogHeight / 2,
-        };
 
-        const rightBotColumn = { 
+        const rightTopColumn = {
             x: 8 - dialogWidth / 4,
             y: 16 - dialogHeight / 2,
-            width: dialogWidth * 3 / 4, 
-            height: 3 * dialogHeight / 4,
+            width: -8 + (dialogWidth * 3 / 4),
+            height: dialogHeight / 3,
+        };
+
+        const rightBotColumn = {
+            x: 8 - dialogWidth / 4,
+            y: -dialogHeight / 8,
+            width: dialogWidth * 3 / 4,
+            height: 2 * dialogHeight / 3,
         };
 
         // Background
@@ -44,7 +45,7 @@ class DialogManager {
 
         // Image (left side)
         const imgSize = leftColumn.width;
-        const npcImage = 
+        const npcImage =
             this.scene.add.image(leftColumn.x, leftColumn.y, imageKey)
             .setDisplaySize(leftColumn.width / 2, leftColumn.height / 2)
             .setOrigin(0.0);
@@ -58,28 +59,69 @@ class DialogManager {
             align: 'left'
         }).setOrigin(0.0);
 
-        // Buttons (lower right, stacked)
-        const buttonYStart = rightBotColumn.height/4;
+        // Buttons: stack non-leave buttons in right column, place leave button at bottom right
+        const buttonYStart = rightBotColumn.y;
         const buttonSpacing = 38;
-        const buttonObjs = buttons.slice(0, 3).map((btn, i) => {
-            const btnObj = this.scene.add.text(rightBotColumn.x, buttonYStart - i * buttonSpacing, btn.label, {
+        let buttonObjs = [];
+
+        // Stack the first buttons (except last) in rightBotColumn
+        const stackedButtons = buttons.slice(0, buttons.length - 1);
+        stackedButtons.forEach((btn, i) => {
+            const btnText = this.scene.add.text(0, 0, btn.label, {
                 fontSize: '16px',
-                backgroundColor: '#444',
                 color: '#fff',
-                padding: { x: 14, y: 7 }
-            })
-            .setOrigin(0, 0)
-            .setInteractive({ useHandCursor: true })
-            .on('pointerdown', () => {
-                btn.onClick();
-                this.dialogContainer.destroy();
+                align: 'center'
             });
-            return btnObj;
+            const textWidth = btnText.width;
+            const buttonWidth = Math.max(100, textWidth + 20);
+            const buttonX = rightBotColumn.x // + (rightBotColumn.width - buttonWidth) / 2;
+
+            const btnBg = this.scene.add.rectangle(buttonX, buttonYStart - i * buttonSpacing, buttonWidth, 30, 0x444444)
+                .setOrigin(0, 0)
+                .setInteractive({ useHandCursor: true })
+                .on('pointerover', () => btnBg.setFillStyle(0x666666))
+                .on('pointerout', () => btnBg.setFillStyle(0x444444))
+                .on('pointerdown', () => {
+                    btn.onClick();
+                });
+
+            btnText.setPosition(buttonX + buttonWidth / 2, buttonYStart - (i) * buttonSpacing + 15);
+            btnText.setOrigin(0.5, 0.5);
+
+            buttonObjs.push(btnBg, btnText);
         });
+
+        // Place the last button (Leave) at bottom right
+        if (buttons.length > 0) {
+            const leaveBtn = buttons[buttons.length - 1];
+            const leaveText = this.scene.add.text(0, 0, leaveBtn.label, {
+                fontSize: '16px',
+                color: '#fff',
+                align: 'center'
+            });
+            const leaveTextWidth = leaveText.width;
+            const leaveButtonWidth = Math.max(100, leaveTextWidth + 20);
+            const leaveButtonX = dialogWidth / 2 - leaveButtonWidth - 10;
+            const leaveButtonY = dialogHeight / 2 - 40;
+
+            const leaveBg = this.scene.add.rectangle(leaveButtonX, leaveButtonY, leaveButtonWidth, 30, 0x444444)
+                .setOrigin(0, 0)
+                .setInteractive({ useHandCursor: true })
+                .on('pointerover', () => leaveBg.setFillStyle(0x666666))
+                .on('pointerout', () => leaveBg.setFillStyle(0x444444))
+                .on('pointerdown', () => {
+                    leaveBtn.onClick();
+                });
+
+            leaveText.setPosition(leaveButtonX + leaveButtonWidth / 2, leaveButtonY + 15);
+            leaveText.setOrigin(0.5, 0.5);
+
+            buttonObjs.push(leaveBg, leaveText);
+        }
 
         // Add all to container
         this.dialogContainer.add([bg, npcImage, dialogText, ...buttonObjs]);
-        this.dialogContainer.setDepth(1000); // On top
+        this.dialogContainer.setDepth(2000); // On top
     }
 
     hideDialog() {

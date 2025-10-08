@@ -68,16 +68,46 @@ class NPCManager {
                     }
                     npc.setInteractive();
                     npc.on('pointerdown', () => {
+
                         if (npc.interactable) {
-                            scene.uiManager.showDialog({
-                                text: "Hello! I'm a vendor. What can I do for you?",
-                                buttons: [
-                                    { text: "Buy", action: () => console.log("Buy action") },
-                                    { text: "Sell", action: () => console.log("Sell action") },
-                                    { text: "Talk", action: () => console.log("Talk action") },
-                                    { text: "Close", action: () => scene.uiManager.closeDialog() }
-                                ]
-                            });
+                            let dialogData;
+                            console.log('NPC clicked:', npc);
+
+                            if (npc.vendorData) {
+                                // Use vendor-specific data
+                                dialogData = {
+                                    imageKey: npc.vendorData.imageKey || 'npc1',
+                                    text: `Welcome to ${npc.vendorData.name}!\n${npc.vendorData.description || ''}`,
+                                    buttons: [
+                                        ...(npc.vendorData.items && npc.vendorData.items.length > 0
+                                            ? [{
+                                                label: `Buy ${npc.vendorData.items[0].name}`,
+                                                onClick: () => {
+                                                    if (scene.uiManager.addItem(npc.vendorData.items[0])) {
+                                                        console.log(`Added ${npc.vendorData.items[0].name} to inventory`);
+                                                    }
+                                                }
+                                            }]
+                                            : []),
+                                        {
+                                            label: 'Leave',
+                                            onClick: () => scene.uiManager.closeDialog()
+                                        }
+                                    ]
+                                };
+                            } else {
+                                // Fallback generic dialog
+                                dialogData = {
+                                    text: "Hello! I'm a vendor. What can I do for you?",
+                                    buttons: [
+                                        { label: "Buy", onClick: () => console.log("Buy action") },
+                                        { label: "Sell", onClick: () => console.log("Sell action") },
+                                        { label: "Talk", onClick: () => console.log("Talk action") },
+                                        { label: "Close", onClick: () => scene.uiManager.closeDialog() }
+                                    ]
+                                };
+                            }
+                            scene.uiManager.showDialog(dialogData);
                         }
                     });
                 } else {
