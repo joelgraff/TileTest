@@ -60,13 +60,8 @@ function create() {
         // Zoom in on mobile/small screens for better visibility
         const isMobile = window.innerWidth < 768 || window.innerHeight < 768;
         if (isMobile) {
-            if (window.innerHeight > window.innerWidth) {
-                // Vertical orientation: substantial zoom
-                scene.cameras.main.setZoom(2.5);
-            } else {
-                // Horizontal orientation: moderate zoom
-                scene.cameras.main.setZoom(1.8);
-            }
+            // Apply zoom for mobile devices
+            scene.cameras.main.setZoom(2);
         }
     } else {
         console.error('Player not created. Check playerManager.js and asset paths.');
