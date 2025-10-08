@@ -102,7 +102,7 @@ class InputManager {
             const dx = this.target.x - this.scene.player.x;
             const dy = this.target.y - this.scene.player.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 10) {
+            if (dist < 20) {
                 this.target = null;
                 return { x: 0, y: 0 };
             } else {
