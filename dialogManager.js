@@ -11,8 +11,9 @@ class DialogManager {
         }
 
         const cam = this.scene.cameras.main;
-        const dialogWidth = Math.min(600, cam.width * 0.85);
-        const dialogHeight = Math.min(240, cam.height * 0.45);
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const dialogWidth = Math.min(isMobile ? 400 : 600, cam.width * (isMobile ? 0.9 : 0.85));
+        const dialogHeight = Math.min(isMobile ? 160 : 240, cam.height * (isMobile ? 0.6 : 0.45));
 
         // Main container centered near bottom
         this.dialogContainer = this.scene.add.container(cam.width / 2, cam.height - dialogHeight / 2 - 16);
