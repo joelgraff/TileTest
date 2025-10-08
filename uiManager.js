@@ -67,9 +67,11 @@ class UIManager {
     }
 
     // Call this from InputManager after pointerdown/up events
-    handlePointerMove(x, y, isDown) {
+    handlePointerMove(screenX, screenY, isDown) {
         if (isDown) {
-            this.showMovementIndicator(x, y);
+            // Convert screen coordinates to world coordinates
+            const worldPoint = this.scene.cameras.main.getWorldPoint(screenX, screenY);
+            this.showMovementIndicator(worldPoint.x, worldPoint.y);
         } else {
             this.hideMovementIndicator();
         }
@@ -222,7 +224,7 @@ class UIManager {
     }
 
     createVersionDisplay() {
-        this.versionText = this.scene.add.text(10, 620, 'Version 1.3', {
+        this.versionText = this.scene.add.text(10, 620, 'Version 1.4', {
             fontFamily: 'Courier New, monospace',
             fontSize: '12px',
             fill: '#FFFFFF',
