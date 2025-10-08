@@ -1,77 +1,113 @@
 import CONFIG from './config.js';
 
 class NPCManager {
-    static createNPCs(scene) {
-        const npcAreaLayer = scene.map.getObjectLayer('npc_area');
-        if (!npcAreaLayer || npcAreaLayer.objects.length === 0) {
-            console.error('npc_area object layer not found or empty in map.');
-            return;
-        }
-
-        // Filter for spawn points (objects with type 'point')
-        const spawnPoints = npcAreaLayer.objects.filter(obj => obj.type === 'point');
-
-        if (spawnPoints.length === 0) {
-            console.warn('No spawn points (type "point") found in npc_area layer.');
-            return;
-        }
-
-        // Load the rect object (assuming only one rect with type 'rect')
-        const rect = npcAreaLayer.objects.find(obj => obj.type === 'rect');
-        if (!rect) {
-            console.warn('No rect object (type "rect") found in npc_area layer.');
-            return;
-        }
-
-        scene.npcGroup = scene.add.group(); // No physics group
-
-        spawnPoints.forEach((point, i) => {
-            const spriteKey = CONFIG.NPC.SPRITES[Math.floor(Math.random() * CONFIG.NPC.SPRITES.length)];
-            const x = point.x; // Tiled x in pixels from map origin
-            const y = point.y; // Tiled y in pixels from map origin
-
-            // Determine nearest edge
-            const rectX = rect.x;
-            const rectY = rect.y;
-            const rectWidth = rect.width;
-            const rectHeight = rect.height;
-            const rectRight = rectX + rectWidth;
-            const rectBottom = rectY + rectHeight;
-
-            const dxLeft = Math.abs(x - rectX);
-            const dxRight = Math.abs(x - rectRight);
-            const dyTop = Math.abs(y - rectY);
-            const dyBottom = Math.abs(y - rectBottom);
-
-            let direction;
-            const minDist = Math.min(dxLeft, dxRight, dyTop, dyBottom);
-            if (minDist === dxLeft) direction = 'left';
-            else if (minDist === dxRight) direction = 'right';
-            else if (minDist === dyTop) direction = 'up';
-            else direction = 'down';
-
-            // Map direction to a static frame (assuming a spritesheet with directional frames)
-            let frame = 0; // Default frame
-            switch (direction) {
-                case 'up': frame = 12; break; // Adjust frame numbers based on your spritesheet
-                case 'down': frame = 0; break; // Default/down frame
-                case 'left': frame = 4; break;
-                case 'right': frame = 8; break;
-            }
-
-            const npc = scene.add.sprite(x, y, spriteKey, frame);
-            npc.setDepth(1); // Same as player
-
-            scene.npcGroup.add(npc);
+    static preload(scene) {
+        CONFIG.NPC.SPRITES.forEach(spriteKey => {
+            scene.load.spritesheet(spriteKey, `assets/${spriteKey}.png`, { frameWidth: 32, frameHeight: 48 });
         });
-
-        // No collision setup needed
     }
 
-    static handleNPCMovements(scene) {
-        if (!scene.npcGroup) return;
+    static create(scene) {
+        const npcAreaLayer = NPCManager.getNPCAreaLayer(scene);
+        if (!npcAreaLayer) return;
 
-        // No movement logic needed since NPCs are static
+        const spawnPoints = NPCManager.getSpawnPoints(npcAreaLayer);
+        if (spawnPoints.length === 0) return;
+
+        const rect = NPCManager.getRectObject(npcAreaLayer);
+        if (!rect) return;
+
+        // Get tables layer depth from scene (set by mapManager)
+        let tablesLayerDepth = 0;
+        if (scene.tablesLayer && typeof scene.tablesLayer.depth === 'number') {
+            tablesLayerDepth = scene.tablesLayer.depth;
+        } else {
+            tablesLayerDepth = Math.floor(scene.map.heightInPixels);
+        }
+
+        scene.npcGroup = scene.add.group();
+
+        spawnPoints.forEach(point => {
+            const direction = NPCManager.getNearestEdgeDirection(point, rect);
+            const frame = NPCManager.getFrameForDirection(direction);
+            const spriteKey = NPCManager.getRandomSpriteKey();
+
+            const npc = scene.add.sprite(point.x, point.y, spriteKey, frame);
+            scene.npcGroup.add(npc);
+
+            // Set progressive depth for NPC (reversed gradient)
+            NPCManager.setNPCDepth(npc, rect, tablesLayerDepth);
+        });
+    }
+
+    static update(scene, time, delta) {
+        // NPCs are static; no update logic needed
+    }
+
+    // --- Helper Functions ---
+
+    static getNPCAreaLayer(scene) {
+        const layer = scene.map.getObjectLayer('npc_area');
+        if (!layer || !layer.objects || layer.objects.length === 0) {
+            return null;
+        }
+        return layer;
+    }
+
+    static getSpawnPoints(npcAreaLayer) {
+        return npcAreaLayer.objects.filter(obj => obj.type === 'point');
+    }
+
+    static getRectObject(npcAreaLayer) {
+        return npcAreaLayer.objects.find(obj => obj.type === 'rect');
+    }
+
+    static getNearestEdgeDirection(point, rect) {
+        const rectX = rect.x;
+        const rectY = rect.y;
+        const rectRight = rect.x + rect.width;
+        const rectBottom = rect.y + rect.height;
+
+        const dxLeft = Math.abs(point.x - rectX);
+        const dxRight = Math.abs(point.x - rectRight);
+        const dyTop = Math.abs(point.y - rectY);
+        const dyBottom = Math.abs(point.y - rectBottom);
+
+        const minDist = Math.min(dxLeft, dxRight, dyTop, dyBottom);
+        if (minDist === dxLeft) return 'left';
+        if (minDist === dxRight) return 'right';
+        if (minDist === dyTop) return 'up';
+        return 'down';
+    }
+
+    static getFrameForDirection(direction) {
+        switch (direction) {
+            case 'up': return 12;
+            case 'down': return 0;
+            case 'left': return 4;
+            case 'right': return 8;
+            default: return 0;
+        }
+    }
+
+    static getRandomSpriteKey() {
+        const sprites = CONFIG.NPC.SPRITES;
+        return sprites[Math.floor(Math.random() * sprites.length)];
+    }
+
+    static setNPCDepth(npc, npcAreaRect, tablesLayerDepth) {
+        // Calculate relative position in npcAreaRect
+        const relY = Phaser.Math.Clamp(npc.y, npcAreaRect.y, npcAreaRect.y + npcAreaRect.height);
+        // Reverse the gradient: 1 at top, 0 at bottom
+        const gradient = 1 - ((relY - npcAreaRect.y) / npcAreaRect.height);
+
+        // Depth range: centered on tablesLayerDepth, width 50
+        const minDepth = Phaser.Math.Clamp(tablesLayerDepth - 25, 0, tablesLayerDepth + 25);
+        const maxDepth = Phaser.Math.Clamp(tablesLayerDepth + 25, minDepth, tablesLayerDepth + 25);
+
+        // Interpolate depth
+        const npcDepth = Math.floor(Phaser.Math.Linear(minDepth, maxDepth, gradient));
+        npc.setDepth(npcDepth);
     }
 }
 

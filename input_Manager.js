@@ -29,7 +29,6 @@ class InputManager {
             this.touchEnd.y = pointer.y;
             this.isDragging = false;
             this.direction = { x: 0, y: 0 };
-            console.log('Pointer Up, Direction Reset:', this.direction); // Debug
         });
     }
 
@@ -44,7 +43,6 @@ class InputManager {
         } else {
             this.direction = { x: 0, y: 0 };
         }
-        console.log('Direction Updated:', this.direction); // Debug
     }
 
     getDirection() {
