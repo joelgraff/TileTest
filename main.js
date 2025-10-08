@@ -62,8 +62,8 @@ function create() {
         scene.cameras.main.centerOn(scene.player.x, scene.player.y);
         scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
 
-        // Zoom in on mobile/small screens for better visibility
-        const isMobile = window.innerWidth < 768 || window.innerHeight < 768;
+        // Zoom in on mobile devices for better visibility
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         if (isMobile) {
             // Apply zoom for mobile devices
             scene.cameras.main.setZoom(1.5);
