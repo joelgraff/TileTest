@@ -30,24 +30,23 @@ class InputManager {
             }
         });
         scene.input.on('pointermove', (pointer) => {
+            if (!pointer.isDown) return; // Only process if pointer is down
             if (!this.isDragging) {
                 const dx = pointer.x - this.touchStart.x;
                 const dy = pointer.y - this.touchStart.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist > this.threshold) {
                     this.isDragging = true;
-                    this.target = null; // Cancel tap-to-move if dragging
-                    this.updateDirection(pointer);
+                    this.target = scene.cameras.main.getWorldPoint(pointer.x, pointer.y); // Update target for drag
                 }
-            } else {
+            }
+            if (this.isDragging) {
                 console.log('[InputManager] pointermove', pointer.x, pointer.y);
                 console.log('[InputManager] scene.uiManager:', scene.uiManager);
                 if (scene.uiManager) {
                     console.log('[InputManager] uiManager keys:', Object.keys(scene.uiManager));
                 }
-                this.touchEnd.x = pointer.x;
-                this.touchEnd.y = pointer.y;
-                this.updateDirection(pointer); // Update direction continuously
+                this.target = scene.cameras.main.getWorldPoint(pointer.x, pointer.y); // Update target during drag
                 if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
                     console.log('[InputManager] calling uiManager.handlePointerMove (move)', pointer.x, pointer.y);
                     scene.uiManager.handlePointerMove(pointer.x, pointer.y, true);
