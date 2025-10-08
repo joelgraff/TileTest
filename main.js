@@ -55,6 +55,7 @@ function create() {
 
     if (scene.player) {
         scene.cameras.main.startFollow(scene.player);
+        scene.cameras.main.centerOn(scene.player.x, scene.player.y);
         scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
 
         // Zoom in on mobile/small screens for better visibility
