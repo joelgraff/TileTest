@@ -5,6 +5,8 @@ import CollisionManager from './collisionManager.js';
 import InputManager from './input_Manager.js';
 import VendorManager from './vendorManager.js';
 import UIManager from './uiManager.js';
+import DomainManager from './domainManager.js';
+import QuestManager from './questManager.js';
 
 // Determine device type for scaling
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -72,6 +74,12 @@ function create() {
 
     scene.vendorManager = new VendorManager(scene);
     scene.inputManager = new InputManager(scene);
+
+    // Initialize QuestManager (needs access to vendors data and scene)
+    // QuestManager will handle loading DomainManager internally
+    scene.questManager = new QuestManager();
+    scene.questManager.init(scene.vendors, scene.uiManager, scene);
+
     CollisionManager.create(scene);
 
     if (scene.player) {

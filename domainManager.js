@@ -80,6 +80,16 @@ class DomainManager {
         // Filter out hardware domain as it's too generic for quests
         return DomainManager.domains.filter(domain => domain.id !== 'hardware');
     }
+
+    static getDomainItems(domainId) {
+        const domain = DomainManager.getDomainById(domainId);
+        return domain && domain.items ? domain.items : [];
+    }
+
+    static getDomainFacts(domainId) {
+        const domain = DomainManager.getDomainById(domainId);
+        return domain && domain.facts ? domain.facts : [];
+    }
 }
 
 export default DomainManager;

@@ -15,6 +15,7 @@ class PlayerManager {
 
     static update(scene, time, delta) {
         if (!scene.player || !scene.inputManager) return;
+        if (scene.isDialogOpen) return; // Don't update player when dialog is open
         PlayerManager.handlePlayerMovement(scene);
         PlayerManager.handlePlayerAnimation(scene);
         PlayerManager.updatePlayerDepth(scene); // Progressive depth

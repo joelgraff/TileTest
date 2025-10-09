@@ -4,6 +4,7 @@ class DialogManager {
         this.dialogContainer = null;
         this.overlay = null;
         this.isDialogOpen = false;
+        this.buttonElements = null;
     }
 
     showDialog({ imageKey, text, buttons = [] }) { // Default buttons to []
@@ -12,8 +13,8 @@ class DialogManager {
             this.hideDialog();
         }
 
-        // Pause the game scene
-        this.scene.scene.pause();
+        // Set dialog open flag to pause game logic
+        this.scene.isDialogOpen = true;
 
         this.isDialogOpen = true;
 
@@ -34,25 +35,25 @@ class DialogManager {
         // Main container centered near bottom
         this.dialogContainer = this.scene.add.container(cam.width / 2, cam.height - dialogHeight / 2 - 16);
 
-        const leftColumn = {
-            x: 32 -dialogWidth / 2,
-            y: -dialogHeight / 2,
+        const leftTopColumn = {
+            x: 32 - dialogWidth / 2,
+            y: 16 - dialogHeight / 2,
             width: dialogWidth / 4,
-            height: dialogHeight,
+            height: dialogHeight / 2,
         };
 
-        const rightTopColumn = {
+        const leftBotColumn = {
+            x: 32 - dialogWidth / 2,
+            y: 16 - dialogHeight / 2 + dialogHeight / 2,
+            width: dialogWidth / 4,
+            height: dialogHeight / 2,
+        };
+
+        const rightColumn = {
             x: 8 - dialogWidth / 4,
             y: 16 - dialogHeight / 2,
-            width: -8 + (dialogWidth * 3 / 4),
-            height: dialogHeight / 3,
-        };
-
-        const rightBotColumn = {
-            x: 8 - dialogWidth / 4,
-            y: -dialogHeight / 8,
-            width: dialogWidth * 3 / 4,
-            height: 2 * dialogHeight / 3,
+            width: dialogWidth * 3 / 4 - 8,
+            height: dialogHeight - 32,
         };
 
         // Background
@@ -65,24 +66,25 @@ class DialogManager {
                 event.stopPropagation();
             });
 
-        // Image (left side)
-        const imgSize = leftColumn.width;
-        const npcImage =
-            this.scene.add.image(leftColumn.x, leftColumn.y, imageKey)
-            .setDisplaySize(leftColumn.width / 2, leftColumn.height / 2)
-            .setOrigin(0.0);
+        let npcImage = null;
+        // Image (left top) - only if imageKey is provided
+        if (imageKey) {
+            const imgSize = leftTopColumn.width;
+            npcImage = this.scene.add.image(leftTopColumn.x, leftTopColumn.y, imageKey)
+                .setDisplaySize(leftTopColumn.width / 2, leftTopColumn.height / 2)
+                .setOrigin(0.0);
+        }
 
-        // Dialog text (upper right)
-        const textWidth = rightTopColumn.width;
-        const dialogText = this.scene.add.text(rightTopColumn.x, rightTopColumn.y, text, {
+        // Dialog text (right side)
+        const dialogText = this.scene.add.text(rightColumn.x, rightColumn.y, text, {
             fontSize: '18px',
-            wordWrap: { width: textWidth },
+            wordWrap: { width: rightColumn.width },
             color: '#fff',
             align: 'left'
         }).setOrigin(0.0);
 
-        // Buttons: stack non-leave buttons in right column, place leave button at bottom right
-        const buttonYStart = rightBotColumn.y;
+        // Buttons: stack non-leave buttons in left bottom column, place leave button at bottom right
+        const buttonYStart = leftBotColumn.y;
         const buttonSpacing = 38;
         let buttonObjs = [];
 
@@ -96,19 +98,23 @@ class DialogManager {
             });
             const textWidth = btnText.width;
             const buttonWidth = Math.max(100, textWidth + 20);
-            const buttonX = rightBotColumn.x // + (rightBotColumn.width - buttonWidth) / 2;
+            const buttonX = this.dialogContainer.x + leftBotColumn.x + (leftBotColumn.width - buttonWidth) / 2;
+            const buttonY = this.dialogContainer.y + buttonYStart + i * buttonSpacing;
 
-            const btnBg = this.scene.add.rectangle(buttonX, buttonYStart + i * buttonSpacing, buttonWidth, 30, 0x444444)
+            const btnBg = this.scene.add.rectangle(buttonX, buttonY, buttonWidth, 30, 0x444444)
                 .setOrigin(0, 0)
                 .setInteractive({ useHandCursor: true })
+                .setDepth(2001)
                 .on('pointerover', () => btnBg.setFillStyle(0x666666))
                 .on('pointerout', () => btnBg.setFillStyle(0x444444))
-                .on('pointerdown', () => {
+                .on('pointerdown', (pointer, localX, localY, event) => {
+                    event.stopPropagation();
                     btn.onClick();
                 });
 
-            btnText.setPosition(buttonX + buttonWidth / 2, buttonYStart + i * buttonSpacing + 15);
+            btnText.setPosition(buttonX + buttonWidth / 2, buttonY + 15);
             btnText.setOrigin(0.5, 0.5);
+            btnText.setDepth(2002);
 
             buttonObjs.push(btnBg, btnText);
         });
@@ -123,33 +129,43 @@ class DialogManager {
             });
             const leaveTextWidth = leaveText.width;
             const leaveButtonWidth = Math.max(100, leaveTextWidth + 20);
-            const leaveButtonX = dialogWidth / 2 - leaveButtonWidth - 10;
-            const leaveButtonY = dialogHeight / 2 - 40;
+            const leaveButtonX = this.dialogContainer.x + dialogWidth / 2 - leaveButtonWidth - 10;
+            const leaveButtonY = this.dialogContainer.y + dialogHeight / 2 - 40;
 
             const leaveBg = this.scene.add.rectangle(leaveButtonX, leaveButtonY, leaveButtonWidth, 30, 0x444444)
                 .setOrigin(0, 0)
                 .setInteractive({ useHandCursor: true })
+                .setDepth(2001)
                 .on('pointerover', () => leaveBg.setFillStyle(0x666666))
                 .on('pointerout', () => leaveBg.setFillStyle(0x444444))
-                .on('pointerdown', () => {
+                .on('pointerdown', (pointer, localX, localY, event) => {
+                    event.stopPropagation();
                     leaveBtn.onClick();
                 });
 
             leaveText.setPosition(leaveButtonX + leaveButtonWidth / 2, leaveButtonY + 15);
             leaveText.setOrigin(0.5, 0.5);
+            leaveText.setDepth(2002);
 
             buttonObjs.push(leaveBg, leaveText);
         }
 
-        // Add all to container
-        this.dialogContainer.add([bg, npcImage, dialogText, ...buttonObjs]);
+        // Add all to container (except buttons which are added to scene)
+        const containerItems = [bg, dialogText];
+        if (npcImage) {
+            containerItems.splice(1, 0, npcImage); // Insert image after background
+        }
+        this.dialogContainer.add(containerItems);
         this.dialogContainer.setDepth(2000); // On top
+
+        // Store button references for cleanup
+        this.buttonElements = buttonObjs;
     }
 
     hideDialog() {
         if (this.isDialogOpen) {
-            // Resume the game scene
-            this.scene.scene.resume();
+            // Resume game logic
+            this.scene.isDialogOpen = false;
             this.isDialogOpen = false;
         }
 
@@ -161,6 +177,16 @@ class DialogManager {
         if (this.overlay) {
             this.overlay.destroy();
             this.overlay = null;
+        }
+
+        // Clean up button elements that were added directly to scene
+        if (this.buttonElements) {
+            this.buttonElements.forEach(element => {
+                if (element && element.destroy) {
+                    element.destroy();
+                }
+            });
+            this.buttonElements = null;
         }
     }
 }

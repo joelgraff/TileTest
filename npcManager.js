@@ -1,4 +1,5 @@
 import CONFIG from './config.js';
+import DomainManager from './domainManager.js';
 
 class NPCManager {
     static preload(scene) {
@@ -45,6 +46,7 @@ class NPCManager {
 
     static update(scene, time, delta) {
         if (!scene.player || !scene.npcGroup) return;
+        if (scene.isDialogOpen) return; // Don't update NPCs when dialog is open
 
         scene.npcGroup.getChildren().forEach(npc => {
 
@@ -86,11 +88,67 @@ class NPCManager {
                                         onClick: () => {
                                             let newText = '';
                                             if (response.action === 'show_items') {
-                                                newText = npc.vendorData.items.map(i => `${i.name}: ${i.description} (${i.value})`).join('\n');
+                                                // Get domain items instead of vendor items
+                                                const domainItems = DomainManager.getDomainItems(npc.vendorData.domain_id);
+                                                if (domainItems.length > 0) {
+                                                    // Create dialog with item list and collection buttons
+                                                    const itemButtons = domainItems.map((item, index) => ({
+                                                        label: `Collect ${item.name}`,
+                                                        onClick: () => {
+                                                            // Check if item collection completes a quest
+                                                            if (scene.questManager) {
+                                                                const questUpdated = scene.questManager.checkItemCollection(item.name, npc.vendorData.id);
+                                                                if (questUpdated) {
+                                                                    scene.uiManager.showDialog({
+                                                                        text: `Collected ${item.name}!\n\nQuest progress updated!`,
+                                                                        buttons: [{
+                                                                            label: 'Continue',
+                                                                            onClick: () => scene.uiManager.showDialog(originalDialogData)
+                                                                        }]
+                                                                    });
+                                                                } else {
+                                                                    scene.uiManager.showDialog({
+                                                                        text: `Collected ${item.name}!\n\n(Item added to your collection)`,
+                                                                        buttons: [{
+                                                                            label: 'Continue',
+                                                                            onClick: () => scene.uiManager.showDialog(originalDialogData)
+                                                                        }]
+                                                                    });
+                                                                }
+                                                            } else {
+                                                                scene.uiManager.showDialog({
+                                                                    text: `Collected ${item.name}!`,
+                                                                    buttons: [{
+                                                                        label: 'Continue',
+                                                                        onClick: () => scene.uiManager.showDialog(originalDialogData)
+                                                                    }]
+                                                                });
+                                                            }
+                                                        }
+                                                    }));
+
+                                                    scene.uiManager.showDialog({
+                                                        text: `Available items from ${DomainManager.getDomainName(npc.vendorData.domain_id)}:`,
+                                                        buttons: itemButtons.concat([{
+                                                            label: 'Back',
+                                                            onClick: () => scene.uiManager.showDialog(originalDialogData)
+                                                        }])
+                                                    });
+                                                    return; // Don't show the text dialog
+                                                } else {
+                                                    newText = 'No items available at this time.';
+                                                }
                                             } else if (response.action === 'booth_info') {
-                                                newText = `Booth: ${npc.vendorData.booth}\nDescription: ${npc.vendorData.description}`;
+                                                newText = `Booth: ${npc.vendorData.booth}\nDescription: ${npc.vendorData.description}\nDomain: ${DomainManager.getDomainName(npc.vendorData.domain_id)}`;
                                             } else if (response.action === 'tech_facts') {
-                                                newText = npc.vendorData.facts.join('\n');
+                                                // Get domain facts instead of vendor facts
+                                                const domainFacts = DomainManager.getDomainFacts(npc.vendorData.domain_id);
+                                                if (domainFacts.length > 0) {
+                                                    newText = DomainManager.getDomainName(npc.vendorData.domain_id) + ' facts:\n\n';
+                                                    newText += domainFacts.join('\n');
+                                                } else {
+                                                    newText = 'No facts available at this time.';
+                                                }
                                             } else if (response.action === 'end') {
                                                 scene.uiManager.closeDialog();
                                                 return;
@@ -117,8 +175,8 @@ class NPCManager {
                                         { label: "Close", onClick: () => scene.uiManager.closeDialog() }
                                     ]
                                 };
+                                scene.uiManager.showDialog(dialogData);
                             }
-                            scene.uiManager.showDialog(dialogData);
                         }
                     });
                 } else {

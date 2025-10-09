@@ -7,6 +7,7 @@ class UIManager {
         this.score = 0;
         this.maxInventorySlots = 8;
         this.isInventoryOpen = false;
+        this.isQuestsOpen = false; // Track quest panel visibility
 
         // Sierra-style EGA color palette
         this.colors = {
@@ -84,8 +85,14 @@ class UIManager {
         // Create inventory button
         this.createInventoryButton();
 
+        // Create quest button
+        this.createQuestButton();
+
         // Create inventory panel (initially hidden)
         this.createInventoryPanel();
+
+        // Create quest panel (initially hidden)
+        this.createQuestPanel();
 
         // Create version display
         this.createVersionDisplay();
@@ -144,6 +151,36 @@ class UIManager {
 
         this.invButton.on('pointerdown', () => {
             this.toggleInventory();
+        });
+    }
+
+    createQuestButton() {
+        this.questButton = this.scene.add.rectangle(620, 25, 80, 30, this.colors.button)
+            .setScrollFactor(0)
+            .setDepth(100)
+            .setStrokeStyle(2, this.colors.border)
+            .setInteractive({ cursor: 'pointer' });
+
+        this.questButtonText = this.scene.add.text(620, 25, 'QUESTS', {
+            fontFamily: 'Courier New, monospace',
+            fontSize: '12px',
+            fill: '#FFFFFF',
+            align: 'center'
+        })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(101);
+
+        this.questButton.on('pointerover', () => {
+            this.questButton.setFillStyle(this.colors.buttonHover);
+        });
+
+        this.questButton.on('pointerout', () => {
+            this.questButton.setFillStyle(this.colors.button);
+        });
+
+        this.questButton.on('pointerdown', () => {
+            this.toggleQuests();
         });
     }
 
@@ -223,6 +260,77 @@ class UIManager {
         ]);
     }
 
+    createQuestPanel() {
+        this.questPanel = this.scene.add.group();
+
+        this.questBackground = this.scene.add.rectangle(400, 300, 500, 400, this.colors.background)
+            .setScrollFactor(0)
+            .setDepth(200)
+            .setVisible(false);
+
+        this.questBorderOuter = this.scene.add.rectangle(400, 300, 500, 400, this.colors.border)
+            .setScrollFactor(0)
+            .setDepth(199)
+            .setStrokeStyle(3, this.colors.border)
+            .setVisible(false);
+
+        this.questBorderInner = this.scene.add.rectangle(400, 300, 496, 396, this.colors.background)
+            .setScrollFactor(0)
+            .setDepth(201)
+            .setStrokeStyle(1, this.colors.text)
+            .setVisible(false);
+
+        this.questTitle = this.scene.add.text(400, 140, 'ACTIVE QUESTS', {
+            fontFamily: 'Courier New, monospace',
+            fontSize: '16px',
+            fill: '#FFFF00',
+            align: 'center'
+        })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(202)
+        .setVisible(false);
+
+        this.questText = this.scene.add.text(400, 180, 'No active quests', {
+            fontFamily: 'Courier New, monospace',
+            fontSize: '12px',
+            fill: '#FFFFFF',
+            align: 'center',
+            wordWrap: { width: 460 }
+        })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(202)
+        .setVisible(false);
+
+        this.questCloseButton = this.scene.add.rectangle(550, 140, 60, 25, this.colors.button)
+            .setScrollFactor(0)
+            .setDepth(202)
+            .setStrokeStyle(1, this.colors.border)
+            .setVisible(false)
+            .setInteractive({ cursor: 'pointer' });
+
+        this.questCloseText = this.scene.add.text(550, 140, 'CLOSE', {
+            fontFamily: 'Courier New, monospace',
+            fontSize: '10px',
+            fill: '#FFFFFF',
+            align: 'center'
+        })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(203)
+        .setVisible(false);
+
+        this.questCloseButton.on('pointerdown', () => {
+            this.toggleQuests();
+        });
+
+        this.questPanel.addMultiple([
+            this.questBackground, this.questBorderOuter, this.questBorderInner,
+            this.questTitle, this.questText, this.questCloseButton, this.questCloseText
+        ]);
+    }
+
     createVersionDisplay() {
         this.versionText = this.scene.add.text(10, 620, 'Version 1.6', {
             fontFamily: 'Courier New, monospace',
@@ -275,6 +383,69 @@ class UIManager {
         }
     }
 
+    toggleQuests() {
+        this.isQuestsOpen = !this.isQuestsOpen;
+
+        this.questPanel.getChildren().forEach(child => {
+            child.setVisible(this.isQuestsOpen);
+        });
+
+        if (this.isQuestsOpen) {
+            this.updateQuestDisplay();
+        }
+    }
+
+    updateQuestDisplay() {
+        if (!this.scene.questManager) {
+            this.questText.setText('Quest system not available');
+            return;
+        }
+
+        const activeQuests = this.scene.questManager.getActiveQuests();
+        const completedQuests = this.scene.questManager.getCompletedQuests();
+
+        let questDisplayText = '';
+
+        if (activeQuests.length > 0) {
+            questDisplayText += 'ACTIVE QUESTS:\n\n';
+            activeQuests.forEach((quest, index) => {
+                questDisplayText += `${index + 1}. ${quest.title}\n`;
+                questDisplayText += `${quest.description}\n`;
+
+                const completedObjectives = quest.objectives.filter(obj => obj.collected).length;
+                const totalObjectives = quest.objectives.length;
+                questDisplayText += `Progress: ${completedObjectives}/${totalObjectives} items collected\n\n`;
+            });
+        } else {
+            questDisplayText += 'No active quests\n\n';
+        }
+
+        if (completedQuests.length > 0) {
+            questDisplayText += 'COMPLETED QUESTS:\n\n';
+            completedQuests.forEach((quest, index) => {
+                questDisplayText += `${index + 1}. ${quest.title} ✓\n`;
+                questDisplayText += `Reward: ${quest.reward.points} points\n\n`;
+            });
+        }
+
+        this.questText.setText(questDisplayText);
+    }
+
+    showQuestCompletion(quest) {
+        this.showDialog({
+            text: `Quest Completed!\n\n${quest.title}\n\nReward: ${quest.reward.points} points\n\n${quest.reward.description}`,
+            buttons: [{
+                label: 'Great!',
+                onClick: () => this.closeDialog()
+            }]
+        });
+
+        // Update quest display if it's open
+        if (this.isQuestsOpen) {
+            this.updateQuestDisplay();
+        }
+    }
+
     // Score Management
     updateScore(points) {
         this.score += points;
@@ -298,10 +469,15 @@ class UIManager {
     handleInput(key) {
         if (key === 'I' || key === 'i') {
             this.toggleInventory();
+        } else if (key === 'Q' || key === 'q') {
+            this.toggleQuests();
         } else if (key === 'ESCAPE') {
             this.closeDialog();
             if (this.isInventoryOpen) {
                 this.toggleInventory();
+            }
+            if (this.isQuestsOpen) {
+                this.toggleQuests();
             }
         }
     }
