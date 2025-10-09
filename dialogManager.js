@@ -77,7 +77,7 @@ class DialogManager {
             const buttonWidth = Math.max(100, textWidth + 20);
             const buttonX = rightBotColumn.x // + (rightBotColumn.width - buttonWidth) / 2;
 
-            const btnBg = this.scene.add.rectangle(buttonX, buttonYStart - i * buttonSpacing, buttonWidth, 30, 0x444444)
+            const btnBg = this.scene.add.rectangle(buttonX, buttonYStart + i * buttonSpacing, buttonWidth, 30, 0x444444)
                 .setOrigin(0, 0)
                 .setInteractive({ useHandCursor: true })
                 .on('pointerover', () => btnBg.setFillStyle(0x666666))
@@ -86,7 +86,7 @@ class DialogManager {
                     btn.onClick();
                 });
 
-            btnText.setPosition(buttonX + buttonWidth / 2, buttonYStart - (i) * buttonSpacing + 15);
+            btnText.setPosition(buttonX + buttonWidth / 2, buttonYStart + i * buttonSpacing + 15);
             btnText.setOrigin(0.5, 0.5);
 
             buttonObjs.push(btnBg, btnText);
