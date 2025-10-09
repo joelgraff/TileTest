@@ -2,18 +2,34 @@ class DialogManager {
     constructor(scene) {
         this.scene = scene;
         this.dialogContainer = null;
+        this.overlay = null;
+        this.isDialogOpen = false;
     }
 
     showDialog({ imageKey, text, buttons = [] }) { // Default buttons to []
-        // Remove previous dialog if exists
-        if (this.dialogContainer) {
-            this.dialogContainer.destroy();
+        // If dialog is already open, close it first
+        if (this.isDialogOpen) {
+            this.hideDialog();
         }
+
+        // Pause the game scene
+        this.scene.scene.pause();
+
+        this.isDialogOpen = true;
 
         const cam = this.scene.cameras.main;
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const dialogWidth = Math.min(isMobile ? 400 : 600, cam.width * (isMobile ? 0.9 : 0.85));
         const dialogHeight = Math.min(isMobile ? 160 : 240, cam.height * (isMobile ? 0.6 : 0.45));
+
+        // Create overlay for click-outside-to-close functionality
+        this.overlay = this.scene.add.rectangle(cam.width / 2, cam.height / 2, cam.width, cam.height, 0x000000, 0.5)
+            .setScrollFactor(0)
+            .setInteractive()
+            .setDepth(1999)
+            .on('pointerdown', () => {
+                this.hideDialog();
+            });
 
         // Main container centered near bottom
         this.dialogContainer = this.scene.add.container(cam.width / 2, cam.height - dialogHeight / 2 - 16);
@@ -42,7 +58,12 @@ class DialogManager {
         // Background
         const bg = this.scene.add.rectangle(0, 0, dialogWidth, dialogHeight, 0x808080, 0.97)
             .setOrigin(0.5)
-            .setStrokeStyle(2, 0x222222);
+            .setStrokeStyle(2, 0x222222)
+            .setInteractive()
+            .on('pointerdown', (pointer, localX, localY, event) => {
+                // Stop event propagation to prevent overlay click
+                event.stopPropagation();
+            });
 
         // Image (left side)
         const imgSize = leftColumn.width;
@@ -126,9 +147,20 @@ class DialogManager {
     }
 
     hideDialog() {
+        if (this.isDialogOpen) {
+            // Resume the game scene
+            this.scene.scene.resume();
+            this.isDialogOpen = false;
+        }
+
         if (this.dialogContainer) {
             this.dialogContainer.destroy();
             this.dialogContainer = null;
+        }
+
+        if (this.overlay) {
+            this.overlay.destroy();
+            this.overlay = null;
         }
     }
 }

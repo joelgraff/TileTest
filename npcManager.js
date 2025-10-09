@@ -79,7 +79,7 @@ class NPCManager {
                             if (npc.vendorData) {
                                 // Use vendor-specific data
                                 const originalDialogData = {
-                                    imageKey: npc.vendorData.imageKey || 'npc1',
+                                    imageKey: npc.texture.key,
                                     text: npc.vendorData.dialog.greeting,
                                     buttons: npc.vendorData.dialog.responses.map(response => ({
                                         label: response.text,

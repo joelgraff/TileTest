@@ -43,7 +43,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Game on! Keep the pixels flowing!",
           "action": "end"
         }
       ]
@@ -53,7 +53,8 @@
       "The Game Boy was the first handheld system with interchangeable cartridges."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "101",
@@ -111,7 +112,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop gaming - keep playing!",
           "action": "end"
         }
       ]
@@ -122,7 +123,8 @@
       "Super Mario Bros. was designed by Shigeru Miyamoto and introduced Mario to the world."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "102",
@@ -174,18 +176,19 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Electronics forever in your circuits!",
           "action": "end"
         }
       ]
     },
     "facts": [
-      "Soldering irons heat solder to 350-400°F to create electrical connections.",
+      "Soldering irons heat solder to 350-400\u00c2\u00b0F to create electrical connections.",
       "Oscilloscopes display voltage waveforms over time for signal analysis.",
       "Surface-mount technology allowed components to be mounted directly on PCB surfaces."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "hardware"
   },
   {
     "id": "103",
@@ -231,7 +234,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "SYS 64738 for more Commodore adventures!",
           "action": "end"
         }
       ]
@@ -242,7 +245,8 @@
       "Commodore's CDTV was the first attempt at a CD-ROM based game console in 1991."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "105",
@@ -294,7 +298,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Game over is never the end!",
           "action": "end"
         }
       ]
@@ -305,7 +309,8 @@
       "Nintendo 64 was the first console with 3D graphics and analog stick control."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "106",
@@ -357,7 +362,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those floppies formatted and ready!",
           "action": "end"
         }
       ]
@@ -367,7 +372,8 @@
       "MS-DOS was purchased by IBM from Microsoft for $75,000 and became the standard PC operating system."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "107",
@@ -419,7 +425,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -429,7 +435,8 @@
       "The Atari 2600 was originally called the 'Stella' project and was designed to play Combat."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "110",
@@ -475,7 +482,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your BASIC programs always RUN without errors!",
           "action": "end"
         }
       ]
@@ -485,7 +492,8 @@
       "Commodore's CDTV was the first attempt at a CD-ROM based game console in 1991."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "111",
@@ -531,7 +539,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -541,14 +549,15 @@
       "The first computer game was Spacewar!, created in 1962 at MIT."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "112",
     "name": "Tim Williams",
     "booth": "Z35/Z36",
     "url": "",
-    "description": "PC Bits (90’s+)",
+    "description": "PC Bits (90\u00e2\u20ac\u2122s+)",
     "x": 576,
     "y": 0,
     "items": [
@@ -578,7 +587,7 @@
       }
     ],
     "dialog": {
-      "greeting": "Welcome to Tim Williams! PC Bits (90’s+)",
+      "greeting": "Welcome to Tim Williams! PC Bits (90\u00e2\u20ac\u2122s+)",
       "responses": [
         {
           "text": "Show me your inventory",
@@ -593,7 +602,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep computing in the IBM way!",
           "action": "end"
         }
       ]
@@ -603,7 +612,8 @@
       "Lotus 1-2-3 was the killer app that made the IBM PC successful in business."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "113",
@@ -661,7 +671,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -671,7 +681,8 @@
       "Arduino was created in 2005 as an educational tool for designers and artists."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "homebrew"
   },
   {
     "id": "114",
@@ -723,7 +734,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those spreadsheets calculating!",
           "action": "end"
         }
       ]
@@ -733,7 +744,8 @@
       "Integrated circuits were invented by Jack Kilby at Texas Instruments and Robert Noyce at Fairchild."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "115",
@@ -779,7 +791,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those cartridges loaded!",
           "action": "end"
         }
       ]
@@ -790,7 +802,8 @@
       "The Atari 400 was released in 1979 with a membrane keyboard to keep costs down."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "atari"
   },
   {
     "id": "117",
@@ -836,7 +849,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next level!",
           "action": "end"
         }
       ]
@@ -847,7 +860,8 @@
       "Super Mario Bros. was designed by Shigeru Miyamoto and introduced Mario to the world."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "118",
@@ -899,7 +913,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -909,7 +923,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "120",
@@ -967,7 +982,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -977,7 +992,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "121",
@@ -1035,7 +1051,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those floppy drives spinning!",
           "action": "end"
         }
       ]
@@ -1046,7 +1062,8 @@
       "The Macintosh SE was the first Mac with an internal hard drive standard."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "122",
@@ -1104,7 +1121,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next robotic revolution!",
           "action": "end"
         }
       ]
@@ -1114,7 +1131,8 @@
       "ASIMO was Honda's humanoid robot that could walk and climb stairs."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "123",
@@ -1160,7 +1178,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your screens never dim!",
           "action": "end"
         }
       ]
@@ -1171,7 +1189,8 @@
       "The Osborne 1 was the first portable computer, weighing 24 pounds with a 5-inch screen."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "124",
@@ -1229,7 +1248,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -1239,7 +1258,8 @@
       "Floppy disks were invented by IBM and originally stored data on 8-inch disks."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "126",
@@ -1285,7 +1305,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -1296,7 +1316,8 @@
       "The Z80 was created by Federico Faggin and was pin-compatible with the Intel 8080."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "homebrew"
   },
   {
     "id": "127",
@@ -1342,7 +1363,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From TI to eternity!",
           "action": "end"
         }
       ]
@@ -1352,7 +1373,8 @@
       "The first pocket calculator was the Busicom LE-120A 'Handy' in 1971."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "128",
@@ -1398,7 +1420,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those historical computers running!",
           "action": "end"
         }
       ]
@@ -1408,7 +1430,8 @@
       "The UNIVAC I was the first commercial computer and predicted the 1952 election."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "129",
@@ -1454,7 +1477,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next DOS prompt!",
           "action": "end"
         }
       ]
@@ -1464,7 +1487,8 @@
       "The GRiD Compass was the first laptop computer, used by NASA on the Space Shuttle."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "130",
@@ -1510,7 +1534,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -1520,7 +1544,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "131",
@@ -1566,7 +1591,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -1577,7 +1602,8 @@
       "Oscilloscopes were originally called 'cathode ray oscillographs' when invented in 1897."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "homebrew"
   },
   {
     "id": "132",
@@ -1623,7 +1649,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "See you on the other side of the bitstream!",
           "action": "end"
         }
       ]
@@ -1633,7 +1659,8 @@
       "Commodore's VIC-20 was the first computer to sell over 1 million units, paving the way for the C64."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "133",
@@ -1685,7 +1712,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "PC power to the people!",
           "action": "end"
         }
       ]
@@ -1695,7 +1722,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "134",
@@ -1747,7 +1775,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until next LOAD\"*\", 64!",
           "action": "end"
         }
       ]
@@ -1757,7 +1785,8 @@
       "Commodore's VIC-20 was the first computer to sell over 1 million units, paving the way for the C64."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "136",
@@ -1803,7 +1832,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -1813,7 +1842,8 @@
       "Commodore's CDTV was the first attempt at a CD-ROM based game console in 1991."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "137",
@@ -1865,7 +1895,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -1876,7 +1906,8 @@
       "Casio's FX-700P was one of the first graphing calculators in the early 1980s."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "calculators"
   },
   {
     "id": "139",
@@ -1934,7 +1965,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "See you on the other side of the bitstream!",
           "action": "end"
         }
       ]
@@ -1945,7 +1976,8 @@
       "The Amiga's graphics capabilities were so advanced that it was used in early CGI for films like Jurassic Park."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "140",
@@ -1991,7 +2023,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next club meeting!",
           "action": "end"
         }
       ]
@@ -2001,7 +2033,8 @@
       "The Vintage Computer Festival started in 1997 and is the largest computer show of its kind."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "141",
@@ -2047,7 +2080,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Retro computing forever!",
           "action": "end"
         }
       ]
@@ -2058,7 +2091,8 @@
       "The first homebrew computer was the Altair 8800 in 1975, starting the microcomputer revolution."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "homebrew"
   },
   {
     "id": "142",
@@ -2116,18 +2150,19 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your oscilloscopes always show clean signals!",
           "action": "end"
         }
       ]
     },
     "facts": [
-      "Soldering irons heat solder to 350-400°F to create electrical connections.",
+      "Soldering irons heat solder to 350-400\u00c2\u00b0F to create electrical connections.",
       "Multimeters can measure voltage, current, and resistance in electronic circuits.",
       "The first transistor was invented by Bell Labs in 1947 by John Bardeen, Walter Brattain, and William Shockley."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "143",
@@ -2179,7 +2214,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -2190,7 +2225,8 @@
       "The first computer game was Spacewar!, created in 1962 at MIT."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "144",
@@ -2242,7 +2278,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Game over is never the end!",
           "action": "end"
         }
       ]
@@ -2252,7 +2288,8 @@
       "Space Invaders was created by Tomohiro Nishikado and started the shoot-em-up genre."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "145",
@@ -2310,7 +2347,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your sprites be crisp and your SID tunes melodic!",
           "action": "end"
         }
       ]
@@ -2321,7 +2358,8 @@
       "Commodore founder Jack Tramiel was a Holocaust survivor who worked in a calculator factory before starting Commodore."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "146",
@@ -2379,7 +2417,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -2390,7 +2428,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "147",
@@ -2436,7 +2475,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Retro computing forever!",
           "action": "end"
         }
       ]
@@ -2447,7 +2486,8 @@
       "Floppy disks were invented by IBM and originally stored data on 8-inch disks."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "148",
@@ -2499,7 +2539,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your high scores keep climbing!",
           "action": "end"
         }
       ]
@@ -2509,7 +2549,8 @@
       "Tetris was created by Alexey Pajitnov and became the best-selling video game of all time."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "151",
@@ -2561,7 +2602,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -2572,7 +2613,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "152",
@@ -2618,7 +2660,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Happy computing! Don't forget to SAVE often.",
           "action": "end"
         }
       ]
@@ -2628,7 +2670,8 @@
       "The C64's BASIC interpreter was written by Microsoft co-founder Bill Gates."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "153",
@@ -2680,7 +2723,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -2690,7 +2733,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "154",
@@ -2742,7 +2786,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -2753,7 +2797,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "156",
@@ -2805,7 +2850,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -2815,7 +2860,8 @@
       "The first computer virus was created in 1983 as an experiment, not malice."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "157",
@@ -2861,7 +2907,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "PC power to the people!",
           "action": "end"
         }
       ]
@@ -2871,7 +2917,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "158",
@@ -2923,7 +2970,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -2933,7 +2980,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "159",
@@ -2985,7 +3033,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -2996,7 +3044,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "160",
@@ -3042,7 +3091,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "2600 ways to enjoy retro gaming!",
           "action": "end"
         }
       ]
@@ -3053,7 +3102,8 @@
       "Atari's Tramiel family bought Commodore in 1984, creating an interesting corporate history."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "atari"
   },
   {
     "id": "161",
@@ -3099,7 +3149,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Retro computing forever!",
           "action": "end"
         }
       ]
@@ -3110,7 +3160,8 @@
       "The first computer game was Spacewar!, created in 1962 at MIT."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "historical"
   },
   {
     "id": "162",
@@ -3156,7 +3207,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -3167,7 +3218,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "historical"
   },
   {
     "id": "163",
@@ -3225,7 +3277,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -3235,7 +3287,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "164",
@@ -3281,7 +3334,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your sprites be crisp and your SID tunes melodic!",
           "action": "end"
         }
       ]
@@ -3291,7 +3344,8 @@
       "Commodore founder Jack Tramiel was a Holocaust survivor who worked in a calculator factory before starting Commodore."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "167",
@@ -3343,7 +3397,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -3353,7 +3407,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "168",
@@ -3399,7 +3454,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep painting with MacPaint!",
           "action": "end"
         }
       ]
@@ -3410,11 +3465,12 @@
       "The Apple II Plus was the first computer to ship with VisiCalc, the first spreadsheet program."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "169",
-    "name": "Dave’s Retro Video Lab",
+    "name": "Dave\u00e2\u20ac\u2122s Retro Video Lab",
     "booth": "L08/L09",
     "url": "https://youtube.com/@davesretrovideolab2709?si=e_mErkZUV0gXgwex",
     "description": "Sony F65 Digital Cinema Camera Production Workflow",
@@ -3441,7 +3497,7 @@
       }
     ],
     "dialog": {
-      "greeting": "Welcome to Dave’s Retro Video Lab! Sony F65 Digital Cinema Camera Production Workflow",
+      "greeting": "Welcome to Dave\u00e2\u20ac\u2122s Retro Video Lab! Sony F65 Digital Cinema Camera Production Workflow",
       "responses": [
         {
           "text": "Show me your inventory",
@@ -3456,7 +3512,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -3466,7 +3522,8 @@
       "The first computer game was Spacewar!, created in 1962 at MIT."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "170",
@@ -3524,7 +3581,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -3535,7 +3592,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "historical"
   },
   {
     "id": "171",
@@ -3593,7 +3651,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next high score!",
           "action": "end"
         }
       ]
@@ -3604,7 +3662,8 @@
       "Atari's Tramiel family bought Commodore in 1984, creating an interesting corporate history."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "atari"
   },
   {
     "id": "172",
@@ -3650,7 +3709,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your sprites be crisp and your SID tunes melodic!",
           "action": "end"
         }
       ]
@@ -3661,7 +3720,8 @@
       "Commodore's CDTV was the first attempt at a CD-ROM based game console in 1991."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "173",
@@ -3707,7 +3767,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your high scores keep climbing!",
           "action": "end"
         }
       ]
@@ -3718,7 +3778,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "174",
@@ -3770,7 +3831,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -3781,7 +3842,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "175",
@@ -3839,7 +3901,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -3850,7 +3912,8 @@
       "The first computer virus was created in 1983 as an experiment, not malice."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "176",
@@ -3908,7 +3971,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your Trak-Balls always roll true!",
           "action": "end"
         }
       ]
@@ -3919,7 +3982,8 @@
       "Atari's ST computers popularized MIDI sequencing and were widely used by musicians."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "atari"
   },
   {
     "id": "177",
@@ -3965,7 +4029,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those joysticks calibrated and your disks formatted!",
           "action": "end"
         }
       ]
@@ -3975,7 +4039,8 @@
       "The Commodore 64 was released in 1982 and became the best-selling single computer model of all time with over 17 million units sold."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "178",
@@ -4033,7 +4098,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -4044,7 +4109,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "historical"
   },
   {
     "id": "181",
@@ -4090,7 +4156,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't forget to defrag regularly!",
           "action": "end"
         }
       ]
@@ -4101,7 +4167,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "182",
@@ -4159,7 +4226,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those floppy drives spinning!",
           "action": "end"
         }
       ]
@@ -4169,7 +4236,8 @@
       "The Apple ImageWriter was the first consumer dot-matrix printer with near-letter-quality printing."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "183",
@@ -4215,7 +4283,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -4226,7 +4294,8 @@
       "QWERTY keyboard layout was designed to slow down typists and prevent jamming."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "184",
@@ -4278,7 +4347,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -4288,7 +4357,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "historical"
   },
   {
     "id": "185",
@@ -4334,7 +4404,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your solder joints never fail!",
           "action": "end"
         }
       ]
@@ -4344,7 +4414,8 @@
       "Surface-mount technology allowed components to be mounted directly on PCB surfaces."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "186",
@@ -4396,7 +4467,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -4406,7 +4477,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "187",
@@ -4452,7 +4524,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -4462,7 +4534,8 @@
       "Floppy disks were invented by IBM and originally stored data on 8-inch disks."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "188",
@@ -4508,7 +4581,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -4519,11 +4592,12 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "189",
-    "name": "Eric’s Edge",
+    "name": "Eric\u00e2\u20ac\u2122s Edge",
     "booth": "L21",
     "url": "https://quackofdawn.com",
     "description": "Adventure! The Quack of Dawn",
@@ -4556,7 +4630,7 @@
       }
     ],
     "dialog": {
-      "greeting": "Welcome to Eric’s Edge! Adventure! The Quack of Dawn",
+      "greeting": "Welcome to Eric\u00e2\u20ac\u2122s Edge! Adventure! The Quack of Dawn",
       "responses": [
         {
           "text": "Show me your inventory",
@@ -4571,7 +4645,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -4582,7 +4656,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "190",
@@ -4634,7 +4709,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -4644,7 +4719,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "191",
@@ -4702,7 +4778,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -4712,7 +4788,8 @@
       "QWERTY keyboard layout was designed to slow down typists and prevent jamming."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "historical"
   },
   {
     "id": "192",
@@ -4764,7 +4841,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -4774,7 +4851,8 @@
       "QWERTY keyboard layout was designed to slow down typists and prevent jamming."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "193",
@@ -4820,7 +4898,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -4830,7 +4908,8 @@
       "QWERTY keyboard layout was designed to slow down typists and prevent jamming."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "194",
@@ -4876,7 +4955,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until we meet again in the Garden of Eden!",
           "action": "end"
         }
       ]
@@ -4887,7 +4966,8 @@
       "Apple's HyperCard was created by Bill Atkinson and inspired the World Wide Web."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "195",
@@ -4933,7 +5013,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -4944,7 +5024,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "196",
@@ -4996,7 +5077,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Retro computing forever!",
           "action": "end"
         }
       ]
@@ -5006,7 +5087,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "197",
@@ -5058,7 +5140,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -5068,7 +5150,8 @@
       "The Sinclair Cambridge was one of the smallest calculators ever made."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "calculators"
   },
   {
     "id": "198",
@@ -5114,7 +5197,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next level!",
           "action": "end"
         }
       ]
@@ -5124,7 +5207,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "199",
@@ -5176,7 +5260,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -5186,7 +5270,8 @@
       "Donkey Kong was Mario's first appearance and was originally called 'Jumpman'."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "200",
@@ -5238,7 +5323,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -5248,7 +5333,8 @@
       "Logic analyzers can capture and display digital signals in real-time."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "203",
@@ -5294,7 +5380,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your hard drives never crash!",
           "action": "end"
         }
       ]
@@ -5304,7 +5390,8 @@
       "Space Invaders was created by Tomohiro Nishikado and started the shoot-em-up genre."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "204",
@@ -5362,7 +5449,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -5372,7 +5459,8 @@
       "Component testers verify the functionality of resistors, capacitors, and semiconductors."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "205",
@@ -5418,7 +5506,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -5429,14 +5517,15 @@
       "QWERTY keyboard layout was designed to slow down typists and prevent jamming."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "206",
     "name": "Zap Coders",
     "booth": "U02",
     "url": "https://zap-coders.com/",
-    "description": "Zap Coders’ brand new game for the gameboy color",
+    "description": "Zap Coders\u00e2\u20ac\u2122 brand new game for the gameboy color",
     "x": 576,
     "y": 128,
     "items": [
@@ -5466,7 +5555,7 @@
       }
     ],
     "dialog": {
-      "greeting": "Welcome to Zap Coders! Zap Coders’ brand new game for the gameboy color",
+      "greeting": "Welcome to Zap Coders! Zap Coders\u00e2\u20ac\u2122 brand new game for the gameboy color",
       "responses": [
         {
           "text": "Show me your inventory",
@@ -5481,7 +5570,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your cartridges never wear out!",
           "action": "end"
         }
       ]
@@ -5492,7 +5581,8 @@
       "The Game Boy was the first handheld system with interchangeable cartridges."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "207",
@@ -5550,7 +5640,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Retro computing forever!",
           "action": "end"
         }
       ]
@@ -5560,7 +5650,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "208",
@@ -5606,7 +5697,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -5617,14 +5708,15 @@
       "The first computer game was Spacewar!, created in 1962 at MIT."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "209",
     "name": "Hak4Kidz",
     "booth": "Z37/Z38/Z39",
     "url": "https://www.hak4kidz.com",
-    "description": "Hak4Kidz Soldering Lab – Hands-On Projects for All Ages",
+    "description": "Hak4Kidz Soldering Lab \u00e2\u20ac\u201c Hands-On Projects for All Ages",
     "x": 768,
     "y": 128,
     "items": [
@@ -5654,7 +5746,7 @@
       }
     ],
     "dialog": {
-      "greeting": "Welcome to Hak4Kidz! Hak4Kidz Soldering Lab – Hands-On Projects for All Ages",
+      "greeting": "Welcome to Hak4Kidz! Hak4Kidz Soldering Lab \u00e2\u20ac\u201c Hands-On Projects for All Ages",
       "responses": [
         {
           "text": "Show me your inventory",
@@ -5669,7 +5761,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From bits to atoms - keep creating!",
           "action": "end"
         }
       ]
@@ -5679,7 +5771,8 @@
       "Oscilloscopes display voltage waveforms over time for signal analysis."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "210",
@@ -5731,7 +5824,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -5741,7 +5834,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "211",
@@ -5793,7 +5887,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't forget to defrag regularly!",
           "action": "end"
         }
       ]
@@ -5803,7 +5897,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "212",
@@ -5861,7 +5956,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -5871,7 +5966,8 @@
       "The first computer virus was created in 1983 as an experiment, not malice."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "historical"
   },
   {
     "id": "213",
@@ -5923,7 +6019,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -5933,7 +6029,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "214",
@@ -5985,7 +6082,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -5996,7 +6093,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "216",
@@ -6042,7 +6140,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those power-ups coming!",
           "action": "end"
         }
       ]
@@ -6052,7 +6150,8 @@
       "Tetris was created by Alexey Pajitnov and became the best-selling video game of all time."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "217",
@@ -6110,7 +6209,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Level up your retro gaming experience!",
           "action": "end"
         }
       ]
@@ -6121,7 +6220,8 @@
       "The NES Zapper light gun used infrared sensors to detect on-screen targets."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "218",
@@ -6173,7 +6273,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "SYS 64738 for more Commodore adventures!",
           "action": "end"
         }
       ]
@@ -6183,7 +6283,8 @@
       "The Commodore 64 was released in 1982 and became the best-selling single computer model of all time with over 17 million units sold."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "219",
@@ -6241,7 +6342,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep computing in the IBM way!",
           "action": "end"
         }
       ]
@@ -6251,7 +6352,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "220",
@@ -6297,7 +6399,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -6308,7 +6410,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "221",
@@ -6366,7 +6469,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -6376,7 +6479,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "222",
@@ -6428,7 +6532,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -6439,7 +6543,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "223",
@@ -6497,7 +6602,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -6507,7 +6612,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "224",
@@ -6565,7 +6671,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -6575,7 +6681,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "historical"
   },
   {
     "id": "226",
@@ -6633,7 +6740,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your mouse always find the right icon!",
           "action": "end"
         }
       ]
@@ -6643,7 +6750,8 @@
       "Apple's Newton MessagePad was the first PDA but failed due to high price and poor handwriting recognition."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "227",
@@ -6695,7 +6803,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -6706,7 +6814,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "historical"
   },
   {
     "id": "228",
@@ -6758,7 +6867,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -6769,7 +6878,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "229",
@@ -6815,7 +6925,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your screens never dim!",
           "action": "end"
         }
       ]
@@ -6825,7 +6935,8 @@
       "The Tandy Model 100 was a popular portable computer with built-in modem."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "230",
@@ -6877,7 +6988,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop gaming - keep playing!",
           "action": "end"
         }
       ]
@@ -6887,7 +6998,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "231",
@@ -6945,7 +7057,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -6955,7 +7067,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "232",
@@ -7007,7 +7120,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Retro computing forever!",
           "action": "end"
         }
       ]
@@ -7017,7 +7130,8 @@
       "Floppy disks were invented by IBM and originally stored data on 8-inch disks."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "233",
@@ -7063,7 +7177,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -7073,7 +7187,8 @@
       "The Atanasoff-Berry Computer was the first electronic digital computer, invented in 1937."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "atari"
   },
   {
     "id": "234",
@@ -7125,7 +7240,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -7136,7 +7251,8 @@
       "Floppy disks were invented by IBM and originally stored data on 8-inch disks."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "236",
@@ -7182,7 +7298,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "SYS 64738 for more Commodore adventures!",
           "action": "end"
         }
       ]
@@ -7193,7 +7309,8 @@
       "Commodore founder Jack Tramiel was a Holocaust survivor who worked in a calculator factory before starting Commodore."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "237",
@@ -7239,7 +7356,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those cartridges loaded!",
           "action": "end"
         }
       ]
@@ -7250,7 +7367,8 @@
       "Atari was founded by Nolan Bushnell and Ted Dabney, who also created Pong, the first arcade video game."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "atari"
   },
   {
     "id": "238",
@@ -7296,7 +7414,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your mouse always find the right icon!",
           "action": "end"
         }
       ]
@@ -7307,7 +7425,8 @@
       "MacPaint was the first bitmap graphics program that let users draw with a mouse."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "239",
@@ -7359,7 +7478,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't forget to defrag regularly!",
           "action": "end"
         }
       ]
@@ -7369,7 +7488,8 @@
       "Oscilloscopes display voltage waveforms over time for signal analysis."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "240",
@@ -7421,7 +7541,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -7431,7 +7551,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "241",
@@ -7483,7 +7604,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -7494,7 +7615,8 @@
       "ARCnet was one of the first local area network technologies in the 1970s."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "243",
@@ -7552,7 +7674,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your high scores keep climbing!",
           "action": "end"
         }
       ]
@@ -7563,7 +7685,8 @@
       "Nintendo 64 was the first console with 3D graphics and analog stick control."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "244",
@@ -7609,7 +7732,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -7619,7 +7742,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "246",
@@ -7665,7 +7789,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Retro computing forever!",
           "action": "end"
         }
       ]
@@ -7675,7 +7799,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "248",
@@ -7733,7 +7858,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -7743,7 +7868,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "249",
@@ -7789,7 +7915,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your mouse always find the right icon!",
           "action": "end"
         }
       ]
@@ -7799,7 +7925,8 @@
       "The Macintosh SE was the first Mac with an internal hard drive standard."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "250",
@@ -7851,7 +7978,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop moving - keep computing!",
           "action": "end"
         }
       ]
@@ -7862,7 +7989,8 @@
       "The Dulmont Magnum was a portable Apple II compatible computer."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "251",
@@ -7908,7 +8036,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Retro computing forever!",
           "action": "end"
         }
       ]
@@ -7918,14 +8046,15 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "252",
     "name": "Ken Van Mersbergen",
     "booth": "S14/S15",
     "url": "",
-    "description": "Get ready for a blast from the past—I’ll be premiering the never-before-seen VIC-20 version of Moonsweeper by Imagic!",
+    "description": "Get ready for a blast from the past\u00e2\u20ac\u201dI\u00e2\u20ac\u2122ll be premiering the never-before-seen VIC-20 version of Moonsweeper by Imagic!",
     "x": 576,
     "y": 192,
     "items": [
@@ -7949,7 +8078,7 @@
       }
     ],
     "dialog": {
-      "greeting": "Welcome to Ken Van Mersbergen! Get ready for a blast from the past—I’ll be premiering the never-before-seen VIC-20 version of Moonsweeper by Imagic!",
+      "greeting": "Welcome to Ken Van Mersbergen! Get ready for a blast from the past\u00e2\u20ac\u201dI\u00e2\u20ac\u2122ll be premiering the never-before-seen VIC-20 version of Moonsweeper by Imagic!",
       "responses": [
         {
           "text": "Show me your inventory",
@@ -7964,7 +8093,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those joysticks calibrated and your disks formatted!",
           "action": "end"
         }
       ]
@@ -7974,7 +8103,8 @@
       "The Commodore 64 was released in 1982 and became the best-selling single computer model of all time with over 17 million units sold."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "253",
@@ -8026,7 +8156,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -8036,7 +8166,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "254",
@@ -8088,7 +8219,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -8099,7 +8230,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "255",
@@ -8145,7 +8277,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those floppies formatted and ready!",
           "action": "end"
         }
       ]
@@ -8156,7 +8288,8 @@
       "WordPerfect was the dominant word processor before Microsoft Word."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "257",
@@ -8208,7 +8341,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -8218,7 +8351,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "258",
@@ -8264,7 +8398,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -8275,7 +8409,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "259",
@@ -8333,7 +8468,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your sprites be crisp and your SID tunes melodic!",
           "action": "end"
         }
       ]
@@ -8344,7 +8479,8 @@
       "The C64's SID chip was so advanced that musicians still use emulators of it in modern music production."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "260",
@@ -8396,7 +8532,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -8406,7 +8542,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "261",
@@ -8458,7 +8595,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -8468,7 +8605,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "262",
@@ -8526,7 +8664,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Happy computing! Don't forget to SAVE often.",
           "action": "end"
         }
       ]
@@ -8537,7 +8675,8 @@
       "The Commodore 64 was released in 1982 and became the best-selling single computer model of all time with over 17 million units sold."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "263",
@@ -8589,7 +8728,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -8599,7 +8738,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "264",
@@ -8645,7 +8785,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those floppy drives spinning!",
           "action": "end"
         }
       ]
@@ -8656,7 +8796,8 @@
       "The Macintosh SE was the first Mac with an internal hard drive standard."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "265",
@@ -8702,7 +8843,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "1984 called - they want their interface back!",
           "action": "end"
         }
       ]
@@ -8713,7 +8854,8 @@
       "MacPaint was the first bitmap graphics program that let users draw with a mouse."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "266",
@@ -8765,7 +8907,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -8776,7 +8918,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "267",
@@ -8828,7 +8971,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't forget to defrag regularly!",
           "action": "end"
         }
       ]
@@ -8839,7 +8982,8 @@
       "The first computer game was Spacewar!, created in 1962 at MIT."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "269",
@@ -8897,7 +9041,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -8908,7 +9052,8 @@
       "The Curta mechanical calculator was called the 'pepper mill' due to its shape."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "271",
@@ -8966,7 +9111,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Robotics forever in motion!",
           "action": "end"
         }
       ]
@@ -8977,7 +9122,8 @@
       "Super Mario Bros. was designed by Shigeru Miyamoto and introduced Mario to the world."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "272",
@@ -9023,7 +9169,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From bits to atoms - keep creating!",
           "action": "end"
         }
       ]
@@ -9033,7 +9179,8 @@
       "Component testers verify the functionality of resistors, capacitors, and semiconductors."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "273",
@@ -9085,7 +9232,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop at 2600 - there's more gaming ahead!",
           "action": "end"
         }
       ]
@@ -9095,7 +9242,8 @@
       "Atari's 8-bit computers used the same 6502 processor as the Apple II and Commodore PET."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "atari"
   },
   {
     "id": "274",
@@ -9147,7 +9295,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -9157,14 +9305,15 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "276",
-    "name": "Matt & Shanon’s",
+    "name": "Matt & Shanon\u00e2\u20ac\u2122s",
     "booth": "B17/B18/B19",
     "url": "",
-    "description": "Matt & Shanon’s Cool Crap for Sale",
+    "description": "Matt & Shanon\u00e2\u20ac\u2122s Cool Crap for Sale",
     "x": 576,
     "y": 224,
     "items": [
@@ -9200,7 +9349,7 @@
       }
     ],
     "dialog": {
-      "greeting": "Welcome to Matt & Shanon’s! Matt & Shanon’s Cool Crap for Sale",
+      "greeting": "Welcome to Matt & Shanon\u00e2\u20ac\u2122s! Matt & Shanon\u00e2\u20ac\u2122s Cool Crap for Sale",
       "responses": [
         {
           "text": "Show me your inventory",
@@ -9215,7 +9364,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -9225,7 +9374,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "277",
@@ -9277,7 +9427,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -9287,7 +9437,8 @@
       "The original Pac-Man arcade game contained a hidden 'split-screen' feature."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "278",
@@ -9339,7 +9490,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't forget to defrag regularly!",
           "action": "end"
         }
       ]
@@ -9349,7 +9500,8 @@
       "WordPerfect was the dominant word processor before Microsoft Word."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "279",
@@ -9401,7 +9553,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -9412,7 +9564,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "280",
@@ -9464,7 +9617,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -9475,7 +9628,8 @@
       "QWERTY keyboard layout was designed to slow down typists and prevent jamming."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "281",
@@ -9527,7 +9681,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -9538,7 +9692,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "283",
@@ -9584,7 +9739,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep computing in the IBM way!",
           "action": "end"
         }
       ]
@@ -9595,7 +9750,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "284",
@@ -9641,7 +9797,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't let the C64 rest - keep computing!",
           "action": "end"
         }
       ]
@@ -9652,7 +9808,8 @@
       "Commodore's Amiga was the first computer to ship with a multitasking operating system in 1985."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "285",
@@ -9704,7 +9861,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your hard drives never crash!",
           "action": "end"
         }
       ]
@@ -9715,7 +9872,8 @@
       "The first computer virus was created in 1983 as an experiment, not malice."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "286",
@@ -9761,7 +9919,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -9772,7 +9930,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "287",
@@ -9824,7 +9983,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -9835,7 +9994,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "288",
@@ -9887,7 +10047,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -9897,7 +10057,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "289",
@@ -9943,7 +10104,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -9954,7 +10115,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "290",
@@ -10012,7 +10174,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your hard drives never crash!",
           "action": "end"
         }
       ]
@@ -10022,7 +10184,8 @@
       "IBM's PC was designed to be 'open architecture' with off-the-shelf components, unlike proprietary designs."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "291",
@@ -10074,7 +10237,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -10084,7 +10247,8 @@
       "The first computer game was Spacewar!, created in 1962 at MIT."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "292",
@@ -10136,7 +10300,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Retro computing forever!",
           "action": "end"
         }
       ]
@@ -10146,7 +10310,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "293",
@@ -10198,7 +10363,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those floppies formatted and ready!",
           "action": "end"
         }
       ]
@@ -10209,7 +10374,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "294",
@@ -10261,7 +10427,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -10271,7 +10437,8 @@
       "QWERTY keyboard layout was designed to slow down typists and prevent jamming."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "295",
@@ -10323,7 +10490,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -10333,7 +10500,8 @@
       "The first computer virus was created in 1983 as an experiment, not malice."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "296",
@@ -10379,7 +10547,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -10390,7 +10558,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "297",
@@ -10448,7 +10617,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until next LOAD\"*\", 64!",
           "action": "end"
         }
       ]
@@ -10458,7 +10627,8 @@
       "Commodore founder Jack Tramiel was a Holocaust survivor who worked in a calculator factory before starting Commodore."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "298",
@@ -10516,7 +10686,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those joysticks calibrated and your disks formatted!",
           "action": "end"
         }
       ]
@@ -10526,7 +10696,8 @@
       "Commodore founder Jack Tramiel was a Holocaust survivor who worked in a calculator factory before starting Commodore."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "299",
@@ -10572,7 +10743,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -10583,7 +10754,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "300",
@@ -10641,7 +10813,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Game over is never the end!",
           "action": "end"
         }
       ]
@@ -10651,7 +10823,8 @@
       "The original Pac-Man arcade game contained a hidden 'split-screen' feature."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "301",
@@ -10703,7 +10876,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your BASIC programs always RUN without errors!",
           "action": "end"
         }
       ]
@@ -10714,7 +10887,8 @@
       "Commodore's VIC-20 was the first computer to sell over 1 million units, paving the way for the C64."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "302",
@@ -10760,7 +10934,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -10770,7 +10944,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "303",
@@ -10822,7 +10997,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your user groups thrive!",
           "action": "end"
         }
       ]
@@ -10832,7 +11007,8 @@
       "User groups formed around specific computer brands like Apple and Commodore."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "304",
@@ -10884,7 +11060,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those floppy drives spinning!",
           "action": "end"
         }
       ]
@@ -10895,7 +11071,8 @@
       "MacPaint was the first bitmap graphics program that let users draw with a mouse."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "305",
@@ -10953,7 +11130,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -10964,7 +11141,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "306",
@@ -11016,7 +11194,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Retro computing forever!",
           "action": "end"
         }
       ]
@@ -11026,7 +11204,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "307",
@@ -11084,7 +11263,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep painting with MacPaint!",
           "action": "end"
         }
       ]
@@ -11095,7 +11274,8 @@
       "MacPaint was the first bitmap graphics program that let users draw with a mouse."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "308",
@@ -11141,7 +11321,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -11151,7 +11331,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "309",
@@ -11197,7 +11378,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -11208,7 +11389,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "310",
@@ -11260,7 +11442,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your cartridges never wear out!",
           "action": "end"
         }
       ]
@@ -11270,7 +11452,8 @@
       "The Game Boy was the first handheld system with interchangeable cartridges."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "311",
@@ -11322,7 +11505,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -11333,7 +11516,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "312",
@@ -11391,7 +11575,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -11401,7 +11585,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "313",
@@ -11459,7 +11644,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -11469,7 +11654,8 @@
       "The first computer game was Spacewar!, created in 1962 at MIT."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "314",
@@ -11515,7 +11701,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your HyperCard stacks never crash!",
           "action": "end"
         }
       ]
@@ -11526,7 +11712,8 @@
       "MacPaint was the first bitmap graphics program that let users draw with a mouse."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "315",
@@ -11584,7 +11771,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your mouse always find the right icon!",
           "action": "end"
         }
       ]
@@ -11595,7 +11782,8 @@
       "Apple's HyperCard was created by Bill Atkinson and inspired the World Wide Web."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "316",
@@ -11647,7 +11835,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Retro computing forever!",
           "action": "end"
         }
       ]
@@ -11658,7 +11846,8 @@
       "Floppy disks were invented by IBM and originally stored data on 8-inch disks."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "317",
@@ -11716,7 +11905,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -11727,7 +11916,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "318",
@@ -11773,7 +11963,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -11784,7 +11974,8 @@
       "The first computer game was Spacewar!, created in 1962 at MIT."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "319",
@@ -11830,7 +12021,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -11841,7 +12032,8 @@
       "QWERTY keyboard layout was designed to slow down typists and prevent jamming."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "320",
@@ -11887,7 +12079,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those power-ups coming!",
           "action": "end"
         }
       ]
@@ -11898,7 +12090,8 @@
       "Space Invaders was created by Tomohiro Nishikado and started the shoot-em-up genre."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "321",
@@ -11956,7 +12149,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those joysticks calibrated and your disks formatted!",
           "action": "end"
         }
       ]
@@ -11967,7 +12160,8 @@
       "Commodore's Plus/4 computer was named for its four built-in applications: word processor, spreadsheet, database, and graphing."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "322",
@@ -12025,7 +12219,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop believing in the power of Macintosh!",
           "action": "end"
         }
       ]
@@ -12035,7 +12229,8 @@
       "Apple's Macintosh was the first successful computer with a mouse and graphical user interface in 1984."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "323",
@@ -12093,7 +12288,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -12103,7 +12298,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "historical"
   },
   {
     "id": "324",
@@ -12155,7 +12351,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your Trak-Balls always roll true!",
           "action": "end"
         }
       ]
@@ -12166,7 +12362,8 @@
       "The Atari 400 was released in 1979 with a membrane keyboard to keep costs down."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "atari"
   },
   {
     "id": "325",
@@ -12218,7 +12415,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "1984 called - they want their interface back!",
           "action": "end"
         }
       ]
@@ -12229,7 +12426,8 @@
       "Apple's Newton MessagePad was the first PDA but failed due to high price and poor handwriting recognition."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "326",
@@ -12275,7 +12473,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -12285,7 +12483,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "327",
@@ -12343,7 +12542,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those floppy drives spinning!",
           "action": "end"
         }
       ]
@@ -12353,7 +12552,8 @@
       "MacPaint was the first bitmap graphics program that let users draw with a mouse."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "328",
@@ -12399,7 +12599,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "See you on the other side of the bitstream!",
           "action": "end"
         }
       ]
@@ -12410,7 +12610,8 @@
       "The Commodore 64 was released in 1982 and became the best-selling single computer model of all time with over 17 million units sold."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "329",
@@ -12462,7 +12663,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -12473,7 +12674,8 @@
       "Floppy disks were invented by IBM and originally stored data on 8-inch disks."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "330",
@@ -12525,7 +12727,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop believing in the power of Macintosh!",
           "action": "end"
         }
       ]
@@ -12536,7 +12738,8 @@
       "Apple's HyperCard was created by Bill Atkinson and inspired the World Wide Web."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "331",
@@ -12588,7 +12791,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -12598,7 +12801,8 @@
       "ENIAC was the first electronic general-purpose computer, completed in 1945."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "332",
@@ -12650,7 +12854,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -12661,7 +12865,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "333",
@@ -12707,7 +12912,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -12718,7 +12923,8 @@
       "The first electronic calculator was the ANITA Mk VII in 1961, weighing 33 pounds."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "calculators"
   },
   {
     "id": "334",
@@ -12770,7 +12976,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -12780,7 +12986,8 @@
       "The first computer bug was an actual bug - a moth stuck in a relay in 1947."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "335",
@@ -12832,7 +13039,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -12843,7 +13050,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "336",
@@ -12889,7 +13097,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your newsletters keep coming!",
           "action": "end"
         }
       ]
@@ -12900,7 +13108,8 @@
       "Computer clubs of the 1970s and 1980s shared software and hardware knowledge."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "337",
@@ -12946,7 +13155,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those spreadsheets calculating!",
           "action": "end"
         }
       ]
@@ -12957,7 +13166,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "338",
@@ -13003,7 +13213,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -13013,7 +13223,8 @@
       "The @ symbol was used in commerce for centuries before becoming the email symbol."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "341",
@@ -13065,7 +13276,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -13076,7 +13287,8 @@
       "ENIAC weighed 30 tons, occupied 1,800 square feet, and consumed 150 kW of power."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "343",
@@ -13134,7 +13346,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next club meeting!",
           "action": "end"
         }
       ]
@@ -13145,7 +13357,8 @@
       "The Vintage Computer Festival started in 1997 and is the largest computer show of its kind."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "344",
@@ -13197,7 +13410,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your Trak-Balls always roll true!",
           "action": "end"
         }
       ]
@@ -13207,7 +13420,8 @@
       "Atari's Tramiel family bought Commodore in 1984, creating an interesting corporate history."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "atari"
   },
   {
     "id": "345",
@@ -13265,7 +13479,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -13275,7 +13489,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "346",
@@ -13327,7 +13542,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Don't stop collecting - keep exploring!",
           "action": "end"
         }
       ]
@@ -13337,7 +13552,8 @@
       "Floppy disks were invented by IBM and originally stored data on 8-inch disks."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "347",
@@ -13383,7 +13599,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -13393,7 +13609,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "348",
@@ -13445,7 +13662,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Electronics forever in your circuits!",
           "action": "end"
         }
       ]
@@ -13455,7 +13672,8 @@
       "Antistatic wrist straps prevent ESD damage when working with electronics."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "349",
@@ -13513,7 +13731,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -13524,7 +13742,8 @@
       "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "historical"
   },
   {
     "id": "350",
@@ -13582,7 +13801,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your high scores keep climbing!",
           "action": "end"
         }
       ]
@@ -13592,7 +13811,8 @@
       "Super Mario Bros. was designed by Shigeru Miyamoto and introduced Mario to the world."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "351",
@@ -13644,7 +13864,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep the retro spirit alive!",
           "action": "end"
         }
       ]
@@ -13654,7 +13874,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "352",
@@ -13712,7 +13933,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Electronics forever in your circuits!",
           "action": "end"
         }
       ]
@@ -13723,7 +13944,8 @@
       "Integrated circuits were invented by Jack Kilby at Texas Instruments and Robert Noyce at Fairchild."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "hardware"
   },
   {
     "id": "353",
@@ -13781,7 +14003,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until we meet again in the Garden of Eden!",
           "action": "end"
         }
       ]
@@ -13792,7 +14014,8 @@
       "Apple's Macintosh was the first successful computer with a mouse and graphical user interface in 1984."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "354",
@@ -13850,7 +14073,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -13861,7 +14084,8 @@
       "QWERTY keyboard layout was designed to slow down typists and prevent jamming."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "355",
@@ -13919,7 +14143,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -13929,7 +14153,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "356",
@@ -13975,7 +14200,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "From past to future - keep computing!",
           "action": "end"
         }
       ]
@@ -13985,7 +14210,8 @@
       "ENIAC's programmers were six women: Kathleen McNulty, Betty Jennings, Betty Snyder, Marlyn Wescoff, Fran Bilas, and Ruth Lichterman."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "358",
@@ -14031,7 +14257,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -14042,7 +14268,8 @@
       "The first computer mouse was invented by Douglas Engelbart in 1964."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "359",
@@ -14100,7 +14327,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Keep those old computers humming!",
           "action": "end"
         }
       ]
@@ -14110,7 +14337,8 @@
       "Thick Ethernet (10BASE5) required specialized transceivers called 'vampire taps'."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "360",
@@ -14168,7 +14396,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Level up your retro gaming experience!",
           "action": "end"
         }
       ]
@@ -14178,7 +14406,8 @@
       "The first computer game was Spacewar!, created in 1962 at MIT."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "361",
@@ -14230,7 +14459,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your retro adventures continue!",
           "action": "end"
         }
       ]
@@ -14241,7 +14470,8 @@
       "ASCII was developed in the 1960s and became the standard character encoding."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "british"
   },
   {
     "id": "362",
@@ -14293,7 +14523,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Happy computing! Don't forget to SAVE often.",
           "action": "end"
         }
       ]
@@ -14304,7 +14534,8 @@
       "The Amiga's graphics capabilities were so advanced that it was used in early CGI for films like Jurassic Park."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "363",
@@ -14350,7 +14581,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until next LOAD\"*\", 64!",
           "action": "end"
         }
       ]
@@ -14361,7 +14592,8 @@
       "The Amiga's graphics capabilities were so advanced that it was used in early CGI for films like Jurassic Park."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "364",
@@ -14419,7 +14651,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Happy computing! Don't forget to SAVE often.",
           "action": "end"
         }
       ]
@@ -14429,7 +14661,8 @@
       "Commodore's VIC-20 was the first computer to sell over 1 million units, paving the way for the C64."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "commodore"
   },
   {
     "id": "404",
@@ -14481,7 +14714,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -14492,7 +14725,8 @@
       "The first hard drive was the IBM 350, weighing over a ton and storing 5MB."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "gaming"
   },
   {
     "id": "405",
@@ -14544,7 +14778,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -14555,7 +14789,8 @@
       "QWERTY keyboard layout was designed to slow down typists and prevent jamming."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "apple"
   },
   {
     "id": "777",
@@ -14613,7 +14848,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "May your vintage finds be plentiful!",
           "action": "end"
         }
       ]
@@ -14623,7 +14858,8 @@
       "The first computer virus was created in 1983 as an experiment, not malice."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   },
   {
     "id": "406",
@@ -14681,7 +14917,7 @@
           "action": "tech_facts"
         },
         {
-          "text": "Thanks, I'll check other vendors",
+          "text": "Until the next great discovery!",
           "action": "end"
         }
       ]
@@ -14691,6 +14927,7 @@
       "The Zuse Z3 was the world's first working programmable, fully automatic digital computer."
     ],
     "puzzle_items": [],
-    "puzzle_dialog": {}
+    "puzzle_dialog": {},
+    "domain_id": "ibm_pc"
   }
 ]

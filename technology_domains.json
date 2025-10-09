@@ -1,0 +1,62 @@
+[
+  {
+    "id": "gaming",
+    "name": "Video Gaming",
+    "description": "Video game consoles, cartridges, controllers, and gaming peripherals from Nintendo, Sega, and other gaming platforms",
+    "keywords": ["nintendo", "nes", "snes", "game boy", "tetris", "super mario", "zelda", "sega", "genesis", "atari 2600", "intellivision"]
+  },
+  {
+    "id": "ibm_pc",
+    "name": "IBM PC Compatible",
+    "description": "IBM PC, PC XT, AT, and compatible computers, DOS, Windows software, PC hardware, and peripherals",
+    "keywords": ["ibm pc", "pc xt", "ms-dos", "windows", "ega", "vga", "lotus 1-2-3", "wordperfect", "norton utilities", "dbase"]
+  },
+  {
+    "id": "commodore",
+    "name": "Commodore Computers",
+    "description": "Commodore 64, VIC-20, PET, Amiga, Plus/4, and Commodore-specific hardware and software",
+    "keywords": ["commodore 64", "c64", "amiga", "vic-20", "pet", "1541", "sid", "geos", "pinball construction set"]
+  },
+  {
+    "id": "apple",
+    "name": "Apple Computers",
+    "description": "Apple II, Macintosh, Lisa, Newton, and Apple-specific hardware, software, and peripherals",
+    "keywords": ["apple ii", "macintosh", "lisa", "newton", "hypercard", "macpaint", "appleworks", "imagewriter"]
+  },
+  {
+    "id": "atari",
+    "name": "Atari Computers",
+    "description": "Atari 400/800/XL/XE series computers, Atari ST/TT, and Atari-specific hardware and software",
+    "keywords": ["atari 400", "atari 800", "atari xl", "atari xe", "atari st", "atari tt", "trak-ball", "atariwriter", "atari basic"]
+  },
+  {
+    "id": "homebrew",
+    "name": "Homebrew & Microcontrollers",
+    "description": "Custom-built computers, microcontrollers, Arduino, Raspberry Pi, and modern retro computing projects",
+    "keywords": ["arduino", "raspberry pi", "6502", "z80", "eprom programmer", "logic analyzer", "homebrew cpu", "mega65"]
+  },
+  {
+    "id": "calculators",
+    "name": "Calculators & Scientific",
+    "description": "Electronic calculators, programmable calculators, and scientific computing devices",
+    "keywords": ["hp calculator", "ti calculator", "scientific calculator", "programmable calculator", "casio"]
+  },
+  {
+    "id": "historical",
+    "name": "Historical Computing",
+    "description": "Early computers, mainframes, minicomputers, and pioneering computing systems",
+    "keywords": ["eniac", "osborne 1", "kaypro", "altair", "minicomputer", "mainframe", "univac", "edsac"]
+  },
+  {
+    "id": "british",
+    "name": "British Computers",
+    "description": "Computers from the UK computing scene including Sinclair, Acorn, and other British manufacturers",
+    "keywords": ["zx spectrum", "bbc micro", "acorn", "sinclair", "dragon 32", "oric", "memotech"]
+  },
+  {
+    "id": "hardware",
+    "name": "Electronics & Hardware",
+    "description": "General electronics, tools, components, soldering equipment, and electronic test equipment",
+    "keywords": ["oscilloscope", "multimeter", "soldering", "electronics", "circuit board", "power supply", "floppy drive"]
+  }
+]
