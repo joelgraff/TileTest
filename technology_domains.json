@@ -1,0 +1,1118 @@
+[
+  {
+    "id": "gaming",
+    "name": "Video Gaming",
+    "description": "Video game consoles, cartridges, controllers, and gaming peripherals from Nintendo, Sega, and other gaming platforms",
+    "keywords": [
+      "nintendo",
+      "nes",
+      "snes",
+      "game boy",
+      "tetris",
+      "super mario",
+      "zelda",
+      "sega",
+      "genesis",
+      "atari 2600",
+      "intellivision"
+    ],
+    "facts": [
+      "The NES Zapper light gun used infrared sensors to detect on-screen targets.",
+      "Tetris was created by Alexey Pajitnov and became the best-selling video game of all time.",
+      "Super Mario Bros. was designed by Shigeru Miyamoto and introduced Mario to the world.",
+      "The Game Boy was the first handheld system with interchangeable cartridges.",
+      "The Atari 2600's Combat was the pack-in game and featured tank battles.",
+      "Nintendo 64 was the first console with 3D graphics and analog stick control.",
+      "QWERTY keyboard layout was designed to slow down typists and prevent jamming.",
+      "The first hard drive was the IBM 350, weighing over a ton and storing 5MB.",
+      "The first computer game was Spacewar!, created in 1962 at MIT.",
+      "Donkey Kong was Mario's first appearance and was originally called 'Jumpman'.",
+      "Space Invaders was created by Tomohiro Nishikado and started the shoot-em-up genre.",
+      "ASCII was developed in the 1960s and became the standard character encoding.",
+      "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946.",
+      "The first computer mouse was invented by Douglas Engelbart in 1964.",
+      "Floppy disks were invented by IBM and originally stored data on 8-inch disks.",
+      "The first computer bug was an actual bug - a moth stuck in a relay in 1947.",
+      "The @ symbol was used in commerce for centuries before becoming the email symbol.",
+      "Nintendo's Famicom (NES) sold over 60 million units worldwide.",
+      "Thin Ethernet (10BASE2) used coaxial cable and BNC connectors.",
+      "The IBM PC Network used a star topology with a file server in the center.",
+      "ARCnet was one of the first local area network technologies in the 1970s.",
+      "Commodore's CDTV was the first attempt at a CD-ROM based game console in 1991.",
+      "The Commodore 64 was released in 1982 and became the best-selling single computer model of all time with over 17 million units sold.",
+      "The C64's SID chip was so advanced that musicians still use emulators of it in modern music production.",
+      "The first computer virus was created in 1983 as an experiment, not malice.",
+      "The Vintage Computer Festival started in 1997 and is the largest computer show of its kind.",
+      "User groups formed around specific computer brands like Apple and Commodore.",
+      "The original Pac-Man arcade game contained a hidden 'split-screen' feature.",
+      "ENIAC weighed 30 tons, occupied 1,800 square feet, and consumed 150 kW of power.",
+      "ENIAC was the first electronic general-purpose computer, completed in 1945."
+    ],
+    "items": [
+      {
+        "id": "item_1_1",
+        "name": "Super Mario Bros.",
+        "description": "Classic platformer game cartridge",
+        "value": 25
+      },
+      {
+        "id": "item_1_2",
+        "name": "Nintendo Entertainment System",
+        "description": "Popular 8-bit gaming console",
+        "value": 100
+      },
+      {
+        "id": "item_1_3",
+        "name": "NES Zapper",
+        "description": "Light gun peripheral for NES",
+        "value": 35
+      },
+      {
+        "id": "item_1_4",
+        "name": "Game Boy",
+        "description": "Handheld gaming system",
+        "value": 80
+      },
+      {
+        "id": "item_1_5",
+        "name": "Tetris Cartridge",
+        "description": "Puzzle game for various systems",
+        "value": 20
+      },
+      {
+        "id": "item_105_1",
+        "name": "Super Mario Bros. 3",
+        "description": "Advanced Mario platformer",
+        "value": 35
+      },
+      {
+        "id": "item_105_2",
+        "name": "Excitebike Cartridge",
+        "description": "Racing game cartridge",
+        "value": 20
+      },
+      {
+        "id": "item_105_4",
+        "name": "Ice Climber Cartridge",
+        "description": "Climbing adventure game",
+        "value": 25
+      },
+      {
+        "id": "item_143_1",
+        "name": "Apple II Plus",
+        "description": "Popular Apple II series computer",
+        "value": 220
+      },
+      {
+        "id": "item_143_2",
+        "name": "Osborne 1",
+        "description": "One of the first portable computers",
+        "value": 180
+      },
+      {
+        "id": "item_143_3",
+        "name": "Commodore PET",
+        "description": "Early Commodore business computer",
+        "value": 250
+      },
+      {
+        "id": "item_143_4",
+        "name": "Atari 400",
+        "description": "Atari's entry-level home computer",
+        "value": 90
+      },
+      {
+        "id": "item_151_1",
+        "name": "TRS-80 Model I",
+        "description": "Early personal computer from Radio Shack",
+        "value": 150
+      },
+      {
+        "id": "item_151_2",
+        "name": "ZX Spectrum",
+        "description": "Popular British home computer",
+        "value": 80
+      },
+      {
+        "id": "item_159_2",
+        "name": "Kaypro II",
+        "description": "Popular portable computer from the 1980s",
+        "value": 200
+      },
+      {
+        "id": "item_186_1",
+        "name": "TI-99/4A",
+        "description": "Texas Instruments home computer",
+        "value": 100
+      },
+      {
+        "id": "item_186_2",
+        "name": "Franklin Ace 1000",
+        "description": "Apple II clone computer",
+        "value": 180
+      },
+      {
+        "id": "item_217_3",
+        "name": "Duck Hunt Cartridge",
+        "description": "Light gun game with NES Zapper",
+        "value": 25
+      },
+      {
+        "id": "item_217_5",
+        "name": "Donkey Kong Cartridge",
+        "description": "Arcade classic port",
+        "value": 30
+      },
+      {
+        "id": "item_241_1",
+        "name": "Banyan VINES",
+        "description": "Network operating system",
+        "value": 40
+      },
+      {
+        "id": "item_241_2",
+        "name": "ARCnet Card",
+        "description": "Alternative networking technology",
+        "value": 30
+      },
+      {
+        "id": "item_241_3",
+        "name": "Hub 8-Port",
+        "description": "Ethernet network hub",
+        "value": 40
+      },
+      {
+        "id": "item_241_4",
+        "name": "Token Ring Card",
+        "description": "IBM Token Ring network adapter",
+        "value": 45
+      },
+      {
+        "id": "item_135_1",
+        "name": "Workbench 1.3",
+        "description": "Operating system for Amiga computers",
+        "value": 80
+      },
+      {
+        "id": "item_135_2",
+        "name": "Amiga Mouse",
+        "description": "Optical mouse for Amiga systems",
+        "value": 30
+      },
+      {
+        "id": "item_135_3",
+        "name": "A500 Keyboard",
+        "description": "Original keyboard for Amiga 500",
+        "value": 50
+      },
+      {
+        "id": "item_135_4",
+        "name": "Amiga 500 Computer",
+        "description": "Popular 16-bit home computer",
+        "value": 200
+      },
+      {
+        "id": "item_135_5",
+        "name": "Deluxe Paint II",
+        "description": "Professional graphics software for Amiga",
+        "value": 60
+      },
+      {
+        "id": "item_281_1",
+        "name": "Trak-Ball Controller",
+        "description": "Trackball controller for games",
+        "value": 55
+      },
+      {
+        "id": "item_281_2",
+        "name": "Atari Joystick",
+        "description": "Classic Atari controller",
+        "value": 25
+      },
+      {
+        "id": "item_281_4",
+        "name": "TurboGrafx-16 Console",
+        "description": "NEC's 16-bit gaming console",
+        "value": 120
+      },
+      {
+        "id": "item_294_1",
+        "name": "PC Engine Console",
+        "description": "TurboGrafx-16 system",
+        "value": 120
+      },
+      {
+        "id": "item_294_2",
+        "name": "PC-FX Console",
+        "description": "NEC's multimedia console",
+        "value": 200
+      },
+      {
+        "id": "item_294_3",
+        "name": "NEC PC-8801",
+        "description": "Popular Japanese computer",
+        "value": 150
+      },
+      {
+        "id": "item_294_4",
+        "name": "Sharp X68000",
+        "description": "Powerful Japanese home computer",
+        "value": 300
+      },
+      {
+        "id": "item_320_3",
+        "name": "Legend of Zelda",
+        "description": "Action-adventure game cartridge",
+        "value": 40
+      },
+      {
+        "id": "item_360_2",
+        "name": "Arcade Cabinet",
+        "description": "Classic arcade gaming machine",
+        "value": 500
+      },
+      {
+        "id": "item_360_4",
+        "name": "Competition Pro Joystick",
+        "description": "High-quality joystick for games",
+        "value": 40
+      }
+    ]
+  },
+  {
+    "id": "ibm_pc",
+    "name": "IBM PC Compatible",
+    "description": "IBM PC, PC XT, AT, and compatible computers, DOS, Windows software, PC hardware, and peripherals",
+    "keywords": [
+      "ibm pc",
+      "pc xt",
+      "ms-dos",
+      "windows",
+      "ega",
+      "vga",
+      "lotus 1-2-3",
+      "wordperfect",
+      "norton utilities",
+      "dbase"
+    ],
+    "facts": [
+      "The Atari 2600's Combat was the pack-in game and featured tank battles.",
+      "The Game Boy was the first handheld system with interchangeable cartridges.",
+      "Lotus 1-2-3 was the killer app that made the IBM PC successful in business.",
+      "MS-DOS was purchased by IBM from Microsoft for $75,000 and became the standard PC operating system.",
+      "WordPerfect was the dominant word processor before Microsoft Word.",
+      "Multimeters can measure voltage, current, and resistance in electronic circuits.",
+      "Integrated circuits were invented by Jack Kilby at Texas Instruments and Robert Noyce at Fairchild.",
+      "Floppy disks were invented by IBM and originally stored data on 8-inch disks.",
+      "The @ symbol was used in commerce for centuries before becoming the email symbol.",
+      "The Da Vinci surgical robot allows surgeons to perform minimally invasive procedures.",
+      "ASIMO was Honda's humanoid robot that could walk and climb stairs.",
+      "The Epson HX-20 was one of the first laptop computers with a built-in printer.",
+      "The Sharp PC-5000 was one of the first clamshell design laptops.",
+      "The Osborne 1 was the first portable computer, weighing 24 pounds with a 5-inch screen.",
+      "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946.",
+      "The HP-9100A was Hewlett-Packard's first programmable calculator in 1968.",
+      "The first pocket calculator was the Busicom LE-120A 'Handy' in 1971.",
+      "The EDSAC was the first practical stored-program computer in the world.",
+      "The UNIVAC I was the first commercial computer and predicted the 1952 election.",
+      "The Compaq Portable was the first IBM PC compatible laptop in 1983.",
+      "The GRiD Compass was the first laptop computer, used by NASA on the Space Shuttle.",
+      "The first hard drive was the IBM 350, weighing over a ton and storing 5MB.",
+      "The first computer bug was an actual bug - a moth stuck in a relay in 1947.",
+      "The Homebrew Computer Club was founded in 1975 and included Steve Jobs and Steve Wozniak.",
+      "The Vintage Computer Festival started in 1997 and is the largest computer show of its kind.",
+      "Soldering irons heat solder to 350-400\u00c2\u00b0F to create electrical connections.",
+      "The first transistor was invented by Bell Labs in 1947 by John Bardeen, Walter Brattain, and William Shockley.",
+      "The first computer mouse was invented by Douglas Engelbart in 1964.",
+      "QWERTY keyboard layout was designed to slow down typists and prevent jamming.",
+      "The first computer virus was created in 1983 as an experiment, not malice.",
+      "The first computer game was Spacewar!, created in 1962 at MIT.",
+      "Surface-mount technology allowed components to be mounted directly on PCB surfaces.",
+      "ASCII was developed in the 1960s and became the standard character encoding.",
+      "The Raspberry Pi was created by the Raspberry Pi Foundation to teach computer science.",
+      "Logic analyzers can capture and display digital signals in real-time.",
+      "Space Invaders was created by Tomohiro Nishikado and started the shoot-em-up genre.",
+      "The Tandy Model 100 was a popular portable computer with built-in modem.",
+      "Antistatic wrist straps prevent ESD damage when working with electronics.",
+      "Oscilloscopes display voltage waveforms over time for signal analysis.",
+      "The Dulmont Magnum was a portable Apple II compatible computer.",
+      "EGA (Enhanced Graphics Adapter) provided 16 colors at 640x350 resolution.",
+      "The first electronic calculator was the ANITA Mk VII in 1961, weighing 33 pounds.",
+      "The Curta mechanical calculator was called the 'pepper mill' due to its shape.",
+      "Tetris was created by Alexey Pajitnov and became the best-selling video game of all time.",
+      "Nintendo 64 was the first console with 3D graphics and analog stick control.",
+      "Super Mario Bros. was designed by Shigeru Miyamoto and introduced Mario to the world.",
+      "Component testers verify the functionality of resistors, capacitors, and semiconductors.",
+      "The original Pac-Man arcade game contained a hidden 'split-screen' feature.",
+      "IBM's PC was designed to be 'open architecture' with off-the-shelf components, unlike proprietary designs.",
+      "The Zuse Z3 was the world's first working programmable, fully automatic digital computer.",
+      "ENIAC's programmers were six women: Kathleen McNulty, Betty Jennings, Betty Snyder, Marlyn Wescoff, Fran Bilas, and Ruth Lichterman.",
+      "The PS/2's Micro Channel Architecture included built-in networking support.",
+      "Thick Ethernet (10BASE5) required specialized transceivers called 'vampire taps'.",
+      "The Colossus computer was used by British intelligence to break German codes in WWII."
+    ],
+    "items": [
+      {
+        "id": "item_0_1",
+        "name": "Lotus 1-2-3",
+        "description": "Popular spreadsheet software",
+        "value": 30
+      },
+      {
+        "id": "item_0_2",
+        "name": "IBM PC XT",
+        "description": "Early IBM personal computer",
+        "value": 250
+      },
+      {
+        "id": "item_0_3",
+        "name": "PC Speaker",
+        "description": "Internal speaker for IBM PCs",
+        "value": 20
+      },
+      {
+        "id": "item_5_1",
+        "name": "MS-DOS 3.1",
+        "description": "Operating system for IBM PCs",
+        "value": 50
+      },
+      {
+        "id": "item_9_4",
+        "name": "EGA Graphics Card",
+        "description": "Enhanced graphics adapter",
+        "value": 80
+      },
+      {
+        "id": "item_123_2",
+        "name": "dBase III Plus",
+        "description": "Database management system",
+        "value": 60
+      },
+      {
+        "id": "item_140_2",
+        "name": "WordPerfect 5.1",
+        "description": "Popular word processing software",
+        "value": 40
+      },
+      {
+        "id": "item_34_1",
+        "name": "Turbo Pascal 3.0",
+        "description": "Programming development environment",
+        "value": 45
+      },
+      {
+        "id": "item_34_3",
+        "name": "Flight Simulator II",
+        "description": "Aviation simulation game",
+        "value": 30
+      },
+      {
+        "id": "item_34_4",
+        "name": "Norton Utilities",
+        "description": "System maintenance tools",
+        "value": 35
+      },
+      {
+        "id": "item_251_1",
+        "name": "TRS-80 Model I",
+        "description": "Early personal computer from Radio Shack",
+        "value": 150
+      },
+      {
+        "id": "item_251_2",
+        "name": "Atari 400",
+        "description": "Atari's entry-level home computer",
+        "value": 90
+      },
+      {
+        "id": "item_251_3",
+        "name": "Franklin Ace 1000",
+        "description": "Apple II clone computer",
+        "value": 180
+      }
+    ]
+  },
+  {
+    "id": "commodore",
+    "name": "Commodore Computers",
+    "description": "Commodore 64, VIC-20, PET, Amiga, Plus/4, and Commodore-specific hardware and software",
+    "keywords": [
+      "commodore 64",
+      "c64",
+      "amiga",
+      "vic-20",
+      "pet",
+      "1541",
+      "sid",
+      "geos",
+      "pinball construction set"
+    ],
+    "facts": [
+      "Commodore's VIC-20 was the first computer to sell over 1 million units, paving the way for the C64.",
+      "The Commodore 64 was released in 1982 and became the best-selling single computer model of all time with over 17 million units sold.",
+      "Commodore's CDTV was the first attempt at a CD-ROM based game console in 1991.",
+      "The Commodore PET was the first personal computer to sell for under $800 in 1977.",
+      "The C64's BASIC interpreter was written by Microsoft co-founder Bill Gates.",
+      "Commodore founder Jack Tramiel was a Holocaust survivor who worked in a calculator factory before starting Commodore.",
+      "The Amiga's graphics capabilities were so advanced that it was used in early CGI for films like Jurassic Park.",
+      "The C64's SID chip was so advanced that musicians still use emulators of it in modern music production.",
+      "Commodore's Plus/4 computer was named for its four built-in applications: word processor, spreadsheet, database, and graphing.",
+      "Commodore's Amiga was the first computer to ship with a multitasking operating system in 1985."
+    ],
+    "items": [
+      {
+        "id": "item_3_1",
+        "name": "Pinball Construction Set",
+        "description": "Iconic game creation tool for the C64",
+        "value": 45
+      },
+      {
+        "id": "item_3_2",
+        "name": "Competition Pro Joystick",
+        "description": "High-quality joystick for Commodore games",
+        "value": 40
+      },
+      {
+        "id": "item_3_3",
+        "name": "C64 User's Guide",
+        "description": "Official Commodore 64 manual",
+        "value": 25
+      },
+      {
+        "id": "item_7_1",
+        "name": "Amiga Mouse",
+        "description": "Optical mouse for Amiga systems",
+        "value": 30
+      },
+      {
+        "id": "item_7_2",
+        "name": "Deluxe Paint II",
+        "description": "Professional graphics software for Amiga",
+        "value": 60
+      },
+      {
+        "id": "item_7_3",
+        "name": "A500 Keyboard",
+        "description": "Original keyboard for Amiga 500",
+        "value": 50
+      },
+      {
+        "id": "item_26_2",
+        "name": "Epyx Fast Load Cartridge",
+        "description": "Speeds up disk loading on Commodore computers",
+        "value": 35
+      },
+      {
+        "id": "item_26_3",
+        "name": "1541 Disk Drive",
+        "description": "Original floppy disk drive for C64",
+        "value": 120
+      },
+      {
+        "id": "item_28_2",
+        "name": "Amiga 500 Computer",
+        "description": "Popular 16-bit home computer",
+        "value": 200
+      },
+      {
+        "id": "item_28_3",
+        "name": "Workbench 1.3",
+        "description": "Operating system for Amiga computers",
+        "value": 80
+      },
+      {
+        "id": "item_252_1",
+        "name": "Commodore Datasette",
+        "description": "Cassette tape drive for data storage",
+        "value": 45
+      },
+      {
+        "id": "item_252_2",
+        "name": "VIC-20 Computer",
+        "description": "Early Commodore home computer",
+        "value": 80
+      },
+      {
+        "id": "item_252_3",
+        "name": "C128 Computer",
+        "description": "Advanced Commodore 128 computer",
+        "value": 180
+      }
+    ]
+  },
+  {
+    "id": "apple",
+    "name": "Apple Computers",
+    "description": "Apple II, Macintosh, Lisa, Newton, and Apple-specific hardware, software, and peripherals",
+    "keywords": [
+      "apple ii",
+      "macintosh",
+      "lisa",
+      "newton",
+      "hypercard",
+      "macpaint",
+      "appleworks",
+      "imagewriter"
+    ],
+    "facts": [
+      "The first computer mouse was invented by Douglas Engelbart in 1964.",
+      "The @ symbol was used in commerce for centuries before becoming the email symbol.",
+      "Apple's Newton MessagePad was the first PDA but failed due to high price and poor handwriting recognition.",
+      "Steve Jobs and Steve Wozniak started Apple in Jobs' garage in 1976.",
+      "The Macintosh SE was the first Mac with an internal hard drive standard.",
+      "Floppy disks were invented by IBM and originally stored data on 8-inch disks.",
+      "QWERTY keyboard layout was designed to slow down typists and prevent jamming.",
+      "The first computer game was Spacewar!, created in 1962 at MIT.",
+      "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946.",
+      "The Macintosh's '1984' Super Bowl commercial cost $1.5 million but only aired once.",
+      "Apple's HyperCard was created by Bill Atkinson and inspired the World Wide Web.",
+      "The Apple II Plus was the first computer to ship with VisiCalc, the first spreadsheet program.",
+      "The first hard drive was the IBM 350, weighing over a ton and storing 5MB.",
+      "The Apple ImageWriter was the first consumer dot-matrix printer with near-letter-quality printing.",
+      "The first computer bug was an actual bug - a moth stuck in a relay in 1947.",
+      "MacPaint was the first bitmap graphics program that let users draw with a mouse.",
+      "The Apple I was sold as a kit for $666.66 and only 200 were ever made.",
+      "ASCII was developed in the 1960s and became the standard character encoding.",
+      "The Atari 2600's Combat was the pack-in game and featured tank battles.",
+      "Donkey Kong was Mario's first appearance and was originally called 'Jumpman'.",
+      "Apple's Macintosh was the first successful computer with a mouse and graphical user interface in 1984.",
+      "Many famous programmers got their start in local computer clubs and user groups.",
+      "The People's Computer Company published newsletters that inspired many early programmers.",
+      "Computer clubs of the 1970s and 1980s shared software and hardware knowledge."
+    ],
+    "items": [
+      {
+        "id": "item_118_1",
+        "name": "Apple II Plus",
+        "description": "Popular Apple II series computer",
+        "value": 220
+      },
+      {
+        "id": "item_118_2",
+        "name": "Franklin Ace 1000",
+        "description": "Apple II clone computer",
+        "value": 180
+      },
+      {
+        "id": "item_118_3",
+        "name": "TRS-80 Model I",
+        "description": "Early personal computer from Radio Shack",
+        "value": 150
+      },
+      {
+        "id": "item_118_4",
+        "name": "ZX Spectrum",
+        "description": "Popular British home computer",
+        "value": 80
+      },
+      {
+        "id": "item_16_1",
+        "name": "HyperCard Stack",
+        "description": "Interactive multimedia authoring tool",
+        "value": 40
+      },
+      {
+        "id": "item_16_2",
+        "name": "Apple ImageWriter II",
+        "description": "Dot matrix printer for Macintosh",
+        "value": 150
+      },
+      {
+        "id": "item_16_3",
+        "name": "MacPaint Software",
+        "description": "Bitmap graphics editor",
+        "value": 35
+      },
+      {
+        "id": "item_16_4",
+        "name": "Apple Extended Keyboard",
+        "description": "Full-size keyboard for Macintosh",
+        "value": 70
+      },
+      {
+        "id": "item_16_5",
+        "name": "Macintosh Plus",
+        "description": "Classic Macintosh computer with 1MB RAM",
+        "value": 300
+      },
+      {
+        "id": "item_154_1",
+        "name": "Atari 400",
+        "description": "Atari's entry-level home computer",
+        "value": 90
+      },
+      {
+        "id": "item_163_4",
+        "name": "TI-99/4A",
+        "description": "Texas Instruments home computer",
+        "value": 100
+      },
+      {
+        "id": "item_189_4",
+        "name": "Kaypro II",
+        "description": "Popular portable computer from the 1980s",
+        "value": 200
+      },
+      {
+        "id": "item_196_3",
+        "name": "Osborne 1",
+        "description": "One of the first portable computers",
+        "value": 180
+      }
+    ]
+  },
+  {
+    "id": "atari",
+    "name": "Atari Computers",
+    "description": "Atari 400/800/XL/XE series computers, Atari ST/TT, and Atari-specific hardware and software",
+    "keywords": [
+      "atari 400",
+      "atari 800",
+      "atari xl",
+      "atari xe",
+      "atari st",
+      "atari tt",
+      "trak-ball",
+      "atariwriter",
+      "atari basic"
+    ],
+    "facts": [
+      "The Atari Portfolio was the first palmtop computer running MS-DOS in 1989.",
+      "The Atari 5200 was designed to be backward compatible with 2600 games but failed due to poor controllers.",
+      "The Atari 400 was released in 1979 with a membrane keyboard to keep costs down.",
+      "The Atari 800 had better graphics than the Apple II with 128 colors and sprite capabilities.",
+      "Atari's Jaguar console was the last system designed by the original Atari team in 1993.",
+      "Atari's Tramiel family bought Commodore in 1984, creating an interesting corporate history.",
+      "The Atari 2600 was originally called the 'Stella' project and was designed to play Combat.",
+      "Atari's ST computers popularized MIDI sequencing and were widely used by musicians.",
+      "The Zuse Z3 was the world's first working programmable, fully automatic digital computer.",
+      "The Atanasoff-Berry Computer was the first electronic digital computer, invented in 1937.",
+      "Atari's 8-bit computers used the same 6502 processor as the Apple II and Commodore PET.",
+      "Atari was founded by Nolan Bushnell and Ted Dabney, who also created Pong, the first arcade video game."
+    ],
+    "items": [
+      {
+        "id": "item_12_1",
+        "name": "Trak-Ball Controller",
+        "description": "Unique trackball controller for Atari",
+        "value": 55
+      },
+      {
+        "id": "item_12_2",
+        "name": "Atari 1050 Disk Drive",
+        "description": "Floppy disk drive for Atari 8-bit systems",
+        "value": 100
+      },
+      {
+        "id": "item_12_3",
+        "name": "AtariWriter Cartridge",
+        "description": "Word processing software cartridge",
+        "value": 20
+      },
+      {
+        "id": "item_49_3",
+        "name": "Atari BASIC Cartridge",
+        "description": "Programming language cartridge",
+        "value": 25
+      },
+      {
+        "id": "item_58_2",
+        "name": "Atari 800XL Computer",
+        "description": "Advanced 8-bit home computer",
+        "value": 150
+      },
+      {
+        "id": "item_233_1",
+        "name": "Atari 400",
+        "description": "Atari's entry-level home computer",
+        "value": 90
+      },
+      {
+        "id": "item_233_2",
+        "name": "ZX Spectrum",
+        "description": "Popular British home computer",
+        "value": 80
+      },
+      {
+        "id": "item_233_3",
+        "name": "Osborne 1",
+        "description": "One of the first portable computers",
+        "value": 180
+      }
+    ]
+  },
+  {
+    "id": "homebrew",
+    "name": "Homebrew & Microcontrollers",
+    "description": "Custom-built computers, microcontrollers, Arduino, Raspberry Pi, and modern retro computing projects",
+    "keywords": [
+      "arduino",
+      "raspberry pi",
+      "6502",
+      "z80",
+      "eprom programmer",
+      "logic analyzer",
+      "homebrew cpu",
+      "mega65"
+    ],
+    "facts": [
+      "The first microcontroller was the TMS 1000 by Texas Instruments in 1974.",
+      "Arduino was created in 2005 as an educational tool for designers and artists.",
+      "The first homebrew computer was the Altair 8800 in 1975, starting the microcomputer revolution.",
+      "The Z80 was created by Federico Faggin and was pin-compatible with the Intel 8080.",
+      "EPROM chips could be erased with ultraviolet light through a quartz window.",
+      "The 6502 microprocessor was designed by Chuck Peddle and used in the Apple II, Commodore PET, and Atari computers.",
+      "Oscilloscopes were originally called 'cathode ray oscillographs' when invented in 1897.",
+      "The Raspberry Pi was created by the Raspberry Pi Foundation to teach computer science."
+    ],
+    "items": [
+      {
+        "id": "item_113_1",
+        "name": "Arduino Uno",
+        "description": "Microcontroller development board",
+        "value": 25
+      },
+      {
+        "id": "item_113_2",
+        "name": "EPROM Programmer",
+        "description": "Device for programming memory chips",
+        "value": 50
+      },
+      {
+        "id": "item_113_3",
+        "name": "6502 Microprocessor",
+        "description": "Classic 8-bit CPU chip",
+        "value": 15
+      },
+      {
+        "id": "item_113_4",
+        "name": "Logic Analyzer",
+        "description": "Digital signal analysis tool",
+        "value": 80
+      },
+      {
+        "id": "item_113_5",
+        "name": "Z80 Microprocessor",
+        "description": "Popular 8-bit CPU",
+        "value": 12
+      },
+      {
+        "id": "item_126_2",
+        "name": "Oscilloscope Probe",
+        "description": "Measurement probe for oscilloscopes",
+        "value": 30
+      },
+      {
+        "id": "item_126_3",
+        "name": "Raspberry Pi 3",
+        "description": "Single-board computer",
+        "value": 35
+      },
+      {
+        "id": "item_131_2",
+        "name": "Soldering Station",
+        "description": "Professional soldering tool",
+        "value": 60
+      }
+    ]
+  },
+  {
+    "id": "calculators",
+    "name": "Calculators & Scientific",
+    "description": "Electronic calculators, programmable calculators, and scientific computing devices",
+    "keywords": [
+      "hp calculator",
+      "ti calculator",
+      "scientific calculator",
+      "programmable calculator",
+      "casio"
+    ],
+    "facts": [
+      "Sharp's EL-8 was the first calculator to use LED display technology.",
+      "The Curta mechanical calculator was called the 'pepper mill' due to its shape.",
+      "Casio's FX-700P was one of the first graphing calculators in the early 1980s.",
+      "The Sinclair Cambridge was one of the smallest calculators ever made.",
+      "The HP-12C financial calculator is still in production after 40+ years.",
+      "The first electronic calculator was the ANITA Mk VII in 1961, weighing 33 pounds."
+    ],
+    "items": [
+      {
+        "id": "item_137_1",
+        "name": "Casio FX-700P",
+        "description": "Programmable scientific calculator",
+        "value": 60
+      },
+      {
+        "id": "item_137_2",
+        "name": "Sinclair Cambridge Calculator",
+        "description": "Compact scientific calculator",
+        "value": 30
+      },
+      {
+        "id": "item_137_3",
+        "name": "HP-9100A Calculator",
+        "description": "Early programmable calculator",
+        "value": 150
+      },
+      {
+        "id": "item_137_4",
+        "name": "Atari Portfolio",
+        "description": "Palm-sized DOS computer",
+        "value": 90
+      },
+      {
+        "id": "item_197_1",
+        "name": "TI-99/4A Computer",
+        "description": "Texas Instruments home computer",
+        "value": 100
+      },
+      {
+        "id": "item_197_4",
+        "name": "Commodore Calculator",
+        "description": "Commodore programmable calculator",
+        "value": 40
+      }
+    ]
+  },
+  {
+    "id": "historical",
+    "name": "Historical Computing",
+    "description": "Early computers, mainframes, minicomputers, and pioneering computing systems",
+    "keywords": [
+      "eniac",
+      "osborne 1",
+      "kaypro",
+      "altair",
+      "minicomputer",
+      "mainframe",
+      "univac",
+      "edsac"
+    ],
+    "facts": [
+      "Floppy disks were invented by IBM and originally stored data on 8-inch disks.",
+      "The first computer bug was an actual bug - a moth stuck in a relay in 1947.",
+      "The first computer game was Spacewar!, created in 1962 at MIT.",
+      "The first hard drive was the IBM 350, weighing over a ton and storing 5MB.",
+      "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946.",
+      "ASCII was developed in the 1960s and became the standard character encoding.",
+      "The @ symbol was used in commerce for centuries before becoming the email symbol.",
+      "QWERTY keyboard layout was designed to slow down typists and prevent jamming.",
+      "The first computer virus was created in 1983 as an experiment, not malice."
+    ],
+    "items": [
+      {
+        "id": "item_161_1",
+        "name": "TI-99/4A",
+        "description": "Texas Instruments home computer",
+        "value": 100
+      },
+      {
+        "id": "item_161_2",
+        "name": "Osborne 1",
+        "description": "One of the first portable computers",
+        "value": 180
+      },
+      {
+        "id": "item_161_3",
+        "name": "Kaypro II",
+        "description": "Popular portable computer from the 1980s",
+        "value": 200
+      },
+      {
+        "id": "item_162_1",
+        "name": "TRS-80 Model I",
+        "description": "Early personal computer from Radio Shack",
+        "value": 150
+      },
+      {
+        "id": "item_162_2",
+        "name": "ZX Spectrum",
+        "description": "Popular British home computer",
+        "value": 80
+      },
+      {
+        "id": "item_170_3",
+        "name": "Acorn BBC Micro",
+        "description": "British educational computer",
+        "value": 120
+      },
+      {
+        "id": "item_170_4",
+        "name": "Apple II Plus",
+        "description": "Popular Apple II series computer",
+        "value": 220
+      },
+      {
+        "id": "item_170_5",
+        "name": "Commodore PET",
+        "description": "Early Commodore business computer",
+        "value": 250
+      },
+      {
+        "id": "item_184_2",
+        "name": "Atari 400",
+        "description": "Atari's entry-level home computer",
+        "value": 90
+      },
+      {
+        "id": "item_212_4",
+        "name": "Franklin Ace 1000",
+        "description": "Apple II clone computer",
+        "value": 180
+      }
+    ]
+  },
+  {
+    "id": "british",
+    "name": "British Computers",
+    "description": "Computers from the UK computing scene including Sinclair, Acorn, and other British manufacturers",
+    "keywords": [
+      "zx spectrum",
+      "bbc micro",
+      "acorn",
+      "sinclair",
+      "dragon 32",
+      "oric",
+      "memotech"
+    ],
+    "facts": [
+      "The Atari Portfolio was the first palmtop computer running MS-DOS in 1989.",
+      "The Atari 2600 was originally called the 'Stella' project and was designed to play Combat.",
+      "The first computer bug was an actual bug - a moth stuck in a relay in 1947.",
+      "The first computer game was Spacewar!, created in 1962 at MIT.",
+      "Floppy disks were invented by IBM and originally stored data on 8-inch disks.",
+      "The first computer virus was created in 1983 as an experiment, not malice.",
+      "The @ symbol was used in commerce for centuries before becoming the email symbol.",
+      "The first computer mouse was invented by Douglas Engelbart in 1964.",
+      "The first hard drive was the IBM 350, weighing over a ton and storing 5MB.",
+      "QWERTY keyboard layout was designed to slow down typists and prevent jamming.",
+      "ASCII was developed in the 1960s and became the standard character encoding.",
+      "Logic probes help troubleshoot digital circuits by indicating high/low states.",
+      "Component testers verify the functionality of resistors, capacitors, and semiconductors.",
+      "Antistatic wrist straps prevent ESD damage when working with electronics.",
+      "Oscilloscopes display voltage waveforms over time for signal analysis.",
+      "The term 'bit' comes from 'binary digit' and was coined by John Tukey in 1946.",
+      "The Harvard Mark I was the first programmable digital computer in the US.",
+      "The Colossus computer was used by British intelligence to break German codes in WWII.",
+      "ENIAC weighed 30 tons, occupied 1,800 square feet, and consumed 150 kW of power.",
+      "Computer fairs and swap meets were crucial for sharing information before the internet.",
+      "BYTE magazine was the primary publication for computer enthusiasts in the 1970s-80s.",
+      "The Vintage Computer Festival started in 1997 and is the largest computer show of its kind."
+    ],
+    "items": [
+      {
+        "id": "item_107_1",
+        "name": "Atari 400",
+        "description": "Atari's entry-level home computer",
+        "value": 90
+      },
+      {
+        "id": "item_107_2",
+        "name": "Acorn BBC Micro",
+        "description": "British educational computer",
+        "value": 120
+      },
+      {
+        "id": "item_107_3",
+        "name": "ZX Spectrum",
+        "description": "Popular British home computer",
+        "value": 80
+      },
+      {
+        "id": "item_107_4",
+        "name": "Franklin Ace 1000",
+        "description": "Apple II clone computer",
+        "value": 180
+      },
+      {
+        "id": "item_111_1",
+        "name": "Osborne 1",
+        "description": "One of the first portable computers",
+        "value": 180
+      },
+      {
+        "id": "item_146_1",
+        "name": "Apple II Plus",
+        "description": "Popular Apple II series computer",
+        "value": 220
+      },
+      {
+        "id": "item_146_2",
+        "name": "Kaypro II",
+        "description": "Popular portable computer from the 1980s",
+        "value": 200
+      },
+      {
+        "id": "item_174_2",
+        "name": "TRS-80 Model I",
+        "description": "Early personal computer from Radio Shack",
+        "value": 150
+      },
+      {
+        "id": "item_193_1",
+        "name": "TI-99/4A",
+        "description": "Texas Instruments home computer",
+        "value": 100
+      },
+      {
+        "id": "item_204_1",
+        "name": "Commodore PET",
+        "description": "Early Commodore business computer",
+        "value": 250
+      }
+    ]
+  },
+  {
+    "id": "hardware",
+    "name": "Electronics & Hardware",
+    "description": "General electronics, tools, components, soldering equipment, and electronic test equipment",
+    "keywords": [
+      "oscilloscope",
+      "multimeter",
+      "soldering",
+      "electronics",
+      "circuit board",
+      "power supply",
+      "floppy drive"
+    ],
+    "facts": [
+      "Soldering irons heat solder to 350-400\u00c2\u00b0F to create electrical connections.",
+      "Oscilloscopes display voltage waveforms over time for signal analysis.",
+      "Surface-mount technology allowed components to be mounted directly on PCB surfaces.",
+      "ESD (electrostatic discharge) can damage electronic components and requires special handling.",
+      "Integrated circuits were invented by Jack Kilby at Texas Instruments and Robert Noyce at Fairchild."
+    ],
+    "items": [
+      {
+        "id": "item_2_1",
+        "name": "Floppy Disk Controller",
+        "description": "Controller for floppy drives",
+        "value": 50
+      },
+      {
+        "id": "item_2_2",
+        "name": "Multi I/O Card",
+        "description": "Serial and parallel ports expansion",
+        "value": 70
+      },
+      {
+        "id": "item_2_3",
+        "name": "SCSI Host Adapter",
+        "description": "Small Computer System Interface card",
+        "value": 85
+      },
+      {
+        "id": "item_2_4",
+        "name": "MFM Hard Drive",
+        "description": "5.25\" hard disk drive",
+        "value": 120
+      },
+      {
+        "id": "item_221_2",
+        "name": "RAM Expansion Module",
+        "description": "Memory upgrade for computers",
+        "value": 90
+      }
+    ]
+  }
+]

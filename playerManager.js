@@ -1,4 +1,7 @@
 class PlayerManager {
+    static lastX = 0;
+    static lastY = 0;
+    static stuckCounter = 0;
     static preload(scene) {
         scene.load.spritesheet('player', 'assets/player.png', { frameWidth: 32, frameHeight: 48 });
     }
@@ -12,6 +15,7 @@ class PlayerManager {
 
     static update(scene, time, delta) {
         if (!scene.player || !scene.inputManager) return;
+        if (scene.isDialogOpen) return; // Don't update player when dialog is open
         PlayerManager.handlePlayerMovement(scene);
         PlayerManager.handlePlayerAnimation(scene);
         PlayerManager.updatePlayerDepth(scene); // Progressive depth
@@ -93,6 +97,28 @@ class PlayerManager {
         const direction = scene.inputManager.getDirection();
         const speed = 200;
         scene.player.setVelocity(direction.x * speed, direction.y * speed);
+
+        // Check if stuck trying to reach target
+        if (scene.inputManager.target) {
+            const deltas = { x: Math.abs(scene.player.x - PlayerManager.lastX), y: Math.abs(scene.player.y - PlayerManager.lastY) };
+
+            if (deltas.x + deltas.y < .2) {
+            //if (scene.player.x === PlayerManager.lastX && scene.player.y === PlayerManager.lastY) {
+                PlayerManager.stuckCounter++;
+                if (PlayerManager.stuckCounter > 1) {
+                    // Player hasn't moved for 2 frames, cancel target
+                    scene.inputManager.target = null;
+                    scene.player.setVelocity(0, 0);
+                    PlayerManager.stuckCounter = 0;
+                }
+            } else {
+                PlayerManager.stuckCounter = 0;
+            }
+            PlayerManager.lastX = scene.player.x;
+            PlayerManager.lastY = scene.player.y;
+        } else {
+            PlayerManager.stuckCounter = 0;
+        }
     }
 
     static handlePlayerAnimation(scene) {

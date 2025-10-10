@@ -12,9 +12,7 @@ class VendorManager {
 
     async loadVendors() {
         try {
-            const response = await fetch('./vendors_.json');
-            const data = await response.json();
-            this.vendors = data.vendors;
+            this.vendors = this.scene.vendors;
             this.tryAssignVendorData();
         } catch (error) {
             console.error('Failed to load vendor data:', error);
@@ -59,13 +57,17 @@ class VendorManager {
 
         this.nearbyVendor = null;
 
+        // First, clear all effects
         this.scene.npcGroup.getChildren().forEach(npcSprite => {
-            if (!npcSprite.vendorData) {
-                npcSprite.clearTint && npcSprite.clearTint();
-                if (npcSprite.glowGraphic) npcSprite.glowGraphic.setVisible(false);
-                npcSprite.setScale && npcSprite.setScale(1);
-                return;
-            }
+            if (npcSprite.glowGraphic) npcSprite.glowGraphic.setVisible(false);
+        });
+
+        // Find the closest vendor in range
+        let closestVendor = null;
+        let closestDistance = this.interactionRange;
+
+        this.scene.npcGroup.getChildren().forEach(npcSprite => {
+            if (!npcSprite.vendorData) return;
 
             const distance = Phaser.Math.Distance.Between(
                 this.scene.player.x,
@@ -74,31 +76,32 @@ class VendorManager {
                 npcSprite.y
             );
 
-            if (distance >= this.interactionRange) {
-                npcSprite.clearTint && npcSprite.clearTint();
-                if (npcSprite.glowGraphic) npcSprite.glowGraphic.setVisible(false);
-                npcSprite.setScale && npcSprite.setScale(1);
-                return;
-            }
-
-            this.nearbyVendor = npcSprite;
-            this.interactionPrompt.x = npcSprite.x - this.scene.cameras.main.scrollX;
-            this.interactionPrompt.y = npcSprite.y - this.scene.cameras.main.scrollY - 40;
-
-            // Pulsing circular glow effect
-            if (npcSprite.glowGraphic) {
-                npcSprite.glowPulse = (npcSprite.glowPulse || 0) + 0.08;
-                const pulse = 0.7 + 0.3 * Math.sin(npcSprite.glowPulse);
-                npcSprite.glowGraphic.clear();
-                npcSprite.glowGraphic.fillStyle(0x00FFFF, 0.25 + 0.25 * pulse); // Cyan, pulsing alpha
-                npcSprite.glowGraphic.fillCircle(
-                    npcSprite.x,
-                    npcSprite.y,
-                    (npcSprite.displayWidth * 0.7) + (npcSprite.displayWidth * 0.3 * pulse)
-                );
-                npcSprite.glowGraphic.setVisible(true);
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestVendor = npcSprite;
             }
         });
+
+        // Apply effect to the closest one
+        if (closestVendor) {
+            this.nearbyVendor = closestVendor;
+            this.interactionPrompt.x = closestVendor.x - this.scene.cameras.main.scrollX;
+            this.interactionPrompt.y = closestVendor.y - this.scene.cameras.main.scrollY - 40;
+
+            // Pulsing circular glow effect
+            if (closestVendor.glowGraphic) {
+                closestVendor.glowPulse = (closestVendor.glowPulse || 0) + 0.08;
+                const pulse = 0.7 + 0.3 * Math.sin(closestVendor.glowPulse);
+                closestVendor.glowGraphic.clear();
+                closestVendor.glowGraphic.fillStyle(0x00FFFF, 0.25 + 0.25 * pulse); // Cyan, pulsing alpha
+                closestVendor.glowGraphic.fillCircle(
+                    closestVendor.x,
+                    closestVendor.y,
+                    (closestVendor.displayWidth * 0.7) + (closestVendor.displayWidth * 0.3 * pulse)
+                );
+                closestVendor.glowGraphic.setVisible(true);
+            }
+        }
 
         if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
             this.interactionPrompt.setVisible(true);

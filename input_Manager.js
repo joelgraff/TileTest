@@ -7,6 +7,7 @@ class InputManager {
         this.threshold = 20; // Min drag distance
         this.direction = { x: 0, y: 0 };
         this.isDragging = false; // Track if drag is active
+        this.target = null; // Target position for tap-to-move
 
         // Touch and mouse events
         scene.input.on('pointerdown', (pointer) => {
@@ -14,21 +15,38 @@ class InputManager {
             this.touchEnd.x = pointer.x;
             this.touchStart.y = pointer.y;
             this.touchEnd.y = pointer.y;
-            this.isDragging = true;
-            this.updateDirection(pointer); // Initial direction
+            this.target = scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
+            this.isDragging = false;
+            if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
+                scene.uiManager.handlePointerMove(pointer.x, pointer.y, true);
+            }
         });
         scene.input.on('pointermove', (pointer) => {
+            if (!pointer.isDown) return; // Only process if pointer is down
+            if (!this.isDragging) {
+                const dx = pointer.x - this.touchStart.x;
+                const dy = pointer.y - this.touchStart.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > this.threshold) {
+                    this.isDragging = true;
+                    this.target = scene.cameras.main.getWorldPoint(pointer.x, pointer.y); // Update target for drag
+                }
+            }
             if (this.isDragging) {
-                this.touchEnd.x = pointer.x;
-                this.touchEnd.y = pointer.y;
-                this.updateDirection(pointer); // Update direction continuously
+                this.target = scene.cameras.main.getWorldPoint(pointer.x, pointer.y); // Update target during drag
+                if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
+                    scene.uiManager.handlePointerMove(pointer.x, pointer.y, true);
+                }
             }
         });
         scene.input.on('pointerup', (pointer) => {
-            this.touchEnd.x = pointer.x;
-            this.touchEnd.y = pointer.y;
+            if (this.isDragging) {
+                this.direction = { x: 0, y: 0 };
+            }
             this.isDragging = false;
-            this.direction = { x: 0, y: 0 };
+            if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
+                scene.uiManager.handlePointerMove(pointer.x, pointer.y, false);
+            }
         });
     }
 
@@ -54,7 +72,21 @@ class InputManager {
         if (this.cursors.up.isDown) dir.y = -1;
         else if (this.cursors.down.isDown) dir.y = 1;
 
-        // Touch or drag if no keyboard
+        // Tap-to-move target
+        if (dir.x === 0 && dir.y === 0 && this.target) {
+            const dx = this.target.x - this.scene.player.x;
+            const dy = this.target.y - this.scene.player.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 20) {
+                this.target = null;
+                return { x: 0, y: 0 };
+            } else {
+                dir.x = dx / dist;
+                dir.y = dy / dist;
+            }
+        }
+
+        // Touch drag if no keyboard or target
         if (dir.x === 0 && dir.y === 0 && this.isDragging) {
             dir = this.direction;
         }
