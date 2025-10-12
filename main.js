@@ -50,6 +50,7 @@ function create() {
     // Load vendors data
     scene.vendors = scene.cache.json.get('vendors');
 
+    console.log('Vendors loaded:', scene.vendors);
     // Set scale mode based on device
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if (isMobile) {
