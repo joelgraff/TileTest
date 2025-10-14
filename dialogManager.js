@@ -7,23 +7,20 @@ class DialogManager {
         this.buttonElements = null;
     }
 
-    showDialog({ imageKey, text, buttons = [] }) { // Default buttons to []
-        // If dialog is already open, close it first
+    showDialog({ imageKey, title = '', text = '', buttons = [], exitButton = null }) {
         if (this.isDialogOpen) {
             this.hideDialog();
         }
 
-        // Set dialog open flag to pause game logic
         this.scene.isDialogOpen = true;
-
         this.isDialogOpen = true;
-
+        console.log('Showing dialog:', imageKey, title, text, buttons, exitButton);
         const cam = this.scene.cameras.main;
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const dialogWidth = Math.min(isMobile ? 400 : 600, cam.width * (isMobile ? 0.9 : 0.85));
-        const dialogHeight = Math.min(isMobile ? 160 : 240, cam.height * (isMobile ? 0.6 : 0.45));
+        const dialogHeight = Math.min(isMobile ? 260 : 340, cam.height * (isMobile ? 0.8 : 0.65)); // Taller dialog
 
-        // Create overlay for click-outside-to-close functionality
+        // Overlay for click-outside-to-close
         this.overlay = this.scene.add.rectangle(cam.width / 2, cam.height / 2, cam.width, cam.height, 0x000000, 0.5)
             .setScrollFactor(0)
             .setInteractive()
@@ -35,26 +32,42 @@ class DialogManager {
         // Main container centered near bottom
         this.dialogContainer = this.scene.add.container(cam.width / 2, cam.height - dialogHeight / 2 - 16);
 
+        // Title bar
+        const titleBarHeight = 40;
+        const titleBar = this.scene.add.rectangle(0, -dialogHeight / 2 + titleBarHeight / 2, dialogWidth, titleBarHeight, 0x333366, 1)
+            .setOrigin(0.5)
+            .setStrokeStyle(2, 0x222222);
+
+        const titleText = this.scene.add.text(0, -dialogHeight / 2 + titleBarHeight / 2, title || '', {
+            fontSize: '20px',
+            fontStyle: 'bold',
+            color: '#fff',
+            align: 'center',
+            wordWrap: { width: dialogWidth - 32 }
+        }).setOrigin(0.5);
+
+        // Layout columns (relative to container origin)
         const leftTopColumn = {
             x: 32 - dialogWidth / 2,
-            y: 16 - dialogHeight / 2,
-            width: dialogWidth / 4,
-            height: dialogHeight / 2,
-        };
-
-        const leftBotColumn = {
-            x: 32 - dialogWidth / 2,
-            y: 16 - dialogHeight / 2 + dialogHeight / 2,
+            y: titleBarHeight + 16 - dialogHeight / 2,
             width: dialogWidth / 4,
             height: dialogHeight / 2,
         };
 
         const rightColumn = {
-            x: 8 - dialogWidth / 4,
-            y: 16 - dialogHeight / 2,
+            x: dialogWidth / 4,  // Relative to container center
+            y: titleBarHeight + 16 - dialogHeight / 2,  // Relative to container center
             width: dialogWidth * 3 / 4 - 8,
-            height: dialogHeight - 32,
+            height: dialogHeight - titleBarHeight - 32,
         };
+
+        const rightBotColumn = {
+            x: rightColumn.x,  // Relative to container center
+            y: rightColumn.y + rightColumn.height / 2,  // Relative to container center
+            width: rightColumn.width,
+            height: rightColumn.height / 2,
+        };
+
 
         // Background
         const bg = this.scene.add.rectangle(0, 0, dialogWidth, dialogHeight, 0x808080, 0.97)
@@ -62,44 +75,42 @@ class DialogManager {
             .setStrokeStyle(2, 0x222222)
             .setInteractive()
             .on('pointerdown', (pointer, localX, localY, event) => {
-                // Stop event propagation to prevent overlay click
                 event.stopPropagation();
             });
 
         let npcImage = null;
-        // Image (left top) - only if imageKey is provided
         if (imageKey) {
-            const imgSize = leftTopColumn.width;
             npcImage = this.scene.add.image(leftTopColumn.x, leftTopColumn.y, imageKey)
                 .setDisplaySize(leftTopColumn.width / 2, leftTopColumn.height / 2)
                 .setOrigin(0.0);
         }
 
-        // Dialog text (right side)
-        const dialogText = this.scene.add.text(rightColumn.x, rightColumn.y, text, {
+        // Dialog text (right side, relative to container)
+        const dialogText = this.scene.add.text(rightColumn.x, rightColumn.y + 100, text, {
             fontSize: '18px',
             wordWrap: { width: rightColumn.width },
-            color: '#fff',
+            color: '#000',  // Black for visibility
             align: 'left'
         }).setOrigin(0.0);
 
-        // Buttons: stack non-leave buttons in left bottom column, place leave button at bottom right
-        const buttonYStart = leftBotColumn.y;
+        console.log(dialogText.text, `Dialog text dimensions: ${dialogText.width}x${dialogText.height}, pos: ${dialogText.x}x${dialogText.y}`);
+        // Buttons: stack vertically in right bottom column, left aligned, shifted upward by 1/8 dialog height
+        const buttonYStart = rightBotColumn.y + 8 - dialogHeight / 8;  // Shift stack upward by 1/8 height
         const buttonSpacing = 38;
         let buttonObjs = [];
 
-        // Stack the first buttons (except last) in rightBotColumn
-        const stackedButtons = buttons.slice(0, buttons.length - 1);
-        stackedButtons.forEach((btn, i) => {
+        buttons.forEach((btn, i) => {
             const btnText = this.scene.add.text(0, 0, btn.label, {
                 fontSize: '16px',
                 color: '#fff',
-                align: 'center'
+                align: 'left'
             });
             const textWidth = btnText.width;
             const buttonWidth = Math.max(100, textWidth + 20);
-            const buttonX = this.dialogContainer.x + leftBotColumn.x + (leftBotColumn.width - buttonWidth) / 2;
-            const buttonY = this.dialogContainer.y + buttonYStart + i * buttonSpacing;
+            const buttonX = rightBotColumn.x + 8;  // Relative to container center
+            const buttonY = buttonYStart + i * buttonSpacing;  // Relative to container center
+
+            console.log(`Rendering button ${btn.label} at (${buttonX}, ${buttonY})`);
 
             const btnBg = this.scene.add.rectangle(buttonX, buttonY, buttonWidth, 30, 0x444444)
                 .setOrigin(0, 0)
@@ -112,59 +123,58 @@ class DialogManager {
                     btn.onClick();
                 });
 
-            btnText.setPosition(buttonX + buttonWidth / 2, buttonY + 15);
-            btnText.setOrigin(0.5, 0.5);
+            btnText.setPosition(buttonX + 10, buttonY + 15);
+            btnText.setOrigin(0, 0.5);
             btnText.setDepth(2002);
 
             buttonObjs.push(btnBg, btnText);
         });
 
-        // Place the last button (Leave) at bottom right
-        if (buttons.length > 0) {
-            const leaveBtn = buttons[buttons.length - 1];
-            const leaveText = this.scene.add.text(0, 0, leaveBtn.label, {
+        // Render exit button at the bottom with small margin above lower border
+        if (exitButton) {
+            console.log('Rendering exit button');
+            const exitBtnText = this.scene.add.text(0, 0, exitButton.label, {
                 fontSize: '16px',
                 color: '#fff',
-                align: 'center'
+                align: 'left'
             });
-            const leaveTextWidth = leaveText.width;
-            const leaveButtonWidth = Math.max(100, leaveTextWidth + 20);
-            const leaveButtonX = this.dialogContainer.x + dialogWidth / 2 - leaveButtonWidth - 10;
-            const leaveButtonY = this.dialogContainer.y + dialogHeight / 2 - 40;
+            const exitTextWidth = exitBtnText.width;
+            const exitButtonWidth = Math.max(100, exitTextWidth + 20);
+            const exitButtonX = rightBotColumn.x + 8;  // Relative to container center
+            const exitButtonY = dialogHeight / 2 - 8 - 30;  // Bottom with 8px margin above border, relative to container center
 
-            const leaveBg = this.scene.add.rectangle(leaveButtonX, leaveButtonY, leaveButtonWidth, 30, 0x444444)
+            const exitBtnBg = this.scene.add.rectangle(exitButtonX, exitButtonY, exitButtonWidth, 30, 0x444444)
                 .setOrigin(0, 0)
                 .setInteractive({ useHandCursor: true })
                 .setDepth(2001)
-                .on('pointerover', () => leaveBg.setFillStyle(0x666666))
-                .on('pointerout', () => leaveBg.setFillStyle(0x444444))
+                .on('pointerover', () => exitBtnBg.setFillStyle(0x666666))
+                .on('pointerout', () => exitBtnBg.setFillStyle(0x444444))
                 .on('pointerdown', (pointer, localX, localY, event) => {
                     event.stopPropagation();
-                    leaveBtn.onClick();
+                    exitButton.onClick();
                 });
 
-            leaveText.setPosition(leaveButtonX + leaveButtonWidth / 2, leaveButtonY + 15);
-            leaveText.setOrigin(0.5, 0.5);
-            leaveText.setDepth(2002);
+            exitBtnText.setPosition(exitButtonX + 10, exitButtonY + 15);  // Left aligned
+            exitBtnText.setOrigin(0, 0.5);
+            exitBtnText.setDepth(2002);
 
-            buttonObjs.push(leaveBg, leaveText);
+            buttonObjs.push(exitBtnBg, exitBtnText);
         }
 
-        // Add all to container (except buttons which are added to scene)
-        const containerItems = [bg, dialogText];
+        // Add all to container
+        const containerItems = [bg, titleBar, titleText, dialogText, ...buttonObjs];
         if (npcImage) {
-            containerItems.splice(1, 0, npcImage); // Insert image after background
+            containerItems.splice(3, 0, npcImage);
         }
         this.dialogContainer.add(containerItems);
-        this.dialogContainer.setDepth(2000); // On top
+        this.dialogContainer.setDepth(2000);
 
-        // Store button references for cleanup
-        this.buttonElements = buttonObjs;
+        // Store button references for cleanup (no longer needed since added to container)
+        this.buttonElements = null;
+
     }
-
     hideDialog() {
         if (this.isDialogOpen) {
-            // Resume game logic
             this.scene.isDialogOpen = false;
             this.isDialogOpen = false;
         }
@@ -179,7 +189,6 @@ class DialogManager {
             this.overlay = null;
         }
 
-        // Clean up button elements that were added directly to scene
         if (this.buttonElements) {
             this.buttonElements.forEach(element => {
                 if (element && element.destroy) {

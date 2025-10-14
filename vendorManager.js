@@ -1,43 +1,26 @@
+import DomainManager from './domainManager.js';
+
 class VendorManager {
     constructor(scene) {
         this.scene = scene;
-        this.vendors = [];
+        this.vendors = scene.vendors || [];
         this.interactionRange = 60;
         this.nearbyVendor = null;
         this.vendorAssignmentDone = false;
 
-        this.loadVendors();
+        this.assignVendorsToNPCs();
         this.setupInteractionPrompt();
     }
 
-    async loadVendors() {
-        try {
-            this.vendors = this.scene.vendors;
-            this.tryAssignVendorData();
-        } catch (error) {
-            console.error('Failed to load vendor data:', error);
-        }
-    }
-
-    tryAssignVendorData() {
+    assignVendorsToNPCs() {
         if (this.vendorAssignmentDone) return;
         if (!this.scene.npcGroup || !this.vendors.length) return;
 
-        const availableVendors = [...this.vendors];
+        // Change to random assignment (matches original NPCManager behavior for consistency)
         this.scene.npcGroup.getChildren().forEach(npcSprite => {
-            let vendor;
-            if (availableVendors.length > 0) {
-                const idx = Math.floor(Math.random() * availableVendors.length);
-                vendor = availableVendors.splice(idx, 1)[0];
-            } else {
-                vendor = this.vendors[Math.floor(Math.random() * this.vendors.length)];
-            }
-            npcSprite.vendorData = vendor;
+            npcSprite.vendorData = this.vendors[Math.floor(Math.random() * this.vendors.length)];
 
-            // Always assign pulsing glow effect
-            npcSprite.interactionEffect = 1;
-
-            // Create a graphics object for the pulsing glow
+            // Pulsing glow effect
             if (npcSprite.glowGraphic) {
                 npcSprite.glowGraphic.destroy();
             }
@@ -50,14 +33,142 @@ class VendorManager {
         this.vendorAssignmentDone = true;
     }
 
+    setupInteractionPrompt() {
+        this.interactionPrompt = this.scene.add.text(400, 100, 'PRESS SPACE TO TALK', {
+            fontFamily: 'Courier New, monospace',
+            fontSize: '12px',
+            fill: '#FFFFFF',
+            backgroundColor: '#000080',
+            padding: { x: 8, y: 4 }
+        })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(150)
+        .setVisible(false);
+
+        this.scene.input.keyboard.on('keydown-SPACE', () => {
+            if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
+                this.interactWithVendor(this.nearbyVendor.vendorData, this.nearbyVendor);
+            }
+        });
+
+        // Global mouse click handler for vendors
+        this.scene.input.on('pointerdown', (pointer) => {
+            if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
+                const bounds = this.nearbyVendor.getBounds();
+                if (Phaser.Geom.Rectangle.Contains(bounds, pointer.worldX, pointer.worldY)) {
+                    this.interactWithVendor(this.nearbyVendor.vendorData, this.nearbyVendor);
+                }
+            }
+        });
+    }
+
+    interactWithVendor(vendorData, npcSprite = null) {
+        console.log('Attempting to interact with vendor:', vendorData);
+        if (!vendorData) return;
+        this.interactionPrompt.setVisible(false);
+
+        // Use the NPC sprite's texture key if available, else fallback
+        const imageKey = npcSprite ? npcSprite.texture.key : (vendorData.imageKey || 'npc1');
+
+        // Separate response buttons from the exit button
+        const responseButtons = vendorData.dialog.responses.filter(response => response.action !== 'end').map(response => ({
+            label: response.text,
+            onClick: () => {
+                let newText = '';
+                if (response.action === 'show_items') {
+                    const domainItems = DomainManager.getDomainItems(vendorData.domain_id);
+                    if (domainItems.length > 0) {
+                        const itemButtons = domainItems.map((item, index) => ({
+                            label: `Collect ${item.name}`,
+                            onClick: () => {
+                                if (this.scene.questManager) {
+                                    const questUpdated = this.scene.questManager.checkItemCollection(item.name, vendorData.id);
+                                    if (questUpdated) {
+                                        this.scene.uiManager.showDialog({
+                                            text: `Collected ${item.name}!\n\nQuest progress updated!`,
+                                            buttons: [{
+                                                label: 'Continue',
+                                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                                            }]
+                                        });
+                                    } else {
+                                        this.scene.uiManager.showDialog({
+                                            text: `Collected ${item.name}!\n\n(Item added to your collection)`,
+                                            buttons: [{
+                                                label: 'Continue',
+                                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                                            }]
+                                        });
+                                    }
+                                } else {
+                                    this.scene.uiManager.showDialog({
+                                        text: `Collected ${item.name}!`,
+                                        buttons: [{
+                                            label: 'Continue',
+                                            onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                                        }]
+                                    });
+                                }
+                            }
+                        }));
+
+                        this.scene.uiManager.showDialog({
+                            text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)}:`,
+                            buttons: itemButtons.concat([{
+                                label: 'Back',
+                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                            }])
+                        });
+                        return;
+                    } else {
+                        newText = 'No items available at this time.';
+                    }
+                } else if (response.action === 'booth_info') {
+                    newText = `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${DomainManager.getDomainName(vendorData.domain_id)}`;
+                } else if (response.action === 'tech_facts') {
+                    const domainFacts = DomainManager.getDomainFacts(vendorData.domain_id);
+                    if (domainFacts.length > 0) {
+                        newText = DomainManager.getDomainName(vendorData.domain_id) + ' facts:\n\n';
+                        newText += domainFacts.join('\n');
+                    } else {
+                        newText = 'No facts available at this time.';
+                    }
+                }
+                this.scene.uiManager.showDialog({
+                    text: newText,
+                    buttons: [{
+                        label: 'Back',
+                        onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                    }]
+                });
+            }
+        }));
+
+        const exitButton = vendorData.dialog.responses.find(response => response.action === 'end') ? {
+            label: vendorData.dialog.responses.find(response => response.action === 'end').text,
+            onClick: () => this.scene.uiManager.closeDialog()
+        } : null;  // Fallback if no 'end' action
+
+        // Full dialog logic adapted from NPCManager (using DomainManager for items/facts)
+        const originalDialogData = {
+            imageKey: imageKey,
+            title: vendorData.name,
+            text: vendorData.description,  // Changed from 'description' to 'text' to match dialog system expectations
+            buttons: responseButtons,  // Main button stack (response buttons)
+            exitButton: exitButton  // Separate exit button for bottom positioning
+        };
+        this.scene.uiManager.showDialog(originalDialogData);
+    }
+
     update() {
-        this.tryAssignVendorData();
+        this.assignVendorsToNPCs();
 
         if (!this.scene.player || !this.scene.npcGroup) return;
 
         this.nearbyVendor = null;
 
-        // First, clear all effects
+        // Clear all effects
         this.scene.npcGroup.getChildren().forEach(npcSprite => {
             if (npcSprite.glowGraphic) npcSprite.glowGraphic.setVisible(false);
         });
@@ -93,7 +204,7 @@ class VendorManager {
                 closestVendor.glowPulse = (closestVendor.glowPulse || 0) + 0.08;
                 const pulse = 0.7 + 0.3 * Math.sin(closestVendor.glowPulse);
                 closestVendor.glowGraphic.clear();
-                closestVendor.glowGraphic.fillStyle(0x00FFFF, 0.25 + 0.25 * pulse); // Cyan, pulsing alpha
+                closestVendor.glowGraphic.fillStyle(0x00FFFF, 0.25 + 0.25 * pulse);
                 closestVendor.glowGraphic.fillCircle(
                     closestVendor.x,
                     closestVendor.y,
@@ -101,6 +212,8 @@ class VendorManager {
                 );
                 closestVendor.glowGraphic.setVisible(true);
             }
+        } else {
+            this.nearbyVendor = null;
         }
 
         if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
@@ -108,115 +221,6 @@ class VendorManager {
         } else {
             this.interactionPrompt.setVisible(false);
         }
-    }
-    setupInteractionPrompt() {
-        this.interactionPrompt = this.scene.add.text(400, 100, 'PRESS SPACE TO TALK', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '12px',
-            fill: '#FFFFFF',
-            backgroundColor: '#000080',
-            padding: { x: 8, y: 4 }
-        })
-        .setOrigin(0.5)
-        .setScrollFactor(0)
-        .setDepth(150)
-        .setVisible(false);
-
-        this.scene.input.keyboard.on('keydown-SPACE', () => {
-            if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
-                this.interactWithVendor(this.nearbyVendor.vendorData);
-            }
-        });
-    }
-/*
-    update() {
-        this.tryAssignVendorData();
-
-        if (!this.scene.player || !this.scene.npcGroup) return;
-
-        this.nearbyVendor = null;
-
-        this.scene.npcGroup.getChildren().forEach(npcSprite => {
-            if (!npcSprite.vendorData) {
-                // Remove all effects if not a vendor
-                npcSprite.clearTint && npcSprite.clearTint();
-                if (npcSprite.outlineGraphic) npcSprite.outlineGraphic.setVisible(false);
-                npcSprite.setScale && npcSprite.setScale(1);
-                return;
-            }
-
-            const distance = Phaser.Math.Distance.Between(
-                this.scene.player.x,
-                this.scene.player.y,
-                npcSprite.x,
-                npcSprite.y
-            );
-
-            // Remove effects if not in range
-            if (distance >= this.interactionRange) {
-                npcSprite.clearTint && npcSprite.clearTint();
-                if (npcSprite.outlineGraphic) npcSprite.outlineGraphic.setVisible(false);
-                npcSprite.setScale && npcSprite.setScale(1);
-                return;
-            }
-
-            // Apply effect if in range
-            this.nearbyVendor = npcSprite;
-            this.interactionPrompt.x = npcSprite.x - this.scene.cameras.main.scrollX;
-            this.interactionPrompt.y = npcSprite.y - this.scene.cameras.main.scrollY - 40;
-
-            switch (npcSprite.interactionEffect) {
-                case 0: // Tint
-                    npcSprite.setTint(0xFFFF00);
-                    break;
-                case 1: // Outline
-                    if (npcSprite.outlineGraphic) {
-                        npcSprite.outlineGraphic.setVisible(true);
-                        npcSprite.outlineGraphic.x = npcSprite.x - npcSprite.displayWidth / 2 - 2;
-                        npcSprite.outlineGraphic.y = npcSprite.y - npcSprite.displayHeight / 2 - 2;
-                    }
-                    break;
-                case 2: // Bounce/scale
-                    npcSprite.setScale(1.2);
-                    break;
-            }
-        });
-
-        if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
-            this.interactionPrompt.setVisible(true);
-        } else {
-            this.interactionPrompt.setVisible(false);
-        }
-    }
-*/
-    interactWithVendor(vendorData) {
-        if (!vendorData) return;
-        this.interactionPrompt.setVisible(false);
-
-        const dialogData = {
-            imageKey: vendorData.imageKey || 'npc1',
-            text: `Welcome to ${vendorData.name}!\n${vendorData.description || ''}`,
-            buttons: [
-                ...(vendorData.items && vendorData.items.length > 0
-                    ? [{
-                        label: `Buy ${vendorData.items[0].name}`,
-                        onClick: () => {
-                            if (this.scene.uiManager.addItem(vendorData.items[0])) {
-                                console.log(`Added ${vendorData.items[0].name} to inventory`);
-                            }
-                        }
-                    }]
-                    : []),
-                {
-                    label: 'Leave',
-                    onClick: () => {
-                        this.scene.uiManager.closeDialog();
-                    }
-                }
-            ]
-        };
-
-        this.scene.uiManager.showDialog(dialogData);
     }
 }
 
