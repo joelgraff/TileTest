@@ -54,17 +54,11 @@ class VendorManager {
 
         // Global mouse click handler for vendors
         this.scene.input.on('pointerdown', (pointer) => {
-            console.log('[VendorManager] Global pointerdown detected');  // Debug: Event fired
             if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
                 const bounds = this.nearbyVendor.getBounds();
                 if (Phaser.Geom.Rectangle.Contains(bounds, pointer.worldX, pointer.worldY)) {
-                    console.log('[VendorManager] Click within vendor bounds, calling interactWithVendor');  // Debug: Bounds check passed
                     this.interactWithVendor(this.nearbyVendor.vendorData, this.nearbyVendor);
-                } else {
-                    console.log('[VendorManager] Click outside vendor bounds');  // Debug: Bounds check failed
                 }
-            } else {
-                console.log('[VendorManager] Conditions failed - nearbyVendor:', !!this.nearbyVendor, 'dialogOpen:', this.scene.uiManager.isDialogOpen);  // Debug: Why failed
             }
         });
     }
@@ -77,86 +71,92 @@ class VendorManager {
         // Use the NPC sprite's texture key if available, else fallback
         const imageKey = npcSprite ? npcSprite.texture.key : (vendorData.imageKey || 'npc1');
 
-        // Full dialog logic adapted from NPCManager (using DomainManager for items/facts)
-        const originalDialogData = {
-            imageKey: imageKey,
-            title: vendorData.name,
-            description: vendorData.description,
-            buttons: vendorData.dialog.responses.map(response => ({
-                label: response.text,
-                onClick: () => {
-                    let newText = '';
-                    if (response.action === 'show_items') {
-                        const domainItems = DomainManager.getDomainItems(vendorData.domain_id);
-                        if (domainItems.length > 0) {
-                            const itemButtons = domainItems.map((item, index) => ({
-                                label: `Collect ${item.name}`,
-                                onClick: () => {
-                                    if (this.scene.questManager) {
-                                        const questUpdated = this.scene.questManager.checkItemCollection(item.name, vendorData.id);
-                                        if (questUpdated) {
-                                            this.scene.uiManager.showDialog({
-                                                text: `Collected ${item.name}!\n\nQuest progress updated!`,
-                                                buttons: [{
-                                                    label: 'Continue',
-                                                    onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-                                                }]
-                                            });
-                                        } else {
-                                            this.scene.uiManager.showDialog({
-                                                text: `Collected ${item.name}!\n\n(Item added to your collection)`,
-                                                buttons: [{
-                                                    label: 'Continue',
-                                                    onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-                                                }]
-                                            });
-                                        }
+        // Separate response buttons from the exit button
+        const responseButtons = vendorData.dialog.responses.filter(response => response.action !== 'end').map(response => ({
+            label: response.text,
+            onClick: () => {
+                let newText = '';
+                if (response.action === 'show_items') {
+                    const domainItems = DomainManager.getDomainItems(vendorData.domain_id);
+                    if (domainItems.length > 0) {
+                        const itemButtons = domainItems.map((item, index) => ({
+                            label: `Collect ${item.name}`,
+                            onClick: () => {
+                                if (this.scene.questManager) {
+                                    const questUpdated = this.scene.questManager.checkItemCollection(item.name, vendorData.id);
+                                    if (questUpdated) {
+                                        this.scene.uiManager.showDialog({
+                                            text: `Collected ${item.name}!\n\nQuest progress updated!`,
+                                            buttons: [{
+                                                label: 'Continue',
+                                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                                            }]
+                                        });
                                     } else {
                                         this.scene.uiManager.showDialog({
-                                            text: `Collected ${item.name}!`,
+                                            text: `Collected ${item.name}!\n\n(Item added to your collection)`,
                                             buttons: [{
                                                 label: 'Continue',
                                                 onClick: () => this.scene.uiManager.showDialog(originalDialogData)
                                             }]
                                         });
                                     }
+                                } else {
+                                    this.scene.uiManager.showDialog({
+                                        text: `Collected ${item.name}!`,
+                                        buttons: [{
+                                            label: 'Continue',
+                                            onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                                        }]
+                                    });
                                 }
-                            }));
+                            }
+                        }));
 
-                            this.scene.uiManager.showDialog({
-                                text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)}:`,
-                                buttons: itemButtons.concat([{
-                                    label: 'Back',
-                                    onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-                                }])
-                            });
-                            return;
-                        } else {
-                            newText = 'No items available at this time.';
-                        }
-                    } else if (response.action === 'booth_info') {
-                        newText = `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${DomainManager.getDomainName(vendorData.domain_id)}`;
-                    } else if (response.action === 'tech_facts') {
-                        const domainFacts = DomainManager.getDomainFacts(vendorData.domain_id);
-                        if (domainFacts.length > 0) {
-                            newText = DomainManager.getDomainName(vendorData.domain_id) + ' facts:\n\n';
-                            newText += domainFacts.join('\n');
-                        } else {
-                            newText = 'No facts available at this time.';
-                        }
-                    } else if (response.action === 'end') {
-                        this.scene.uiManager.closeDialog();
+                        this.scene.uiManager.showDialog({
+                            text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)}:`,
+                            buttons: itemButtons.concat([{
+                                label: 'Back',
+                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                            }])
+                        });
                         return;
+                    } else {
+                        newText = 'No items available at this time.';
                     }
-                    this.scene.uiManager.showDialog({
-                        text: newText,
-                        buttons: [{
-                            label: 'Back',
-                            onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-                        }]
-                    });
+                } else if (response.action === 'booth_info') {
+                    newText = `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${DomainManager.getDomainName(vendorData.domain_id)}`;
+                } else if (response.action === 'tech_facts') {
+                    const domainFacts = DomainManager.getDomainFacts(vendorData.domain_id);
+                    if (domainFacts.length > 0) {
+                        newText = DomainManager.getDomainName(vendorData.domain_id) + ' facts:\n\n';
+                        newText += domainFacts.join('\n');
+                    } else {
+                        newText = 'No facts available at this time.';
+                    }
                 }
-            }))
+                this.scene.uiManager.showDialog({
+                    text: newText,
+                    buttons: [{
+                        label: 'Back',
+                        onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                    }]
+                });
+            }
+        }));
+
+        const exitButton = vendorData.dialog.responses.find(response => response.action === 'end') ? {
+            label: vendorData.dialog.responses.find(response => response.action === 'end').text,
+            onClick: () => this.scene.uiManager.closeDialog()
+        } : null;  // Fallback if no 'end' action
+
+        // Full dialog logic adapted from NPCManager (using DomainManager for items/facts)
+        const originalDialogData = {
+            imageKey: imageKey,
+            title: vendorData.name,
+            text: vendorData.description,  // Changed from 'description' to 'text' to match dialog system expectations
+            buttons: responseButtons,  // Main button stack (response buttons)
+            exitButton: exitButton  // Separate exit button for bottom positioning
         };
         this.scene.uiManager.showDialog(originalDialogData);
     }
@@ -196,7 +196,6 @@ class VendorManager {
         // Apply effect to the closest one
         if (closestVendor) {
             this.nearbyVendor = closestVendor;
-            console.log('[VendorManager] Nearby vendor set:', this.nearbyVendor.vendorData?.name);  // Debug: Confirm nearest vendor
             this.interactionPrompt.x = closestVendor.x - this.scene.cameras.main.scrollX;
             this.interactionPrompt.y = closestVendor.y - this.scene.cameras.main.scrollY - 40;
 
@@ -214,7 +213,6 @@ class VendorManager {
                 closestVendor.glowGraphic.setVisible(true);
             }
         } else {
-            console.log('[VendorManager] No nearby vendor found');  // Debug: No vendor in range
             this.nearbyVendor = null;
         }
 
