@@ -72,65 +72,165 @@ class VendorManager {
         const imageKey = npcSprite ? npcSprite.texture.key : (vendorData.imageKey || 'npc1');
 
         // Separate response buttons from the exit button
-        const responseButtons = vendorData.dialog.responses.filter(response => response.action !== 'end').map(response => ({
+        const responseButtons = vendorData.dialog.responses
+            .filter(response => response.action !== 'end' && response.text !== 'Tell me about your booth')
+            .map(response => ({
             label: response.text,
             onClick: () => {
                 let newText = '';
                 if (response.action === 'show_items') {
                     const domainItems = DomainManager.getDomainItems(vendorData.domain_id);
                     if (domainItems.length > 0) {
-                        const itemButtons = domainItems.map((item, index) => ({
-                            label: `Collect ${item.name}`,
-                            onClick: () => {
-                                if (this.scene.questManager) {
-                                    const questUpdated = this.scene.questManager.checkItemCollection(item.name, vendorData.id);
-                                    if (questUpdated) {
-                                        this.scene.uiManager.showDialog({
-                                            text: `Collected ${item.name}!\n\nQuest progress updated!`,
-                                            buttons: [{
-                                                label: 'Continue',
-                                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-                                            }]
-                                        });
+                        const itemsPerPage = 4; // Show 4 items per page
+                        const totalPages = Math.ceil(domainItems.length / itemsPerPage);
+
+                        const showItemsDialog = (page = 0) => {
+                            const startIndex = page * itemsPerPage;
+                            const endIndex = Math.min(startIndex + itemsPerPage, domainItems.length);
+                            const pageItems = domainItems.slice(startIndex, endIndex);
+
+                            const itemButtons = pageItems.map((item, index) => ({
+                                label: item.name,
+                                onClick: () => {
+                                    if (this.scene.questManager) {
+                                        const questUpdated = this.scene.questManager.checkItemCollection(item.name, vendorData.id);
+                                        if (questUpdated) {
+                                            this.scene.uiManager.showDialog({
+                                                text: `Collected ${item.name}!\n\nQuest progress updated!`,
+                                                buttons: [{
+                                                    label: 'Continue',
+                                                    onClick: () => showItemsDialog(page)
+                                                }]
+                                            });
+                                        } else {
+                                            this.scene.uiManager.showDialog({
+                                                text: `Collected ${item.name}!\n\n(Item added to your collection)`,
+                                                buttons: [{
+                                                    label: 'Continue',
+                                                    onClick: () => showItemsDialog(page)
+                                                }]
+                                            });
+                                        }
                                     } else {
                                         this.scene.uiManager.showDialog({
-                                            text: `Collected ${item.name}!\n\n(Item added to your collection)`,
+                                            text: `Collected ${item.name}!`,
                                             buttons: [{
                                                 label: 'Continue',
-                                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                                                onClick: () => showItemsDialog(page)
                                             }]
                                         });
                                     }
-                                } else {
-                                    this.scene.uiManager.showDialog({
-                                        text: `Collected ${item.name}!`,
-                                        buttons: [{
-                                            label: 'Continue',
-                                            onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-                                        }]
-                                    });
                                 }
-                            }
-                        }));
+                            }));
 
-                        this.scene.uiManager.showDialog({
-                            text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)}:`,
-                            buttons: itemButtons.concat([{
+                            const bottomButtons = [];
+                            const exitButton = {
                                 label: 'Back',
                                 onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-                            }])
-                        });
+                            };
+
+                            // Add pagination buttons - always show both, disable when not applicable
+                            if (totalPages > 1) {
+                                bottomButtons.push({
+                                    label: '<',
+                                    disabled: page <= 0,
+                                    onClick: page > 0 ? () => showItemsDialog(page - 1) : () => {}
+                                });
+                                bottomButtons.push({
+                                    label: '>',
+                                    disabled: page >= totalPages - 1,
+                                    onClick: page < totalPages - 1 ? () => showItemsDialog(page + 1) : () => {}
+                                });
+                            } else {
+                                // Single page - show disabled buttons
+                                bottomButtons.push({ label: '<', disabled: true, onClick: () => {} });
+                                bottomButtons.push({ label: '>', disabled: true, onClick: () => {} });
+                            }
+
+                            this.scene.uiManager.showDialog({
+                                imageKey: imageKey,
+                                title: vendorData.name,
+                                text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)} (Page ${page + 1}/${totalPages}):`,
+                                buttons: itemButtons,
+                                bottomButtons: bottomButtons,
+                                exitButton: exitButton
+                            });
+                        };
+
+                        showItemsDialog(0); // Start with first page
                         return;
                     } else {
                         newText = 'No items available at this time.';
                     }
                 } else if (response.action === 'booth_info') {
-                    newText = `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${DomainManager.getDomainName(vendorData.domain_id)}`;
+                    this.scene.uiManager.showDialog({
+                        imageKey: imageKey,
+                        title: vendorData.name,
+                        text: `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${DomainManager.getDomainName(vendorData.domain_id)}`,
+                        buttons: [{
+                            label: 'Back',
+                            onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                        }]
+                    });
+                    return;
                 } else if (response.action === 'tech_facts') {
-                    const domainFacts = DomainManager.getDomainFacts(vendorData.domain_id);
-                    if (domainFacts.length > 0) {
-                        newText = DomainManager.getDomainName(vendorData.domain_id) + ' facts:\n\n';
-                        newText += domainFacts.join('\n');
+                    const allDomainFacts = DomainManager.getDomainFacts(vendorData.domain_id);
+                    if (allDomainFacts.length > 0) {
+                        // Limit to maximum 6 randomly selected facts per vendor
+                        const maxFactsPerVendor = 6;
+                        const selectedFacts = allDomainFacts.length <= maxFactsPerVendor
+                            ? allDomainFacts
+                            : this.getRandomFacts(allDomainFacts, maxFactsPerVendor);
+
+                        // Estimate ~400 characters fit in dialog, but paginate by complete facts
+                        const factsPerPage = 3; // Show 3 facts per page for better readability
+                        const totalPages = Math.ceil(selectedFacts.length / factsPerPage);
+
+                        const showFactsDialog = (page = 0) => {
+                            const startIndex = page * factsPerPage;
+                            const endIndex = Math.min(startIndex + factsPerPage, selectedFacts.length);
+                            const pageFacts = selectedFacts.slice(startIndex, endIndex);
+
+                            // Format facts with bullet points and blank lines
+                            const formattedFacts = pageFacts.map(fact => `• ${fact}`).join('\n\n');
+
+                            const factButtons = [];
+                            const bottomButtons = [];
+                            const exitButton = {
+                                label: 'Back',
+                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                            };
+
+                            // Add pagination buttons - always show both, disable when not applicable
+                            if (totalPages > 1) {
+                                bottomButtons.push({
+                                    label: '<',
+                                    disabled: page <= 0,
+                                    onClick: page > 0 ? () => showFactsDialog(page - 1) : () => {}
+                                });
+                                bottomButtons.push({
+                                    label: '>',
+                                    disabled: page >= totalPages - 1,
+                                    onClick: page < totalPages - 1 ? () => showFactsDialog(page + 1) : () => {}
+                                });
+                            } else {
+                                // Single page - show disabled buttons
+                                bottomButtons.push({ label: '<', disabled: true, onClick: () => {} });
+                                bottomButtons.push({ label: '>', disabled: true, onClick: () => {} });
+                            }
+
+                            this.scene.uiManager.showDialog({
+                                imageKey: imageKey,
+                                title: vendorData.name,
+                                text: `${DomainManager.getDomainName(vendorData.domain_id)} facts (Page ${page + 1}/${totalPages}):\n\n${formattedFacts}`,
+                                buttons: factButtons,
+                                bottomButtons: bottomButtons,
+                                exitButton: exitButton
+                            });
+                        };
+
+                        showFactsDialog(0); // Start with first page
+                        return;
                     } else {
                         newText = 'No facts available at this time.';
                     }
@@ -159,6 +259,20 @@ class VendorManager {
             exitButton: exitButton  // Separate exit button for bottom positioning
         };
         this.scene.uiManager.showDialog(originalDialogData);
+    }
+
+    getRandomFacts(factsArray, count) {
+        // Create a copy of the array to avoid modifying the original
+        const facts = [...factsArray];
+
+        // Shuffle the array using Fisher-Yates algorithm
+        for (let i = facts.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [facts[i], facts[j]] = [facts[j], facts[i]];
+        }
+
+        // Return the first 'count' facts
+        return facts.slice(0, count);
     }
 
     update() {

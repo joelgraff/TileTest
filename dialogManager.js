@@ -7,7 +7,7 @@ class DialogManager {
         this.buttonElements = null;
     }
 
-    showDialog({ imageKey, title = '', text = '', buttons = [], exitButton = null }) {
+    showDialog({ imageKey, title = '', text = '', buttons = [], exitButton = null, pagination = null, bottomButtons = null }) {
         if (this.isDialogOpen) {
             this.hideDialog();
         }
@@ -55,7 +55,7 @@ class DialogManager {
         };
 
         const rightColumn = {
-            x: dialogWidth / 4,  // Relative to container center
+            x: -dialogWidth / 4,  // Start at left edge of right 3/4 section
             y: titleBarHeight + 16 - dialogHeight / 2,  // Relative to container center
             width: dialogWidth * 3 / 4 - 8,
             height: dialogHeight - titleBarHeight - 32,
@@ -86,7 +86,7 @@ class DialogManager {
         }
 
         // Dialog text (right side, relative to container)
-        const dialogText = this.scene.add.text(rightColumn.x, rightColumn.y + 100, text, {
+        const dialogText = this.scene.add.text(rightColumn.x, rightColumn.y, text, {
             fontSize: '18px',
             wordWrap: { width: rightColumn.width },
             color: '#000',  // Black for visibility
@@ -94,12 +94,66 @@ class DialogManager {
         }).setOrigin(0.0);
 
         console.log(dialogText.text, `Dialog text dimensions: ${dialogText.width}x${dialogText.height}, pos: ${dialogText.x}x${dialogText.y}`);
-        // Buttons: stack vertically in right bottom column, left aligned, shifted upward by 1/8 dialog height
-        const buttonYStart = rightBotColumn.y + 8 - dialogHeight / 8;  // Shift stack upward by 1/8 height
+        // Handle pagination
+        let displayButtons = buttons;
+        if (pagination) {
+            console.log('Applying pagination:', pagination, 'to buttons:', buttons.length);
+            const { currentPage, totalPages, itemsPerPage } = pagination;
+            const startIndex = currentPage * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, buttons.length);
+            displayButtons = buttons.slice(startIndex, endIndex);
+            console.log('Sliced to displayButtons:', displayButtons.length);
+
+            // Add pagination controls if needed
+            if (totalPages > 1) {
+                const paginationButtons = [];
+
+                if (currentPage > 0) {
+                    paginationButtons.push({
+                        label: 'Previous',
+                        onClick: () => {
+                            console.log('Previous clicked, calling onPageChange');
+                            if (pagination.onPageChange) {
+                                pagination.onPageChange(currentPage - 1);
+                            }
+                        }
+                    });
+                }
+
+                if (currentPage < totalPages - 1) {
+                    paginationButtons.push({
+                        label: 'Next',
+                        onClick: () => {
+                            console.log('Next clicked, calling onPageChange');
+                            if (pagination.onPageChange) {
+                                pagination.onPageChange(currentPage + 1);
+                            }
+                        }
+                    });
+                }
+
+                displayButtons = displayButtons.concat(paginationButtons);
+                console.log('Added pagination buttons, total displayButtons:', displayButtons.length);
+            }
+        }
+
+        // Buttons: stack vertically in right bottom column, positioned based on button count
         const buttonSpacing = 38;
+        const maxButtonsInArea = Math.floor((rightBotColumn.height - 16) / buttonSpacing); // Available button slots
+
+        // Position buttons from bottom up for fewer buttons, or from top down for many buttons
+        let buttonYStart;
+        if (displayButtons.length <= 3) {
+            // For few buttons, position higher up to avoid exit button
+            buttonYStart = rightBotColumn.y + rightBotColumn.height - 8 - (displayButtons.length * buttonSpacing) - 40; // Leave space for exit button
+        } else {
+            // For many buttons, start higher up and fill the area - move up by button height
+            buttonYStart = rightBotColumn.y + 8 - dialogHeight / 8 - 38; // Move up by one button height
+        }
+
         let buttonObjs = [];
 
-        buttons.forEach((btn, i) => {
+        displayButtons.forEach((btn, i) => {
             const btnText = this.scene.add.text(0, 0, btn.label, {
                 fontSize: '16px',
                 color: '#fff',
@@ -107,8 +161,8 @@ class DialogManager {
             });
             const textWidth = btnText.width;
             const buttonWidth = Math.max(100, textWidth + 20);
-            const buttonX = rightBotColumn.x + 8;  // Relative to container center
-            const buttonY = buttonYStart + i * buttonSpacing;  // Relative to container center
+            const buttonX = this.dialogContainer.x + rightBotColumn.x + 8;  // Absolute position
+            const buttonY = this.dialogContainer.y + buttonYStart + i * buttonSpacing;  // Absolute position
 
             console.log(`Rendering button ${btn.label} at (${buttonX}, ${buttonY})`);
 
@@ -130,7 +184,7 @@ class DialogManager {
             buttonObjs.push(btnBg, btnText);
         });
 
-        // Render exit button at the bottom with small margin above lower border
+        // Render exit button at the bottom right corner
         if (exitButton) {
             console.log('Rendering exit button');
             const exitBtnText = this.scene.add.text(0, 0, exitButton.label, {
@@ -140,8 +194,9 @@ class DialogManager {
             });
             const exitTextWidth = exitBtnText.width;
             const exitButtonWidth = Math.max(100, exitTextWidth + 20);
-            const exitButtonX = rightBotColumn.x + 8;  // Relative to container center
-            const exitButtonY = dialogHeight / 2 - 8 - 30;  // Bottom with 8px margin above border, relative to container center
+            // Position at bottom right corner
+            const exitButtonX = this.dialogContainer.x + dialogWidth / 2 - exitButtonWidth - 8;  // Right aligned
+            const exitButtonY = this.dialogContainer.y + dialogHeight / 2 - 8 - 30;  // Absolute position
 
             const exitBtnBg = this.scene.add.rectangle(exitButtonX, exitButtonY, exitButtonWidth, 30, 0x444444)
                 .setOrigin(0, 0)
@@ -154,23 +209,73 @@ class DialogManager {
                     exitButton.onClick();
                 });
 
-            exitBtnText.setPosition(exitButtonX + 10, exitButtonY + 15);  // Left aligned
-            exitBtnText.setOrigin(0, 0.5);
+            exitBtnText.setPosition(exitButtonX + exitButtonWidth / 2, exitButtonY + 15);  // Center aligned within button
+            exitBtnText.setOrigin(0.5, 0.5);
             exitBtnText.setDepth(2002);
 
             buttonObjs.push(exitBtnBg, exitBtnText);
         }
 
-        // Add all to container
-        const containerItems = [bg, titleBar, titleText, dialogText, ...buttonObjs];
+        // Render bottom buttons horizontally across the bottom
+        if (bottomButtons && bottomButtons.length > 0) {
+            console.log('Rendering bottom buttons:', bottomButtons.length);
+            const bottomButtonY = this.dialogContainer.y + dialogHeight / 2 - 8 - 30;  // Same Y as exit button
+            const totalButtonWidth = bottomButtons.reduce((total, btn) => {
+                const btnText = this.scene.add.text(0, 0, btn.label, { fontSize: '16px' });
+                const width = Math.max(60, btnText.width + 20); // Minimum width for arrow buttons
+                btnText.destroy(); // Clean up temp text
+                return total + width + 8; // Add spacing
+            }, 0) - 8; // Remove last spacing
+
+            const startX = this.dialogContainer.x - totalButtonWidth / 2; // Center the button group
+
+            bottomButtons.forEach((btn, i) => {
+                const isDisabled = btn.disabled || false;
+                const buttonColor = isDisabled ? 0x222222 : 0x444444; // Darker gray for disabled
+                const hoverColor = isDisabled ? 0x222222 : 0x666666; // No hover effect for disabled
+                const textColor = isDisabled ? '#666666' : '#fff'; // Gray text for disabled
+
+                const btnText = this.scene.add.text(0, 0, btn.label, {
+                    fontSize: '16px',
+                    color: textColor,
+                    align: 'center'
+                });
+                const buttonWidth = Math.max(60, btnText.width + 20);
+                const buttonX = startX + (i * (buttonWidth + 8));
+
+                const btnBg = this.scene.add.rectangle(buttonX, bottomButtonY, buttonWidth, 30, buttonColor)
+                    .setOrigin(0, 0)
+                    .setDepth(2001);
+
+                // Only make interactive and add hover effects if not disabled
+                if (!isDisabled) {
+                    btnBg.setInteractive({ useHandCursor: true })
+                        .on('pointerover', () => btnBg.setFillStyle(hoverColor))
+                        .on('pointerout', () => btnBg.setFillStyle(buttonColor))
+                        .on('pointerdown', (pointer, localX, localY, event) => {
+                            event.stopPropagation();
+                            btn.onClick();
+                        });
+                }
+
+                btnText.setPosition(buttonX + buttonWidth / 2, bottomButtonY + 15);
+                btnText.setOrigin(0.5, 0.5);
+                btnText.setDepth(2002);
+
+                buttonObjs.push(btnBg, btnText);
+            });
+        }
+
+        // Add all to container (except buttons which are positioned absolutely)
+        const containerItems = [bg, titleBar, titleText, dialogText];
         if (npcImage) {
             containerItems.splice(3, 0, npcImage);
         }
         this.dialogContainer.add(containerItems);
         this.dialogContainer.setDepth(2000);
 
-        // Store button references for cleanup (no longer needed since added to container)
-        this.buttonElements = null;
+        // Store button references for cleanup
+        this.buttonElements = buttonObjs;
 
     }
     hideDialog() {
