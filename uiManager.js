@@ -99,19 +99,10 @@ class UIManager {
     }
 
     createScoreDisplay() {
-        this.scoreBackground = this.scene.add.rectangle(100, 25, 180, 40, this.colors.background)
+        this.scoreBackground = this.scene.add.rectangle(100, 25, 180, 40, this.colors.button)
             .setScrollFactor(0)
-            .setDepth(100);
-
-        this.scoreBorderOuter = this.scene.add.rectangle(100, 25, 180, 40, this.colors.border)
-            .setScrollFactor(0)
-            .setDepth(99)
-            .setStrokeStyle(2, this.colors.border);
-
-        this.scoreBorderInner = this.scene.add.rectangle(100, 25, 176, 36, this.colors.background)
-            .setScrollFactor(0)
-            .setDepth(101)
-            .setStrokeStyle(1, this.colors.text);
+            .setDepth(100)
+            .setStrokeStyle(2, 0xFFFFFF);  // White border to match buttons
 
         this.scoreText = this.scene.add.text(100, 25, 'SCORE: 0', {
             fontFamily: 'Courier New, monospace',
@@ -121,17 +112,17 @@ class UIManager {
         })
         .setOrigin(0.5)
         .setScrollFactor(0)
-        .setDepth(102);
+        .setDepth(101);
     }
 
     createInventoryButton() {
-        this.invButton = this.scene.add.rectangle(700, 25, 80, 30, this.colors.button)
+        this.invButton = this.scene.add.rectangle(720, 60, 80, 30, this.colors.button)  // Moved to right edge, below QUESTS
             .setScrollFactor(0)
             .setDepth(100)
-            .setStrokeStyle(2, this.colors.border)
+            .setStrokeStyle(2, 0xFFFFFF)  // White border
             .setInteractive({ cursor: 'pointer' });
 
-        this.invButtonText = this.scene.add.text(700, 25, 'PACK', {
+        this.invButtonText = this.scene.add.text(720, 60, 'PACK', {
             fontFamily: 'Courier New, monospace',
             fontSize: '12px',
             fill: '#FFFFFF',
@@ -156,13 +147,13 @@ class UIManager {
     }
 
     createQuestButton() {
-        this.questButton = this.scene.add.rectangle(620, 25, 80, 30, this.colors.button)
+        this.questButton = this.scene.add.rectangle(720, 25, 80, 30, this.colors.button)  // Moved to right edge, top position
             .setScrollFactor(0)
             .setDepth(100)
-            .setStrokeStyle(2, this.colors.border)
+            .setStrokeStyle(2, 0xFFFFFF)  // White border
             .setInteractive({ cursor: 'pointer' });
 
-        this.questButtonText = this.scene.add.text(620, 25, 'QUESTS', {
+        this.questButtonText = this.scene.add.text(720, 25, 'QUESTS', {
             fontFamily: 'Courier New, monospace',
             fontSize: '12px',
             fill: '#FFFFFF',
