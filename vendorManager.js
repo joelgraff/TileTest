@@ -57,6 +57,12 @@ class VendorManager {
             if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
                 const bounds = this.nearbyVendor.getBounds();
                 if (Phaser.Geom.Rectangle.Contains(bounds, pointer.worldX, pointer.worldY)) {
+                    // Clear any existing input state to prevent player movement
+                    if (this.scene.inputManager) {
+                        this.scene.inputManager.target = null;
+                        this.scene.inputManager.isDragging = false;
+                        this.scene.inputManager.direction = { x: 0, y: 0 };
+                    }
                     this.interactWithVendor(this.nearbyVendor.vendorData, this.nearbyVendor);
                 }
             }

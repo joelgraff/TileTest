@@ -88,11 +88,8 @@ class UIManager {
         // Create quest button
         this.createQuestButton();
 
-        // Create inventory panel (initially hidden)
-        this.createInventoryPanel();
-
-        // Create quest panel (initially hidden)
-        this.createQuestPanel();
+        // Create help button
+        this.createHelpButton();
 
         // Create version display
         this.createVersionDisplay();
@@ -142,6 +139,12 @@ class UIManager {
 
         this.invButton.on('pointerdown', (pointer, localX, localY, event) => {
             event.stopPropagation();
+            // Clear any existing input state to prevent player movement
+            if (this.scene.inputManager) {
+                this.scene.inputManager.target = null;
+                this.scene.inputManager.isDragging = false;
+                this.scene.inputManager.direction = { x: 0, y: 0 };
+            }
             this.toggleInventory();
         });
     }
@@ -173,156 +176,14 @@ class UIManager {
 
         this.questButton.on('pointerdown', (pointer, localX, localY, event) => {
             event.stopPropagation();
+            // Clear any existing input state to prevent player movement
+            if (this.scene.inputManager) {
+                this.scene.inputManager.target = null;
+                this.scene.inputManager.isDragging = false;
+                this.scene.inputManager.direction = { x: 0, y: 0 };
+            }
             this.toggleQuests();
         });
-    }
-
-    createInventoryPanel() {
-        this.inventoryPanel = this.scene.add.group();
-
-        this.invBackground = this.scene.add.rectangle(400, 300, 400, 300, this.colors.background)
-            .setScrollFactor(0)
-            .setDepth(200)
-            .setVisible(false);
-
-        this.invBorderOuter = this.scene.add.rectangle(400, 300, 400, 300, this.colors.border)
-            .setScrollFactor(0)
-            .setDepth(199)
-            .setStrokeStyle(3, this.colors.border)
-            .setVisible(false);
-
-        this.invBorderInner = this.scene.add.rectangle(400, 300, 396, 296, this.colors.background)
-            .setScrollFactor(0)
-            .setDepth(201)
-            .setStrokeStyle(1, this.colors.text)
-            .setVisible(false);
-
-        this.invTitle = this.scene.add.text(400, 180, 'INVENTORY', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '16px',
-            fill: '#FFFF00',
-            align: 'center'
-        })
-        .setOrigin(0.5)
-        .setScrollFactor(0)
-        .setDepth(202)
-        .setVisible(false);
-
-        this.inventorySlots = [];
-        for (let i = 0; i < this.maxInventorySlots; i++) {
-            const x = 280 + (i % 4) * 60;
-            const y = 220 + Math.floor(i / 4) * 60;
-
-            const slot = this.scene.add.rectangle(x, y, 50, 50, this.colors.shadow)
-                .setScrollFactor(0)
-                .setDepth(202)
-                .setStrokeStyle(2, this.colors.text)
-                .setVisible(false)
-                .setInteractive({ cursor: 'pointer' });
-
-            slot.slotIndex = i;
-            this.inventorySlots.push(slot);
-        }
-
-        this.invCloseButton = this.scene.add.rectangle(500, 180, 60, 25, this.colors.button)
-            .setScrollFactor(0)
-            .setDepth(202)
-            .setStrokeStyle(1, this.colors.border)
-            .setVisible(false)
-            .setInteractive({ cursor: 'pointer' });
-
-        this.invCloseText = this.scene.add.text(500, 180, 'CLOSE', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '10px',
-            fill: '#FFFFFF',
-            align: 'center'
-        })
-        .setOrigin(0.5)
-        .setScrollFactor(0)
-        .setDepth(203)
-        .setVisible(false);
-
-        this.invCloseButton.on('pointerdown', (pointer, localX, localY, event) => {
-            event.stopPropagation();
-            this.toggleInventory();
-        });
-
-        this.inventoryPanel.addMultiple([
-            this.invBackground, this.invBorderOuter, this.invBorderInner,
-            this.invTitle, this.invCloseButton, this.invCloseText,
-            ...this.inventorySlots
-        ]);
-    }
-
-    createQuestPanel() {
-        this.questPanel = this.scene.add.group();
-
-        this.questBackground = this.scene.add.rectangle(400, 300, 500, 400, this.colors.background)
-            .setScrollFactor(0)
-            .setDepth(200)
-            .setVisible(false);
-
-        this.questBorderOuter = this.scene.add.rectangle(400, 300, 500, 400, this.colors.border)
-            .setScrollFactor(0)
-            .setDepth(199)
-            .setStrokeStyle(3, this.colors.border)
-            .setVisible(false);
-
-        this.questBorderInner = this.scene.add.rectangle(400, 300, 496, 396, this.colors.background)
-            .setScrollFactor(0)
-            .setDepth(201)
-            .setStrokeStyle(1, this.colors.text)
-            .setVisible(false);
-
-        this.questTitle = this.scene.add.text(400, 140, 'ACTIVE QUESTS', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '16px',
-            fill: '#FFFF00',
-            align: 'center'
-        })
-        .setOrigin(0.5)
-        .setScrollFactor(0)
-        .setDepth(202)
-        .setVisible(false);
-
-        this.questText = this.scene.add.text(400, 180, 'No active quests', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '12px',
-            fill: '#FFFFFF',
-            align: 'center',
-            wordWrap: { width: 460 }
-        })
-        .setOrigin(0.5)
-        .setScrollFactor(0)
-        .setDepth(202)
-        .setVisible(false);
-
-        this.questCloseButton = this.scene.add.rectangle(550, 140, 60, 25, this.colors.button)
-            .setScrollFactor(0)
-            .setDepth(202)
-            .setStrokeStyle(1, this.colors.border)
-            .setVisible(false)
-            .setInteractive({ cursor: 'pointer' });
-
-        this.questCloseText = this.scene.add.text(550, 140, 'CLOSE', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '10px',
-            fill: '#FFFFFF',
-            align: 'center'
-        })
-        .setOrigin(0.5)
-        .setScrollFactor(0)
-        .setDepth(203)
-        .setVisible(false);
-
-        this.questCloseButton.on('pointerdown', (pointer, localX, localY, event) => {
-            event.stopPropagation();
-            this.toggleQuests();
-        });
-        this.questPanel.addMultiple([
-            this.questBackground, this.questBorderOuter, this.questBorderInner,
-            this.questTitle, this.questText, this.questCloseButton, this.questCloseText
-        ]);
     }
 
     createVersionDisplay() {
@@ -342,92 +203,145 @@ class UIManager {
         if (this.inventory.length < this.maxInventorySlots) {
             this.inventory.push(item);
             this.updateScore(item.value || 0);
-            this.updateInventoryDisplay();
             return true;
         }
         return false;
     }
 
-    removeItem(index) {
-        if (index >= 0 && index < this.inventory.length) {
-            return this.inventory.splice(index, 1)[0];
+    toggleInventory() {
+        if (this.isInventoryOpen) {
+            this.closeDialog();
+            this.isInventoryOpen = false;
+            return;
         }
-        return null;
-    }
 
-    updateInventoryDisplay() {
-        this.inventorySlots.forEach((slot, index) => {
-            if (index < this.inventory.length) {
-                slot.setFillStyle(this.colors.button);
-            } else {
-                slot.setFillStyle(this.colors.shadow);
+        this.isInventoryOpen = true;
+
+        // Create inventory dialog content
+        let inventoryText = 'INVENTORY\n\n';
+        if (this.inventory.length === 0) {
+            inventoryText += 'No items collected yet.';
+        } else {
+            this.inventory.forEach((item, index) => {
+                inventoryText += `${index + 1}. ${item.name}\n`;
+                if (item.description) {
+                    inventoryText += `   ${item.description}\n`;
+                }
+                inventoryText += `   Value: ${item.value || 0} points\n\n`;
+            });
+        }
+
+        // Create inventory management buttons
+        const buttons = [];
+        if (this.inventory.length > 0) {
+            // Add buttons for each item to potentially remove/use them
+            this.inventory.forEach((item, index) => {
+                buttons.push({
+                    label: `Drop ${item.name}`,
+                    onClick: () => {
+                        this.removeItem(index);
+                        this.toggleInventory(); // Refresh dialog
+                    }
+                });
+            });
+        }
+
+        this.showDialog({
+            title: 'Inventory',
+            text: inventoryText,
+            buttons: buttons,
+            exitButton: {
+                label: 'Close',
+                onClick: () => {
+                    this.isInventoryOpen = false;
+                    this.closeDialog();
+                }
             }
         });
     }
 
-    toggleInventory() {
-        this.isInventoryOpen = !this.isInventoryOpen;
-
-        this.inventoryPanel.getChildren().forEach(child => {
-            child.setVisible(this.isInventoryOpen);
-        });
-
-        if (this.isInventoryOpen) {
-            this.updateInventoryDisplay();
-        }
-    }
-
     toggleQuests() {
-        this.isQuestsOpen = !this.isQuestsOpen;
-
-        this.questPanel.getChildren().forEach(child => {
-            child.setVisible(this.isQuestsOpen);
-        });
-
         if (this.isQuestsOpen) {
-            this.updateQuestDisplay();
+            this.closeDialog();
+            this.isQuestsOpen = false;
+            return;
         }
+
+        this.isQuestsOpen = true;
+        this.showQuestDialog();
     }
 
-    updateQuestDisplay() {
+    showQuestDialog(page = 0) {
         if (!this.scene.questManager) {
-            this.questText.setText('Quest system not available');
+            this.showDialog({
+                title: 'Quests',
+                text: 'Quest system not available',
+                exitButton: {
+                    label: 'Close',
+                    onClick: () => {
+                        this.isQuestsOpen = false;
+                        this.closeDialog();
+                    }
+                }
+            });
             return;
         }
 
         const activeQuests = this.scene.questManager.getActiveQuests();
         const completedQuests = this.scene.questManager.getCompletedQuests();
 
-        let questDisplayText = '';
+        // Create quest list for pagination
+        const questItems = [];
 
+        // Add active quests
         if (activeQuests.length > 0) {
-            questDisplayText += 'ACTIVE QUESTS:\n\n';
+            questItems.push('=== ACTIVE QUESTS ===');
             activeQuests.forEach((quest, index) => {
-                questDisplayText += `${index + 1}. ${quest.title}\n`;
-                questDisplayText += `${quest.description}\n`;
-
+                questItems.push(`${index + 1}. ${quest.title}`);
+                questItems.push(`   ${quest.description}`);
                 const completedObjectives = quest.objectives.filter(obj => obj.collected).length;
                 const totalObjectives = quest.objectives.length;
-                questDisplayText += `Progress: ${completedObjectives}/${totalObjectives} items collected\n\n`;
+                questItems.push(`   Progress: ${completedObjectives}/${totalObjectives} items collected`);
+                questItems.push(''); // Empty line for spacing
             });
         } else {
-            questDisplayText += 'No active quests\n\n';
+            questItems.push('=== ACTIVE QUESTS ===');
+            questItems.push('No active quests');
+            questItems.push('');
         }
 
+        // Add completed quests
         if (completedQuests.length > 0) {
-            questDisplayText += 'COMPLETED QUESTS:\n\n';
+            questItems.push('=== COMPLETED QUESTS ===');
             completedQuests.forEach((quest, index) => {
-                questDisplayText += `${index + 1}. ${quest.title} ✓\n`;
-                questDisplayText += `Reward: ${quest.reward.points} points\n\n`;
+                questItems.push(`${index + 1}. ${quest.title} ✓`);
+                questItems.push(`   Reward: ${quest.reward.points} points`);
+                questItems.push('');
             });
         }
 
-        this.questText.setText(questDisplayText);
+        this.showDialog({
+            title: 'Quests',
+            text: questItems,
+            textPagination: {
+                currentPage: page,
+                text: questItems
+            },
+            buttons: [],
+            exitButton: {
+                label: 'Close',
+                onClick: () => {
+                    this.isQuestsOpen = false;
+                    this.closeDialog();
+                }
+            }
+        });
     }
 
     showQuestCompletion(quest) {
         this.showDialog({
-            text: `Quest Completed!\n\n${quest.title}\n\nReward: ${quest.reward.points} points\n\n${quest.reward.description}`,
+            title: 'Quest Completed!',
+            text: `${quest.title}\n\nReward: ${quest.reward.points} points\n\n${quest.reward.description}`,
             buttons: [{
                 label: 'Great!',
                 onClick: () => this.closeDialog()
@@ -436,7 +350,8 @@ class UIManager {
 
         // Update quest display if it's open
         if (this.isQuestsOpen) {
-            this.updateQuestDisplay();
+            // Refresh the quest dialog if it's currently open
+            this.showQuestDialog();
         }
     }
 
@@ -466,12 +381,12 @@ class UIManager {
         } else if (key === 'Q' || key === 'q') {
             this.toggleQuests();
         } else if (key === 'ESCAPE') {
-            this.closeDialog();
-            if (this.isInventoryOpen) {
-                this.toggleInventory();
-            }
-            if (this.isQuestsOpen) {
-                this.toggleQuests();
+            // Close any open dialog first
+            if (this.scene.isDialogOpen) {
+                this.closeDialog();
+                // Reset panel states when dialog is closed via ESC
+                this.isInventoryOpen = false;
+                this.isQuestsOpen = false;
             }
         }
     }

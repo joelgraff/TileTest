@@ -51,11 +51,22 @@ class DialogLayout {
      * @returns {Phaser.GameObjects.Rectangle} Overlay rectangle
      */
     createOverlay(cam, onClickOutside) {
-        return this.scene.add.rectangle(cam.width / 2, cam.height / 2, cam.width, cam.height, 0x000000, 0.5)
+        const overlay = this.scene.add.rectangle(cam.width / 2, cam.height / 2, cam.width, cam.height, 0x000000, 0.5)
             .setScrollFactor(0)
             .setInteractive()
             .setDepth(1999)
-            .on('pointerdown', onClickOutside);
+            .on('pointerdown', (pointer, localX, localY, event) => {
+                event.stopPropagation();
+                onClickOutside();
+            })
+            .on('pointermove', (pointer, localX, localY, event) => {
+                event.stopPropagation();
+            })
+            .on('pointerup', (pointer, localX, localY, event) => {
+                event.stopPropagation();
+            });
+
+        return overlay;
     }
 
     /**
@@ -76,7 +87,9 @@ class DialogLayout {
             .setOrigin(0.5)
             .setStrokeStyle(2, 0x222222)
             .setInteractive()
-            .on('pointerdown', (pointer, localX, localY, event) => event.stopPropagation());
+            .on('pointerdown', (pointer, localX, localY, event) => event.stopPropagation())
+            .on('pointermove', (pointer, localX, localY, event) => event.stopPropagation())
+            .on('pointerup', (pointer, localX, localY, event) => event.stopPropagation());
     }
 
     /**

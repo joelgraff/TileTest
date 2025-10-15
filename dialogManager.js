@@ -17,6 +17,14 @@ class DialogManager {
 
         this.scene.isDialogOpen = true;
         this.isDialogOpen = true;
+
+        // Clear any existing input state to prevent player movement
+        if (this.scene.inputManager) {
+            this.scene.inputManager.target = null;
+            this.scene.inputManager.isDragging = false;
+            this.scene.inputManager.direction = { x: 0, y: 0 };
+        }
+
         const cam = this.scene.cameras.main;
 
         const dialogWidth = Math.min(this.isMobile ? 400 : 600, cam.width * (this.isMobile ? 0.9 : 0.85));
@@ -213,17 +221,20 @@ class DialogManager {
             const pages = this.calculateTextPages(text);
             const totalPages = pages.length;
 
-            // Always show both navigation buttons, disable when not applicable
-            buttons.push({
-                label: '<',
-                disabled: currentPage <= 0,
-                onClick: currentPage > 0 ? () => this.showDialog({ ...this.getDialogParams(), textPagination: { ...textPagination, currentPage: currentPage - 1 } }) : () => {}
-            });
-            buttons.push({
-                label: '>',
-                disabled: currentPage >= totalPages - 1,
-                onClick: currentPage < totalPages - 1 ? () => this.showDialog({ ...this.getDialogParams(), textPagination: { ...textPagination, currentPage: currentPage + 1 } }) : () => {}
-            });
+            // Only show navigation buttons if there are multiple pages
+            if (totalPages > 1) {
+                // Always show both navigation buttons, disable when not applicable
+                buttons.push({
+                    label: '<',
+                    disabled: currentPage <= 0,
+                    onClick: currentPage > 0 ? () => this.showDialog({ ...this.getDialogParams(), textPagination: { ...textPagination, currentPage: currentPage - 1 } }) : () => {}
+                });
+                buttons.push({
+                    label: '>',
+                    disabled: currentPage >= totalPages - 1,
+                    onClick: currentPage < totalPages - 1 ? () => this.showDialog({ ...this.getDialogParams(), textPagination: { ...textPagination, currentPage: currentPage + 1 } }) : () => {}
+                });
+            }
         }
         return buttons;
     }
@@ -237,6 +248,11 @@ class DialogManager {
         if (this.isDialogOpen) {
             this.scene.isDialogOpen = false;
             this.isDialogOpen = false;
+        }
+
+        // If pointer is still down when dialog closes, ignore subsequent pointer events until release
+        if (this.scene.inputManager && this.scene.input.activePointer.isDown) {
+            this.scene.inputManager.ignorePointerUntilRelease = true;
         }
 
         // Clear the layout system (elements will be destroyed with container)
