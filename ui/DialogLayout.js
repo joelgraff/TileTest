@@ -1,5 +1,6 @@
 import GridLayout from './GridLayout.js';
 import ColumnLayout from './ColumnLayout.js';
+import ButtonFactory from './ButtonFactory.js';
 
 /**
  * DialogLayout - Main layout manager for dialog components
@@ -12,6 +13,9 @@ class DialogLayout {
         this.dialogY = dialogY;
         this.dialogWidth = dialogWidth;
         this.dialogHeight = dialogHeight;
+
+        // Initialize button factory
+        this.buttonFactory = new ButtonFactory(scene);
 
         // Define layout areas (relative to dialog container origin at 0,0)
         const titleBarHeight = 40;
@@ -28,18 +32,6 @@ class DialogLayout {
             bottomArea: { x: 0, y: dialogHeight / 2 - bottomAreaHeight / 2, width: dialogWidth, height: bottomAreaHeight }
         };
 
-        // Create layout managers for different areas (relative to container)
-        this.titleLayout = new ColumnLayout(scene,
-            this.areas.titleBar.x,
-            this.areas.titleBar.y,
-            this.areas.titleBar.width,
-            this.areas.titleBar.height,
-            5
-        );
-
-        // Note: Using simplified direct positioning for content and buttons
-        // GridLayout instances removed as they're not needed for current layout
-
         // Storage for dialog elements
         this.elements = {
             titleBar: null,
@@ -53,15 +45,64 @@ class DialogLayout {
     }
 
     /**
-     * Set the dialog title
-     * @param {Phaser.GameObjects.Text} titleText - Title text object
+     * Create the dialog overlay
+     * @param {Phaser.Cameras.Scene2D.Camera} cam - Scene camera
+     * @param {Function} onClickOutside - Handler for clicking outside dialog
+     * @returns {Phaser.GameObjects.Rectangle} Overlay rectangle
      */
-    setTitle(titleText) {
-        // Center title in title bar area
-        titleText.setPosition(
-            this.areas.titleBar.x,
-            this.areas.titleBar.y + this.areas.titleBar.height / 2
-        );
+    createOverlay(cam, onClickOutside) {
+        return this.scene.add.rectangle(cam.width / 2, cam.height / 2, cam.width, cam.height, 0x000000, 0.5)
+            .setScrollFactor(0)
+            .setInteractive()
+            .setDepth(1999)
+            .on('pointerdown', onClickOutside);
+    }
+
+    /**
+     * Create the dialog container
+     * @param {Phaser.Cameras.Scene2D.Camera} cam - Scene camera
+     * @returns {Phaser.GameObjects.Container} Dialog container
+     */
+    createContainer(cam) {
+        return this.scene.add.container(cam.width / 2, cam.height - this.dialogHeight / 2 - 16);
+    }
+
+    /**
+     * Create the dialog background
+     * @returns {Phaser.GameObjects.Rectangle} Background rectangle
+     */
+    createBackground() {
+        return this.scene.add.rectangle(0, 0, this.dialogWidth, this.dialogHeight, 0x808080, 0.97)
+            .setOrigin(0.5)
+            .setStrokeStyle(2, 0x222222)
+            .setInteractive()
+            .on('pointerdown', (pointer, localX, localY, event) => event.stopPropagation());
+    }
+
+    /**
+     * Create the title bar with background and text
+     * @param {string} title - Dialog title text
+     */
+    createTitleBar(title) {
+        // Create title bar background
+        const titleBar = this.scene.add.rectangle(
+            0,
+            -this.dialogHeight / 2 + 20, // Center of title bar area
+            this.dialogWidth,
+            40,
+            0x333366,
+            1
+        ).setOrigin(0.5).setStrokeStyle(2, 0x222222);
+
+        const titleText = this.scene.add.text(0, -this.dialogHeight / 2 + 20, title || 'Dialog', {
+            fontSize: '20px',
+            fontStyle: 'bold',
+            color: '#fff',
+            align: 'center',
+            wordWrap: { width: this.dialogWidth - 32 }
+        }).setOrigin(0.5);
+
+        this.elements.titleBar = titleBar;
         this.elements.title = titleText;
     }
 
@@ -84,32 +125,35 @@ class DialogLayout {
      */
     setText(text) {
         // Position text in the text area (upper right)
+        // Shift down one line (approximately 22 pixels) for better positioning
         text.setPosition(
             this.areas.textArea.x + 8, // Small padding from left edge
-            this.areas.textArea.y + 8  // Small padding from top edge
+            this.areas.textArea.y + 8 + 22  // Small padding from top edge + one line offset
         );
         this.elements.text = text;
     }
 
     /**
      * Add main dialog buttons (typically in a grid layout)
-     * @param {Array<Phaser.GameObjects.Container>} buttons - Array of button objects
+     * @param {Array} buttonConfigs - Array of button config objects with {label, onClick, options}
      */
-    setButtons(buttons) {
+    createButtons(buttonConfigs) {
         // Clear existing buttons
         this.elements.buttons.forEach(button => {
             if (button && button.destroy) button.destroy();
         });
         this.elements.buttons = [];
 
+        const buttonContainers = this.buttonFactory.createButtons(buttonConfigs);
+
         const buttonSpacing = 38;
         const availableHeight = this.areas.buttonArea.height;
-        const totalButtonHeight = buttons.length * buttonSpacing;
+        const totalButtonHeight = buttonContainers.length * buttonSpacing;
 
         // Center the button stack vertically in the button area
         let buttonYStart = this.areas.buttonArea.y + (availableHeight - totalButtonHeight) / 2;
 
-        buttons.forEach((button, index) => {
+        buttonContainers.forEach((button, index) => {
             // Position buttons with left edge at button area start to avoid left column intrusion
             const buttonX = this.areas.buttonArea.x + button.width / 2 + 8; // Left-align with small padding
             const buttonY = buttonYStart + index * buttonSpacing;
@@ -120,20 +164,22 @@ class DialogLayout {
 
     /**
      * Add bottom buttons (pagination, etc.)
-     * @param {Array<Phaser.GameObjects.Container>} buttons - Array of button objects
+     * @param {Array} buttonConfigs - Array of button config objects with {label, onClick, options}
      */
-    setBottomButtons(buttons) {
+    createBottomButtons(buttonConfigs) {
         // Clear existing bottom buttons
         this.elements.bottomButtons.forEach(button => {
             if (button && button.destroy) button.destroy();
         });
         this.elements.bottomButtons = [];
 
+        const buttonContainers = this.buttonFactory.createSmallButtons(buttonConfigs);
+
         // Position bottom buttons horizontally centered (relative to container)
-        const totalWidth = buttons.reduce((width, button) => width + button.width + 10, 0) - 10;
+        const totalWidth = buttonContainers.reduce((width, button) => width + button.width + 10, 0) - 10;
         let currentX = -totalWidth / 2;
 
-        buttons.forEach(button => {
+        buttonContainers.forEach(button => {
             button.setPosition(currentX + button.width / 2, this.areas.bottomArea.y);
             currentX += button.width + 10;
             this.elements.bottomButtons.push(button);
@@ -141,72 +187,36 @@ class DialogLayout {
     }
 
     /**
-     * Set the exit button (typically in bottom right)
-     * @param {Phaser.GameObjects.Container} button - Exit button object
+     * Create the exit button
+     * @param {Object} exitButtonConfig - Button config with {label, onClick, options}
      */
-    setExitButton(button) {
+    createExitButton(exitButtonConfig) {
+        if (!exitButtonConfig) return;
+
+        const exitButton = this.buttonFactory.createButton(
+            exitButtonConfig.label,
+            exitButtonConfig.onClick,
+            exitButtonConfig.options
+        );
+
         // Position in bottom right corner (relative to container)
-        button.setPosition(
-            this.dialogWidth / 2 - button.width / 2 - 10,
+        exitButton.setPosition(
+            this.dialogWidth / 2 - exitButton.width / 2 - 10,
             this.areas.bottomArea.y
         );
-        this.elements.exitButton = button;
-    }
-
-    /**
-     * Create a button grid layout for a specific area
-     * @param {number} startX - Starting X position relative to dialog container
-     * @param {number} startY - Starting Y position relative to dialog container
-     * @param {number} areaWidth - Width of the button area
-     * @param {number} areaHeight - Height of the button area
-     * @param {number} rows - Number of rows in grid
-     * @param {number} cols - Number of columns in grid
-     * @returns {GridLayout} New grid layout for buttons
-     */
-    createButtonGrid(startX, startY, areaWidth, areaHeight, rows = 2, cols = 4) {
-        return new GridLayout(
-            this.scene,
-            startX,
-            startY,
-            areaWidth,
-            areaHeight,
-            rows,
-            cols,
-            5
-        );
-    }
-
-    /**
-     * Create a vertical column layout for a specific area
-     * @param {number} startX - Starting X position relative to dialog container
-     * @param {number} startY - Starting Y position relative to dialog container
-     * @param {number} areaWidth - Width of the column area
-     * @param {number} areaHeight - Height of the column area
-     * @returns {ColumnLayout} New column layout
-     */
-    createColumn(startX, startY, areaWidth, areaHeight) {
-        return new ColumnLayout(
-            this.scene,
-            startX,
-            startY,
-            areaWidth,
-            areaHeight,
-            10
-        );
+        this.elements.exitButton = exitButton;
     }
 
     /**
      * Clear all elements from the dialog layout
      */
     clear() {
-        // Clear layout managers
-        this.titleLayout.clear();
-
         // Note: Elements are not destroyed here as they will be destroyed
         // when the dialog container is destroyed
 
         // Reset elements storage
         this.elements = {
+            titleBar: null,
             title: null,
             image: null,
             text: null,

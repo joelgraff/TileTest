@@ -182,54 +182,24 @@ class VendorManager {
                             ? allDomainFacts
                             : this.getRandomFacts(allDomainFacts, maxFactsPerVendor);
 
-                        // Estimate ~400 characters fit in dialog, but paginate by complete facts
-                        const factsPerPage = 3; // Show 3 facts per page for better readability
-                        const totalPages = Math.ceil(selectedFacts.length / factsPerPage);
+                        // Format facts with bullet points for display (no extra newlines - pagination handles spacing)
+                        const formattedFacts = selectedFacts.map(fact => `• ${fact}`);
 
-                        const showFactsDialog = (page = 0) => {
-                            const startIndex = page * factsPerPage;
-                            const endIndex = Math.min(startIndex + factsPerPage, selectedFacts.length);
-                            const pageFacts = selectedFacts.slice(startIndex, endIndex);
-
-                            // Format facts with bullet points and blank lines
-                            const formattedFacts = pageFacts.map(fact => `• ${fact}`).join('\n\n');
-
-                            const factButtons = [];
-                            const bottomButtons = [];
-                            const exitButton = {
+                        // Show facts using intelligent text pagination based on line limits
+                        this.scene.uiManager.showDialog({
+                            imageKey: imageKey,
+                            title: vendorData.name,
+                            text: formattedFacts,
+                            textPagination: {
+                                currentPage: 0,
+                                text: formattedFacts
+                            },
+                            buttons: [],
+                            exitButton: {
                                 label: 'Back',
                                 onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-                            };
-
-                            // Add pagination buttons - always show both, disable when not applicable
-                            if (totalPages > 1) {
-                                bottomButtons.push({
-                                    label: '<',
-                                    disabled: page <= 0,
-                                    onClick: page > 0 ? () => showFactsDialog(page - 1) : () => {}
-                                });
-                                bottomButtons.push({
-                                    label: '>',
-                                    disabled: page >= totalPages - 1,
-                                    onClick: page < totalPages - 1 ? () => showFactsDialog(page + 1) : () => {}
-                                });
-                            } else {
-                                // Single page - show disabled buttons
-                                bottomButtons.push({ label: '<', disabled: true, onClick: () => {} });
-                                bottomButtons.push({ label: '>', disabled: true, onClick: () => {} });
                             }
-
-                            this.scene.uiManager.showDialog({
-                                imageKey: imageKey,
-                                title: vendorData.name,
-                                text: `${DomainManager.getDomainName(vendorData.domain_id)} facts (Page ${page + 1}/${totalPages}):\n\n${formattedFacts}`,
-                                buttons: factButtons,
-                                bottomButtons: bottomButtons,
-                                exitButton: exitButton
-                            });
-                        };
-
-                        showFactsDialog(0); // Start with first page
+                        });
                         return;
                     } else {
                         newText = 'No facts available at this time.';

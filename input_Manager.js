@@ -11,6 +11,9 @@ class InputManager {
 
         // Touch and mouse events
         scene.input.on('pointerdown', (pointer) => {
+            // Don't process player movement input when dialog is open
+            if (scene.isDialogOpen) return;
+
             this.touchStart.x = pointer.x;
             this.touchEnd.x = pointer.x;
             this.touchStart.y = pointer.y;
@@ -22,6 +25,9 @@ class InputManager {
             }
         });
         scene.input.on('pointermove', (pointer) => {
+            // Don't process player movement input when dialog is open
+            if (scene.isDialogOpen) return;
+
             if (!pointer.isDown) return; // Only process if pointer is down
             if (!this.isDragging) {
                 const dx = pointer.x - this.touchStart.x;
@@ -40,6 +46,9 @@ class InputManager {
             }
         });
         scene.input.on('pointerup', (pointer) => {
+            // Don't process player movement input when dialog is open
+            if (scene.isDialogOpen) return;
+
             if (this.isDragging) {
                 this.direction = { x: 0, y: 0 };
             }
