@@ -149,7 +149,8 @@ class UIManager {
             this.invButton.setFillStyle(this.colors.button);
         });
 
-        this.invButton.on('pointerdown', () => {
+        this.invButton.on('pointerdown', (pointer, localX, localY, event) => {
+            event.stopPropagation();
             this.toggleInventory();
         });
     }
@@ -179,7 +180,8 @@ class UIManager {
             this.questButton.setFillStyle(this.colors.button);
         });
 
-        this.questButton.on('pointerdown', () => {
+        this.questButton.on('pointerdown', (pointer, localX, localY, event) => {
+            event.stopPropagation();
             this.toggleQuests();
         });
     }
@@ -249,7 +251,8 @@ class UIManager {
         .setDepth(203)
         .setVisible(false);
 
-        this.invCloseButton.on('pointerdown', () => {
+        this.invCloseButton.on('pointerdown', (pointer, localX, localY, event) => {
+            event.stopPropagation();
             this.toggleInventory();
         });
 
@@ -321,10 +324,10 @@ class UIManager {
         .setDepth(203)
         .setVisible(false);
 
-        this.questCloseButton.on('pointerdown', () => {
+        this.questCloseButton.on('pointerdown', (pointer, localX, localY, event) => {
+            event.stopPropagation();
             this.toggleQuests();
         });
-
         this.questPanel.addMultiple([
             this.questBackground, this.questBorderOuter, this.questBorderInner,
             this.questTitle, this.questText, this.questCloseButton, this.questCloseText
