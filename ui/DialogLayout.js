@@ -39,6 +39,7 @@ class DialogLayout {
             image: null,
             text: null,
             buttons: [],
+            leftButtons: [],
             bottomButtons: [],
             exitButton: null
         };
@@ -135,13 +136,29 @@ class DialogLayout {
     /**
      * Set the main dialog text content
      * @param {Phaser.GameObjects.Text} text - Text object
+     * @param {boolean} hasLeftButtons - Whether the dialog has left column buttons
      */
-    setText(text) {
-        // Position text in the text area (upper right)
-        // Shift down one line (approximately 22 pixels) for better positioning
+    setText(text, hasLeftButtons = false) {
+        // If there are left buttons, use a reduced height text area to leave space for buttons
+        // Otherwise use the text area (upper portion of right column)
+        let textArea;
+        if (hasLeftButtons) {
+            // For dialogs with left buttons (like help topics), use most of right column but leave bottom margin
+            const buttonAreaHeight = 80; // Leave space for navigation buttons at bottom
+            textArea = {
+                x: this.areas.rightColumn.x,
+                y: this.areas.rightColumn.y,
+                width: this.areas.rightColumn.width,
+                height: this.areas.rightColumn.height - buttonAreaHeight
+            };
+        } else {
+            textArea = this.areas.textArea;
+        }
+
+        // Position text in the text area with proper margins
         text.setPosition(
-            this.areas.textArea.x + 8, // Small padding from left edge
-            this.areas.textArea.y + 8 + 22  // Small padding from top edge + one line offset
+            textArea.x + 8, // Small padding from left edge
+            textArea.y + 8   // Small padding from top edge (reduced from 30px)
         );
         this.elements.text = text;
     }
@@ -157,19 +174,86 @@ class DialogLayout {
         });
         this.elements.buttons = [];
 
+        if (buttonConfigs.length === 0) return;
+
         const buttonContainers = this.buttonFactory.createButtons(buttonConfigs);
 
-        const buttonSpacing = 38;
+        // Always arrange vertically with dynamic spacing to fit all buttons
+        this.arrangeButtonsVertically(buttonContainers);
+    }
+
+    /**
+     * Add link-style buttons (text-only with underline on hover)
+     * @param {Array} buttonConfigs - Array of button config objects with {label, onClick, options}
+     */
+    createLinkButtons(buttonConfigs) {
+        // Clear existing buttons
+        this.elements.buttons.forEach(button => {
+            if (button && button.destroy) button.destroy();
+        });
+        this.elements.buttons = [];
+
+        if (buttonConfigs.length === 0) return;
+
+        const buttonContainers = this.buttonFactory.createLinkButtons(buttonConfigs);
+
+        // Arrange link buttons vertically with appropriate spacing
+        this.arrangeLinkButtonsVertically(buttonContainers);
+    }
+
+    arrangeLinkButtonsVertically(buttonContainers) {
+        const buttonSpacing = 25; // Smaller spacing for link buttons
         const availableHeight = this.areas.buttonArea.height;
         const totalButtonHeight = buttonContainers.length * buttonSpacing;
 
         // Center the button stack vertically in the button area
-        let buttonYStart = this.areas.buttonArea.y + (availableHeight - totalButtonHeight) / 2;
+        let buttonYStart = this.areas.buttonArea.y + (availableHeight - totalButtonHeight) / 2 + buttonSpacing / 2;
+
+        buttonContainers.forEach((button, index) => {
+            // Position link buttons with left alignment in the button area
+            const buttonX = this.areas.buttonArea.x + 16; // Left padding
+            const buttonY = buttonYStart + index * buttonSpacing;
+            button.setPosition(buttonX, buttonY);
+            this.elements.buttons.push(button);
+        });
+    }
+
+    arrangeButtonsVertically(buttonContainers) {
+        // Use smaller spacing for many buttons to fit them all
+        const buttonSpacing = buttonContainers.length > 4 ? 30 : 38;
+        const availableHeight = this.areas.buttonArea.height;
+        const totalButtonHeight = buttonContainers.length * buttonSpacing;
+
+        // If buttons don't fit, reduce spacing further
+        const actualSpacing = totalButtonHeight > availableHeight ? availableHeight / buttonContainers.length : buttonSpacing;
+
+        // Center the button stack vertically in the button area
+        let buttonYStart = this.areas.buttonArea.y + (availableHeight - buttonContainers.length * actualSpacing) / 2 + actualSpacing / 2;
 
         buttonContainers.forEach((button, index) => {
             // Position buttons with left edge at button area start to avoid left column intrusion
             const buttonX = this.areas.buttonArea.x + button.width / 2 + 8; // Left-align with small padding
-            const buttonY = buttonYStart + index * buttonSpacing;
+            const buttonY = buttonYStart + index * actualSpacing;
+            button.setPosition(buttonX, buttonY);
+            this.elements.buttons.push(button);
+        });
+    }
+
+    arrangeButtonsInGrid(buttonContainers) {
+        const buttonSpacingX = 10;
+        const buttonSpacingY = 35;
+        const buttonsPerRow = 2; // 2 columns for grid layout
+
+        const startX = this.areas.buttonArea.x + 8;
+        const startY = this.areas.buttonArea.y + 10;
+
+        buttonContainers.forEach((button, index) => {
+            const row = Math.floor(index / buttonsPerRow);
+            const col = index % buttonsPerRow;
+
+            const buttonX = startX + col * (button.width + buttonSpacingX) + button.width / 2;
+            const buttonY = startY + row * buttonSpacingY + button.height / 2;
+
             button.setPosition(buttonX, buttonY);
             this.elements.buttons.push(button);
         });
@@ -197,6 +281,90 @@ class DialogLayout {
             currentX += button.width + 10;
             this.elements.bottomButtons.push(button);
         });
+    }
+
+    /**
+     * Add left column buttons
+     * @param {Array} buttonConfigs - Array of button config objects with {label, onClick, options}
+     */
+    createLeftButtons(buttonConfigs) {
+        // Clear existing left buttons
+        this.elements.leftButtons.forEach(button => {
+            if (button && button.destroy) button.destroy();
+        });
+        this.elements.leftButtons = [];
+
+        const buttonContainers = this.buttonFactory.createSmallButtons(buttonConfigs);
+
+        // Special case: Help navigation layout (nav buttons on same row, back button below)
+        if (buttonConfigs.length === 3 &&
+            buttonConfigs[0].label === '<' &&
+            buttonConfigs[1].label === '>') {
+
+            // Calculate the width needed for the "Back to Topics" button based on text
+            const backButtonText = buttonConfigs[2].label;
+            const tempText = this.scene.add.text(0, 0, backButtonText, {
+                fontSize: '16px',
+                fontStyle: 'bold'
+            });
+            const textWidth = tempText.width;
+            tempText.destroy();
+
+            const backButtonWidth = Math.max(140, textWidth + 24); // Minimum 140px, padding for text
+
+            // Calculate navigation button width: (backButtonWidth - spacing) / 2
+            const navSpacing = 8; // Space between navigation buttons
+            const navButtonWidth = Math.max(35, (backButtonWidth - navSpacing) / 2); // Minimum 35px each
+
+            // Create buttons with calculated widths
+            const navButtonOptions = { width: navButtonWidth, ...buttonConfigs[0].options };
+            const backButtonOptions = { width: backButtonWidth, ...buttonConfigs[2].options };
+
+            const navButton1 = this.buttonFactory.createSmallButton(buttonConfigs[0].label, buttonConfigs[0].onClick, navButtonOptions);
+            const navButton2 = this.buttonFactory.createSmallButton(buttonConfigs[1].label, buttonConfigs[1].onClick, navButtonOptions);
+            const backButton = this.buttonFactory.createSmallButton(buttonConfigs[2].label, buttonConfigs[2].onClick, backButtonOptions);
+
+            // Position navigation buttons horizontally on the same row at bottom with margin
+            const bottomMargin = 20; // Margin from bottom of left column
+            const buttonSpacing = 8; // Space between navigation buttons
+            const navRowY = this.areas.leftColumn.y + this.areas.leftColumn.height - bottomMargin;
+
+            // Position back button first (centered at bottom)
+            const backButtonX = this.areas.leftColumn.x + this.areas.leftColumn.width / 2;
+            const backButtonY = navRowY - 35; // Position above navigation buttons
+            backButton.setPosition(backButtonX, backButtonY);
+            this.elements.leftButtons.push(backButton);
+
+            // Position navigation buttons: their combined width + spacing = back button width
+            // Center them as a group below the back button
+            const totalNavWidth = navButton1.width + buttonSpacing + navButton2.width;
+            const navStartX = backButtonX - totalNavWidth / 2;
+
+            // Position '<' button
+            const navButton1X = navStartX + navButton1.width / 2;
+            navButton1.setPosition(navButton1X, navRowY);
+            this.elements.leftButtons.push(navButton1);
+
+            // Position '>' button
+            const navButton2X = navStartX + navButton1.width + buttonSpacing + navButton2.width / 2;
+            navButton2.setPosition(navButton2X, navRowY);
+            this.elements.leftButtons.push(navButton2);
+
+        } else {
+            // Default vertical layout
+            const buttonSpacing = 35;
+            const leftColumnBottom = this.areas.leftColumn.y + this.areas.leftColumn.height;
+
+            // Start from bottom and work upwards
+            let currentY = leftColumnBottom - buttonSpacing / 2;
+
+            buttonContainers.forEach(button => {
+                const buttonX = this.areas.leftColumn.x + this.areas.leftColumn.width / 2;
+                button.setPosition(buttonX, currentY);
+                currentY -= buttonSpacing;
+                this.elements.leftButtons.push(button);
+            });
+        }
     }
 
     /**
@@ -234,6 +402,7 @@ class DialogLayout {
             image: null,
             text: null,
             buttons: [],
+            leftButtons: [],
             bottomButtons: [],
             exitButton: null
         };

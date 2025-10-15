@@ -8,6 +8,10 @@ class UIManager {
         this.maxInventorySlots = 8;
         this.isInventoryOpen = false;
         this.isQuestsOpen = false; // Track quest panel visibility
+        this.isHelpOpen = false; // Track help dialog visibility
+
+        // Load help data
+        this.loadHelpData();
 
         // Sierra-style EGA color palette
         this.colors = {
@@ -186,6 +190,43 @@ class UIManager {
         });
     }
 
+    createHelpButton() {
+        this.helpButton = this.scene.add.rectangle(720, 95, 80, 30, this.colors.button)  // Below PACK button
+            .setScrollFactor(0)
+            .setDepth(100)
+            .setStrokeStyle(2, 0xFFFFFF)  // White border
+            .setInteractive({ cursor: 'pointer' });
+
+        this.helpButtonText = this.scene.add.text(720, 95, 'HELP', {
+            fontFamily: 'Courier New, monospace',
+            fontSize: '12px',
+            fill: '#FFFFFF',
+            align: 'center'
+        })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(101);
+
+        this.helpButton.on('pointerover', () => {
+            this.helpButton.setFillStyle(this.colors.buttonHover);
+        });
+
+        this.helpButton.on('pointerout', () => {
+            this.helpButton.setFillStyle(this.colors.button);
+        });
+
+        this.helpButton.on('pointerdown', (pointer, localX, localY, event) => {
+            event.stopPropagation();
+            // Clear any existing input state to prevent player movement
+            if (this.scene.inputManager) {
+                this.scene.inputManager.target = null;
+                this.scene.inputManager.isDragging = false;
+                this.scene.inputManager.direction = { x: 0, y: 0 };
+            }
+            this.toggleHelp();
+        });
+    }
+
     createVersionDisplay() {
         this.versionText = this.scene.add.text(10, 620, 'Version 1.6', {
             fontFamily: 'Courier New, monospace',
@@ -269,6 +310,139 @@ class UIManager {
 
         this.isQuestsOpen = true;
         this.showQuestDialog();
+    }
+
+    loadHelpData() {
+        // Load help data from help.json
+        fetch('help.json')
+            .then(response => response.json())
+            .then(data => {
+                this.helpData = data;
+            })
+            .catch(error => {
+                console.error('Failed to load help data:', error);
+                this.helpData = { topics: {} };
+            });
+    }
+
+    toggleHelp() {
+        if (this.isHelpOpen) {
+            this.closeDialog();
+            this.isHelpOpen = false;
+            return;
+        }
+
+        this.isHelpOpen = true;
+        this.showHelpDialog();
+    }
+
+    showHelpDialog(selectedTopic = null) {
+        if (!this.helpData) {
+            this.showDialog({
+                title: 'Help',
+                text: 'Loading help data...',
+                exitButton: {
+                    label: 'Close',
+                    onClick: () => {
+                        this.isHelpOpen = false;
+                        this.closeDialog();
+                    }
+                }
+            });
+            return;
+        }
+
+        if (selectedTopic && this.helpData.topics[selectedTopic]) {
+            // Show specific topic content
+            this.showTopicContent(selectedTopic);
+        } else {
+            // Show topic selection
+            this.showTopicSelection();
+        }
+    }
+
+    showTopicSelection() {
+        const topicButtons = [];
+        const topics = this.helpData.topics;
+
+        // Create buttons for each topic
+        Object.keys(topics).forEach(topicKey => {
+            const topic = topics[topicKey];
+            topicButtons.push({
+                label: topic.title,
+                onClick: () => {
+                    this.showHelpDialog(topicKey);
+                }
+            });
+        });
+
+        this.showDialog({
+            title: 'Help Topics',
+            text: 'Select a topic below to view detailed help information:',
+            buttons: topicButtons,
+            useLinkButtons: true,
+            exitButton: {
+                label: 'Close',
+                onClick: () => {
+                    this.isHelpOpen = false;
+                    this.closeDialog();
+                }
+            }
+        });
+    }
+
+    showTopicContent(topicKey, page = 0) {
+        const topic = this.helpData.topics[topicKey];
+        if (!topic) {
+            this.showHelpDialog(); // Go back to topic selection
+            return;
+        }
+
+        // Calculate pages for this topic
+        const pages = this.dialogManager.calculateTextPages(topic.content, 15); // Use 5 lines per page for help content (reduced spacing)
+        const totalPages = pages.length;
+        const currentPage = Math.min(page, totalPages - 1);
+
+        // Get the text for current page
+        const displayText = pages[currentPage].join('\n');
+
+        // Create left buttons
+        const leftButtons = [];
+
+        // Add pagination buttons if multiple pages
+        if (totalPages > 1) {
+            leftButtons.push({
+                label: '<',
+                disabled: currentPage <= 0,
+                onClick: currentPage > 0 ? () => this.showTopicContent(topicKey, currentPage - 1) : () => {}
+            });
+            leftButtons.push({
+                label: '>',
+                disabled: currentPage >= totalPages - 1,
+                onClick: currentPage < totalPages - 1 ? () => this.showTopicContent(topicKey, currentPage + 1) : () => {}
+            });
+        }
+
+        // Add "Back to Topics" button
+        leftButtons.push({
+            label: 'Back to Topics',
+            onClick: () => {
+                this.showHelpDialog(); // Go back to topic selection
+            }
+        });
+
+        this.showDialog({
+            title: topic.title,
+            text: displayText,
+            leftButtons: leftButtons,
+            exitButton: {
+                label: 'Close',
+                onClick: () => {
+                    this.isHelpOpen = false;
+                    this.closeDialog();
+                }
+            }
+        });
     }
 
     showQuestDialog(page = 0) {
@@ -380,6 +554,8 @@ class UIManager {
             this.toggleInventory();
         } else if (key === 'Q' || key === 'q') {
             this.toggleQuests();
+        } else if (key === 'H' || key === 'h') {
+            this.toggleHelp();
         } else if (key === 'ESCAPE') {
             // Close any open dialog first
             if (this.scene.isDialogOpen) {
@@ -387,6 +563,7 @@ class UIManager {
                 // Reset panel states when dialog is closed via ESC
                 this.isInventoryOpen = false;
                 this.isQuestsOpen = false;
+                this.isHelpOpen = false;
             }
         }
     }
