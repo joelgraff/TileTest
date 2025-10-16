@@ -8,9 +8,21 @@ class InputManager {
         this.direction = { x: 0, y: 0 };
         this.isDragging = false; // Track if drag is active
         this.target = null; // Target position for tap-to-move
+        this.ignorePointerUntilRelease = false; // Ignore pointer events until button release
 
         // Touch and mouse events
         scene.input.on('pointerdown', (pointer) => {
+            // Don't process player movement input when dialog is open
+            if (scene.isDialogOpen) {
+                this.ignorePointerUntilRelease = true;
+                return;
+            }
+
+            // If we're ignoring pointer events until release, don't process
+            if (this.ignorePointerUntilRelease) {
+                return;
+            }
+
             this.touchStart.x = pointer.x;
             this.touchEnd.x = pointer.x;
             this.touchStart.y = pointer.y;
@@ -22,6 +34,12 @@ class InputManager {
             }
         });
         scene.input.on('pointermove', (pointer) => {
+            // Don't process player movement input when dialog is open
+            if (scene.isDialogOpen) return;
+
+            // If we're ignoring pointer events until release, don't process
+            if (this.ignorePointerUntilRelease) return;
+
             if (!pointer.isDown) return; // Only process if pointer is down
             if (!this.isDragging) {
                 const dx = pointer.x - this.touchStart.x;
@@ -40,6 +58,12 @@ class InputManager {
             }
         });
         scene.input.on('pointerup', (pointer) => {
+            // Don't process player movement input when dialog is open
+            if (scene.isDialogOpen) return;
+
+            // Reset the ignore flag when button is released
+            this.ignorePointerUntilRelease = false;
+
             if (this.isDragging) {
                 this.direction = { x: 0, y: 0 };
             }
@@ -64,6 +88,19 @@ class InputManager {
     }
 
     getDirection() {
+        // Don't allow player movement when dialog is open
+        if (this.scene.isDialogOpen) {
+            // Clear any existing targets to prevent movement
+            this.target = null;
+            this.isDragging = false;
+            return { x: 0, y: 0 };
+        }
+
+        // Don't allow movement if we're ignoring pointer events until release
+        if (this.ignorePointerUntilRelease) {
+            return { x: 0, y: 0 };
+        }
+
         let dir = { x: 0, y: 0 };
 
         // Keyboard priority

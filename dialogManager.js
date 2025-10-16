@@ -1,10 +1,11 @@
+import { DialogLayout } from './ui/index.js';
+
 class DialogManager {
     constructor(scene) {
         this.scene = scene;
         this.dialogContainer = null;
         this.overlay = null;
         this.isDialogOpen = false;
-        this.buttonElements = null;
         // Cache mobile detection for performance
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
@@ -16,299 +17,248 @@ class DialogManager {
 
         this.scene.isDialogOpen = true;
         this.isDialogOpen = true;
-        const cam = this.scene.cameras.main;
-        const dialogWidth = Math.min(this.isMobile ? 400 : 600, cam.width * (this.isMobile ? 0.9 : 0.85));
-        const dialogHeight = Math.min(this.isMobile ? 260 : 340, cam.height * (this.isMobile ? 0.8 : 0.65)); // Taller dialog
 
-        this.createOverlay(cam);
-        this.createDialogContainer(cam, dialogWidth, dialogHeight);
+        // Clear any existing input state to prevent player movement
+        if (this.scene.inputManager) {
+            this.scene.inputManager.target = null;
+            this.scene.inputManager.isDragging = false;
+            this.scene.inputManager.direction = { x: 0, y: 0 };
+        }
+
+        const cam = this.scene.cameras.main;
+
+        const dialogWidth = Math.min(this.isMobile ? 400 : 600, cam.width * (this.isMobile ? 0.9 : 0.85));
+        const dialogHeight = Math.min(this.isMobile ? 260 : 340, cam.height * (this.isMobile ? 0.8 : 0.65));
+
+        // Store dialog parameters for pagination callbacks
+        this.currentDialogParams = { imageKey, title, text, buttons, exitButton, pagination, bottomButtons, textPagination };
+
+        // Initialize the layout system first
+        this.dialogLayout = new DialogLayout(this.scene, cam.width / 2, cam.height - dialogHeight / 2 - 16, dialogWidth, dialogHeight);
+
+        // Create overlay and container using the layout system
+        this.overlay = this.createOverlay(cam);
+        this.dialogContainer = this.createContainer(cam, dialogWidth, dialogHeight);
+
+        // Create dialog structure
         this.renderBackground(dialogWidth, dialogHeight);
-        this.renderTitleBar(dialogWidth, dialogHeight, title);
-        const npcImage = this.renderNpcImage(imageKey, dialogWidth, dialogHeight);
-        const displayText = this.handleTextPagination(text, textPagination);
-        this.renderDialogText(displayText, dialogWidth, dialogHeight);
-        const displayButtons = this.handleButtonPagination(buttons, pagination, textPagination);
-        this.renderButtons(displayButtons, dialogWidth, dialogHeight);
-        this.renderExitButton(exitButton, dialogWidth, dialogHeight);
-        this.renderBottomButtons(bottomButtons, dialogWidth, dialogHeight);
-        this.addToContainer(npcImage);
+        this.renderTitleBar(title, dialogWidth, dialogHeight);
+        this.renderNpcImage(imageKey, dialogWidth, dialogHeight);
+        this.renderDialogText(this.handleTextPagination(text, textPagination), dialogWidth, dialogHeight);
+        this.renderButtons(this.handleButtonPagination(buttons, pagination, textPagination));
+        this.renderBottomButtons(this.handleBottomButtonPagination(bottomButtons, textPagination));
+        this.renderExitButton(exitButton);
+
+        this.addElementsToContainer();
     }
 
     createOverlay(cam) {
-        this.overlay = this.scene.add.rectangle(cam.width / 2, cam.height / 2, cam.width, cam.height, 0x000000, 0.5)
-            .setScrollFactor(0)
-            .setInteractive()
-            .setDepth(1999)
-            .on('pointerdown', () => this.hideDialog());
+        return this.dialogLayout.createOverlay(cam, () => this.hideDialog());
     }
 
-    createDialogContainer(cam, dialogWidth, dialogHeight) {
-        this.dialogContainer = this.scene.add.container(cam.width / 2, cam.height - dialogHeight / 2 - 16);
+    createContainer(cam, dialogWidth, dialogHeight) {
+        return this.dialogLayout.createContainer(cam);
     }
 
     renderBackground(dialogWidth, dialogHeight) {
-        const bg = this.scene.add.rectangle(0, 0, dialogWidth, dialogHeight, 0x808080, 0.97)
-            .setOrigin(0.5)
-            .setStrokeStyle(2, 0x222222)
-            .setInteractive()
-            .on('pointerdown', (pointer, localX, localY, event) => event.stopPropagation());
+        const bg = this.dialogLayout.createBackground();
         this.dialogContainer.add(bg);
     }
 
-    renderTitleBar(dialogWidth, dialogHeight, title) {
-        const titleBarHeight = 40;
-        const titleBar = this.scene.add.rectangle(0, -dialogHeight / 2 + titleBarHeight / 2, dialogWidth, titleBarHeight, 0x333366, 1)
-            .setOrigin(0.5)
-            .setStrokeStyle(2, 0x222222);
-        const titleText = this.scene.add.text(0, -dialogHeight / 2 + titleBarHeight / 2, title || '', {
-            fontSize: '20px',
-            fontStyle: 'bold',
-            color: '#fff',
-            align: 'center',
-            wordWrap: { width: dialogWidth - 32 }
-        }).setOrigin(0.5);
-        this.dialogContainer.add([titleBar, titleText]);
+    renderTitleBar(title, dialogWidth, dialogHeight) {
+        this.dialogLayout.createTitleBar(title);
     }
 
     renderNpcImage(imageKey, dialogWidth, dialogHeight) {
         if (!imageKey) return null;
-        const leftTopColumn = {
-            x: 32 - dialogWidth / 2,
-            y: 40 + 16 - dialogHeight / 2,
-            width: dialogWidth / 4,
-            height: dialogHeight / 2,
-        };
-        const npcImage = this.scene.add.image(leftTopColumn.x, leftTopColumn.y, imageKey)
-            .setDisplaySize(leftTopColumn.width / 2, leftTopColumn.height / 2)
-            .setOrigin(0.0);
+        const npcImage = this.scene.add.image(0, 0, imageKey)
+            .setDisplaySize(dialogWidth / 6, dialogWidth / 6)
+            .setOrigin(0.5, 0.5);
+        this.dialogLayout.setImage(npcImage);
         return npcImage;
+    }
+
+    renderDialogText(displayText, dialogWidth, dialogHeight) {
+        // Calculate word wrap width for approximately 36 characters per line
+        // Average character width is ~0.6 * fontSize, so 36 * (0.6 * 18) ≈ 389 pixels
+        const textAreaWidth = Math.floor(2 * dialogWidth / 3 - 16);
+        const targetWidth = Math.min(textAreaWidth, 389); // Cap at 36 chars worth
+
+        const dialogText = this.scene.add.text(0, 0, displayText, {
+            fontSize: '18px',
+            fontStyle: 'bold',
+            wordWrap: { width: targetWidth },
+            color: '#000',
+            align: 'left'
+        }).setOrigin(0, 0);
+        this.dialogLayout.setText(dialogText);
+    }
+
+    renderButtons(displayButtons) {
+        this.dialogLayout.createButtons(displayButtons);
+    }
+
+    renderExitButton(exitButton) {
+        this.dialogLayout.createExitButton(exitButton);
+    }
+
+    renderBottomButtons(bottomButtons) {
+        if (!bottomButtons || bottomButtons.length === 0) return;
+        this.dialogLayout.createBottomButtons(bottomButtons);
+    }
+
+    addElementsToContainer() {
+        const containerItems = [];
+
+        // Add layout elements to container
+        if (this.dialogLayout) {
+            Object.values(this.dialogLayout.elements).forEach(element => {
+                if (Array.isArray(element)) {
+                    containerItems.push(...element);
+                } else if (element) {
+                    containerItems.push(element);
+                }
+            });
+        }
+
+        this.dialogContainer.add(containerItems);
+        this.dialogContainer.setDepth(2000);
     }
 
     handleTextPagination(text, textPagination) {
         let displayText = text;
         if (textPagination && Array.isArray(text)) {
-            const { currentPage = 0, itemsPerPage = 5 } = textPagination;
-            const startIndex = currentPage * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, text.length);
-            const pageItems = text.slice(startIndex, endIndex);
-            displayText = pageItems.join('\n');
+            const { currentPage = 0 } = textPagination;
+            const pages = this.calculateTextPages(text);
+            if (currentPage < pages.length) {
+                // Join facts with blank lines for readability
+                displayText = pages[currentPage].join('\n\n');
+            }
         }
         return displayText;
     }
 
-    renderDialogText(displayText, dialogWidth, dialogHeight) {
-        const rightColumn = {
-            x: -dialogWidth / 4,
-            y: 40 + 16 - dialogHeight / 2,
-            width: dialogWidth * 3 / 4 - 8,
-        };
-        const dialogText = this.scene.add.text(rightColumn.x, rightColumn.y, displayText, {
-            fontSize: '18px',
-            fontStyle: 'bold',
-            wordWrap: { width: rightColumn.width },
-            color: '#000',
-            align: 'left'
-        }).setOrigin(0.0);
-        this.dialogContainer.add(dialogText);
+    /**
+     * Calculate pages of text based on line and character limits
+     * @param {Array<string>} textArray - Array of text items to paginate
+     * @returns {Array<Array<string>>} Array of pages, each containing an array of text items
+     */
+    calculateTextPages(textArray) {
+        const pages = [];
+        const maxLinesPerPage = 8; // Compromise between button area and no button area dialogs
+        const charsPerLine = 36;
+        const maxCharsPerPage = maxLinesPerPage * charsPerLine; // ~288 characters per page
+
+        let currentPage = [];
+        let currentChars = 0;
+
+        for (const item of textArray) {
+            // Calculate characters this item will take (including bullet and spacing)
+            const itemChars = item.length + 2; // +2 for bullet and space
+
+            // If adding this item would exceed the page limit, start a new page
+            if (currentChars + itemChars > maxCharsPerPage && currentPage.length > 0) {
+                pages.push([...currentPage]);
+                currentPage = [];
+                currentChars = 0;
+            }
+
+            // If this single item is too long for any page, we still need to add it
+            if (itemChars > maxCharsPerPage) {
+                if (currentPage.length > 0) {
+                    pages.push([...currentPage]);
+                    currentPage = [];
+                    currentChars = 0;
+                }
+                pages.push([item]);
+                continue;
+            }
+
+            // Add the item to current page
+            currentPage.push(item);
+            currentChars += itemChars;
+
+            // If we've reached the character limit, start a new page
+            if (currentChars >= maxCharsPerPage) {
+                pages.push([...currentPage]);
+                currentPage = [];
+                currentChars = 0;
+            }
+        }
+
+        // Add any remaining items to the last page
+        if (currentPage.length > 0) {
+            pages.push(currentPage);
+        }
+
+        return pages;
     }
 
     handleButtonPagination(buttons, pagination, textPagination) {
-        let displayButtons = buttons.concat(this.getTextPaginationButtons(textPagination));
+        let displayButtons = buttons;
         if (pagination) {
             const { currentPage, totalPages, itemsPerPage } = pagination;
             const startIndex = currentPage * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, buttons.length);
-            displayButtons = buttons.slice(startIndex, endIndex).concat(this.getTextPaginationButtons(textPagination));
+            displayButtons = buttons.slice(startIndex, endIndex);
             displayButtons = displayButtons.concat(this.getPaginationButtons(pagination));
         }
         return displayButtons;
     }
 
+    handleBottomButtonPagination(bottomButtons, textPagination) {
+        let displayBottomButtons = bottomButtons || [];
+        if (textPagination) {
+            displayBottomButtons = displayBottomButtons.concat(this.getTextPaginationButtons(textPagination));
+        }
+        return displayBottomButtons;
+    }
+
     getTextPaginationButtons(textPagination) {
         const buttons = [];
         if (textPagination && Array.isArray(textPagination.text)) {
-            const { currentPage = 0, itemsPerPage = 5, text } = textPagination;
-            const totalPages = Math.ceil(text.length / itemsPerPage);
+            const { currentPage = 0, text } = textPagination;
+            const pages = this.calculateTextPages(text);
+            const totalPages = pages.length;
+
+            // Only show navigation buttons if there are multiple pages
             if (totalPages > 1) {
-                if (currentPage > 0) {
-                    buttons.push({
-                        label: '<',
-                        onClick: () => this.showDialog({ ...this.getDialogParams(), textPagination: { ...textPagination, currentPage: currentPage - 1 } })
-                    });
-                }
-                if (currentPage < totalPages - 1) {
-                    buttons.push({
-                        label: '>',
-                        onClick: () => this.showDialog({ ...this.getDialogParams(), textPagination: { ...textPagination, currentPage: currentPage + 1 } })
-                    });
-                }
-            }
-        }
-        return buttons;
-    }
-
-    getPaginationButtons(pagination) {
-        const buttons = [];
-        const { currentPage, totalPages } = pagination;
-        if (totalPages > 1) {
-            if (currentPage > 0) {
+                // Always show both navigation buttons, disable when not applicable
                 buttons.push({
-                    label: 'Previous',
-                    onClick: () => {
-                        if (pagination.onPageChange) pagination.onPageChange(currentPage - 1);
-                    }
+                    label: '<',
+                    disabled: currentPage <= 0,
+                    onClick: currentPage > 0 ? () => this.showDialog({ ...this.getDialogParams(), textPagination: { ...textPagination, currentPage: currentPage - 1 } }) : () => {}
                 });
-            }
-            if (currentPage < totalPages - 1) {
                 buttons.push({
-                    label: 'Next',
-                    onClick: () => {
-                        if (pagination.onPageChange) pagination.onPageChange(currentPage + 1);
-                    }
+                    label: '>',
+                    disabled: currentPage >= totalPages - 1,
+                    onClick: currentPage < totalPages - 1 ? () => this.showDialog({ ...this.getDialogParams(), textPagination: { ...textPagination, currentPage: currentPage + 1 } }) : () => {}
                 });
             }
         }
         return buttons;
-    }
-
-    renderButtons(displayButtons, dialogWidth, dialogHeight) {
-        const buttonSpacing = 38;
-        const rightBotColumn = {
-            x: -dialogWidth / 4,
-            y: (40 + 16 - dialogHeight / 2) + (dialogHeight - 40 - 32) / 2,
-            width: dialogWidth * 3 / 4 - 8,
-            height: (dialogHeight - 40 - 32) / 2,
-        };
-        let buttonYStart;
-        if (displayButtons.length <= 3) {
-            buttonYStart = rightBotColumn.y + rightBotColumn.height - 8 - (displayButtons.length * buttonSpacing) - 40;
-        } else {
-            buttonYStart = rightBotColumn.y + 8 - dialogHeight / 8 - 38;
-        }
-
-        let buttonObjs = [];
-        displayButtons.forEach((btn, i) => {
-            const btnText = this.scene.add.text(0, 0, btn.label, {
-                fontSize: '16px',
-                fontStyle: 'bold',
-                color: '#fff',
-                align: 'left'
-            });
-            const textWidth = btnText.width;
-            const buttonWidth = Math.max(100, textWidth + 20);
-            const buttonX = this.dialogContainer.x + rightBotColumn.x + 8;
-            const buttonY = this.dialogContainer.y + buttonYStart + i * buttonSpacing;
-
-            const btnBg = this.scene.add.rectangle(buttonX, buttonY, buttonWidth, 30, 0x444444)
-                .setOrigin(0, 0)
-                .setInteractive({ useHandCursor: true })
-                .setDepth(2001)
-                .on('pointerover', () => btnBg.setFillStyle(0x666666))
-                .on('pointerout', () => btnBg.setFillStyle(0x444444))
-                .on('pointerdown', (pointer, localX, localY, event) => {
-                    event.stopPropagation();
-                    btn.onClick();
-                });
-
-            btnText.setPosition(buttonX + 10, buttonY + 15);
-            btnText.setOrigin(0, 0.5);
-            btnText.setDepth(2002);
-
-            buttonObjs.push(btnBg, btnText);
-        });
-        this.buttonElements = buttonObjs;
-    }
-
-    renderExitButton(exitButton, dialogWidth, dialogHeight) {
-        if (!exitButton) return;
-        const exitBtnText = this.scene.add.text(0, 0, exitButton.label, {
-            fontSize: '16px',
-            fontStyle: 'bold',
-            color: '#fff',
-            align: 'left'
-        });
-        const exitTextWidth = exitBtnText.width;
-        const exitButtonWidth = Math.max(100, exitTextWidth + 20);
-        const exitButtonX = this.dialogContainer.x + dialogWidth / 2 - exitButtonWidth - 8;
-        const exitButtonY = this.dialogContainer.y + dialogHeight / 2 - 8 - 30;
-
-        const exitBtnBg = this.scene.add.rectangle(exitButtonX, exitButtonY, exitButtonWidth, 30, 0x444444)
-            .setOrigin(0, 0)
-            .setInteractive({ useHandCursor: true })
-            .setDepth(2001)
-            .on('pointerover', () => exitBtnBg.setFillStyle(0x666666))
-            .on('pointerout', () => exitBtnBg.setFillStyle(0x444444))
-            .on('pointerdown', (pointer, localX, localY, event) => {
-                event.stopPropagation();
-                exitButton.onClick();
-            });
-
-        exitBtnText.setPosition(exitButtonX + exitButtonWidth / 2, exitButtonY + 15);
-        exitBtnText.setOrigin(0.5, 0.5);
-        exitBtnText.setDepth(2002);
-
-        this.buttonElements.push(exitBtnBg, exitBtnText);
-    }
-
-    renderBottomButtons(bottomButtons, dialogWidth, dialogHeight) {
-        if (!bottomButtons || bottomButtons.length === 0) return;
-        const bottomButtonY = this.dialogContainer.y + dialogHeight / 2 - 8 - 30;
-        const buttonWidth = 60;
-        const totalButtonWidth = bottomButtons.length * buttonWidth + (bottomButtons.length - 1) * 8;
-        const startX = this.dialogContainer.x - totalButtonWidth / 2;
-
-        bottomButtons.forEach((btn, i) => {
-            const isDisabled = btn.disabled || false;
-            const buttonColor = isDisabled ? 0x222222 : 0x444444;
-            const hoverColor = isDisabled ? 0x222222 : 0x666666;
-            const textColor = isDisabled ? '#666666' : '#fff';
-
-            const btnText = this.scene.add.text(0, 0, btn.label, {
-                fontSize: '16px',
-                fontStyle: 'bold',
-                color: textColor,
-                align: 'center'
-            });
-            const buttonX = startX + (i * (buttonWidth + 8));
-
-            const btnBg = this.scene.add.rectangle(buttonX, bottomButtonY, buttonWidth, 30, buttonColor)
-                .setOrigin(0, 0)
-                .setDepth(2001);
-
-            if (!isDisabled) {
-                btnBg.setInteractive({ useHandCursor: true })
-                    .on('pointerover', () => btnBg.setFillStyle(hoverColor))
-                    .on('pointerout', () => btnBg.setFillStyle(buttonColor))
-                    .on('pointerdown', (pointer, localX, localY, event) => {
-                        event.stopPropagation();
-                        btn.onClick();
-                    });
-            }
-
-            btnText.setPosition(buttonX + buttonWidth / 2, bottomButtonY + 15);
-            btnText.setOrigin(0.5, 0.5);
-            btnText.setDepth(2002);
-
-            this.buttonElements.push(btnBg, btnText);
-        });
-    }
-
-    addToContainer(npcImage) {
-        const containerItems = [];
-        if (npcImage) containerItems.push(npcImage);
-        this.dialogContainer.add(containerItems);
-        this.dialogContainer.setDepth(2000);
     }
 
     getDialogParams() {
-        // Helper to reconstruct params for pagination (simplified; adjust as needed)
-        return {}; // Placeholder; implement based on stored params if required
+        // Return the current dialog parameters for pagination callbacks
+        return this.currentDialogParams || {};
     }
 
     hideDialog() {
         if (this.isDialogOpen) {
             this.scene.isDialogOpen = false;
             this.isDialogOpen = false;
+        }
+
+        // If pointer is still down when dialog closes, ignore subsequent pointer events until release
+        if (this.scene.inputManager && this.scene.input.activePointer.isDown) {
+            this.scene.inputManager.ignorePointerUntilRelease = true;
+        }
+
+        // Clear the layout system (elements will be destroyed with container)
+        if (this.dialogLayout) {
+            this.dialogLayout.clear();
+            this.dialogLayout = null;
         }
 
         if (this.dialogContainer) {
@@ -319,15 +269,6 @@ class DialogManager {
         if (this.overlay) {
             this.overlay.destroy();
             this.overlay = null;
-        }
-
-        if (this.buttonElements) {
-            this.buttonElements.forEach(element => {
-                if (element && element.destroy) {
-                    element.destroy();
-                }
-            });
-            this.buttonElements = null;
         }
     }
 }
