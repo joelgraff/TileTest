@@ -3,8 +3,9 @@ import ColumnLayout from './ColumnLayout.js';
 import ButtonFactory from './ButtonFactory.js';
 
 /**
- * DialogLayout - Main layout manager for dialog components
- * Orchestrates grid and column layouts for flexible dialog positioning
+ * DialogLayout - Container-based layout manager for dialog components
+ * Organizes dialogs into three primary containers: title bar, main content, and bottom bar
+ * Assets are positioned relative to their container's upper-left corner
  */
 class DialogLayout {
     constructor(scene, dialogX, dialogY, dialogWidth, dialogHeight) {
@@ -17,31 +18,34 @@ class DialogLayout {
         // Initialize button factory
         this.buttonFactory = new ButtonFactory(scene);
 
-        // Define layout areas (relative to dialog container origin at 0,0)
+        // Define primary containers (relative to dialog container origin at 0,0)
         const titleBarHeight = 40;
         const bottomAreaHeight = 40;
-        const contentStartY = -dialogHeight / 2 + titleBarHeight;
         const contentHeight = dialogHeight - titleBarHeight - bottomAreaHeight;
 
-        this.areas = {
-            titleBar: { x: 0, y: -dialogHeight / 2, width: dialogWidth, height: titleBarHeight },
-            leftColumn: { x: -dialogWidth / 2, y: contentStartY, width: dialogWidth / 3, height: contentHeight },
-            rightColumn: { x: -dialogWidth / 2 + dialogWidth / 3, y: contentStartY, width: 2 * dialogWidth / 3, height: contentHeight },
-            textArea: { x: -dialogWidth / 2 + dialogWidth / 3, y: contentStartY, width: 2 * dialogWidth / 3, height: contentHeight / 3 },
-            buttonArea: { x: -dialogWidth / 2 + dialogWidth / 3, y: contentStartY + contentHeight / 3, width: 2 * dialogWidth / 3, height: 2 * contentHeight / 3 },
-            bottomArea: { x: 0, y: dialogHeight / 2 - bottomAreaHeight / 2, width: dialogWidth, height: bottomAreaHeight }
+        // Apply margins to main container positioning
+        const margin = 8;
+        this.containers = {
+            titleContainer: new Phaser.GameObjects.Container(this.scene, 0, -dialogHeight / 2 + titleBarHeight / 2), // Center in title bar
+            mainContainer: new Phaser.GameObjects.Container(this.scene, 0, -dialogHeight / 2 + titleBarHeight + margin), // Position with top margin
+            bottomContainer: new Phaser.GameObjects.Container(this.scene, 0, dialogHeight / 2 - bottomAreaHeight / 2) // Center in bottom area
         };
 
-        // Storage for dialog elements
+        // Sub-containers for main content - with 8px margins
+        const availableWidth = dialogWidth - (margin * 2); // Subtract left and right margins
+        const availableHeight = contentHeight - (margin * 2); // Subtract top and bottom margins
+        this.availableHeight = availableHeight; // Store for layout calculations
+        const mainLeftWidth = availableWidth / 3;
+        const mainRightWidth = availableWidth * 2 / 3;
+        this.containers.mainLeft = new Phaser.GameObjects.Container(this.scene, -availableWidth / 3, 0, []);
+        this.containers.mainRight = new Phaser.GameObjects.Container(this.scene, availableWidth / 6, 0, []);
+        this.containers.mainContainer.add([this.containers.mainLeft, this.containers.mainRight]);
+
+        // Storage for dialog elements (now grouped by container)
         this.elements = {
-            titleBar: null,
-            title: null,
-            image: null,
-            text: null,
-            buttons: [],
-            leftButtons: [],
-            bottomButtons: [],
-            exitButton: null
+            titleContainer: [],
+            mainContainer: { left: [], right: [], full: [] },
+            bottomContainer: []
         };
     }
 
@@ -55,7 +59,7 @@ class DialogLayout {
         const overlay = this.scene.add.rectangle(cam.width / 2, cam.height / 2, cam.width, cam.height, 0x000000, 0.5)
             .setScrollFactor(0)
             .setInteractive()
-            .setDepth(1999)
+            .setDepth(49999)
             .on('pointerdown', (pointer, localX, localY, event) => {
                 event.stopPropagation();
                 onClickOutside();
@@ -76,317 +80,263 @@ class DialogLayout {
      * @returns {Phaser.GameObjects.Container} Dialog container
      */
     createContainer(cam) {
-        return this.scene.add.container(cam.width / 2, cam.height - this.dialogHeight / 2 - 16);
+        return this.scene.add.container(cam.width / 2, cam.height - this.dialogHeight / 2 - 16).setScrollFactor(0);
     }
 
     /**
      * Create the dialog background
-     * @returns {Phaser.GameObjects.Rectangle} Background rectangle
+     * @returns {Phaser.GameObjects.Container} Container with background rectangles
      */
     createBackground() {
-        return this.scene.add.rectangle(0, 0, this.dialogWidth, this.dialogHeight, 0x808080, 0.97)
+        const backgroundContainer = this.scene.add.container(0, 0);
+
+        // Title bar background
+        const titleBg = this.scene.add.rectangle(0, -this.dialogHeight / 2 + 20, this.dialogWidth, 40, 0x000080, 0.9)
             .setOrigin(0.5)
-            .setStrokeStyle(2, 0x222222)
-            .setInteractive()
-            .on('pointerdown', (pointer, localX, localY, event) => event.stopPropagation())
-            .on('pointermove', (pointer, localX, localY, event) => event.stopPropagation())
-            .on('pointerup', (pointer, localX, localY, event) => event.stopPropagation());
+            .setStrokeStyle(1, 0x666666);
+
+        // Main content background
+        const mainBg = this.scene.add.rectangle(0, -this.dialogHeight / 2 + 40 + (this.dialogHeight - 80) / 2, this.dialogWidth, this.dialogHeight - 80, 0x808080, 0.97)
+            .setOrigin(0.5);
+
+        // Bottom area background
+        const bottomBg = this.scene.add.rectangle(0, this.dialogHeight / 2 - 20, this.dialogWidth, 40, 0x808080, 0.9)
+            .setOrigin(0.5);
+
+        backgroundContainer.add([titleBg, mainBg, bottomBg]);
+
+        // Make backgrounds interactive to prevent click-through
+        [titleBg, mainBg, bottomBg].forEach(bg => {
+            bg.setInteractive()
+                .on('pointerdown', (pointer, localX, localY, event) => event.stopPropagation())
+                .on('pointermove', (pointer, localX, localY, event) => event.stopPropagation())
+                .on('pointerup', (pointer, localX, localY, event) => event.stopPropagation());
+        });
+
+        return backgroundContainer;
     }
 
     /**
-     * Create the title bar with background and text
-     * @param {string} title - Dialog title text
+     * Add title text to the title container
+     * @param {Phaser.GameObjects.Text} titleText - Pre-built title text object
      */
-    createTitleBar(title) {
-        // Create title bar background
-        const titleBar = this.scene.add.rectangle(
-            0,
-            -this.dialogHeight / 2 + 20, // Center of title bar area
-            this.dialogWidth,
-            40,
-            0x333366,
-            1
-        ).setOrigin(0.5).setStrokeStyle(2, 0x222222);
-
-        const titleText = this.scene.add.text(0, -this.dialogHeight / 2 + 20, title || 'Dialog', {
-            fontSize: '20px',
-            fontStyle: 'bold',
-            color: '#fff',
-            align: 'center',
-            wordWrap: { width: this.dialogWidth - 32 }
-        }).setOrigin(0.5);
-
-        this.elements.titleBar = titleBar;
-        this.elements.title = titleText;
+    addTitle(titleText) {
+        if (titleText) {
+            this.containers.titleContainer.add(titleText);
+            this.elements.titleContainer.push(titleText);
+            // Center the title text in the title bar with margins
+            titleText.setOrigin(0.5, 0.5);
+            titleText.setPosition(0, 0);
+        }
     }
 
     /**
-     * Set the dialog image (NPC/vendor portrait)
-     * @param {Phaser.GameObjects.Image} image - Image object
+     * Add content to the main container's left sub-container
+     * @param {Phaser.GameObjects.GameObject|Array} assets - Single asset or array of assets
      */
-    setImage(image) {
-        // Position image in the left column, centered
-        image.setPosition(
-            this.areas.leftColumn.x + this.areas.leftColumn.width / 2 - image.width / 2,
-            this.areas.leftColumn.y + this.areas.leftColumn.height / 2 - image.height / 2
-        );
-        this.elements.image = image;
+    addMainLeft(assets) {
+        const assetArray = Array.isArray(assets) ? assets : [assets];
+        assetArray.forEach(asset => {
+            if (asset) {
+                this.containers.mainLeft.add(asset);
+                this.elements.mainContainer.left.push(asset);
+                // Position from top of main area, centered horizontally
+                asset.setOrigin(0.5, 0);
+                asset.setPosition(0, 0); // Container is already positioned at top of main area
+            }
+        });
     }
 
     /**
-     * Set the main dialog text content
-     * @param {Phaser.GameObjects.Text} text - Text object
-     * @param {boolean} hasLeftButtons - Whether the dialog has left column buttons
+     * Add content to the main container's right sub-container
+     * @param {Phaser.GameObjects.GameObject|Array} assets - Single asset or array of assets
      */
-    setText(text, hasLeftButtons = false) {
-        // If there are left buttons, use a reduced height text area to leave space for buttons
-        // Otherwise use the text area (upper portion of right column)
-        let textArea;
-        if (hasLeftButtons) {
-            // For dialogs with left buttons (like help topics), use most of right column but leave bottom margin
-            const buttonAreaHeight = 80; // Leave space for navigation buttons at bottom
-            textArea = {
-                x: this.areas.rightColumn.x,
-                y: this.areas.rightColumn.y,
-                width: this.areas.rightColumn.width,
-                height: this.areas.rightColumn.height - buttonAreaHeight
-            };
-        } else {
-            textArea = this.areas.textArea;
+    addMainRight(assets) {
+        const assetArray = Array.isArray(assets) ? assets : [assets];
+        assetArray.forEach(asset => {
+            if (asset) {
+                this.containers.mainRight.add(asset);
+                this.elements.mainContainer.right.push(asset);
+                // Position from top of main area, centered horizontally
+                asset.setOrigin(0.5, 0);
+                asset.setPosition(0, 0); // Container is already positioned at top of main area
+            }
+        });
+    }
+
+    /**
+     * Add content to the main container (full width)
+     * @param {Phaser.GameObjects.GameObject|Array} assets - Single asset or array of assets
+     */
+    addMain(assets) {
+        const assetArray = Array.isArray(assets) ? assets : [assets];
+        assetArray.forEach(asset => {
+            if (asset) {
+                this.containers.mainContainer.add(asset);
+                this.elements.mainContainer.full.push(asset);
+                // Position from top of main area, centered horizontally (container already has top margin)
+                asset.setOrigin(0.5, 0);
+                asset.setPosition(0, 0);
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Add content to the bottom container
+     * @param {Phaser.GameObjects.GameObject|Array} assets - Single asset or array of assets
+     */
+    addBottom(assets) {
+        const assetArray = Array.isArray(assets) ? assets : [assets];
+        assetArray.forEach(asset => {
+            if (asset) {
+                this.containers.bottomContainer.add(asset);
+                this.elements.bottomContainer.push(asset);
+                // Center the bottom content
+                asset.setOrigin(0.5, 0.5);
+                asset.setPosition(0, 0);
+            }
+        });
+    }
+
+    /**
+     * Add assets to a specified container with relative positioning
+     * @param {string} containerName - Name of container ('title', 'mainLeft', 'mainRight', 'bottom')
+     * @param {Phaser.GameObjects.GameObject|Array} assets - Single asset or array of assets
+     * @param {Object} layoutOptions - Layout options (e.g., { vertical: true, spacing: 10 })
+     */
+    addAssets(containerName, assets, layoutOptions = {}) {
+        const assetArray = Array.isArray(assets) ? assets : [assets];
+        let container;
+        let elementGroup;
+
+        switch (containerName) {
+            case 'title':
+                container = this.containers.titleContainer;
+                elementGroup = this.elements.titleContainer;
+                break;
+            case 'main':
+                container = this.containers.mainContainer;
+                elementGroup = this.elements.mainContainer.full;
+                break;
+            case 'mainLeft':
+                container = this.containers.mainLeft;
+                elementGroup = this.elements.mainContainer.left;
+                break;
+            case 'mainRight':
+                container = this.containers.mainRight;
+                elementGroup = this.elements.mainContainer.right;
+                break;
+            case 'bottom':
+                container = this.containers.bottomContainer;
+                elementGroup = this.elements.bottomContainer;
+                break;
+            default:
+                console.warn(`Unknown container name: ${containerName}`);
+                return;
         }
 
-        // Position text in the text area with proper margins
-        text.setPosition(
-            textArea.x + 8, // Small padding from left edge
-            textArea.y + 8   // Small padding from top edge (reduced from 30px)
-        );
-        this.elements.text = text;
+        assetArray.forEach(asset => {
+            if (asset) {
+                container.add(asset);
+                elementGroup.push(asset);
+                // Position relative to container - containers are pre-positioned correctly
+                if (containerName === 'title' || containerName === 'bottom') {
+                    asset.setOrigin(0.5, 0.5);
+                    asset.setPosition(0, 0);
+                } else {
+                    // Main content starts from top-left of container
+                    asset.setOrigin(0.5, 0);
+                    asset.setPosition(0, 0);
+                }
+            }
+        });
+
+        // Apply layout if specified
+        if (layoutOptions.vertical) {
+            this.layoutVertically(container, assetArray, layoutOptions.spacing || 10);
+        } else if (layoutOptions.horizontal) {
+            this.layoutHorizontally(container, assetArray, layoutOptions.spacing || 10);
+        }
     }
 
     /**
-     * Add main dialog buttons (typically in a grid layout)
-     * @param {Array} buttonConfigs - Array of button config objects with {label, onClick, options}
+     * Layout assets vertically within their container
+     * @param {Phaser.GameObjects.Container} container - Container holding the assets
+     * @param {Array} assets - Array of assets to layout
+     * @param {number} spacing - Spacing between assets
      */
-    createButtons(buttonConfigs) {
-        // Clear existing buttons
-        this.elements.buttons.forEach(button => {
-            if (button && button.destroy) button.destroy();
-        });
-        this.elements.buttons = [];
+    layoutVertically(container, assets, spacing) {
+        // For main content containers, start from the top with margins
+        // For title/bottom containers, center the group vertically
+        const isMainContainer = container === this.containers.mainContainer ||
+                               container === this.containers.mainLeft ||
+                               container === this.containers.mainRight;
+        let currentY;
 
-        if (buttonConfigs.length === 0) return;
+        if (isMainContainer) {
+            currentY = 0; // Start from top of container (margins already accounted for in positioning)
+        } else {
+            // Center the vertical group in the container
+            const totalHeight = assets.reduce((sum, asset, index) => {
+                return sum + asset.height + (index < assets.length - 1 ? spacing : 0);
+            }, 0);
+            currentY = -totalHeight / 2;
+        }
 
-        const buttonContainers = this.buttonFactory.createButtons(buttonConfigs);
-
-        // Always arrange vertically with dynamic spacing to fit all buttons
-        this.arrangeButtonsVertically(buttonContainers);
-    }
-
-    /**
-     * Add link-style buttons (text-only with underline on hover)
-     * @param {Array} buttonConfigs - Array of button config objects with {label, onClick, options}
-     */
-    createLinkButtons(buttonConfigs) {
-        // Clear existing buttons
-        this.elements.buttons.forEach(button => {
-            if (button && button.destroy) button.destroy();
-        });
-        this.elements.buttons = [];
-
-        if (buttonConfigs.length === 0) return;
-
-        const buttonContainers = this.buttonFactory.createLinkButtons(buttonConfigs);
-
-        // Arrange link buttons vertically with appropriate spacing
-        this.arrangeLinkButtonsVertically(buttonContainers);
-    }
-
-    arrangeLinkButtonsVertically(buttonContainers) {
-        const buttonSpacing = 25; // Smaller spacing for link buttons
-        const availableHeight = this.areas.buttonArea.height;
-        const totalButtonHeight = buttonContainers.length * buttonSpacing;
-
-        // Center the button stack vertically in the button area
-        let buttonYStart = this.areas.buttonArea.y + (availableHeight - totalButtonHeight) / 2 + buttonSpacing / 2;
-
-        buttonContainers.forEach((button, index) => {
-            // Position link buttons with left alignment in the button area
-            const buttonX = this.areas.buttonArea.x + 16; // Left padding
-            const buttonY = buttonYStart + index * buttonSpacing;
-            button.setPosition(buttonX, buttonY);
-            this.elements.buttons.push(button);
-        });
-    }
-
-    arrangeButtonsVertically(buttonContainers) {
-        // Use smaller spacing for many buttons to fit them all
-        const buttonSpacing = buttonContainers.length > 4 ? 30 : 38;
-        const availableHeight = this.areas.buttonArea.height;
-        const totalButtonHeight = buttonContainers.length * buttonSpacing;
-
-        // If buttons don't fit, reduce spacing further
-        const actualSpacing = totalButtonHeight > availableHeight ? availableHeight / buttonContainers.length : buttonSpacing;
-
-        // Center the button stack vertically in the button area
-        let buttonYStart = this.areas.buttonArea.y + (availableHeight - buttonContainers.length * actualSpacing) / 2 + actualSpacing / 2;
-
-        buttonContainers.forEach((button, index) => {
-            // Position buttons with left edge at button area start to avoid left column intrusion
-            const buttonX = this.areas.buttonArea.x + button.width / 2 + 8; // Left-align with small padding
-            const buttonY = buttonYStart + index * actualSpacing;
-            button.setPosition(buttonX, buttonY);
-            this.elements.buttons.push(button);
-        });
-    }
-
-    arrangeButtonsInGrid(buttonContainers) {
-        const buttonSpacingX = 10;
-        const buttonSpacingY = 35;
-        const buttonsPerRow = 2; // 2 columns for grid layout
-
-        const startX = this.areas.buttonArea.x + 8;
-        const startY = this.areas.buttonArea.y + 10;
-
-        buttonContainers.forEach((button, index) => {
-            const row = Math.floor(index / buttonsPerRow);
-            const col = index % buttonsPerRow;
-
-            const buttonX = startX + col * (button.width + buttonSpacingX) + button.width / 2;
-            const buttonY = startY + row * buttonSpacingY + button.height / 2;
-
-            button.setPosition(buttonX, buttonY);
-            this.elements.buttons.push(button);
+        assets.forEach(asset => {
+            if (isMainContainer) {
+                // For main containers, position from top with horizontal center
+                asset.setPosition(0, currentY);
+            } else {
+                // For title/bottom containers, center each asset
+                asset.setPosition(0, currentY + asset.height / 2);
+            }
+            currentY += asset.height + spacing;
         });
     }
 
     /**
-     * Add bottom buttons (pagination, etc.)
-     * @param {Array} buttonConfigs - Array of button config objects with {label, onClick, options}
+     * Layout assets horizontally within their container
+     * @param {Phaser.GameObjects.Container} container - Container holding the assets
+     * @param {Array} assets - Array of assets to layout
+     * @param {number} spacing - Spacing between assets
      */
-    createBottomButtons(buttonConfigs) {
-        // Clear existing bottom buttons
-        this.elements.bottomButtons.forEach(button => {
-            if (button && button.destroy) button.destroy();
-        });
-        this.elements.bottomButtons = [];
-
-        const buttonContainers = this.buttonFactory.createSmallButtons(buttonConfigs);
-
-        // Position bottom buttons horizontally centered (relative to container)
-        const totalWidth = buttonContainers.reduce((width, button) => width + button.width + 10, 0) - 10;
+    layoutHorizontally(container, assets, spacing) {
+        // Center the horizontal group in the container
+        const totalWidth = assets.reduce((sum, asset, index) => {
+            return sum + asset.width + (index < assets.length - 1 ? spacing : 0);
+        }, 0);
         let currentX = -totalWidth / 2;
 
-        buttonContainers.forEach(button => {
-            button.setPosition(currentX + button.width / 2, this.areas.bottomArea.y);
-            currentX += button.width + 10;
-            this.elements.bottomButtons.push(button);
+        const isMainContainer = container === this.containers.mainContainer ||
+                               container === this.containers.mainLeft ||
+                               container === this.containers.mainRight;
+
+        assets.forEach(asset => {
+            if (isMainContainer) {
+                // For main containers, position with vertical bottom alignment
+                asset.setPosition(currentX + asset.width / 2, this.availableHeight - asset.height);
+            } else {
+                // For title/bottom containers, center each asset vertically
+                asset.setPosition(currentX + asset.width / 2, 0);
+            }
+            currentX += asset.width + spacing;
         });
     }
 
-    /**
-     * Add left column buttons
-     * @param {Array} buttonConfigs - Array of button config objects with {label, onClick, options}
-     */
-    createLeftButtons(buttonConfigs) {
-        // Clear existing left buttons
-        this.elements.leftButtons.forEach(button => {
-            if (button && button.destroy) button.destroy();
-        });
-        this.elements.leftButtons = [];
 
-        const buttonContainers = this.buttonFactory.createSmallButtons(buttonConfigs);
 
-        // Special case: Help navigation layout (nav buttons on same row, back button below)
-        if (buttonConfigs.length === 3 &&
-            buttonConfigs[0].label === '<' &&
-            buttonConfigs[1].label === '>') {
 
-            // Calculate the width needed for the "Back to Topics" button based on text
-            const backButtonText = buttonConfigs[2].label;
-            const tempText = this.scene.add.text(0, 0, backButtonText, {
-                fontSize: '16px',
-                fontStyle: 'bold'
-            });
-            const textWidth = tempText.width;
-            tempText.destroy();
-
-            const backButtonWidth = Math.max(140, textWidth + 24); // Minimum 140px, padding for text
-
-            // Calculate navigation button width: (backButtonWidth - spacing) / 2
-            const navSpacing = 8; // Space between navigation buttons
-            const navButtonWidth = Math.max(35, (backButtonWidth - navSpacing) / 2); // Minimum 35px each
-
-            // Create buttons with calculated widths
-            const navButtonOptions = { width: navButtonWidth, ...buttonConfigs[0].options };
-            const backButtonOptions = { width: backButtonWidth, ...buttonConfigs[2].options };
-
-            const navButton1 = this.buttonFactory.createSmallButton(buttonConfigs[0].label, buttonConfigs[0].onClick, navButtonOptions);
-            const navButton2 = this.buttonFactory.createSmallButton(buttonConfigs[1].label, buttonConfigs[1].onClick, navButtonOptions);
-            const backButton = this.buttonFactory.createSmallButton(buttonConfigs[2].label, buttonConfigs[2].onClick, backButtonOptions);
-
-            // Position navigation buttons horizontally on the same row at bottom with margin
-            const bottomMargin = 20; // Margin from bottom of left column
-            const buttonSpacing = 8; // Space between navigation buttons
-            const navRowY = this.areas.leftColumn.y + this.areas.leftColumn.height - bottomMargin;
-
-            // Position back button first (centered at bottom)
-            const backButtonX = this.areas.leftColumn.x + this.areas.leftColumn.width / 2;
-            const backButtonY = navRowY - 35; // Position above navigation buttons
-            backButton.setPosition(backButtonX, backButtonY);
-            this.elements.leftButtons.push(backButton);
-
-            // Position navigation buttons: their combined width + spacing = back button width
-            // Center them as a group below the back button
-            const totalNavWidth = navButton1.width + buttonSpacing + navButton2.width;
-            const navStartX = backButtonX - totalNavWidth / 2;
-
-            // Position '<' button
-            const navButton1X = navStartX + navButton1.width / 2;
-            navButton1.setPosition(navButton1X, navRowY);
-            this.elements.leftButtons.push(navButton1);
-
-            // Position '>' button
-            const navButton2X = navStartX + navButton1.width + buttonSpacing + navButton2.width / 2;
-            navButton2.setPosition(navButton2X, navRowY);
-            this.elements.leftButtons.push(navButton2);
-
-        } else {
-            // Default vertical layout
-            const buttonSpacing = 35;
-            const leftColumnBottom = this.areas.leftColumn.y + this.areas.leftColumn.height;
-
-            // Start from bottom and work upwards
-            let currentY = leftColumnBottom - buttonSpacing / 2;
-
-            buttonContainers.forEach(button => {
-                const buttonX = this.areas.leftColumn.x + this.areas.leftColumn.width / 2;
-                button.setPosition(buttonX, currentY);
-                currentY -= buttonSpacing;
-                this.elements.leftButtons.push(button);
-            });
-        }
-    }
-
-    /**
-     * Create the exit button
-     * @param {Object} exitButtonConfig - Button config with {label, onClick, options}
-     */
-    createExitButton(exitButtonConfig) {
-        if (!exitButtonConfig) return;
-
-        const exitButton = this.buttonFactory.createButton(
-            exitButtonConfig.label,
-            exitButtonConfig.onClick,
-            exitButtonConfig.options
-        );
-
-        // Position in bottom right corner (relative to container)
-        exitButton.setPosition(
-            this.dialogWidth / 2 - exitButton.width / 2 - 10,
-            this.areas.bottomArea.y
-        );
-        this.elements.exitButton = exitButton;
-    }
 
     /**
      * Clear all elements from the dialog layout
@@ -397,27 +347,38 @@ class DialogLayout {
 
         // Reset elements storage
         this.elements = {
-            titleBar: null,
-            title: null,
-            image: null,
-            text: null,
-            buttons: [],
-            leftButtons: [],
-            bottomButtons: [],
-            exitButton: null
+            titleContainer: [],
+            mainContainer: { left: [], right: [], full: [] },
+            bottomContainer: []
         };
     }
 
     /**
-     * Get layout area bounds for custom positioning
-     * @param {string} areaName - Name of the predefined area
-     * @returns {Object} Area bounds with x, y, width, height (relative to container)
+     * Get container bounds for custom positioning
+     * @param {string} containerName - Name of container ('title', 'main', 'bottom')
+     * @returns {Object} Container bounds with x, y, width, height (relative to dialog container)
      */
-    getArea(areaName) {
-        if (this.areas[areaName]) {
-            return { ...this.areas[areaName] };
+    getContainerBounds(containerName) {
+        const titleBarHeight = 40;
+        const bottomAreaHeight = 40;
+        const contentHeight = this.dialogHeight - titleBarHeight - bottomAreaHeight;
+        const margin = 8;
+
+        switch (containerName) {
+            case 'title':
+                return { x: 0, y: -this.dialogHeight / 2, width: this.dialogWidth, height: titleBarHeight };
+            case 'main':
+                return {
+                    x: 0,
+                    y: -this.dialogHeight / 2 + titleBarHeight + margin,
+                    width: this.dialogWidth - (margin * 2),
+                    height: contentHeight - (margin * 2)
+                };
+            case 'bottom':
+                return { x: 0, y: this.dialogHeight / 2 - bottomAreaHeight / 2, width: this.dialogWidth, height: bottomAreaHeight };
+            default:
+                return null;
         }
-        return null;
     }
 }
 
