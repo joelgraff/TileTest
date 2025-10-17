@@ -88,6 +88,11 @@ class DialogManager {
             this.dialogLayout.addMain(assets.main);
         }
 
+        // Add main left assets
+        if (assets.mainLeft) {
+            this.dialogLayout.addMainLeft(assets.mainLeft);
+        }
+
         // Add main right assets
         if (assets.mainRight) {
             this.dialogLayout.addMainRight(assets.mainRight);

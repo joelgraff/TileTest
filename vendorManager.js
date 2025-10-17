@@ -188,24 +188,8 @@ class VendorManager {
                             ? allDomainFacts
                             : this.getRandomFacts(allDomainFacts, maxFactsPerVendor);
 
-                        // Format facts with bullet points for display (no extra newlines - pagination handles spacing)
-                        const formattedFacts = selectedFacts.map(fact => `• ${fact}`);
-
-                        // Show facts using intelligent text pagination based on line limits
-                        this.scene.uiManager.showDialog({
-                            imageKey: imageKey,
-                            title: vendorData.name,
-                            text: formattedFacts,
-                            textPagination: {
-                                currentPage: 0,
-                                text: formattedFacts
-                            },
-                            buttons: [],
-                            exitButton: {
-                                label: 'Back',
-                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-                            }
-                        });
+                        // Show facts with pagination
+                        this.showTechFactsDialog(selectedFacts, vendorData, imageKey, originalDialogData);
                         return;
                     } else {
                         newText = 'No facts available at this time.';
@@ -235,6 +219,91 @@ class VendorManager {
             exitButton: exitButton  // Separate exit button for bottom positioning
         };
         this.scene.uiManager.showDialog(originalDialogData);
+    }
+
+    showTechFactsDialog(facts, vendorData, imageKey, originalDialogData, page = 0) {
+        // Show 4 facts per page maximum to ensure they fit
+        const factsPerPage = 4;
+        const totalPages = Math.ceil(facts.length / factsPerPage);
+        const currentPage = Math.min(page, totalPages - 1);
+        const startIndex = currentPage * factsPerPage;
+        const endIndex = Math.min(startIndex + factsPerPage, facts.length);
+        const pageFacts = facts.slice(startIndex, endIndex);
+
+        // Format facts with bullet points
+        const formattedFacts = pageFacts.map(fact => `• ${fact}`);
+        const displayText = formattedFacts.join('\n');
+
+        // Create assets
+        const assets = {};
+        const layoutOptions = {};
+
+        // Title
+        assets.title = [this.scene.add.text(0, 0, `${vendorData.name} - Tech Facts`, {
+            fontSize: '20px',
+            fontStyle: 'bold',
+            color: '#fff',
+            align: 'center'
+        })];
+
+        // NPC Image
+        const imageAsset = this.scene.add.image(0, 0, imageKey)
+            .setDisplaySize(90, 134)
+            .setOrigin(0.5, 0.5);
+        assets.mainLeft = [imageAsset];
+
+        // Main text
+        const textAsset = this.scene.add.text(0, 0, displayText, {
+            fontSize: '16px',
+            fontStyle: 'bold',
+            wordWrap: { width: 280 },
+            color: '#000',
+            align: 'left'
+        });
+        assets.mainRight = [textAsset];
+
+        // Create bottom buttons
+        const bottomButtons = [];
+
+        // Back button on the left
+        const backButton = this.scene.add.text(0, 0, '< Back', {
+            fontSize: '16px',
+            color: '#000',
+            backgroundColor: '#ccc',
+            padding: { x: 10, y: 5 }
+        }).setInteractive().on('pointerdown', () => this.scene.uiManager.showDialog(originalDialogData));
+        bottomButtons.push(backButton);
+
+        // Pagination buttons on the right (if needed)
+        if (totalPages > 1) {
+            const prevButton = this.scene.add.text(0, 0, '<', {
+                fontSize: '16px',
+                color: currentPage <= 0 ? '#666' : '#000',
+                backgroundColor: '#ccc',
+                padding: { x: 10, y: 5 }
+            });
+            if (currentPage > 0) {
+                prevButton.setInteractive().on('pointerdown', () => this.showTechFactsDialog(facts, vendorData, imageKey, originalDialogData, currentPage - 1));
+            }
+            bottomButtons.push(prevButton);
+
+            const nextButton = this.scene.add.text(0, 0, '>', {
+                fontSize: '16px',
+                color: currentPage >= totalPages - 1 ? '#666' : '#000',
+                backgroundColor: '#ccc',
+                padding: { x: 10, y: 5 }
+            });
+            if (currentPage < totalPages - 1) {
+                nextButton.setInteractive().on('pointerdown', () => this.showTechFactsDialog(facts, vendorData, imageKey, originalDialogData, currentPage + 1));
+            }
+            bottomButtons.push(nextButton);
+        }
+
+        assets.bottom = bottomButtons;
+        // Use custom layout that positions back button left, pagination buttons right
+        layoutOptions.bottom = { horizontal: true, spacing: 20, leftAlignFirst: true };
+
+        this.scene.uiManager.dialogManager.showDialog(assets, layoutOptions);
     }
 
     getRandomFacts(factsArray, count) {

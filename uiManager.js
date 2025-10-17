@@ -333,11 +333,12 @@ class UIManager {
     }
 
     loadHelpData() {
-        // Load help data from help.json
-        fetch('help.json')
-            .then(response => response.json())
-            .then(data => {
-                this.helpData = data;
+        // Load help data from help.md
+        fetch('help.md')
+            .then(response => response.text())
+            .then(markdownContent => {
+                const contentProcessor = this.dialogManager.getContentProcessor();
+                this.helpData = contentProcessor.parseHelpMarkdown(markdownContent);
             })
             .catch(error => {
                 console.error('Failed to load help data:', error);
@@ -461,7 +462,7 @@ class UIManager {
 
         // Use ContentProcessor for pagination
         const contentProcessor = this.dialogManager.getContentProcessor();
-        const pages = contentProcessor.paginateText(topic.content.join('\n'), 15);
+        const pages = contentProcessor.paginateText(topic.content.join('\n'), 9);
         const totalPages = pages.length;
         const currentPage = Math.min(page, totalPages - 1);
         const displayText = pages[currentPage];
@@ -479,6 +480,7 @@ class UIManager {
         })];
 
         // Main text
+        console.log(displayText);
         const textAsset = this.scene.add.text(0, 0, displayText, {
             fontSize: '18px',
             fontStyle: 'bold',
@@ -583,15 +585,14 @@ class UIManager {
         if (activeQuests.length > 0) {
             questItems.push('=== ACTIVE QUESTS ===');
             activeQuests.forEach((quest, index) => {
-                questItems.push(`${index + 1}. ${quest.title}`);
-                questItems.push(`   ${quest.description}`);
+                questItems.push(`\n${index + 1}. ${quest.title}`);
+                questItems.push(`\n${quest.description}`);
                 const completedObjectives = quest.objectives.filter(obj => obj.collected).length;
                 const totalObjectives = quest.objectives.length;
-                questItems.push(`   Progress: ${completedObjectives}/${totalObjectives} items collected`);
+                questItems.push(`\nProgress: ${completedObjectives}/${totalObjectives} items collected`);
                 questItems.push(''); // Empty line for spacing
             });
         } else {
-            questItems.push('=== ACTIVE QUESTS ===');
             questItems.push('No active quests');
             questItems.push('');
         }
@@ -608,7 +609,7 @@ class UIManager {
 
         // Use ContentProcessor for pagination
         const contentProcessor = this.dialogManager.getContentProcessor();
-        const pages = contentProcessor.paginateText(questItems.join('\n'), 15);
+        const pages = contentProcessor.paginateText(questItems.join('\n'), 9);
         const totalPages = pages.length;
         const currentPage = Math.min(page, totalPages - 1);
         const displayText = pages[currentPage];
@@ -754,7 +755,7 @@ class UIManager {
         // Create image asset if provided
         if (dialogData.imageKey) {
             const imageAsset = this.scene.add.image(0, 0, dialogData.imageKey)
-                .setDisplaySize(100, 100)
+                .setDisplaySize(90, 134)
                 .setOrigin(0.5, 0.5);
             assets.mainLeft = [imageAsset];
         }
@@ -801,9 +802,23 @@ class UIManager {
 
         // Add buttons to appropriate containers
         if (buttons.length > 0) {
-            assets.mainRight = assets.mainRight || [];
-            assets.mainRight.push(...buttons);
-            layoutOptions.mainRight = { vertical: true, spacing: 10 };
+            // For vendor dialogs with both text and buttons in mainRight,
+            // position buttons at the bottom of the right column
+            if (dialogData.text && assets.mainRight && assets.mainRight.length > 0) {
+                // Add buttons to mainRight with bottom positioning
+                assets.mainRight.push(...buttons);
+                // Use a custom layout that positions text at top, buttons at bottom
+                layoutOptions.mainRight = {
+                    vertical: true,
+                    spacing: 10,
+                    bottomAlignButtons: true
+                };
+            } else {
+                // Default behavior: buttons in mainRight
+                assets.mainRight = assets.mainRight || [];
+                assets.mainRight.push(...buttons);
+                layoutOptions.mainRight = { vertical: true, spacing: 10 };
+            }
         }
 
         if (leftButtons.length > 0) {

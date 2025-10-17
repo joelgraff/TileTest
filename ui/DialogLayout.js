@@ -37,8 +37,8 @@ class DialogLayout {
         this.availableHeight = availableHeight; // Store for layout calculations
         const mainLeftWidth = availableWidth / 3;
         const mainRightWidth = availableWidth * 2 / 3;
-        this.containers.mainLeft = new Phaser.GameObjects.Container(this.scene, -availableWidth / 3, 0, []);
-        this.containers.mainRight = new Phaser.GameObjects.Container(this.scene, availableWidth / 6, 0, []);
+        this.containers.mainLeft = new Phaser.GameObjects.Container(this.scene, -availableWidth / 3, -this.availableHeight / 2, []);
+        this.containers.mainRight = new Phaser.GameObjects.Container(this.scene, availableWidth / 6, -this.availableHeight / 2, []);
         this.containers.mainContainer.add([this.containers.mainLeft, this.containers.mainRight]);
 
         // Storage for dialog elements (now grouped by container)
@@ -157,9 +157,9 @@ class DialogLayout {
             if (asset) {
                 this.containers.mainRight.add(asset);
                 this.elements.mainContainer.right.push(asset);
-                // Position from top of main area, centered horizontally
+                // Position at the top of the container, centered horizontally
                 asset.setOrigin(0.5, 0);
-                asset.setPosition(0, 0); // Container is already positioned at top of main area
+                asset.setPosition(0, 0);
             }
         });
     }
@@ -174,9 +174,9 @@ class DialogLayout {
             if (asset) {
                 this.containers.mainContainer.add(asset);
                 this.elements.mainContainer.full.push(asset);
-                // Position from top of main area, centered horizontally (container already has top margin)
+                // Position at the top of the container, centered horizontally
                 asset.setOrigin(0.5, 0);
-                asset.setPosition(0, 0);
+                asset.setPosition(0, -this.availableHeight / 2);
             }
         });
     }
@@ -263,9 +263,9 @@ class DialogLayout {
 
         // Apply layout if specified
         if (layoutOptions.vertical) {
-            this.layoutVertically(container, assetArray, layoutOptions.spacing || 10);
+            this.layoutVertically(container, assetArray, layoutOptions.spacing || 10, layoutOptions);
         } else if (layoutOptions.horizontal) {
-            this.layoutHorizontally(container, assetArray, layoutOptions.spacing || 10);
+            this.layoutHorizontally(container, assetArray, layoutOptions.spacing || 10, layoutOptions);
         }
     }
 
@@ -274,9 +274,10 @@ class DialogLayout {
      * @param {Phaser.GameObjects.Container} container - Container holding the assets
      * @param {Array} assets - Array of assets to layout
      * @param {number} spacing - Spacing between assets
+     * @param {Object} options - Layout options (e.g., { bottomAlignButtons: true })
      */
-    layoutVertically(container, assets, spacing) {
-        // For main content containers, start from the top with margins
+    layoutVertically(container, assets, spacing, options = {}) {
+        // For main content containers, start from the top
         // For title/bottom containers, center the group vertically
         const isMainContainer = container === this.containers.mainContainer ||
                                container === this.containers.mainLeft ||
@@ -284,7 +285,29 @@ class DialogLayout {
         let currentY;
 
         if (isMainContainer) {
-            currentY = 0; // Start from top of container (margins already accounted for in positioning)
+            // Special handling for mainRight with bottom-aligned buttons
+            if (container === this.containers.mainRight && options.bottomAlignButtons && assets.length > 1) {
+                // Position first item (text) at top, remaining items (buttons) at bottom
+                const textAsset = assets[0];
+                const buttonAssets = assets.slice(1);
+
+                // Position text at top
+                textAsset.setPosition(0, 0);
+
+                // Position buttons at bottom
+                const buttonTotalHeight = buttonAssets.reduce((sum, asset, index) => {
+                    return sum + asset.height + (index < buttonAssets.length - 1 ? spacing : 0);
+                }, 0);
+
+                let buttonY = this.availableHeight / 2 - buttonTotalHeight / 2;
+                buttonAssets.forEach(asset => {
+                    asset.setPosition(0, buttonY);
+                    buttonY += asset.height + spacing;
+                });
+                return;
+            }
+
+            currentY = 0; // Start from the top of the container
         } else {
             // Center the vertical group in the container
             const totalHeight = assets.reduce((sum, asset, index) => {
@@ -310,28 +333,58 @@ class DialogLayout {
      * @param {Phaser.GameObjects.Container} container - Container holding the assets
      * @param {Array} assets - Array of assets to layout
      * @param {number} spacing - Spacing between assets
+     * @param {Object} options - Layout options (e.g., { leftAlignFirst: true })
      */
-    layoutHorizontally(container, assets, spacing) {
-        // Center the horizontal group in the container
-        const totalWidth = assets.reduce((sum, asset, index) => {
-            return sum + asset.width + (index < assets.length - 1 ? spacing : 0);
-        }, 0);
-        let currentX = -totalWidth / 2;
-
+    layoutHorizontally(container, assets, spacing, options = {}) {
         const isMainContainer = container === this.containers.mainContainer ||
                                container === this.containers.mainLeft ||
                                container === this.containers.mainRight;
 
-        assets.forEach(asset => {
+        if (options.leftAlignFirst && assets.length > 1) {
+            // Special layout: first item left-justified, remaining items right-justified
+            const firstAsset = assets[0];
+            const remainingAssets = assets.slice(1);
+            const margin = 15; // Margin from dialog edges
+
+            // Position first asset with left margin
             if (isMainContainer) {
-                // For main containers, position with vertical bottom alignment
-                asset.setPosition(currentX + asset.width / 2, this.availableHeight - asset.height);
+                firstAsset.setPosition(-this.dialogWidth / 2 + margin + firstAsset.width / 2, this.availableHeight / 2 - 15);
             } else {
-                // For title/bottom containers, center each asset vertically
-                asset.setPosition(currentX + asset.width / 2, 0);
+                firstAsset.setPosition(-this.dialogWidth / 2 + margin + firstAsset.width / 2, 0);
             }
-            currentX += asset.width + spacing;
-        });
+
+            // Position remaining assets with right margin
+            const remainingWidth = remainingAssets.reduce((sum, asset, index) => {
+                return sum + asset.width + (index < remainingAssets.length - 1 ? spacing : 0);
+            }, 0);
+            let currentX = this.dialogWidth / 2 - margin - remainingWidth;
+
+            remainingAssets.forEach(asset => {
+                if (isMainContainer) {
+                    asset.setPosition(currentX + asset.width / 2, this.availableHeight / 2 - 15);
+                } else {
+                    asset.setPosition(currentX + asset.width / 2, 0);
+                }
+                currentX += asset.width + spacing;
+            });
+        } else {
+            // Default: center the horizontal group in the container
+            const totalWidth = assets.reduce((sum, asset, index) => {
+                return sum + asset.width + (index < assets.length - 1 ? spacing : 0);
+            }, 0);
+            let currentX = -totalWidth / 2;
+
+            assets.forEach(asset => {
+                if (isMainContainer) {
+                    // For main containers, position with vertical bottom alignment
+                    asset.setPosition(currentX + asset.width / 2, this.availableHeight / 2 - 15);
+                } else {
+                    // For title/bottom containers, center each asset vertically
+                    asset.setPosition(currentX + asset.width / 2, 0);
+                }
+                currentX += asset.width + spacing;
+            });
+        }
     }
 
 
