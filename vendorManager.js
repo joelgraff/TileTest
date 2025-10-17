@@ -16,9 +16,56 @@ class VendorManager {
         if (this.vendorAssignmentDone) return;
         if (!this.scene.npcGroup || !this.vendors.length) return;
 
-        // Change to random assignment (matches original NPCManager behavior for consistency)
-        this.scene.npcGroup.getChildren().forEach(npcSprite => {
-            npcSprite.vendorData = this.vendors[Math.floor(Math.random() * this.vendors.length)];
+        const npcs = this.scene.npcGroup.getChildren();
+        const numNpcs = npcs.length;
+
+        // Group vendors by domain
+        const vendorsByDomain = {};
+        this.vendors.forEach(vendor => {
+            if (!vendorsByDomain[vendor.domain_id]) {
+                vendorsByDomain[vendor.domain_id] = [];
+            }
+            vendorsByDomain[vendor.domain_id].push(vendor);
+        });
+
+        console.log('Vendors by domain:', Object.keys(vendorsByDomain).map(domain => `${domain}: ${vendorsByDomain[domain].length} vendors`));
+
+        // Select vendors to ensure domain diversity
+        const selectedVendors = [];
+        const domains = Object.keys(vendorsByDomain);
+
+        // First, select one vendor from each domain
+        domains.forEach(domain => {
+            if (vendorsByDomain[domain].length > 0 && selectedVendors.length < numNpcs) {
+                const randomVendor = vendorsByDomain[domain][Math.floor(Math.random() * vendorsByDomain[domain].length)];
+                selectedVendors.push(randomVendor);
+                // Remove this vendor from the pool to avoid duplicates
+                vendorsByDomain[domain] = vendorsByDomain[domain].filter(v => v.id !== randomVendor.id);
+            }
+        });
+
+        // If we still need more vendors, fill with random remaining vendors
+        const remainingVendors = [];
+        domains.forEach(domain => {
+            remainingVendors.push(...vendorsByDomain[domain]);
+        });
+
+        while (selectedVendors.length < numNpcs && remainingVendors.length > 0) {
+            const randomIndex = Math.floor(Math.random() * remainingVendors.length);
+            selectedVendors.push(remainingVendors[randomIndex]);
+            remainingVendors.splice(randomIndex, 1);
+        }
+
+        console.log('Selected vendors for NPCs:', selectedVendors.map(v => `${v.name} (${v.domain_id})`));
+
+        // Assign selected vendors to NPCs
+        npcs.forEach((npcSprite, index) => {
+            if (index < selectedVendors.length) {
+                npcSprite.vendorData = selectedVendors[index];
+            } else {
+                // Fallback to random if we somehow don't have enough
+                npcSprite.vendorData = this.vendors[Math.floor(Math.random() * this.vendors.length)];
+            }
 
             // Pulsing glow effect
             if (npcSprite.glowGraphic) {
@@ -30,6 +77,7 @@ class VendorManager {
             npcSprite.glowGraphic = glow;
             npcSprite.glowPulse = 0;
         });
+
         this.vendorAssignmentDone = true;
     }
 
@@ -85,9 +133,75 @@ class VendorManager {
             onClick: () => {
                 let newText = '';
                 if (response.action === 'show_items') {
-                    const domainItems = DomainManager.getDomainItems(vendorData.domain_id);
-                    if (domainItems.length > 0) {
-                        const itemsPerPage = 4; // Show 4 items per page
+                    const allDomainItems = DomainManager.getDomainItems(vendorData.domain_id);
+                    if (allDomainItems.length > 0) {
+                        // Get quest-required items for this domain
+                        let questRequiredItems = [];
+                        if (this.scene.questManager) {
+                            const activeQuests = this.scene.questManager.getActiveQuests();
+                            activeQuests.forEach(quest => {
+                                if (quest.domains.includes(vendorData.domain_id)) {
+                                    quest.objectives.forEach(objective => {
+                                        if (!objective.collected) {
+                                            questRequiredItems.push(objective.item);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+
+                        // Distribute quest items across vendors in the same domain
+                        let distributedQuestItems = [];
+                        if (questRequiredItems.length > 0) {
+                            // Find all vendors in this domain
+                            const vendorsInDomain = [];
+                            this.scene.npcGroup.getChildren().forEach(npc => {
+                                if (npc.vendorData && npc.vendorData.domain_id === vendorData.domain_id) {
+                                    vendorsInDomain.push(npc.vendorData);
+                                }
+                            });
+
+                            // Sort vendors by ID for consistent distribution
+                            vendorsInDomain.sort((a, b) => a.id.localeCompare(b.id));
+                            const vendorIndex = vendorsInDomain.findIndex(v => v.id === vendorData.id);
+
+                            if (vendorIndex !== -1) {
+                                // Distribute quest items round-robin across vendors
+                                questRequiredItems.forEach((item, itemIndex) => {
+                                    const assignedVendorIndex = itemIndex % vendorsInDomain.length;
+                                    if (assignedVendorIndex === vendorIndex) {
+                                        distributedQuestItems.push(item);
+                                    }
+                                });
+
+                                // Ensure at least one quest item per vendor if there are more vendors than items
+                                if (distributedQuestItems.length === 0 && vendorIndex < questRequiredItems.length) {
+                                    distributedQuestItems.push(questRequiredItems[vendorIndex]);
+                                }
+                            }
+                        }
+
+                        // Ensure quest items are included, then add random items up to the limit
+                        let selectedItems = [...distributedQuestItems];
+                        const remainingItems = allDomainItems.filter(item =>
+                            !selectedItems.some(selected => selected.name === item.name)
+                        );
+
+                        // Limit to 6-9 random items per vendor (increased minimum for better quest completion)
+                        const minItems = 6;
+                        const maxItems = 9;
+                        const numItemsToShow = Math.min(
+                            Math.max(minItems, Math.floor(Math.random() * (maxItems - minItems + 1)) + minItems),
+                            allDomainItems.length
+                        );
+
+                        // Add random items to fill the quota
+                        const additionalItems = this.getRandomItems(remainingItems, numItemsToShow - selectedItems.length);
+                        selectedItems = selectedItems.concat(additionalItems);
+
+                        const domainItems = selectedItems;
+
+                        const itemsPerPage = 5; // Show 5 items per page
                         const totalPages = Math.ceil(domainItems.length / itemsPerPage);
 
                         const showItemsDialog = (page = 0) => {
@@ -135,7 +249,7 @@ class VendorManager {
                                 onClick: () => this.scene.uiManager.showDialog(originalDialogData)
                             };
 
-                            // Add pagination buttons - always show both, disable when not applicable
+                            // Add pagination buttons only when there are multiple pages
                             if (totalPages > 1) {
                                 bottomButtons.push({
                                     label: '<',
@@ -147,16 +261,12 @@ class VendorManager {
                                     disabled: page >= totalPages - 1,
                                     onClick: page < totalPages - 1 ? () => showItemsDialog(page + 1) : () => {}
                                 });
-                            } else {
-                                // Single page - show disabled buttons
-                                bottomButtons.push({ label: '<', disabled: true, onClick: () => {} });
-                                bottomButtons.push({ label: '>', disabled: true, onClick: () => {} });
                             }
 
                             this.scene.uiManager.showDialog({
                                 imageKey: imageKey,
                                 title: vendorData.name,
-                                text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)} (Page ${page + 1}/${totalPages}):`,
+                                text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)}${totalPages > 1 ? ` (Page ${page + 1}/${totalPages})` : ''}:`,
                                 buttons: itemButtons,
                                 bottomButtons: bottomButtons,
                                 exitButton: exitButton
@@ -172,7 +282,7 @@ class VendorManager {
                     this.scene.uiManager.showDialog({
                         imageKey: imageKey,
                         title: vendorData.name,
-                        text: `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${DomainManager.getDomainName(vendorData.domain_id)}`,
+                        text: `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}`,
                         buttons: [{
                             label: 'Back',
                             onClick: () => this.scene.uiManager.showDialog(originalDialogData)
@@ -213,7 +323,7 @@ class VendorManager {
         // Full dialog logic adapted from NPCManager (using DomainManager for items/facts)
         const originalDialogData = {
             imageKey: imageKey,
-            title: vendorData.name,
+            title: `${vendorData.name} (${DomainManager.getDomainName(vendorData.domain_id)})`,
             text: vendorData.description,  // Changed from 'description' to 'text' to match dialog system expectations
             buttons: responseButtons,  // Main button stack (response buttons)
             exitButton: exitButton  // Separate exit button for bottom positioning
@@ -318,6 +428,20 @@ class VendorManager {
 
         // Return the first 'count' facts
         return facts.slice(0, count);
+    }
+
+    getRandomItems(itemsArray, count) {
+        // Create a copy of the array to avoid modifying the original
+        const items = [...itemsArray];
+
+        // Shuffle the array using Fisher-Yates algorithm
+        for (let i = items.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [items[i], items[j]] = [items[j], items[i]];
+        }
+
+        // Return the first 'count' items
+        return items.slice(0, count);
     }
 
     update() {

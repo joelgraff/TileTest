@@ -800,6 +800,30 @@ class UIManager {
             layoutOptions.bottom = { horizontal: true, spacing: 10 };
         }
 
+        // Create bottom buttons (for pagination, etc.)
+        if (dialogData.bottomButtons) {
+            const bottomButtons = [];
+            dialogData.bottomButtons.forEach(buttonConfig => {
+                const button = this.scene.add.text(0, 0, buttonConfig.label, {
+                    fontSize: '16px',
+                    color: buttonConfig.disabled ? '#666' : '#000',
+                    backgroundColor: '#ccc',
+                    padding: { x: 10, y: 5 }
+                });
+                if (!buttonConfig.disabled && buttonConfig.onClick) {
+                    button.setInteractive().on('pointerdown', buttonConfig.onClick);
+                }
+                bottomButtons.push(button);
+            });
+            assets.bottom = assets.bottom || [];
+            assets.bottom.unshift(...bottomButtons); // Add pagination buttons before exit button
+            // Use centered layout for bottom buttons (navigation buttons)
+            layoutOptions.bottom = {
+                horizontal: true,
+                spacing: 10
+            };
+        }
+
         // Add buttons to appropriate containers
         if (buttons.length > 0) {
             // For vendor dialogs with both text and buttons in mainRight,

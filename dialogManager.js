@@ -98,8 +98,8 @@ class DialogManager {
             this.dialogLayout.addMainRight(assets.mainRight);
         }
 
-        // Add bottom assets
-        if (assets.bottom) {
+        // Add bottom assets - only if no layout options (to avoid double-adding)
+        if (assets.bottom && !layoutOptions.bottom) {
             this.dialogLayout.addBottom(assets.bottom);
         }
 
