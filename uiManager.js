@@ -261,64 +261,35 @@ class UIManager {
             });
         }
 
-        // Create assets
-        const assets = {};
-        const layoutOptions = {};
-
-        // Title
-        assets.title = [this.scene.add.text(0, 0, 'Inventory', {
-            fontSize: '20px',
-            fontStyle: 'bold',
-            color: '#fff',
-            align: 'center'
-        })];
-
-        // Main text
-        const textAsset = this.scene.add.text(0, 0, inventoryText, {
-            fontSize: '18px',
-            fontStyle: 'bold',
-            wordWrap: { width: 400 },
-            color: '#000',
-            align: 'left'
-        });
-        assets.mainRight = [textAsset];
-
-        // Create inventory management buttons
+        // Create drop buttons
         const buttons = [];
         if (this.inventory.length > 0) {
             this.inventory.forEach((item, index) => {
-                const button = this.scene.add.text(0, 0, `Drop ${item.name}`, {
-                    fontSize: '16px',
-                    color: '#000',
-                    backgroundColor: '#ccc',
-                    padding: { x: 10, y: 5 }
-                }).setInteractive().on('pointerdown', () => {
-                    this.removeItem(index);
-                    this.toggleInventory(); // Refresh dialog
+                buttons.push({
+                    label: `Drop ${item.name}`,
+                    onClick: () => {
+                        this.removeItem(index);
+                        this.toggleInventory(); // Refresh dialog
+                    }
                 });
-                buttons.push(button);
             });
         }
 
-        if (buttons.length > 0) {
-            assets.mainRight.push(...buttons);
-            layoutOptions.mainRight = { vertical: true, spacing: 10 };
-        }
+        // Create dialog content object
+        const dialogData = {
+            title: 'Inventory',
+            text: inventoryText,
+            buttons: buttons,
+            exitButton: {
+                label: 'Close',
+                onClick: () => {
+                    this.isInventoryOpen = false;
+                    this.closeDialog();
+                }
+            }
+        };
 
-        // Exit button
-        const exitButton = this.scene.add.text(0, 0, 'Close', {
-            fontSize: '16px',
-            color: '#000',
-            backgroundColor: '#ccc',
-            padding: { x: 10, y: 5 }
-        }).setInteractive().on('pointerdown', () => {
-            this.isInventoryOpen = false;
-            this.closeDialog();
-        });
-        assets.bottom = [exitButton];
-        layoutOptions.bottom = { horizontal: true, spacing: 10 };
-
-        this.dialogManager.showDialog(assets, layoutOptions);
+        this.showDialog(dialogData);
     }
 
     toggleQuests() {
@@ -359,31 +330,18 @@ class UIManager {
 
     showHelpDialog(selectedTopic = null) {
         if (!this.helpData) {
-            const assets = {
-                title: [this.scene.add.text(0, 0, 'Help', {
-                    fontSize: '20px',
-                    fontStyle: 'bold',
-                    color: '#fff',
-                    align: 'center'
-                })],
-                main: [this.scene.add.text(0, 0, 'Loading help data...', {
-                    fontSize: '18px',
-                    fontStyle: 'bold',
-                    wordWrap: { width: 500 },
-                    color: '#000',
-                    align: 'left'
-                })],
-                bottom: [this.scene.add.text(0, 0, 'Close', {
-                    fontSize: '16px',
-                    color: '#000',
-                    backgroundColor: '#ccc',
-                    padding: { x: 10, y: 5 }
-                }).setInteractive().on('pointerdown', () => {
-                    this.isHelpOpen = false;
-                    this.closeDialog();
-                })]
+            const dialogData = {
+                title: 'Help',
+                text: 'Loading help data...',
+                exitButton: {
+                    label: 'Close',
+                    onClick: () => {
+                        this.isHelpOpen = false;
+                        this.closeDialog();
+                    }
+                }
             };
-            this.dialogManager.showDialog(assets, { bottom: { horizontal: true, spacing: 10 } });
+            this.showDialog(dialogData);
             return;
         }
 
@@ -399,58 +357,31 @@ class UIManager {
     showTopicSelection() {
         const topics = this.helpData.topics;
 
-        // Create assets
-        const assets = {};
-        const layoutOptions = {};
-
-        // Title
-        assets.title = [this.scene.add.text(0, 0, 'Help Topics', {
-            fontSize: '20px',
-            fontStyle: 'bold',
-            color: '#fff',
-            align: 'center'
-        })];
-
-        // Main text
-        const textAsset = this.scene.add.text(0, 0, 'Select a topic below to view detailed help information:', {
-            fontSize: '18px',
-            fontStyle: 'bold',
-            wordWrap: { width: 500 },
-            color: '#000',
-            align: 'left',
-            origin: 0.0
-        });
-        assets.main = [textAsset];
-
-        // Topic buttons as link-style buttons
-        const topicButtons = [];
+        // Create topic buttons
+        const buttons = [];
         Object.keys(topics).forEach(topicKey => {
             const topic = topics[topicKey];
-            const button = this.scene.add.text(0, 0, topic.title, {
-                fontSize: '16px',
-                color: '#00f',
-                backgroundColor: 'transparent'
-            }).setInteractive().on('pointerdown', () => this.showHelpDialog(topicKey));
-            topicButtons.push(button);
+            buttons.push({
+                label: topic.title,
+                onClick: () => this.showHelpDialog(topicKey)
+            });
         });
 
-        assets.main.push(...topicButtons);
-        layoutOptions.main = { vertical: true, spacing: 10 };
+        // Create dialog content object
+        const dialogData = {
+            title: 'Help Topics',
+            text: 'Select a topic below to view detailed help information:',
+            buttons: buttons,
+            exitButton: {
+                label: 'Close',
+                onClick: () => {
+                    this.isHelpOpen = false;
+                    this.closeDialog();
+                }
+            }
+        };
 
-        // Exit button
-        const exitButton = this.scene.add.text(0, 0, 'Close', {
-            fontSize: '16px',
-            color: '#000',
-            backgroundColor: '#ccc',
-            padding: { x: 10, y: 5 }
-        }).setInteractive().on('pointerdown', () => {
-            this.isHelpOpen = false;
-            this.closeDialog();
-        });
-        assets.bottom = [exitButton];
-        layoutOptions.bottom = { horizontal: true, spacing: 10 };
-
-        this.dialogManager.showDialog(assets, layoutOptions);
+        this.showDialog(dialogData);
     }
 
     showTopicContent(topicKey, page = 0) {
@@ -467,111 +398,63 @@ class UIManager {
         const currentPage = Math.min(page, totalPages - 1);
         const displayText = pages[currentPage];
 
-        // Create assets
-        const assets = {};
-        const layoutOptions = {};
-
-        // Title
-        assets.title = [this.scene.add.text(0, 0, topic.title, {
-            fontSize: '20px',
-            fontStyle: 'bold',
-            color: '#fff',
-            align: 'center'
-        })];
-
-        // Main text
-        console.log(displayText);
-        const textAsset = this.scene.add.text(0, 0, displayText, {
-            fontSize: '18px',
-            fontStyle: 'bold',
-            wordWrap: { width: 400 },
-            color: '#000',
-            align: 'left'
-        });
-        assets.mainRight = [textAsset];
-
-        // Left buttons (pagination and back)
+        // Create left buttons (pagination)
         const leftButtons = [];
 
         // Add pagination buttons if multiple pages
         if (totalPages > 1) {
-            const prevButton = this.scene.add.text(0, 0, '<', {
-                fontSize: '16px',
-                color: currentPage <= 0 ? '#666' : '#000',
-                backgroundColor: '#ccc',
-                padding: { x: 10, y: 5 }
+            leftButtons.push({
+                label: '<',
+                disabled: currentPage <= 0,
+                onClick: () => this.showTopicContent(topicKey, currentPage - 1)
             });
-            if (currentPage > 0) {
-                prevButton.setInteractive().on('pointerdown', () => this.showTopicContent(topicKey, currentPage - 1));
-            }
-            leftButtons.push(prevButton);
-
-            const nextButton = this.scene.add.text(0, 0, '>', {
-                fontSize: '16px',
-                color: currentPage >= totalPages - 1 ? '#666' : '#000',
-                backgroundColor: '#ccc',
-                padding: { x: 10, y: 5 }
+            leftButtons.push({
+                label: '>',
+                disabled: currentPage >= totalPages - 1,
+                onClick: () => this.showTopicContent(topicKey, currentPage + 1)
             });
-            if (currentPage < totalPages - 1) {
-                nextButton.setInteractive().on('pointerdown', () => this.showTopicContent(topicKey, currentPage + 1));
-            }
-            leftButtons.push(nextButton);
         }
 
-        // Add "Back to Topics" button
-        const backButton = this.scene.add.text(0, 0, 'Back to Topics', {
-            fontSize: '16px',
-            color: '#000',
-            backgroundColor: '#ccc',
-            padding: { x: 10, y: 5 }
-        }).setInteractive().on('pointerdown', () => this.showHelpDialog());
+        // Create bottom buttons
+        const bottomButtons = [
+            {
+                label: 'Back to Topics',
+                onClick: () => this.showHelpDialog()
+            },
+            {
+                label: 'Close',
+                onClick: () => {
+                    this.isHelpOpen = false;
+                    this.closeDialog();
+                }
+            }
+        ];
 
-        assets.mainLeft = leftButtons;
-        layoutOptions.mainLeft = { horizontal: true, spacing: 10 };
+        // Create dialog content object
+        const dialogData = {
+            title: topic.title,
+            text: displayText,
+            leftButtons: leftButtons.length > 0 ? leftButtons : undefined,
+            bottomButtons: bottomButtons
+        };
 
-        // Bottom buttons
-        const exitButton = this.scene.add.text(0, 0, 'Close', {
-            fontSize: '16px',
-            color: '#000',
-            backgroundColor: '#ccc',
-            padding: { x: 10, y: 5 }
-        }).setInteractive().on('pointerdown', () => {
-            this.isHelpOpen = false;
-            this.closeDialog();
-        });
-        assets.bottom = [backButton, exitButton];
-        layoutOptions.bottom = { horizontal: true, spacing: 10 };
-
-        this.dialogManager.showDialog(assets, layoutOptions);
+        this.showDialog(dialogData);
     }
 
     showQuestDialog(page = 0) {
         if (!this.scene.questManager) {
-            const assets = {
-                title: [this.scene.add.text(0, 0, 'Quests', {
-                    fontSize: '20px',
-                    fontStyle: 'bold',
-                    color: '#fff',
-                    align: 'center'
-                })],
-                mainRight: [this.scene.add.text(0, 0, 'Quest system not available', {
-                    fontSize: '18px',
-                    fontStyle: 'bold',
-                    wordWrap: { width: 400 },
-                    color: '#000',
-                    align: 'left'
-                })],
-                bottom: [this.scene.add.text(0, 0, 'Close', {
-                    fontSize: '16px',
-                    color: '#000',
-                    backgroundColor: '#ccc',
-                    padding: { x: 10, y: 5 }
-                }).setInteractive().on('pointerdown', () => {
-                    this.isQuestsOpen = false;
-                    this.closeDialog();
-                })]
+            const dialogData = {
+                title: 'Quests',
+                text: 'Quest system not available',
+                exitButton: {
+                    label: 'Close',
+                    onClick: () => {
+                        this.isQuestsOpen = false;
+                        this.closeDialog();
+                    }
+                }
             };
-            this.dialogManager.showDialog(assets, { bottom: { horizontal: true, spacing: 10 } });
+            this.showDialog(dialogData);
             return;
         }
 
@@ -593,118 +476,70 @@ class UIManager {
                 questItems.push(''); // Empty line for spacing
             });
         } else {
-            questItems.push('No active quests');
-            questItems.push('');
-        }
-
-        // Add completed quests
-        if (completedQuests.length > 0) {
-            questItems.push('=== COMPLETED QUESTS ===');
-            completedQuests.forEach((quest, index) => {
-                questItems.push(`${index + 1}. ${quest.title} ✓`);
-                questItems.push(`   Reward: ${quest.reward.points} points`);
-                questItems.push('');
-            });
-        }
-
-        // Use ContentProcessor for pagination
+               // Add active quests
+               if (activeQuests.length > 0) {
+                   questItems.push('=== ACTIVE QUESTS ===');
+                   activeQuests.forEach((quest, index) => {
+                       questItems.push(`\n${index + 1}. ${quest.title}`);
+                       questItems.push(`\n${quest.description}`);
+                       const completedObjectives = quest.objectives.filter(obj => obj.collected).length;
+                       const totalObjectives = quest.objectives.length;
+                       questItems.push(`\nProgress: ${completedObjectives}/${totalObjectives} items collected`);
+                       questItems.push(''); // Empty line for spacing
+                   });
+               } else {
+                   questItems.push('No active quests');
+                   questItems.push('');
+               }
         const contentProcessor = this.dialogManager.getContentProcessor();
         const pages = contentProcessor.paginateText(questItems.join('\n'), 9);
         const totalPages = pages.length;
         const currentPage = Math.min(page, totalPages - 1);
         const displayText = pages[currentPage];
 
-        // Create assets
-        const assets = {};
-        const layoutOptions = {};
-
-        // Title
-        assets.title = [this.scene.add.text(0, 0, 'Quests', {
-            fontSize: '20px',
-            fontStyle: 'bold',
-            color: '#fff',
-            align: 'center'
-        })];
-
-        // Main text
-        const textAsset = this.scene.add.text(0, 0, displayText, {
-            fontSize: '18px',
-            fontStyle: 'bold',
-            wordWrap: { width: 400 },
-            color: '#000',
-            align: 'left'
-        });
-        assets.mainRight = [textAsset];
-
-        // Pagination buttons if needed
+        // Create pagination buttons if needed
+        const leftButtons = [];
         if (totalPages > 1) {
-            const leftButtons = [];
-            const prevButton = this.scene.add.text(0, 0, '<', {
-                fontSize: '16px',
-                color: currentPage <= 0 ? '#666' : '#000',
-                backgroundColor: '#ccc',
-                padding: { x: 10, y: 5 }
+            leftButtons.push({
+                label: '<',
+                disabled: currentPage <= 0,
+                onClick: () => this.showQuestDialog(currentPage - 1)
             });
-            if (currentPage > 0) {
-                prevButton.setInteractive().on('pointerdown', () => this.showQuestDialog(currentPage - 1));
-            }
-            leftButtons.push(prevButton);
-
-            const nextButton = this.scene.add.text(0, 0, '>', {
-                fontSize: '16px',
-                color: currentPage >= totalPages - 1 ? '#666' : '#000',
-                backgroundColor: '#ccc',
-                padding: { x: 10, y: 5 }
+            leftButtons.push({
+                label: '>',
+                disabled: currentPage >= totalPages - 1,
+                onClick: () => this.showQuestDialog(currentPage + 1)
             });
-            if (currentPage < totalPages - 1) {
-                nextButton.setInteractive().on('pointerdown', () => this.showQuestDialog(currentPage + 1));
-            }
-            leftButtons.push(nextButton);
-
-            assets.mainLeft = leftButtons;
-            layoutOptions.mainLeft = { vertical: true, spacing: 10 };
         }
 
-        // Exit button
-        const exitButton = this.scene.add.text(0, 0, 'Close', {
-            fontSize: '16px',
-            color: '#000',
-            backgroundColor: '#ccc',
-            padding: { x: 10, y: 5 }
-        }).setInteractive().on('pointerdown', () => {
-            this.isQuestsOpen = false;
-            this.closeDialog();
-        });
-        assets.bottom = [exitButton];
-        layoutOptions.bottom = { horizontal: true, spacing: 10 };
-
-        this.dialogManager.showDialog(assets, layoutOptions);
-    }
-
-    showQuestCompletion(quest) {
-        const assets = {
-            title: [this.scene.add.text(0, 0, 'Quest Completed!', {
-                fontSize: '20px',
-                fontStyle: 'bold',
-                color: '#fff',
-                align: 'center'
-            })],
-            mainRight: [this.scene.add.text(0, 0, `${quest.title}\n\nReward: ${quest.reward.points} points\n\n${quest.reward.description}`, {
-                fontSize: '18px',
-                fontStyle: 'bold',
-                wordWrap: { width: 400 },
-                color: '#000',
-                align: 'left'
-            })],
-            bottom: [this.scene.add.text(0, 0, 'Great!', {
-                fontSize: '16px',
-                color: '#000',
-                backgroundColor: '#ccc',
-                padding: { x: 10, y: 5 }
-            }).setInteractive().on('pointerdown', () => this.closeDialog())]
+        // Create dialog content object
+        const dialogData = {
+            title: 'Quests',
+            text: displayText,
+            leftButtons: leftButtons.length > 0 ? leftButtons : undefined,
+            exitButton: {
+                label: 'Close',
+                onClick: () => {
+                    this.isQuestsOpen = false;
+                    this.closeDialog();
+                }
+            }
         };
 
-        this.dialogManager.showDialog(assets, { bottom: { horizontal: true, spacing: 10 } });
+        this.showDialog(dialogData);
+    }}
+
+    showQuestCompletion(quest) {
+        const dialogData = {
+            title: 'Quest Completed!',
+            text: `${quest.title}\n\nReward: ${quest.reward.points} points\n\n${quest.reward.description}`,
+            exitButton: {
+                label: 'Great!',
+                onClick: () => this.closeDialog()
+            }
+        };
+
+        this.showDialog(dialogData);
 
         // Update quest display if it's open
         if (this.isQuestsOpen) {
@@ -725,134 +560,187 @@ class UIManager {
 
     // Dialog System (delegated to DialogManager)
     showDialog(dialogData) {
-        // Create assets grouped by container
+        // Create content objects instead of Phaser assets
+        const content = {
+            title: dialogData.title,
+            text: dialogData.text,
+            imageKey: dialogData.imageKey,
+            buttons: dialogData.buttons,
+            leftButtons: dialogData.leftButtons,
+            exitButton: dialogData.exitButton,
+            bottomButtons: dialogData.bottomButtons
+        };
+
+        // Use explicit dialogType if provided, else determine automatically
+        const dialogType = dialogData.dialogType || this.determineDialogType(content);
+        console.log('UIManager: content:', content);
+        // Convert content to assets using the appropriate dialog type
+        const assets = this.createAssetsForDialog(content, dialogType);
+
+        // Call DialogManager with type and assets
+        this.dialogManager.showDialog(assets.assets, assets.layoutOptions, dialogType);
+    }
+
+    /**
+     * Determine the appropriate dialog type based on content
+     * @param {Object} content - Dialog content object
+     * @returns {string} Dialog type
+     */
+    determineDialogType(content) {
+        // Interaction dialogs have navigation buttons or complex button layouts
+        if (content.leftButtons || content.bottomButtons ||
+            (content.buttons && content.buttons.length > 3)) {
+            return 'interaction';
+        }
+
+        // Default dialogs are simple: title, text, image, close button
+        return 'default';
+    }
+
+    /**
+     * Create assets for the specified dialog type
+     * @param {Object} content - Dialog content object
+     * @param {string} dialogType - Dialog type
+     * @returns {Object} Assets and layout options
+     */
+    createAssetsForDialog(content, dialogType) {
         const assets = {};
         const layoutOptions = {};
 
         // Create title asset
-        if (dialogData.title) {
-            assets.title = [this.scene.add.text(0, 0, dialogData.title, {
-                fontSize: '20px',
-                fontStyle: 'bold',
-                color: '#fff',
-                align: 'center'
-            })];
-        }
-
-        // Create main content assets
-        if (dialogData.text) {
-            const textContent = Array.isArray(dialogData.text) ? dialogData.text.join('\n') : dialogData.text;
-            const textAsset = this.scene.add.text(0, 0, textContent, {
-                fontSize: '18px',
-                fontStyle: 'bold',
-                wordWrap: { width: 400 },
-                color: '#000',
-                align: 'left'
-            });
-            assets.mainRight = [textAsset];
+        if (content.title) {
+            assets.title = { type: 'text', text: content.title, style: { fontSize: '20px', fontStyle: 'bold', color: '#fff', align: 'center' } };
         }
 
         // Create image asset if provided
-        if (dialogData.imageKey) {
-            const imageAsset = this.scene.add.image(0, 0, dialogData.imageKey)
-                .setDisplaySize(90, 134)
-                .setOrigin(0.5, 0.5);
-            assets.mainLeft = [imageAsset];
+        if (content.imageKey) {
+            console.log('UIManager: Creating image asset for mainLeft:', content.imageKey);
+            assets.mainLeft = [{ type: 'image', key: content.imageKey, displaySize: { width: 90, height: 134 }, isAvatar: true }];
         }
 
-        // Create button assets
+        // Create text content
+        if (content.text) {
+            const textContent = Array.isArray(content.text) ? content.text.join('\n') : content.text;
+            assets.mainRight = [{ type: 'text', text: textContent, style: { fontSize: '18px', fontStyle: 'bold', wordWrap: { width: 400 }, color: '#000', align: 'left' } }];
+        }
+
+        // Create button assets based on dialog type
+        if (dialogType === 'interaction') {
+            this.createInteractionDialogAssets(content, assets, layoutOptions);
+        } else {
+            this.createDefaultDialogAssets(content, assets, layoutOptions);
+        }
+
+        return { assets, layoutOptions };
+    }
+
+    /**
+     * Create assets for default dialog type
+     * @param {Object} content - Dialog content
+     * @param {Object} assets - Assets object to populate
+     * @param {Object} layoutOptions - Layout options to populate
+     */
+    createDefaultDialogAssets(content, assets, layoutOptions) {
+        // Create button assets for main content
         const buttons = [];
-        if (dialogData.buttons) {
-            dialogData.buttons.forEach(buttonConfig => {
-                const button = this.scene.add.text(0, 0, buttonConfig.label, {
-                    fontSize: '16px',
-                    color: '#000',
-                    backgroundColor: '#ccc',
-                    padding: { x: 10, y: 5 }
-                }).setInteractive().on('pointerdown', buttonConfig.onClick);
+        if (content.buttons) {
+            content.buttons.forEach(buttonConfig => {
+                const button = { type: 'button', label: buttonConfig.label, onClick: buttonConfig.onClick };
                 buttons.push(button);
             });
         }
 
-        // Create left buttons
-        const leftButtons = [];
-        if (dialogData.leftButtons) {
-            dialogData.leftButtons.forEach(buttonConfig => {
-                const button = this.scene.add.text(0, 0, buttonConfig.label, {
-                    fontSize: '16px',
-                    color: '#000',
-                    backgroundColor: '#ccc',
-                    padding: { x: 10, y: 5 }
-                }).setInteractive().on('pointerdown', buttonConfig.onClick);
-                leftButtons.push(button);
-            });
-        }
-
-        // Create exit button
-        if (dialogData.exitButton) {
-            const exitButton = this.scene.add.text(0, 0, dialogData.exitButton.label, {
-                fontSize: '16px',
-                color: '#000',
-                backgroundColor: '#ccc',
-                padding: { x: 10, y: 5 }
-            }).setInteractive().on('pointerdown', dialogData.exitButton.onClick);
-            assets.bottom = [exitButton];
-            layoutOptions.bottom = { horizontal: true, spacing: 10 };
-        }
-
-        // Create bottom buttons (for pagination, etc.)
-        if (dialogData.bottomButtons) {
-            const bottomButtons = [];
-            dialogData.bottomButtons.forEach(buttonConfig => {
-                const button = this.scene.add.text(0, 0, buttonConfig.label, {
-                    fontSize: '16px',
-                    color: buttonConfig.disabled ? '#666' : '#000',
-                    backgroundColor: '#ccc',
-                    padding: { x: 10, y: 5 }
-                });
-                if (!buttonConfig.disabled && buttonConfig.onClick) {
-                    button.setInteractive().on('pointerdown', buttonConfig.onClick);
-                }
-                bottomButtons.push(button);
-            });
-            assets.bottom = assets.bottom || [];
-            assets.bottom.unshift(...bottomButtons); // Add pagination buttons before exit button
-            // Use centered layout for bottom buttons (navigation buttons)
-            layoutOptions.bottom = {
-                horizontal: true,
-                spacing: 10
+        // Add buttons to mainRight with bottom alignment
+        if (buttons.length > 0) {
+            if (!assets.mainRight) assets.mainRight = [];
+            assets.mainRight.push(...buttons);
+            layoutOptions.mainRight = {
+                vertical: true,
+                spacing: 10,
+                bottomAlignButtons: true
             };
         }
 
-        // Add buttons to appropriate containers
-        if (buttons.length > 0) {
-            // For vendor dialogs with both text and buttons in mainRight,
-            // position buttons at the bottom of the right column
-            if (dialogData.text && assets.mainRight && assets.mainRight.length > 0) {
-                // Add buttons to mainRight with bottom positioning
-                assets.mainRight.push(...buttons);
-                // Use a custom layout that positions text at top, buttons at bottom
-                layoutOptions.mainRight = {
-                    vertical: true,
-                    spacing: 10,
-                    bottomAlignButtons: true
-                };
+        // Create exit button for bottom
+        if (content.exitButton) {
+            assets.bottom = [{ type: 'button', label: content.exitButton.label, onClick: content.exitButton.onClick }];
+            layoutOptions.bottom = { horizontal: true, spacing: 10 };
+        }
+
+        // Assign left buttons to mainLeft if present
+        if (content.leftButtons) {
+            if (!assets.mainLeft) assets.mainLeft = [];
+            content.leftButtons.forEach(buttonConfig => {
+                const button = { type: 'button', label: buttonConfig.label, onClick: buttonConfig.onClick };
+                assets.mainLeft.push(button);
+            });
+        }
+
+        // For dialogs with imageKey and bottomButtons, assign bottomButtons to mainLeft
+        if (content.bottomButtons && content.imageKey) {
+            if (!assets.mainLeft) assets.mainLeft = [];
+            content.bottomButtons.forEach(buttonConfig => {
+                const button = { type: 'button', label: buttonConfig.label, onClick: buttonConfig.onClick, disabled: buttonConfig.disabled, options: { width: 60 } };
+                assets.mainLeft.push(button);
+            });
+            layoutOptions.mainLeft = { horizontal: true, spacing: 10 };
+        }
+    }
+
+    /**
+     * Create assets for interaction dialog type
+     * @param {Object} content - Dialog content
+     * @param {Object} assets - Assets object to populate
+     * @param {Object} layoutOptions - Layout options to populate
+     */
+    createInteractionDialogAssets(content, assets, layoutOptions) {
+        // Create left buttons (navigation/back) -- assign to mainRightButtons for interaction dialogs
+        if (content.leftButtons) {
+            if (!assets.mainRightButtons) assets.mainRightButtons = [];
+            content.leftButtons.forEach(buttonConfig => {
+                const button = { type: 'button', label: buttonConfig.label, onClick: buttonConfig.onClick, options: { ...(buttonConfig.options || {}) } };
+                assets.mainRightButtons.push(button);
+            });
+            // layoutOptions.mainRightButtons already set below
+        }
+
+        // Create main buttons (for right column)
+        if (content.buttons) {
+            const buttons = content.buttons.map(buttonConfig => {
+                return { type: 'button', label: buttonConfig.label, onClick: buttonConfig.onClick, options: { ...(buttonConfig.options || {}) } };
+            });
+            assets.mainRightButtons = buttons;
+            layoutOptions.mainRightButtons = { vertical: true, spacing: 10 };
+        }
+
+        // Create bottom buttons (pagination, etc.)
+        if (content.bottomButtons) {
+            const bottomButtons = content.bottomButtons.map(buttonConfig => {
+                return { type: 'button', label: buttonConfig.label, onClick: buttonConfig.onClick, disabled: buttonConfig.disabled, options: { ...(content.imageKey ? { width: 60 } : {}), ...(buttonConfig.options || {}) } };
+            });
+            if (content.imageKey) {
+                // For dialogs with avatar, put navigation buttons in mainLeft
+                if (!assets.mainLeft) assets.mainLeft = [];
+                assets.mainLeft.push(...bottomButtons);
+                // Ensure the Back (exit) button is left-aligned in bottom area and matches nav button style
+                layoutOptions.bottom = { leftAlign: true };
             } else {
-                // Default behavior: buttons in mainRight
-                assets.mainRight = assets.mainRight || [];
-                assets.mainRight.push(...buttons);
-                layoutOptions.mainRight = { vertical: true, spacing: 10 };
+                // Normal case, put in bottom
+                assets.bottom = bottomButtons;
+                layoutOptions.bottom = {
+                    horizontal: true,
+                    spacing: 10
+                };
             }
         }
 
-        if (leftButtons.length > 0) {
-            assets.mainLeft = assets.mainLeft || [];
-            assets.mainLeft.push(...leftButtons);
-            layoutOptions.mainLeft = { vertical: true, spacing: 10 };
+        // Create exit button
+        if (content.exitButton) {
+            const exitButton = { type: 'button', label: content.exitButton.label, onClick: content.exitButton.onClick, options: { ...(content.exitButton.options || {}) } };
+            assets.bottom = (assets.bottom || []).concat([exitButton]);
+            // If we're in an interaction dialog with avatar (pagination in left), we want this left-aligned
+            layoutOptions.bottom = { ...(layoutOptions.bottom || {}), leftAlign: !!content.imageKey };
         }
-
-        // Call the new dialogManager.showDialog
-        this.dialogManager.showDialog(assets, layoutOptions);
     }
 
     closeDialog() {

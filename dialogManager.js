@@ -1,6 +1,12 @@
 import { DialogLayout } from './ui/index.js';
 import ContentProcessor from './ui/ContentProcessor.js';
 
+// Dialog type constants
+const DIALOG_TYPES = {
+    DEFAULT: 'default',
+    INTERACTION: 'interaction'
+};
+
 class DialogManager {
     constructor(scene) {
         this.scene = scene;
@@ -13,11 +19,12 @@ class DialogManager {
     }
 
     /**
-     * Show dialog with pre-built assets organized by container
+     * Show dialog with specified type and pre-built assets
      * @param {Object} assets - Assets grouped by container { title: [...], mainLeft: [...], mainRight: [...], bottom: [...] }
      * @param {Object} layoutOptions - Layout options for each container
+     * @param {string} dialogType - Dialog type ('default' or 'interaction')
      */
-    showDialog(assets = {}, layoutOptions = {}) {
+    showDialog(assets = {}, layoutOptions = {}, dialogType = DIALOG_TYPES.DEFAULT) {
         if (this.isDialogOpen) {
             this.hideDialog();
         }
@@ -36,8 +43,8 @@ class DialogManager {
         const dialogWidth = Math.min(this.isMobile ? 400 : 600, cam.width * (this.isMobile ? 0.9 : 0.85));
         const dialogHeight = Math.min(this.isMobile ? 260 : 340, cam.height * (this.isMobile ? 0.8 : 0.65));
 
-        // Initialize the layout system
-        this.dialogLayout = new DialogLayout(this.scene, cam.width / 2, cam.height - dialogHeight / 2 - 16, dialogWidth, dialogHeight);
+        // Initialize the layout system with dialog type
+        this.dialogLayout = new DialogLayout(this.scene, cam.width / 2, cam.height - dialogHeight / 2 - 16, dialogWidth, dialogHeight, dialogType);
 
         // Create overlay and container
         this.overlay = this.createOverlay(cam);
@@ -48,8 +55,8 @@ class DialogManager {
         // Create dialog background
         this.renderBackground(dialogWidth, dialogHeight);
 
-        // Add assets to containers
-        this.addAssetsToLayout(assets, layoutOptions);
+        // Add assets to containers based on dialog type
+        this.addAssetsToLayout(assets, layoutOptions, dialogType);
 
         // Add all elements to the dialog container
         this.addElementsToContainer();
@@ -69,11 +76,26 @@ class DialogManager {
     }
 
     /**
-     * Add pre-built assets to their respective containers
+     * Add pre-built assets to their respective containers based on dialog type
+     * @param {Object} assets - Assets grouped by container
+     * @param {Object} layoutOptions - Layout options for each container
+     * @param {string} dialogType - Dialog type for layout scheme
+     */
+    addAssetsToLayout(assets, layoutOptions, dialogType) {
+        // Apply type-specific layout scheme
+        if (dialogType === DIALOG_TYPES.INTERACTION) {
+            this.applyInteractionLayout(assets, layoutOptions);
+        } else {
+            this.applyDefaultLayout(assets, layoutOptions);
+        }
+    }
+
+    /**
+     * Apply default dialog layout (title, left image, right text, bottom close)
      * @param {Object} assets - Assets grouped by container
      * @param {Object} layoutOptions - Layout options for each container
      */
-    addAssetsToLayout(assets, layoutOptions) {
+    applyDefaultLayout(assets, layoutOptions) {
         // Add title assets
         if (assets.title) {
             if (Array.isArray(assets.title)) {
@@ -83,27 +105,62 @@ class DialogManager {
             }
         }
 
+        // Add mainLeft assets (avatar/image)
+        if (assets.mainLeft) {
+            this.dialogLayout.addAssets('mainLeft', assets.mainLeft, layoutOptions.mainLeft || {});
+        }
+
         // Add main assets (full width)
         if (assets.main) {
-            this.dialogLayout.addMain(assets.main);
+            this.dialogLayout.addAssets('main', assets.main, layoutOptions.main || {});
         }
 
-        // Add main left assets
+        // Add bottom assets
+        if (assets.bottom) {
+            this.dialogLayout.addAssets('bottom', assets.bottom, layoutOptions.bottom || {});
+        }
+
+        // Apply layout options to all containers
+        Object.keys(layoutOptions).forEach(containerName => {
+            const options = layoutOptions[containerName];
+            if (options && assets[containerName]) {
+                this.dialogLayout.addAssets(containerName, assets[containerName], options);
+            }
+        });
+    }
+
+    /**
+     * Apply interaction dialog layout (navigation buttons, split right column)
+     * @param {Object} assets - Assets grouped by container
+     * @param {Object} layoutOptions - Layout options for each container
+     */
+    applyInteractionLayout(assets, layoutOptions) {
+        // Add title assets
+        if (assets.title) {
+            if (Array.isArray(assets.title)) {
+                assets.title.forEach(asset => this.dialogLayout.addTitle(asset));
+            } else {
+                this.dialogLayout.addTitle(assets.title);
+            }
+        }
+
+        // Add mainLeft assets (avatar/image)
         if (assets.mainLeft) {
-            this.dialogLayout.addMainLeft(assets.mainLeft);
+            console.log('DialogManager: Adding mainLeft assets:', assets.mainLeft);
+            this.dialogLayout.addAssets('mainLeft', assets.mainLeft, layoutOptions.mainLeft || {});
         }
 
-        // Add main right assets
-        if (assets.mainRight) {
-            this.dialogLayout.addMainRight(assets.mainRight);
+        // Add main assets (full width)
+        if (assets.main) {
+            this.dialogLayout.addAssets('main', assets.main, layoutOptions.main || {});
         }
 
-        // Add bottom assets - only if no layout options (to avoid double-adding)
-        if (assets.bottom && !layoutOptions.bottom) {
-            this.dialogLayout.addBottom(assets.bottom);
+        // Add bottom assets
+        if (assets.bottom) {
+            this.dialogLayout.addAssets('bottom', assets.bottom, layoutOptions.bottom || {});
         }
 
-        // Apply layout options
+        // Apply layout options to all containers
         Object.keys(layoutOptions).forEach(containerName => {
             const options = layoutOptions[containerName];
             if (options && assets[containerName]) {

@@ -129,191 +129,198 @@ class VendorManager {
         const responseButtons = vendorData.dialog.responses
             .filter(response => response.action !== 'end' && response.text !== 'Tell me about your booth')
             .map(response => ({
-            label: response.text,
-            onClick: () => {
-                let newText = '';
-                if (response.action === 'show_items') {
-                    const allDomainItems = DomainManager.getDomainItems(vendorData.domain_id);
-                    if (allDomainItems.length > 0) {
-                        // Get quest-required items for this domain
-                        let questRequiredItems = [];
-                        if (this.scene.questManager) {
-                            const activeQuests = this.scene.questManager.getActiveQuests();
-                            activeQuests.forEach(quest => {
-                                if (quest.domains.includes(vendorData.domain_id)) {
-                                    quest.objectives.forEach(objective => {
-                                        if (!objective.collected) {
-                                            questRequiredItems.push(objective.item);
-                                        }
-                                    });
-                                }
-                            });
-                        }
-
-                        // Distribute quest items across vendors in the same domain
-                        let distributedQuestItems = [];
-                        if (questRequiredItems.length > 0) {
-                            // Find all vendors in this domain
-                            const vendorsInDomain = [];
-                            this.scene.npcGroup.getChildren().forEach(npc => {
-                                if (npc.vendorData && npc.vendorData.domain_id === vendorData.domain_id) {
-                                    vendorsInDomain.push(npc.vendorData);
-                                }
-                            });
-
-                            // Sort vendors by ID for consistent distribution
-                            vendorsInDomain.sort((a, b) => a.id.localeCompare(b.id));
-                            const vendorIndex = vendorsInDomain.findIndex(v => v.id === vendorData.id);
-
-                            if (vendorIndex !== -1) {
-                                // Distribute quest items round-robin across vendors
-                                questRequiredItems.forEach((item, itemIndex) => {
-                                    const assignedVendorIndex = itemIndex % vendorsInDomain.length;
-                                    if (assignedVendorIndex === vendorIndex) {
-                                        distributedQuestItems.push(item);
-                                    }
-                                });
-
-                                // Ensure at least one quest item per vendor if there are more vendors than items
-                                if (distributedQuestItems.length === 0 && vendorIndex < questRequiredItems.length) {
-                                    distributedQuestItems.push(questRequiredItems[vendorIndex]);
-                                }
-                            }
-                        }
-
-                        // Ensure quest items are included, then add random items up to the limit
-                        let selectedItems = [...distributedQuestItems];
-                        const remainingItems = allDomainItems.filter(item =>
-                            !selectedItems.some(selected => selected.name === item.name)
-                        );
-
-                        // Limit to 6-9 random items per vendor (increased minimum for better quest completion)
-                        const minItems = 6;
-                        const maxItems = 9;
-                        const numItemsToShow = Math.min(
-                            Math.max(minItems, Math.floor(Math.random() * (maxItems - minItems + 1)) + minItems),
-                            allDomainItems.length
-                        );
-
-                        // Add random items to fill the quota
-                        const additionalItems = this.getRandomItems(remainingItems, numItemsToShow - selectedItems.length);
-                        selectedItems = selectedItems.concat(additionalItems);
-
-                        const domainItems = selectedItems;
-
-                        const itemsPerPage = 5; // Show 5 items per page
-                        const totalPages = Math.ceil(domainItems.length / itemsPerPage);
-
-                        const showItemsDialog = (page = 0) => {
-                            const startIndex = page * itemsPerPage;
-                            const endIndex = Math.min(startIndex + itemsPerPage, domainItems.length);
-                            const pageItems = domainItems.slice(startIndex, endIndex);
-
-                            const itemButtons = pageItems.map((item, index) => ({
-                                label: item.name,
-                                onClick: () => {
-                                    if (this.scene.questManager) {
-                                        const questUpdated = this.scene.questManager.checkItemCollection(item.name, vendorData.id);
-                                        if (questUpdated) {
-                                            this.scene.uiManager.showDialog({
-                                                text: `Collected ${item.name}!\n\nQuest progress updated!`,
-                                                buttons: [{
-                                                    label: 'Continue',
-                                                    onClick: () => showItemsDialog(page)
-                                                }]
-                                            });
-                                        } else {
-                                            this.scene.uiManager.showDialog({
-                                                text: `Collected ${item.name}!\n\n(Item added to your collection)`,
-                                                buttons: [{
-                                                    label: 'Continue',
-                                                    onClick: () => showItemsDialog(page)
-                                                }]
-                                            });
-                                        }
-                                    } else {
-                                        this.scene.uiManager.showDialog({
-                                            text: `Collected ${item.name}!`,
-                                            buttons: [{
-                                                label: 'Continue',
-                                                onClick: () => showItemsDialog(page)
-                                            }]
+                label: response.text,
+                onClick: () => {
+                    let newText = '';
+                    if (response.action === 'show_items') {
+                        const allDomainItems = DomainManager.getDomainItems(vendorData.domain_id);
+                        if (allDomainItems.length > 0) {
+                            // Get quest-required items for this domain
+                            let questRequiredItems = [];
+                            if (this.scene.questManager) {
+                                const activeQuests = this.scene.questManager.getActiveQuests();
+                                activeQuests.forEach(quest => {
+                                    if (quest.domains.includes(vendorData.domain_id)) {
+                                        quest.objectives.forEach(objective => {
+                                            if (!objective.collected) {
+                                                questRequiredItems.push(objective.item);
+                                            }
                                         });
                                     }
-                                }
-                            }));
-
-                            const bottomButtons = [];
-                            const exitButton = {
-                                label: 'Back',
-                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-                            };
-
-                            // Add pagination buttons only when there are multiple pages
-                            if (totalPages > 1) {
-                                bottomButtons.push({
-                                    label: '<',
-                                    disabled: page <= 0,
-                                    onClick: page > 0 ? () => showItemsDialog(page - 1) : () => {}
-                                });
-                                bottomButtons.push({
-                                    label: '>',
-                                    disabled: page >= totalPages - 1,
-                                    onClick: page < totalPages - 1 ? () => showItemsDialog(page + 1) : () => {}
                                 });
                             }
 
-                            this.scene.uiManager.showDialog({
-                                imageKey: imageKey,
-                                title: vendorData.name,
-                                text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)}${totalPages > 1 ? ` (Page ${page + 1}/${totalPages})` : ''}:`,
-                                buttons: itemButtons,
-                                bottomButtons: bottomButtons,
-                                exitButton: exitButton
-                            });
-                        };
+                            // Distribute quest items across vendors in the same domain
+                            let distributedQuestItems = [];
+                            if (questRequiredItems.length > 0) {
+                                // Find all vendors in this domain
+                                const vendorsInDomain = [];
+                                this.scene.npcGroup.getChildren().forEach(npc => {
+                                    if (npc.vendorData && npc.vendorData.domain_id === vendorData.domain_id) {
+                                        vendorsInDomain.push(npc.vendorData);
+                                    }
+                                });
 
-                        showItemsDialog(0); // Start with first page
+                                // Sort vendors by ID for consistent distribution
+                                vendorsInDomain.sort((a, b) => a.id.localeCompare(b.id));
+                                const vendorIndex = vendorsInDomain.findIndex(v => v.id === vendorData.id);
+
+                                if (vendorIndex !== -1) {
+                                    // Distribute quest items round-robin across vendors
+                                    questRequiredItems.forEach((item, itemIndex) => {
+                                        const assignedVendorIndex = itemIndex % vendorsInDomain.length;
+                                        if (assignedVendorIndex === vendorIndex) {
+                                            distributedQuestItems.push(item);
+                                        }
+                                    });
+
+                                    // Ensure at least one quest item per vendor if there are more vendors than items
+                                    if (distributedQuestItems.length === 0 && vendorIndex < questRequiredItems.length) {
+                                        distributedQuestItems.push(questRequiredItems[vendorIndex]);
+                                    }
+                                }
+                            }
+
+                            // Ensure quest items are included, then add random items up to the limit
+                            let selectedItems = [...distributedQuestItems];
+                            const remainingItems = allDomainItems.filter(item =>
+                                !selectedItems.some(selected => selected.name === item.name)
+                            );
+
+                            // Limit to 6-9 random items per vendor (increased minimum for better quest completion)
+                            const minItems = 6;
+                            const maxItems = 9;
+                            const numItemsToShow = Math.min(
+                                Math.max(minItems, Math.floor(Math.random() * (maxItems - minItems + 1)) + minItems),
+                                allDomainItems.length
+                            );
+
+                            // Add random items to fill the quota
+                            const additionalItems = this.getRandomItems(remainingItems, numItemsToShow - selectedItems.length);
+                            selectedItems = selectedItems.concat(additionalItems);
+
+                            const domainItems = selectedItems;
+
+                            const itemsPerPage = 5; // Show 5 items per page
+                            const totalPages = Math.ceil(domainItems.length / itemsPerPage);
+
+                            const showItemsDialog = (page = 0) => {
+                                const startIndex = page * itemsPerPage;
+                                const endIndex = Math.min(startIndex + itemsPerPage, domainItems.length);
+                                const pageItems = domainItems.slice(startIndex, endIndex);
+
+                                // Page indicator text
+                                const pageIndicator = totalPages > 1 ? `Page ${page + 1} of ${totalPages}` : '';
+                                const dialogText = `${pageIndicator}\n\nAvailable items from ${DomainManager.getDomainName(vendorData.domain_id)}:`;
+
+                                // Item buttons (inventory)
+                                const itemButtons = pageItems.map((item, index) => ({
+                                    label: item.name,
+                                    onClick: () => {
+                                        if (this.scene.questManager) {
+                                            const questUpdated = this.scene.questManager.checkItemCollection(item.name, vendorData.id);
+                                            if (questUpdated) {
+                                                this.scene.uiManager.showDialog({
+                                                    text: `Collected ${item.name}!\n\nQuest progress updated!`,
+                                                    buttons: [{
+                                                        label: 'Continue',
+                                                        onClick: () => showItemsDialog(page)
+                                                    }]
+                                                });
+                                            } else {
+                                                this.scene.uiManager.showDialog({
+                                                    text: `Collected ${item.name}!\n\n(Item added to your collection)`,
+                                                    buttons: [{
+                                                        label: 'Continue',
+                                                        onClick: () => showItemsDialog(page)
+                                                    }]
+                                                });
+                                            }
+                                        } else {
+                                            this.scene.uiManager.showDialog({
+                                                text: `Collected ${item.name}!`,
+                                                buttons: [{
+                                                    label: 'Continue',
+                                                    onClick: () => showItemsDialog(page)
+                                                }]
+                                            });
+                                        }
+                                    }
+                                }));
+
+                                // Pagination nav buttons
+                                const bottomButtons = [];
+                                if (totalPages > 1) {
+                                    bottomButtons.push({
+                                        label: '<',
+                                        disabled: page <= 0,
+                                        onClick: page > 0 ? () => showItemsDialog(page - 1) : () => {}
+                                    });
+                                    bottomButtons.push({
+                                        label: '>',
+                                        disabled: page >= totalPages - 1,
+                                        onClick: page < totalPages - 1 ? () => showItemsDialog(page + 1) : () => {}
+                                    });
+                                }
+
+                                // Back button (left-aligned under nav buttons)
+                                const exitButton = {
+                                    label: 'Back',
+                                    onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                                };
+
+                                this.scene.uiManager.showDialog({
+                                    imageKey: imageKey,
+                                    title: vendorData.name,
+                                    text: dialogText,
+                                    buttons: itemButtons,
+                                    bottomButtons: bottomButtons,
+                                    exitButton: exitButton,
+                                    dialogType: 'interaction' // Force interaction layout for vendor inventory
+                                });
+                            };
+
+                            showItemsDialog(0); // Start with first page
+                            return;
+                        } else {
+                            newText = 'No items available at this time.';
+                        }
+                    } else if (response.action === 'booth_info') {
+                        this.scene.uiManager.showDialog({
+                            imageKey: imageKey,
+                            title: vendorData.name,
+                            text: `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}`,
+                            buttons: [{
+                                label: 'Back',
+                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                            }]
+                        });
                         return;
-                    } else {
-                        newText = 'No items available at this time.';
+                    } else if (response.action === 'tech_facts') {
+                        const allDomainFacts = DomainManager.getDomainFacts(vendorData.domain_id);
+                        if (allDomainFacts.length > 0) {
+                            // Limit to maximum 6 randomly selected facts per vendor
+                            const maxFactsPerVendor = 6;
+                            const selectedFacts = allDomainFacts.length <= maxFactsPerVendor
+                                ? allDomainFacts
+                                : this.getRandomFacts(allDomainFacts, maxFactsPerVendor);
+
+                            // Show facts with pagination
+                            this.showTechFactsDialog(selectedFacts, vendorData, imageKey, originalDialogData);
+                            return;
+                        } else {
+                            newText = 'No facts available at this time.';
+                        }
                     }
-                } else if (response.action === 'booth_info') {
                     this.scene.uiManager.showDialog({
-                        imageKey: imageKey,
-                        title: vendorData.name,
-                        text: `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}`,
+                        text: newText,
                         buttons: [{
                             label: 'Back',
                             onClick: () => this.scene.uiManager.showDialog(originalDialogData)
                         }]
                     });
-                    return;
-                } else if (response.action === 'tech_facts') {
-                    const allDomainFacts = DomainManager.getDomainFacts(vendorData.domain_id);
-                    if (allDomainFacts.length > 0) {
-                        // Limit to maximum 6 randomly selected facts per vendor
-                        const maxFactsPerVendor = 6;
-                        const selectedFacts = allDomainFacts.length <= maxFactsPerVendor
-                            ? allDomainFacts
-                            : this.getRandomFacts(allDomainFacts, maxFactsPerVendor);
-
-                        // Show facts with pagination
-                        this.showTechFactsDialog(selectedFacts, vendorData, imageKey, originalDialogData);
-                        return;
-                    } else {
-                        newText = 'No facts available at this time.';
-                    }
                 }
-                this.scene.uiManager.showDialog({
-                    text: newText,
-                    buttons: [{
-                        label: 'Back',
-                        onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-                    }]
-                });
-            }
-        }));
+            }));
 
         const exitButton = vendorData.dialog.responses.find(response => response.action === 'end') ? {
             label: vendorData.dialog.responses.find(response => response.action === 'end').text,
@@ -344,76 +351,38 @@ class VendorManager {
         const formattedFacts = pageFacts.map(fact => `• ${fact}`);
         const displayText = formattedFacts.join('\n');
 
-        // Create assets
-        const assets = {};
-        const layoutOptions = {};
-
-        // Title
-        assets.title = [this.scene.add.text(0, 0, `${vendorData.name} - Tech Facts`, {
-            fontSize: '20px',
-            fontStyle: 'bold',
-            color: '#fff',
-            align: 'center'
-        })];
-
-        // NPC Image
-        const imageAsset = this.scene.add.image(0, 0, imageKey)
-            .setDisplaySize(90, 134)
-            .setOrigin(0.5, 0.5);
-        assets.mainLeft = [imageAsset];
-
-        // Main text
-        const textAsset = this.scene.add.text(0, 0, displayText, {
-            fontSize: '16px',
-            fontStyle: 'bold',
-            wordWrap: { width: 280 },
-            color: '#000',
-            align: 'left'
-        });
-        assets.mainRight = [textAsset];
-
         // Create bottom buttons
         const bottomButtons = [];
 
         // Back button on the left
-        const backButton = this.scene.add.text(0, 0, '< Back', {
-            fontSize: '16px',
-            color: '#000',
-            backgroundColor: '#ccc',
-            padding: { x: 10, y: 5 }
-        }).setInteractive().on('pointerdown', () => this.scene.uiManager.showDialog(originalDialogData));
-        bottomButtons.push(backButton);
+        bottomButtons.push({
+            label: '< Back',
+            onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+        });
 
         // Pagination buttons on the right (if needed)
         if (totalPages > 1) {
-            const prevButton = this.scene.add.text(0, 0, '<', {
-                fontSize: '16px',
-                color: currentPage <= 0 ? '#666' : '#000',
-                backgroundColor: '#ccc',
-                padding: { x: 10, y: 5 }
+            bottomButtons.push({
+                label: '<',
+                disabled: currentPage <= 0,
+                onClick: currentPage > 0 ? () => this.showTechFactsDialog(facts, vendorData, imageKey, originalDialogData, currentPage - 1) : () => {}
             });
-            if (currentPage > 0) {
-                prevButton.setInteractive().on('pointerdown', () => this.showTechFactsDialog(facts, vendorData, imageKey, originalDialogData, currentPage - 1));
-            }
-            bottomButtons.push(prevButton);
-
-            const nextButton = this.scene.add.text(0, 0, '>', {
-                fontSize: '16px',
-                color: currentPage >= totalPages - 1 ? '#666' : '#000',
-                backgroundColor: '#ccc',
-                padding: { x: 10, y: 5 }
+            bottomButtons.push({
+                label: '>',
+                disabled: currentPage >= totalPages - 1,
+                onClick: currentPage < totalPages - 1 ? () => this.showTechFactsDialog(facts, vendorData, imageKey, originalDialogData, currentPage + 1) : () => {}
             });
-            if (currentPage < totalPages - 1) {
-                nextButton.setInteractive().on('pointerdown', () => this.showTechFactsDialog(facts, vendorData, imageKey, originalDialogData, currentPage + 1));
-            }
-            bottomButtons.push(nextButton);
         }
 
-        assets.bottom = bottomButtons;
-        // Use custom layout that positions back button left, pagination buttons right
-        layoutOptions.bottom = { horizontal: true, spacing: 20, leftAlignFirst: true };
+        // Create dialog content object
+        const dialogData = {
+            imageKey: imageKey,
+            title: `${vendorData.name} - Tech Facts`,
+            text: displayText,
+            bottomButtons: bottomButtons
+        };
 
-        this.scene.uiManager.dialogManager.showDialog(assets, layoutOptions);
+        this.scene.uiManager.showDialog(dialogData);
     }
 
     getRandomFacts(factsArray, count) {
