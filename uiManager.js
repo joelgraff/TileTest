@@ -386,17 +386,35 @@ class UIManager {
 
     showTopicContent(topicKey, page = 0) {
         const topic = this.helpData.topics[topicKey];
-        if (!topic) {
-            this.showHelpDialog(); // Go back to topic selection
+        if (!topic || !topic.content || topic.content.length === 0) {
+            // Fallback if topic is missing or empty
+            const dialogData = {
+                title: topic ? topic.title : 'Help',
+                text: 'No help content available for this topic.',
+                bottomButtons: [
+                    {
+                        label: 'Back to Topics',
+                        onClick: () => this.showHelpDialog()
+                    },
+                    {
+                        label: 'Close',
+                        onClick: () => {
+                            this.isHelpOpen = false;
+                            this.closeDialog();
+                        }
+                    }
+                ]
+            };
+            this.showDialog(dialogData);
             return;
         }
 
         // Use ContentProcessor for pagination
         const contentProcessor = this.dialogManager.getContentProcessor();
-        const pages = contentProcessor.paginateText(topic.content.join('\n'), 9);
+        const pages = contentProcessor.paginateText(topic.content.join('\n'), 8);
         const totalPages = pages.length;
         const currentPage = Math.min(page, totalPages - 1);
-        const displayText = pages[currentPage];
+        const displayText = pages[currentPage] || 'No help content available.';
 
         // Create left buttons (pagination)
         const leftButtons = [];
@@ -406,12 +424,14 @@ class UIManager {
             leftButtons.push({
                 label: '<',
                 disabled: currentPage <= 0,
-                onClick: () => this.showTopicContent(topicKey, currentPage - 1)
+                onClick: () => this.showTopicContent(topicKey, currentPage - 1),
+                options: { width: 68 }
             });
             leftButtons.push({
                 label: '>',
                 disabled: currentPage >= totalPages - 1,
-                onClick: () => this.showTopicContent(topicKey, currentPage + 1)
+                onClick: () => this.showTopicContent(topicKey, currentPage + 1),
+                options: { width: 68 }
             });
         }
 
@@ -419,7 +439,8 @@ class UIManager {
         const bottomButtons = [
             {
                 label: 'Back to Topics',
-                onClick: () => this.showHelpDialog()
+                onClick: () => this.showHelpDialog(),
+                options: { width: 145 }
             },
             {
                 label: 'Close',
@@ -463,8 +484,6 @@ class UIManager {
 
         // Create quest list for pagination
         const questItems = [];
-
-        // Add active quests
         if (activeQuests.length > 0) {
             questItems.push('=== ACTIVE QUESTS ===');
             activeQuests.forEach((quest, index) => {
@@ -473,29 +492,26 @@ class UIManager {
                 const completedObjectives = quest.objectives.filter(obj => obj.collected).length;
                 const totalObjectives = quest.objectives.length;
                 questItems.push(`\nProgress: ${completedObjectives}/${totalObjectives} items collected`);
-                questItems.push(''); // Empty line for spacing
+                questItems.push('');
             });
         } else {
-               // Add active quests
-               if (activeQuests.length > 0) {
-                   questItems.push('=== ACTIVE QUESTS ===');
-                   activeQuests.forEach((quest, index) => {
-                       questItems.push(`\n${index + 1}. ${quest.title}`);
-                       questItems.push(`\n${quest.description}`);
-                       const completedObjectives = quest.objectives.filter(obj => obj.collected).length;
-                       const totalObjectives = quest.objectives.length;
-                       questItems.push(`\nProgress: ${completedObjectives}/${totalObjectives} items collected`);
-                       questItems.push(''); // Empty line for spacing
-                   });
-               } else {
-                   questItems.push('No active quests');
-                   questItems.push('');
-               }
+            questItems.push('No active quests');
+            questItems.push('');
+        }
+        // Add completed quests
+        if (completedQuests.length > 0) {
+            questItems.push('=== COMPLETED QUESTS ===');
+            completedQuests.forEach((quest, index) => {
+                questItems.push(`\n${index + 1}. ${quest.title}`);
+                questItems.push(`\n${quest.description}`);
+                questItems.push('');
+            });
+        }
         const contentProcessor = this.dialogManager.getContentProcessor();
         const pages = contentProcessor.paginateText(questItems.join('\n'), 9);
         const totalPages = pages.length;
         const currentPage = Math.min(page, totalPages - 1);
-        const displayText = pages[currentPage];
+        const displayText = pages[currentPage] || 'No quest information available.';
 
         // Create pagination buttons if needed
         const leftButtons = [];
@@ -527,7 +543,7 @@ class UIManager {
         };
 
         this.showDialog(dialogData);
-    }}
+    }
 
     showQuestCompletion(quest) {
         const dialogData = {
@@ -621,7 +637,11 @@ class UIManager {
         // Create text content
         if (content.text) {
             const textContent = Array.isArray(content.text) ? content.text.join('\n') : content.text;
-            assets.mainRight = [{ type: 'text', text: textContent, style: { fontSize: '18px', fontStyle: 'bold', wordWrap: { width: 400 }, color: '#000', align: 'left' } }];
+            if (dialogType === 'interaction') {
+                assets.mainRight = [{ type: 'text', text: textContent, style: { fontSize: '16px', fontStyle: 'normal', color: '#ffffff', align: 'left' } }];
+            } else {
+                assets.mainRight = [{ type: 'text', text: textContent, style: { fontSize: '16px', fontStyle: 'normal', color: '#ffffff', align: 'left' } }];
+            }
         }
 
         // Create button assets based on dialog type
@@ -694,23 +714,37 @@ class UIManager {
      * @param {Object} layoutOptions - Layout options to populate
      */
     createInteractionDialogAssets(content, assets, layoutOptions) {
-        // Create left buttons (navigation/back) -- assign to mainRightButtons for interaction dialogs
+        // Create left buttons (navigation/back) -- assign to mainLeft for dialogs without avatar, mainRightButtons for dialogs with avatar
         if (content.leftButtons) {
-            if (!assets.mainRightButtons) assets.mainRightButtons = [];
-            content.leftButtons.forEach(buttonConfig => {
-                const button = { type: 'button', label: buttonConfig.label, onClick: buttonConfig.onClick, options: { ...(buttonConfig.options || {}) } };
-                assets.mainRightButtons.push(button);
-            });
-            // layoutOptions.mainRightButtons already set below
+            if (!content.imageKey) {
+                // Put in mainLeft for dialogs without avatar
+                if (!assets.mainLeft) assets.mainLeft = [];
+                content.leftButtons.forEach(buttonConfig => {
+                    const button = { type: 'button', label: buttonConfig.label, onClick: buttonConfig.onClick, options: { ...(buttonConfig.options || {}) } };
+                    assets.mainLeft.push(button);
+                });
+                layoutOptions.mainLeft = { horizontal: true, spacing: 10 };
+            } else {
+                // Put in mainRightButtons for dialogs with avatar
+                assets.mainRightButtons = content.leftButtons.map(buttonConfig => {
+                    return { type: 'button', label: buttonConfig.label, onClick: buttonConfig.onClick, options: { ...(buttonConfig.options || {}) } };
+                });
+                layoutOptions.mainRightButtons = { vertical: true, spacing: 10 };
+            }
         }
 
         // Create main buttons (for right column)
         if (content.buttons) {
             const buttons = content.buttons.map(buttonConfig => {
-                return { type: 'button', label: buttonConfig.label, onClick: buttonConfig.onClick, options: { ...(buttonConfig.options || {}) } };
+                // Use link style for help topic buttons
+                if (content.title === 'Help Topics') {
+                    return { type: 'linkButton', label: buttonConfig.label, onClick: buttonConfig.onClick, options: { ...(buttonConfig.options || {}) } };
+                } else {
+                    return { type: 'button', label: buttonConfig.label, onClick: buttonConfig.onClick, options: { ...(buttonConfig.options || {}) } };
+                }
             });
             assets.mainRightButtons = buttons;
-            layoutOptions.mainRightButtons = { vertical: true, spacing: 10 };
+            layoutOptions.mainRightButtons = { vertical: true, spacing: 5 };
         }
 
         // Create bottom buttons (pagination, etc.)
@@ -727,10 +761,19 @@ class UIManager {
             } else {
                 // Normal case, put in bottom
                 assets.bottom = bottomButtons;
-                layoutOptions.bottom = {
-                    horizontal: true,
-                    spacing: 10
-                };
+                // For help dialogs, center the buttons instead of nav-aligned
+                if (content.title && content.title.includes('Help')) {
+                    layoutOptions.bottom = {
+                        horizontal: true,
+                        spacing: 10
+                    };
+                } else {
+                    layoutOptions.bottom = {
+                        horizontal: true,
+                        spacing: 10,
+                        navAligned: true
+                    };
+                }
             }
         }
 
@@ -738,8 +781,13 @@ class UIManager {
         if (content.exitButton) {
             const exitButton = { type: 'button', label: content.exitButton.label, onClick: content.exitButton.onClick, options: { ...(content.exitButton.options || {}) } };
             assets.bottom = (assets.bottom || []).concat([exitButton]);
-            // If we're in an interaction dialog with avatar (pagination in left), we want this left-aligned
-            layoutOptions.bottom = { ...(layoutOptions.bottom || {}), leftAlign: !!content.imageKey };
+            // For help dialogs, center the exit button instead of left-aligning
+            if (content.title && content.title.includes('Help')) {
+                layoutOptions.bottom = { ...(layoutOptions.bottom || {}), horizontal: true, spacing: 10 };
+            } else {
+                // If we're in an interaction dialog with avatar (pagination in left), we want this left-aligned
+                layoutOptions.bottom = { ...(layoutOptions.bottom || {}), leftAlign: !!content.imageKey };
+            }
         }
     }
 

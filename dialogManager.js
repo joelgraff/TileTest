@@ -44,7 +44,7 @@ class DialogManager {
         const dialogHeight = Math.min(this.isMobile ? 260 : 340, cam.height * (this.isMobile ? 0.8 : 0.65));
 
         // Initialize the layout system with dialog type
-        this.dialogLayout = new DialogLayout(this.scene, cam.width / 2, cam.height - dialogHeight / 2 - 16, dialogWidth, dialogHeight, dialogType);
+        this.dialogLayout = new DialogLayout(this.scene, cam.width / 2, cam.height / 2, dialogWidth, dialogHeight, dialogType);
 
         // Create overlay and container
         this.overlay = this.createOverlay(cam);
@@ -115,6 +115,11 @@ class DialogManager {
             this.dialogLayout.addAssets('main', assets.main, layoutOptions.main || {});
         }
 
+        // Add mainRight assets (text for default dialogs)
+        if (assets.mainRight) {
+            this.dialogLayout.addAssets('mainRight', assets.mainRight, layoutOptions.mainRight || {});
+        }
+
         // Add bottom assets
         if (assets.bottom) {
             this.dialogLayout.addAssets('bottom', assets.bottom, layoutOptions.bottom || {});
@@ -153,6 +158,11 @@ class DialogManager {
         // Add main assets (full width)
         if (assets.main) {
             this.dialogLayout.addAssets('main', assets.main, layoutOptions.main || {});
+        }
+
+        // Add mainRight assets (text for interaction dialogs)
+        if (assets.mainRight) {
+            this.dialogLayout.addAssets('mainRight', assets.mainRight, layoutOptions.mainRight || {});
         }
 
         // Add bottom assets

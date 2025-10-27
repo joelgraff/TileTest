@@ -9,7 +9,7 @@ class ContentProcessor {
     /**
      * Process text content into pages where each page contains at most one subtopic
      * @param {string} text - Raw text content
-     * @param {number} maxLines - Maximum logical lines per page (optional override)
+     * @param {number} maxLines - Maximum logical lines per page (optional, mainly for non-header content)
      * @returns {Array<string>} Array of page texts
      */
     paginateText(text, maxLines = null) {
@@ -39,11 +39,11 @@ class ContentProcessor {
                 // Add the line to current page
                 currentPageLines.push(line);
 
-                // Check if we've exceeded the maximum lines per page
-                if (currentPageLines.length >= MAX_LINES) {
-                    pages.push(currentPageLines.join('\n'));
-                    currentPageLines = [];
-                }
+                // Don't enforce maximum lines - let headers control page breaks
+                // if (currentPageLines.length >= MAX_LINES) {
+                //     pages.push(currentPageLines.join('\n'));
+                //     currentPageLines = [];
+                // }
             }
             console.log('Current page lines:', currentPageLines);
             console.log('Processing line:', line);
