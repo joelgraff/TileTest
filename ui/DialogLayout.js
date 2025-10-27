@@ -72,10 +72,10 @@ class DialogLayout {
             this.containers.mainLeft = new Phaser.GameObjects.Container(this.scene, -availableWidth / 3, 0);
             this.containers.mainLeft.width = mainLeftWidth;
 
-            this.containers.mainRight = new Phaser.GameObjects.Container(this.scene, rightColumnX, -availableHeight / 2 + 20);
+            this.containers.mainRight = new Phaser.GameObjects.Container(this.scene, rightColumnX, -availableHeight / 2 + 40);
             this.containers.mainRight.width = mainRightWidth;
 
-            this.containers.mainRightText = new Phaser.GameObjects.Container(this.scene, rightColumnX, -availableHeight / 2 + textAreaHeight / 2 - 5);
+            this.containers.mainRightText = new Phaser.GameObjects.Container(this.scene, rightColumnX, -availableHeight / 2 + textAreaHeight / 2 + 20);
             this.containers.mainRightText.width = mainRightWidth;
 
             this.containers.mainRightButtons = new Phaser.GameObjects.Container(this.scene, rightColumnX, -availableHeight / 2 + textAreaHeight + this.buttonAreaHeight / 2 + 5);
@@ -230,11 +230,11 @@ class DialogLayout {
             posX = 0;
             posY = 0;
         } else if (containerName === 'mainRightText') {
-            // Left-align text in right column
+            // Top-align text in right column
             originX = 0;
-            originY = 0.5;
+            originY = 0;
             posX = -this.containers.mainRightText.width / 2;
-            posY = 0;
+            posY = -this.containers.mainRightText.height / 2 + 10; // Start 10px from top
         }
 
         // Apply positioning
@@ -602,7 +602,7 @@ class DialogLayout {
             }
 
             // Default: start from the top of the container
-            let currentY = -this.availableHeight / 2 + 10; // Start 10px from top
+            let currentY = -this.availableHeight / 2 + 20; // Start 20px from top
             assets.forEach(asset => {
                 if (asset.setOrigin) asset.setOrigin(0.5, 0);
                 asset.setPosition(0, currentY);
