@@ -1,26 +1,22 @@
 import DialogManager from './dialogManager.js';
-import ContentProcessor from './ui/ContentProcessor.js';
+import InventoryManager from './inventoryManager.js';
+import QuestDialogManager from './questDialogManager.js';
+import HelpManager from './helpManager.js';
 
 class UIManager {
     constructor(scene) {
         this.scene = scene;
-        this.inventory = [];
         this.score = 0;
-        this.maxInventorySlots = 8;
-        this.isInventoryOpen = false;
-        this.isQuestsOpen = false; // Track quest panel visibility
-        this.isHelpOpen = false; // Track help dialog visibility
-
-        // Content processor for text pagination
-        this.contentProcessor = new ContentProcessor();
-
-        // Load help data
-        this.loadHelpData();
 
         this.createUI();
 
         // DialogManager instance
         this.dialogManager = new DialogManager(scene);
+
+        // Specialized managers
+        this.inventoryManager = new InventoryManager(scene, this);
+        this.questDialogManager = new QuestDialogManager(scene, this);
+        this.helpManager = new HelpManager(scene, this);
 
         // Movement indicator (reticle)
         this.movementIndicator = this.scene.add.graphics();
@@ -232,337 +228,29 @@ class UIManager {
         .setDepth(100);
     }
 
-    // Inventory Management
+    // Inventory Management - delegated to InventoryManager
     addItem(item) {
-        if (this.inventory.length < this.maxInventorySlots) {
-            this.inventory.push(item);
-            this.updateScore(item.value || 0);
-            return true;
-        }
-        return false;
+        return this.inventoryManager.addItem(item);
+    }
+
+    getInventory() {
+        return this.inventoryManager.getInventory();
     }
 
     toggleInventory() {
-        if (this.isInventoryOpen) {
-            this.closeDialog();
-            this.isInventoryOpen = false;
-            return;
-        }
-
-        this.isInventoryOpen = true;
-
-        // Create inventory dialog content
-        let inventoryText = 'INVENTORY\n\n';
-        if (this.inventory.length === 0) {
-            inventoryText += 'No items collected yet.';
-        } else {
-            this.inventory.forEach((item, index) => {
-                inventoryText += `${index + 1}. ${item.name}\n`;
-                if (item.description) {
-                    inventoryText += `   ${item.description}\n`;
-                }
-                inventoryText += `   Value: ${item.value || 0} points\n\n`;
-            });
-        }
-
-        // Create drop buttons
-        const buttons = [];
-        if (this.inventory.length > 0) {
-            this.inventory.forEach((item, index) => {
-                buttons.push({
-                    label: `Drop ${item.name}`,
-                    onClick: () => {
-                        this.removeItem(index);
-                        this.toggleInventory(); // Refresh dialog
-                    }
-                });
-            });
-        }
-
-        // Create dialog content object
-        const dialogData = {
-            title: 'Inventory',
-            text: inventoryText,
-            buttons: buttons,
-            exitButton: {
-                label: 'Close',
-                onClick: () => {
-                    this.isInventoryOpen = false;
-                    this.closeDialog();
-                }
-            }
-        };
-
-        this.showDialog(dialogData);
+        this.inventoryManager.toggleInventory();
     }
 
     toggleQuests() {
-        if (this.isQuestsOpen) {
-            this.closeDialog();
-            this.isQuestsOpen = false;
-            return;
-        }
-
-        this.isQuestsOpen = true;
-        this.showQuestDialog();
-    }
-
-    loadHelpData() {
-        // Load help data from help.md
-        fetch('help.md')
-            .then(response => response.text())
-            .then(markdownContent => {
-                this.helpData = this.contentProcessor.parseHelpMarkdown(markdownContent);
-            })
-            .catch(error => {
-                console.error('Failed to load help data:', error);
-                this.helpData = { topics: {} };
-            });
+        this.questDialogManager.toggleQuests();
     }
 
     toggleHelp() {
-        if (this.isHelpOpen) {
-            this.closeDialog();
-            this.isHelpOpen = false;
-            return;
-        }
-
-        this.isHelpOpen = true;
-        this.showHelpDialog();
-    }
-
-    showHelpDialog(selectedTopic = null) {
-        if (!this.helpData) {
-            const dialogData = {
-                title: 'Help',
-                text: 'Loading help data...',
-                exitButton: {
-                    label: 'Close',
-                    onClick: () => {
-                        this.isHelpOpen = false;
-                        this.closeDialog();
-                    }
-                }
-            };
-            this.showDialog(dialogData);
-            return;
-        }
-
-        if (selectedTopic && this.helpData.topics[selectedTopic]) {
-            // Show specific topic content
-            this.showTopicContent(selectedTopic);
-        } else {
-            // Show topic selection
-            this.showTopicSelection();
-        }
-    }
-
-    showTopicSelection() {
-        const topics = this.helpData.topics;
-
-        // Create topic buttons
-        const buttons = [];
-        Object.keys(topics).forEach(topicKey => {
-            const topic = topics[topicKey];
-            buttons.push({
-                label: topic.title,
-                onClick: () => this.showHelpDialog(topicKey)
-            });
-        });
-
-        // Create dialog content object
-        const dialogData = {
-            title: 'Help Topics',
-            text: 'Select a topic below to view detailed help information:',
-            buttons: buttons,
-            exitButton: {
-                label: 'Close',
-                onClick: () => {
-                    this.isHelpOpen = false;
-                    this.closeDialog();
-                }
-            }
-        };
-
-        this.showDialog(dialogData);
-    }
-
-    showTopicContent(topicKey, page = 0) {
-        const topic = this.helpData.topics[topicKey];
-        if (!topic || !topic.content || topic.content.length === 0) {
-            // Fallback if topic is missing or empty
-            const dialogData = {
-                title: topic ? topic.title : 'Help',
-                text: 'No help content available for this topic.',
-                bottomButtons: [
-                    {
-                        label: 'Back to Topics',
-                        onClick: () => this.showHelpDialog()
-                    },
-                    {
-                        label: 'Close',
-                        onClick: () => {
-                            this.isHelpOpen = false;
-                            this.closeDialog();
-                        }
-                    }
-                ]
-            };
-            this.showDialog(dialogData);
-            return;
-        }
-
-        // Use ContentProcessor for pagination
-        const pages = this.contentProcessor.paginateText(topic.content.join('\n'), 8);
-        const totalPages = pages.length;
-        const currentPage = Math.min(page, totalPages - 1);
-        const displayText = pages[currentPage] || 'No help content available.';
-
-        // Create left buttons (pagination)
-        const leftButtons = [];
-
-        // Add pagination buttons if multiple pages
-        if (totalPages > 1) {
-            leftButtons.push({
-                label: '<',
-                disabled: currentPage <= 0,
-                onClick: () => this.showTopicContent(topicKey, currentPage - 1),
-                options: { width: 68 }
-            });
-            leftButtons.push({
-                label: '>',
-                disabled: currentPage >= totalPages - 1,
-                onClick: () => this.showTopicContent(topicKey, currentPage + 1),
-                options: { width: 68 }
-            });
-        }
-
-        // Create bottom buttons
-        const bottomButtons = [
-            {
-                label: 'Back to Topics',
-                onClick: () => this.showHelpDialog(),
-                options: { width: 145 }
-            },
-            {
-                label: 'Close',
-                onClick: () => {
-                    this.isHelpOpen = false;
-                    this.closeDialog();
-                }
-            }
-        ];
-
-        // Create dialog content object
-        const dialogData = {
-            title: topic.title,
-            text: displayText,
-            leftButtons: leftButtons.length > 0 ? leftButtons : undefined,
-            bottomButtons: bottomButtons
-        };
-
-        this.showDialog(dialogData);
-    }
-
-    showQuestDialog(page = 0) {
-        if (!this.scene.questManager) {
-            const dialogData = {
-                title: 'Quests',
-                text: 'Quest system not available',
-                exitButton: {
-                    label: 'Close',
-                    onClick: () => {
-                        this.isQuestsOpen = false;
-                        this.closeDialog();
-                    }
-                }
-            };
-            this.showDialog(dialogData);
-            return;
-        }
-
-        const activeQuests = this.scene.questManager.getActiveQuests();
-        const completedQuests = this.scene.questManager.getCompletedQuests();
-
-        // Create quest list for pagination
-        const questItems = [];
-        if (activeQuests.length > 0) {
-            questItems.push('=== ACTIVE QUESTS ===');
-            activeQuests.forEach((quest, index) => {
-                questItems.push(`\n${index + 1}. ${quest.title}`);
-                questItems.push(`\n${quest.description}`);
-                const completedObjectives = quest.objectives.filter(obj => obj.collected).length;
-                const totalObjectives = quest.objectives.length;
-                questItems.push(`\nProgress: ${completedObjectives}/${totalObjectives} items collected`);
-                questItems.push('');
-            });
-        } else {
-            questItems.push('No active quests');
-            questItems.push('');
-        }
-        // Add completed quests
-        if (completedQuests.length > 0) {
-            questItems.push('=== COMPLETED QUESTS ===');
-            completedQuests.forEach((quest, index) => {
-                questItems.push(`\n${index + 1}. ${quest.title}`);
-                questItems.push(`\n${quest.description}`);
-                questItems.push('');
-            });
-        }
-        const pages = this.contentProcessor.paginateText(questItems.join('\n'), 9);
-        const totalPages = pages.length;
-        const currentPage = Math.min(page, totalPages - 1);
-        const displayText = pages[currentPage] || 'No quest information available.';
-
-        // Create pagination buttons if needed
-        const leftButtons = [];
-        if (totalPages > 1) {
-            leftButtons.push({
-                label: '<',
-                disabled: currentPage <= 0,
-                onClick: () => this.showQuestDialog(currentPage - 1)
-            });
-            leftButtons.push({
-                label: '>',
-                disabled: currentPage >= totalPages - 1,
-                onClick: () => this.showQuestDialog(currentPage + 1)
-            });
-        }
-
-        // Create dialog content object
-        const dialogData = {
-            title: 'Quests',
-            text: displayText,
-            leftButtons: leftButtons.length > 0 ? leftButtons : undefined,
-            exitButton: {
-                label: 'Close',
-                onClick: () => {
-                    this.isQuestsOpen = false;
-                    this.closeDialog();
-                }
-            }
-        };
-
-        this.showDialog(dialogData);
+        this.helpManager.toggleHelp();
     }
 
     showQuestCompletion(quest) {
-        const dialogData = {
-            title: 'Quest Completed!',
-            text: `${quest.title}\n\nReward: ${quest.reward.points} points\n\n${quest.reward.description}`,
-            exitButton: {
-                label: 'Great!',
-                onClick: () => this.closeDialog()
-            }
-        };
-
-        this.showDialog(dialogData);
-
-        // Update quest display if it's open
-        if (this.isQuestsOpen) {
-            // Refresh the quest dialog if it's currently open
-            this.showQuestDialog();
-        }
+        this.questDialogManager.showQuestCompletion(quest);
     }
 
     // Score Management
@@ -798,20 +486,20 @@ class UIManager {
 
     // Input handling for UI
     handleInput(key) {
-        if (key === 'I' || key === 'i') {
-            this.toggleInventory();
-        } else if (key === 'Q' || key === 'q') {
-            this.toggleQuests();
-        } else if (key === 'H' || key === 'h') {
-            this.toggleHelp();
-        } else if (key === 'ESCAPE') {
+        // Delegate to specialized managers
+        if (this.inventoryManager.handleInput(key)) return;
+        if (this.questDialogManager.handleInput(key)) return;
+        if (this.helpManager.handleInput(key)) return;
+
+        // Handle ESC key for closing dialogs
+        if (key === 'ESCAPE') {
             // Close any open dialog first
             if (this.scene.isDialogOpen) {
                 this.closeDialog();
                 // Reset panel states when dialog is closed via ESC
-                this.isInventoryOpen = false;
-                this.isQuestsOpen = false;
-                this.isHelpOpen = false;
+                this.inventoryManager.isInventoryOpen = false;
+                this.questDialogManager.isQuestsOpen = false;
+                this.helpManager.isHelpOpen = false;
             }
         }
     }
