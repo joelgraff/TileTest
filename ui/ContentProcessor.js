@@ -140,13 +140,16 @@ class ContentProcessor {
      * @returns {Object} Parsed help topics
      */
     parseHelpMarkdown(markdownContent) {
+        console.log('Parsing help markdown, length:', markdownContent.length);
         const topics = {};
         const sections = markdownContent.split(/^# /m);
+        console.log('Sections found:', sections.length);
 
         for (let i = 1; i < sections.length; i++) {
             const section = sections[i];
             const lines = section.split('\n');
             const title = lines[0].trim();
+            console.log('Processing section', i, 'title:', title);
 
             // Parse the content of this section
             const contentMarkdown = lines.slice(1).join('\n');
@@ -159,8 +162,10 @@ class ContentProcessor {
                 title: title,
                 content: contentLines
             };
+            console.log('Created topic:', topicKey, 'with', contentLines.length, 'lines');
         }
 
+        console.log('Total topics created:', Object.keys(topics).length);
         return { topics };
     }
 }

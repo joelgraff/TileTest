@@ -129,15 +129,15 @@ class ButtonFactory {
         // Create underline graphics (normal and hover states)
         const underlineNormal = this.scene.add.graphics()
             .lineStyle(2, disabled ? 0x666666 : 0xffffff)
-            .moveTo(0, btnText.height / 2 + 2)
-            .lineTo(btnText.width, btnText.height / 2 + 2)
+            .moveTo(0, btnText.height / 2 - 9)
+            .lineTo(btnText.width, btnText.height / 2 - 9)
             .stroke()
             .setVisible(false);
 
         const underlineHover = this.scene.add.graphics()
             .lineStyle(2, disabled ? 0x666666 : 0x0080ff)
-            .moveTo(0, btnText.height / 2 + 2)
-            .lineTo(btnText.width, btnText.height / 2 + 2)
+            .moveTo(0, btnText.height / 2 - 9)
+            .lineTo(btnText.width, btnText.height / 2 - 9)
             .stroke()
             .setVisible(false);
 
@@ -165,8 +165,8 @@ class ButtonFactory {
         }
 
         btnText.setPosition(0, 0);
-        btnText.setOrigin(0, 0.5); // Left-align
-        underlineHover.setPosition(0, 0);
+        btnText.setOrigin(0, 0.5); // Left-align for link buttons to align left edges
+        underlineHover.setPosition(0, btnText.height / 2 + 2);
 
         // Create a container for the link button
         const buttonContainer = this.scene.add.container(0, 0, [underlineHover, btnText]);

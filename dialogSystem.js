@@ -88,6 +88,7 @@ class DialogSystem {
                 style: { fontSize: '20px', fontStyle: 'bold', color: '#fff', align: 'center' }
             });
             title.setPosition(0, currentY + 15);
+            title.setOrigin(0.5, 0); // Center horizontally, align to top
             this.dialogContainer.add(title);
             currentY += 40;
         }
@@ -118,6 +119,8 @@ class DialogSystem {
             // Position text based on whether there's an image
             const textX = hasImage ? -contentWidth / 2 + 160 : -contentWidth / 2 + 20;
             const textY = currentY + 20;
+            console.log(textContent, hasImage);
+            console.log('Dialog Text Position:', textX, textY);
             text.setPosition(textX, textY);
 
             // Set word wrap width based on available space
@@ -138,37 +141,50 @@ class DialogSystem {
     layoutButtons(dialogData, contentWidth, contentHeight, startY, hasImage) {
         // Handle main buttons (vertical stack)
         if (dialogData.buttons && dialogData.buttons.length > 0) {
-            const buttonY = startY + 20;
-            const mainX = hasImage ? contentWidth / 4 : 0;
+            let buttonY = startY + 25;
+
+            console.log('Button Layout - hasImage:', hasImage, 'buttonStyle:', dialogData.buttonStyle, 'buttonPosition:', dialogData.buttonPosition, 'startY:', startY, 'buttonY:', buttonY);
+            const mainX = dialogData.buttonStyle === 'link' ? -80 : (hasImage ? contentWidth / 4 : 0); // Left edge for bottomLeft, left-align links near center for others, offset regular buttons with images
+            const buttonSpacing = dialogData.buttonStyle === 'link' ? 20 : 35; // Closer spacing for links
 
             dialogData.buttons.forEach((btnConfig, index) => {
+                const buttonType = dialogData.buttonStyle === 'link' ? 'linkButton' : 'button';
                 const btn = this.assetFactory.createAsset({
-                    type: 'button',
+                    type: buttonType,
                     label: btnConfig.label,
                     onClick: btnConfig.onClick,
                     disabled: btnConfig.disabled,
                     options: btnConfig.options
                 });
-                btn.setPosition(mainX, buttonY + (index * 35));
+
+                btn.setPosition(mainX, buttonY + (index * buttonSpacing));
                 this.dialogContainer.add(btn);
             });
         }
 
         // Handle left buttons (horizontal row, typically pagination)
         if (dialogData.leftButtons && dialogData.leftButtons.length > 0) {
-            const leftX = hasImage ? -contentWidth / 2 + 80 : -contentWidth / 2 + 40;
-            const buttonY = startY + 20;
+            const leftX = hasImage ? -contentWidth / 2 + 80 : -contentWidth / 2;
+            // Position at bottom if no main buttons (topic content screens)
+            const buttonY = dialogData.buttons && dialogData.buttons.length > 0 ? startY + 32 : contentHeight / 2 - 15;
+            console.log('Left buttons positioning - hasMainButtons:', !!(dialogData.buttons && dialogData.buttons.length > 0), 'buttonY:', buttonY);
 
+            let currentX = leftX;
             dialogData.leftButtons.forEach((btnConfig, index) => {
                 const btn = this.assetFactory.createAsset({
                     type: 'button',
                     label: btnConfig.label,
                     onClick: btnConfig.onClick,
                     disabled: btnConfig.disabled,
-                    options: { ...(btnConfig.options || {}), width: 68 }
+                    options: btnConfig.options || {}
                 });
-                btn.setPosition(leftX + (index * 80), buttonY);
+                console.log('Left Button Positioning - index:', index, 'currentX:', currentX, 'buttonY:', buttonY, 'name:', btnConfig.label);
+                // Position button so its left edge is at currentX
+                btn.setPosition(currentX + btn.width / 2, buttonY);
                 this.dialogContainer.add(btn);
+                console.log('button width:', btn.width);
+                // Move to next position with some spacing
+                currentX += btn.width + 10; // Add 10px spacing between buttons
             });
         }
 
@@ -191,12 +207,13 @@ class DialogSystem {
                     disabled: btnConfig.disabled,
                     options: { ...(btnConfig.options || {}), width: hasImage ? 60 : undefined }
                 });
-                btn.setPosition(startX + (index * 90), contentHeight / 2 - 25);
+
+                btn.setPosition(startX + (index * 90), contentHeight / 2 - 10);
                 this.dialogContainer.add(btn);
             });
         }
 
-        // Handle exit button (bottom center)
+        // Handle exit button (bottom position based on exitButtonPosition)
         if (dialogData.exitButton) {
             const exitBtn = this.assetFactory.createAsset({
                 type: 'button',
@@ -204,7 +221,8 @@ class DialogSystem {
                 onClick: dialogData.exitButton.onClick,
                 options: dialogData.exitButton.options
             });
-            exitBtn.setPosition(0, contentHeight / 2 - 25);
+            const exitX = dialogData.exitButtonPosition === 'right' ? contentWidth / 2 - 55 : 0; // Right side with margin
+            exitBtn.setPosition(exitX, contentHeight / 2 - 15); // Slightly lower
             this.dialogContainer.add(exitBtn);
         }
     }
