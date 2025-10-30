@@ -16,7 +16,7 @@ TileTest is a browser-based 2D tilemap game built with Phaser.js featuring proce
   - `questManager.js`: Procedural quest generation and state management.
   - `domainManager.js`: Static class managing domain-based data (technology categories).
   - `uiManager.js`: Game interface with inventory, quests panel, and dialog delegation.
-  - `dialogManager.js`: Modal dialog system with button interactions.
+  - `dialogSystem.js`: Modal dialog system with button interactions.
 - **Assets & Data:**
   - Sprites: PNG files for player, NPCs, and tiles.
   - Maps: JSON/TMX files for tilemaps and configuration.
@@ -66,17 +66,3 @@ TileTest is a browser-based 2D tilemap game built with Phaser.js featuring proce
 - **Browser APIs:** Cookies for quest state persistence, fetch for domain loading
 - **Python Scripts:** Data processing utilities in workspace root
 
-## Example: Adding Quest Functionality
-1. Define domain data in `technology_domains.json` with items/facts arrays
-2. Update `questManager.js` to generate quests from domain templates
-3. Add NPC interactions in `npcManager.js` calling `scene.questManager.checkItemCollection()`
-4. Handle quest completion in `uiManager.js` with reward dialogs
-
-## References
-- Core patterns: `main.js`, `playerManager.js`, `npcManager.js`, `mapManager.js`
-- Quest system: `questManager.js`, `domainManager.js`, `uiManager.js`
-- Data conventions: `technology_domains.json`, `vendors.json`, `config.js`
-- Dialog patterns: `dialogManager.js` with quadrant-based button layout
-
----
-For questions or unclear patterns, review manager modules and data files. If conventions are missing, ask for clarification or propose updates based on existing structure.

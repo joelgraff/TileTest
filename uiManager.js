@@ -1,7 +1,10 @@
+
 import DialogSystem from './dialogSystem.js';
 import InventoryManager from './inventoryManager.js';
 import QuestDialogManager from './questDialogManager.js';
 import HelpManager from './helpManager.js';
+import MovementIndicator from './MovementIndicator.js';
+
 
 class UIManager {
     constructor(scene) {
@@ -19,56 +22,21 @@ class UIManager {
         this.helpManager = new HelpManager(scene, this);
 
         // Movement indicator (reticle)
-        this.movementIndicator = this.scene.add.graphics();
-        this.movementIndicator.setDepth(999);
-        this.movementIndicator.setVisible(false);
-        this.movementIndicator.alpha = 1;
-        this.movementIndicatorFadeTween = null;
+        this.movementIndicator = new MovementIndicator(scene);
     }
+
     // Movement indicator (reticle)
     showMovementIndicator(x, y) {
-        this.movementIndicator.clear();
-        // Draw reticle: circle + crosshair
-        this.movementIndicator.lineStyle(4, 0xFFFF00, 1);
-        this.movementIndicator.strokeCircle(x, y, 16);
-        this.movementIndicator.lineStyle(2, 0xFFFFFF, 1);
-        this.movementIndicator.beginPath();
-        this.movementIndicator.moveTo(x - 12, y);
-        this.movementIndicator.lineTo(x + 12, y);
-        this.movementIndicator.moveTo(x, y - 12);
-        this.movementIndicator.lineTo(x, y + 12);
-        this.movementIndicator.strokePath();
-        this.movementIndicator.setVisible(true);
-        this.movementIndicator.alpha = 1;
-        if (this.movementIndicatorFadeTween) {
-            this.movementIndicatorFadeTween.stop();
-            this.movementIndicatorFadeTween = null;
-        }
+        this.movementIndicator.show(x, y);
     }
 
     hideMovementIndicator() {
-        if (this.movementIndicatorFadeTween) {
-            this.movementIndicatorFadeTween.stop();
-        }
-        this.movementIndicatorFadeTween = this.scene.tweens.add({
-            targets: this.movementIndicator,
-            alpha: 0,
-            duration: 200,
-            onComplete: () => {
-                this.movementIndicator.setVisible(false);
-            }
-        });
+        this.movementIndicator.hide();
     }
 
     // Call this from InputManager after pointerdown/up events
     handlePointerMove(screenX, screenY, isDown) {
-        if (isDown) {
-            // Convert screen coordinates to world coordinates
-            const worldPoint = this.scene.cameras.main.getWorldPoint(screenX, screenY);
-            this.showMovementIndicator(worldPoint.x, worldPoint.y);
-        } else {
-            this.hideMovementIndicator();
-        }
+        this.movementIndicator.handlePointerMove(screenX, screenY, isDown);
     }
 
     createUI() {
