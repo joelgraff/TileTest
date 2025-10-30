@@ -1,4 +1,5 @@
 import DialogManager from './dialogManager.js';
+import ContentProcessor from './ui/ContentProcessor.js';
 
 class UIManager {
     constructor(scene) {
@@ -9,6 +10,9 @@ class UIManager {
         this.isInventoryOpen = false;
         this.isQuestsOpen = false; // Track quest panel visibility
         this.isHelpOpen = false; // Track help dialog visibility
+
+        // Content processor for text pagination
+        this.contentProcessor = new ContentProcessor();
 
         // Load help data
         this.loadHelpData();
@@ -308,8 +312,7 @@ class UIManager {
         fetch('help.md')
             .then(response => response.text())
             .then(markdownContent => {
-                const contentProcessor = this.dialogManager.getContentProcessor();
-                this.helpData = contentProcessor.parseHelpMarkdown(markdownContent);
+                this.helpData = this.contentProcessor.parseHelpMarkdown(markdownContent);
             })
             .catch(error => {
                 console.error('Failed to load help data:', error);
@@ -410,8 +413,7 @@ class UIManager {
         }
 
         // Use ContentProcessor for pagination
-        const contentProcessor = this.dialogManager.getContentProcessor();
-        const pages = contentProcessor.paginateText(topic.content.join('\n'), 8);
+        const pages = this.contentProcessor.paginateText(topic.content.join('\n'), 8);
         const totalPages = pages.length;
         const currentPage = Math.min(page, totalPages - 1);
         const displayText = pages[currentPage] || 'No help content available.';
@@ -507,8 +509,7 @@ class UIManager {
                 questItems.push('');
             });
         }
-        const contentProcessor = this.dialogManager.getContentProcessor();
-        const pages = contentProcessor.paginateText(questItems.join('\n'), 9);
+        const pages = this.contentProcessor.paginateText(questItems.join('\n'), 9);
         const totalPages = pages.length;
         const currentPage = Math.min(page, totalPages - 1);
         const displayText = pages[currentPage] || 'No quest information available.';

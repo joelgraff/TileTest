@@ -1,5 +1,4 @@
 import { DialogLayout } from './ui/index.js';
-import ContentProcessor from './ui/ContentProcessor.js';
 
 // Dialog type constants
 const DIALOG_TYPES = {
@@ -13,7 +12,6 @@ class DialogManager {
         this.dialogContainer = null;
         this.overlay = null;
         this.isDialogOpen = false;
-        this.contentProcessor = new ContentProcessor();
         // Cache mobile detection for performance
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
@@ -82,99 +80,23 @@ class DialogManager {
      * @param {string} dialogType - Dialog type for layout scheme
      */
     addAssetsToLayout(assets, layoutOptions, dialogType) {
-        // Apply type-specific layout scheme
-        if (dialogType === DIALOG_TYPES.INTERACTION) {
-            this.applyInteractionLayout(assets, layoutOptions);
-        } else {
-            this.applyDefaultLayout(assets, layoutOptions);
-        }
-    }
+        // Add assets to each container using DialogLayout
+        Object.keys(assets).forEach(containerName => {
+            const containerAssets = assets[containerName];
+            const containerOptions = layoutOptions[containerName] || {};
 
-    /**
-     * Apply default dialog layout (title, left image, right text, bottom close)
-     * @param {Object} assets - Assets grouped by container
-     * @param {Object} layoutOptions - Layout options for each container
-     */
-    applyDefaultLayout(assets, layoutOptions) {
-        // Add title assets
-        if (assets.title) {
-            if (Array.isArray(assets.title)) {
-                assets.title.forEach(asset => this.dialogLayout.addTitle(asset));
-            } else {
-                this.dialogLayout.addTitle(assets.title);
-            }
-        }
-
-        // Add mainLeft assets (avatar/image)
-        if (assets.mainLeft) {
-            this.dialogLayout.addAssets('mainLeft', assets.mainLeft, layoutOptions.mainLeft || {});
-        }
-
-        // Add main assets (full width)
-        if (assets.main) {
-            this.dialogLayout.addAssets('main', assets.main, layoutOptions.main || {});
-        }
-
-        // Add mainRight assets (text for default dialogs)
-        if (assets.mainRight) {
-            this.dialogLayout.addAssets('mainRight', assets.mainRight, layoutOptions.mainRight || {});
-        }
-
-        // Add bottom assets
-        if (assets.bottom) {
-            this.dialogLayout.addAssets('bottom', assets.bottom, layoutOptions.bottom || {});
-        }
-
-        // Apply layout options to all containers
-        Object.keys(layoutOptions).forEach(containerName => {
-            const options = layoutOptions[containerName];
-            if (options && assets[containerName]) {
-                this.dialogLayout.addAssets(containerName, assets[containerName], options);
-            }
-        });
-    }
-
-    /**
-     * Apply interaction dialog layout (navigation buttons, split right column)
-     * @param {Object} assets - Assets grouped by container
-     * @param {Object} layoutOptions - Layout options for each container
-     */
-    applyInteractionLayout(assets, layoutOptions) {
-        // Add title assets
-        if (assets.title) {
-            if (Array.isArray(assets.title)) {
-                assets.title.forEach(asset => this.dialogLayout.addTitle(asset));
-            } else {
-                this.dialogLayout.addTitle(assets.title);
-            }
-        }
-
-        // Add mainLeft assets (avatar/image)
-        if (assets.mainLeft) {
-            console.log('DialogManager: Adding mainLeft assets:', assets.mainLeft);
-            this.dialogLayout.addAssets('mainLeft', assets.mainLeft, layoutOptions.mainLeft || {});
-        }
-
-        // Add main assets (full width)
-        if (assets.main) {
-            this.dialogLayout.addAssets('main', assets.main, layoutOptions.main || {});
-        }
-
-        // Add mainRight assets (text for interaction dialogs)
-        if (assets.mainRight) {
-            this.dialogLayout.addAssets('mainRight', assets.mainRight, layoutOptions.mainRight || {});
-        }
-
-        // Add bottom assets
-        if (assets.bottom) {
-            this.dialogLayout.addAssets('bottom', assets.bottom, layoutOptions.bottom || {});
-        }
-
-        // Apply layout options to all containers
-        Object.keys(layoutOptions).forEach(containerName => {
-            const options = layoutOptions[containerName];
-            if (options && assets[containerName]) {
-                this.dialogLayout.addAssets(containerName, assets[containerName], options);
+            if (containerAssets) {
+                if (containerName === 'title') {
+                    // Special handling for title
+                    if (Array.isArray(containerAssets)) {
+                        containerAssets.forEach(asset => this.dialogLayout.addTitle(asset));
+                    } else {
+                        this.dialogLayout.addTitle(containerAssets);
+                    }
+                } else {
+                    // Add to appropriate container
+                    this.dialogLayout.addAssets(containerName, containerAssets, containerOptions);
+                }
             }
         });
     }
@@ -220,11 +142,6 @@ class DialogManager {
             this.overlay.destroy();
             this.overlay = null;
         }
-    }
-
-    // Utility method to access content processor for pagination
-    getContentProcessor() {
-        return this.contentProcessor;
     }
 }
 

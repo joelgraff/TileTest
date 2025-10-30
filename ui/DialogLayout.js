@@ -1,4 +1,4 @@
-import ButtonFactory from './ButtonFactory.js';
+import { AssetFactory } from './index.js';
 
 /**
  * DialogLayout - Container-based layout manager for dialog components
@@ -16,8 +16,7 @@ class DialogLayout {
         this.dialogType = dialogType;
 
         // Initialize dependencies
-        this.buttonFactory = new ButtonFactory(scene);
-        this.createPhaserAsset = this.createPhaserAsset.bind(this);
+        this.assetFactory = new AssetFactory(scene);
         this.positionAssetInContainer = this.positionAssetInContainer.bind(this);
 
         // Calculate dimensions
@@ -163,7 +162,7 @@ class DialogLayout {
 
     addTitle(titleText) {
         if (titleText) {
-            let phaserAsset = this.createPhaserAsset(titleText);
+            let phaserAsset = this.assetFactory.createAsset(titleText);
             this.containers.titleContainer.add(phaserAsset);
             this.elements.titleContainer.push(phaserAsset);
             // Center the title text in the title bar
@@ -305,58 +304,6 @@ class DialogLayout {
         }
     }
 
-    createPhaserAsset(asset, options = {}) {
-        if (!asset || typeof asset !== 'object' || !asset.type) {
-            return asset; // Return as-is if not a config object
-        }
-
-        switch (asset.type) {
-            case 'button':
-                return this.buttonFactory.createButton(
-                    asset.label,
-                    asset.onClick,
-                    {
-                        disabled: asset.disabled,
-                        ...(asset.options || {})
-                    }
-                );
-
-            case 'linkButton':
-                return this.buttonFactory.createLinkButton(
-                    asset.label,
-                    asset.onClick,
-                    {
-                        disabled: asset.disabled,
-                        ...(asset.options || {})
-                    }
-                );
-
-            case 'image':
-                const image = this.scene.add.sprite(0, 0, asset.key, 0);
-                image.anims.stop();
-                if (asset.displaySize) {
-                    image.setDisplaySize(asset.displaySize.width, asset.displaySize.height);
-                }
-                image.setOrigin(0.5, 0.5);
-                if (asset.scale) image.setScale(asset.scale);
-                if (asset.isAvatar) image.isAvatar = true;
-                return image;
-
-            case 'text':
-            case 'Text':
-                const style = asset.style || { fontSize: '18px', color: '#ffffff', align: 'left' };
-                const text = this.scene.add.text(0, 0, asset.text, style);
-                // Set word wrap based on container width
-                if (options.container && options.container.width) {
-                    text.setWordWrapWidth(options.container.width - 20);
-                }
-                return text;
-
-            default:
-                console.warn(`Unknown asset type: ${asset.type}`);
-                return null;
-        }
-    }
     addAssets(containerName, assets, layoutOptions = {}) {
         const assetArray = Array.isArray(assets) ? assets : [assets];
 
@@ -389,7 +336,7 @@ class DialogLayout {
         // Process assets
         const phaserAssets = [];
         assetArray.forEach(asset => {
-            let phaserAsset = this.createPhaserAsset(asset, { container });
+            let phaserAsset = this.assetFactory.createAsset(asset, { container });
             if (phaserAsset) {
                 container.add(phaserAsset);
                 elementGroup.push(phaserAsset);
