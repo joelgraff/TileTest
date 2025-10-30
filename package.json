@@ -1,0 +1,17 @@
+{
+  "name": "tile-test",
+  "version": "1.0.0",
+  "description": "Browser-based 2D tilemap game with procedural quest generation for VCF Midwest events",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 5000",
+    "serve": "python -m http.server 5000"
+  },
+  "dependencies": {
+    "phaser": "^3.55.2"
+  },
+  "devDependencies": {},
+  "keywords": ["game", "phaser", "tilemap", "quest"],
+  "author": "",
+  "license": "ISC"
+}
