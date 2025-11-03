@@ -37,7 +37,12 @@ class DialogSystem {
 
         const cam = this.scene.cameras.main;
         const dialogWidth = Math.min(this.isMobile ? 400 : 600, cam.width * (this.isMobile ? 0.9 : 0.85));
-        const dialogHeight = Math.min(this.isMobile ? 260 : 340, cam.height * (this.isMobile ? 0.8 : 0.65));
+
+        // Increase dialog height if there are bottom buttons to prevent overlap
+        let dialogHeight = Math.min(this.isMobile ? 260 : 280, cam.height * (this.isMobile ? 0.8 : 0.65));
+        if (dialogData.bottomButtons && dialogData.bottomButtons.length > 0) {
+            dialogHeight = Math.min(this.isMobile ? 340 : 360, cam.height * (this.isMobile ? 0.95 : 0.8));
+        }
 
         // Create dialog container and overlay
         this.createDialogStructure(cam, dialogWidth, dialogHeight);
@@ -139,6 +144,9 @@ class DialogSystem {
      * Layout buttons based on dialog configuration
      */
     layoutButtons(dialogData, contentWidth, contentHeight, startY, hasImage) {
+        const textColumnLeft = hasImage ? -contentWidth / 2 + 160 : -contentWidth / 2 + 20;
+        const textColumnWidth = hasImage ? contentWidth - 180 : contentWidth - 40;
+
         // Handle main buttons (vertical stack)
         if (dialogData.buttons && dialogData.buttons.length > 0) {
             let buttonY = startY + 25;
@@ -157,7 +165,16 @@ class DialogSystem {
                     options: btnConfig.options
                 });
 
-                btn.setPosition(mainX, buttonY + (index * buttonSpacing));
+                let buttonX = mainX;
+                if (dialogData.buttonAlignment === 'textLeft') {
+                    buttonX = textColumnLeft + btn.width / 2;
+                } else if (dialogData.buttonAlignment === 'textCenter') {
+                    buttonX = textColumnLeft + (textColumnWidth / 2);
+                } else if (dialogData.buttonAlignment === 'textRight') {
+                    buttonX = textColumnLeft + textColumnWidth - btn.width / 2;
+                }
+
+                btn.setPosition(buttonX, buttonY + (index * buttonSpacing));
                 this.dialogContainer.add(btn);
             });
         }
@@ -191,26 +208,81 @@ class DialogSystem {
         // Handle bottom buttons (horizontal row at bottom)
         if (dialogData.bottomButtons && dialogData.bottomButtons.length > 0) {
             const bottomBtnCount = dialogData.bottomButtons.length;
-            const totalWidth = bottomBtnCount * 80 + (bottomBtnCount - 1) * 10;
-            let startX = -totalWidth / 2;
 
-            if (hasImage) {
-                // For dialogs with images, align to the left
-                startX = -contentWidth / 2 + 20;
-            }
-
-            dialogData.bottomButtons.forEach((btnConfig, index) => {
-                const btn = this.assetFactory.createAsset({
+            if (dialogData.bottomButtonsAlign === 'split') {
+                // Split layout: Back button on left, pagination aligned with right column
+                const lastBtnConfig = dialogData.bottomButtons[bottomBtnCount - 1];
+                const lastBtn = this.assetFactory.createAsset({
                     type: 'button',
-                    label: btnConfig.label,
-                    onClick: btnConfig.onClick,
-                    disabled: btnConfig.disabled,
-                    options: { ...(btnConfig.options || {}), width: hasImage ? 60 : undefined }
+                    label: lastBtnConfig.label,
+                    onClick: lastBtnConfig.onClick,
+                    disabled: lastBtnConfig.disabled,
+                    options: lastBtnConfig.options || {}
                 });
+                // Position last button (Back) at left edge
+                lastBtn.setPosition(-contentWidth / 2 + lastBtn.width / 2, contentHeight / 2 - 10);
+                this.dialogContainer.add(lastBtn);
 
-                btn.setPosition(startX + (index * 90), contentHeight / 2 - 10);
-                this.dialogContainer.add(btn);
-            });
+                // Position remaining buttons (pagination) aligned with left edge of right column
+                if (bottomBtnCount > 1) {
+                    // Calculate the left edge of the right column (where text starts when there's an image)
+                    const rightColumnLeft = hasImage ? -contentWidth / 2 + 160 : -contentWidth / 2 + 20;
+                    let currentX = rightColumnLeft;
+
+                    // Layout pagination buttons from left to right
+                    for (let i = 0; i < bottomBtnCount - 1; i++) {
+                        const btnConfig = dialogData.bottomButtons[i];
+                        const btn = this.assetFactory.createAsset({
+                            type: 'button',
+                            label: btnConfig.label,
+                            onClick: btnConfig.onClick,
+                            disabled: btnConfig.disabled,
+                            options: btnConfig.options || {}
+                        });
+                        btn.setPosition(currentX + btn.width / 2, contentHeight / 2 - 10);
+                        this.dialogContainer.add(btn);
+                        currentX += btn.width + 10;
+                    }
+                }
+            } else if (dialogData.bottomButtonsAlign === 'left') {
+                // Align all buttons to left edge of dialog
+                let currentX = -contentWidth / 2;
+                dialogData.bottomButtons.forEach((btnConfig, index) => {
+                    const btn = this.assetFactory.createAsset({
+                        type: 'button',
+                        label: btnConfig.label,
+                        onClick: btnConfig.onClick,
+                        disabled: btnConfig.disabled,
+                        options: btnConfig.options || {}
+                    });
+                    btn.setPosition(currentX + btn.width / 2, contentHeight / 2 - 10);
+                    this.dialogContainer.add(btn);
+                    currentX += btn.width + 10;
+                });
+            } else {
+                // Default center alignment
+                const totalWidth = bottomBtnCount * 80 + (bottomBtnCount - 1) * 10;
+                let startX = -totalWidth / 2;
+
+                if (hasImage) {
+                    // For dialogs with images, align to the left
+                    startX = -contentWidth / 2 + 20;
+                }
+
+                let currentX = startX;
+                dialogData.bottomButtons.forEach((btnConfig, index) => {
+                    const btn = this.assetFactory.createAsset({
+                        type: 'button',
+                        label: btnConfig.label,
+                        onClick: btnConfig.onClick,
+                        disabled: btnConfig.disabled,
+                        options: btnConfig.options || {}
+                    });
+                    btn.setPosition(currentX + btn.width / 2, contentHeight / 2 - 10);
+                    this.dialogContainer.add(btn);
+                    currentX += btn.width + 10;
+                });
+            }
         }
 
         // Handle exit button (bottom position based on exitButtonPosition)

@@ -49,7 +49,8 @@ class VendorDialog {
             title: `${vendorData.name} (${DomainManager.getDomainName(vendorData.domain_id)})`,
             text: vendorData.description,
             buttons: responseButtons,
-            exitButton: exitButton
+            exitButton: exitButton,
+            buttonAlignment: 'textLeft'
         };
         this.scene.uiManager.showDialog(originalDialogData);
     }
@@ -174,19 +175,23 @@ class VendorDialog {
                 bottomButtons.push({
                     label: '<',
                     disabled: page <= 0,
-                    onClick: page > 0 ? () => showItemsDialog(page - 1) : () => {}
+                    onClick: page > 0 ? () => showItemsDialog(page - 1) : () => {},
+                    options: { height: 30 }
                 });
                 bottomButtons.push({
                     label: '>',
                     disabled: page >= totalPages - 1,
-                    onClick: page < totalPages - 1 ? () => showItemsDialog(page + 1) : () => {}
+                    onClick: page < totalPages - 1 ? () => showItemsDialog(page + 1) : () => {},
+                    options: { height: 30 }
                 });
             }
 
-            const exitButton = {
+            // Add Back button at the end of bottomButtons
+            bottomButtons.push({
                 label: 'Back',
-                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-            };
+                onClick: () => this.scene.uiManager.showDialog(originalDialogData),
+                options: { height: 30 }
+            });
 
             this.scene.uiManager.showDialog({
                 imageKey: imageKey,
@@ -194,8 +199,9 @@ class VendorDialog {
                 text: dialogText,
                 buttons: itemButtons,
                 bottomButtons: bottomButtons,
-                exitButton: exitButton,
-                dialogType: 'interaction'
+                bottomButtonsAlign: 'split',
+                dialogType: 'interaction',
+                buttonAlignment: 'textLeft'
             });
         };
 
@@ -210,7 +216,8 @@ class VendorDialog {
             buttons: [{
                 label: 'Back',
                 onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-            }]
+            }],
+            buttonAlignment: 'textLeft'
         });
     }
 
@@ -248,29 +255,36 @@ class VendorDialog {
 
         const bottomButtons = [];
 
-        bottomButtons.push({
-            label: '< Back',
-            onClick: () => this.scene.uiManager.showDialog(originalDialogData)
-        });
-
+        // Add pagination buttons first
         if (totalPages > 1) {
             bottomButtons.push({
                 label: '<',
                 disabled: currentPage <= 0,
-                onClick: currentPage > 0 ? () => this.displayTechFactsDialog(facts, vendorData, imageKey, originalDialogData, currentPage - 1) : () => {}
+                onClick: currentPage > 0 ? () => this.displayTechFactsDialog(facts, vendorData, imageKey, originalDialogData, currentPage - 1) : () => {},
+                options: { height: 30 }
             });
             bottomButtons.push({
                 label: '>',
                 disabled: currentPage >= totalPages - 1,
-                onClick: currentPage < totalPages - 1 ? () => this.displayTechFactsDialog(facts, vendorData, imageKey, originalDialogData, currentPage + 1) : () => {}
+                onClick: currentPage < totalPages - 1 ? () => this.displayTechFactsDialog(facts, vendorData, imageKey, originalDialogData, currentPage + 1) : () => {},
+                options: { height: 30 }
             });
         }
+
+        // Add Back button at the end
+        bottomButtons.push({
+            label: 'Back',
+            onClick: () => this.scene.uiManager.showDialog(originalDialogData),
+            options: { height: 30 }
+        });
 
         const dialogData = {
             imageKey: imageKey,
             title: `${vendorData.name} - Tech Facts`,
             text: displayText,
-            bottomButtons: bottomButtons
+            bottomButtons: bottomButtons,
+            bottomButtonsAlign: 'split',
+            buttonAlignment: 'textLeft'
         };
 
         this.scene.uiManager.showDialog(dialogData);

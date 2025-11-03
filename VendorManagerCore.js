@@ -12,10 +12,12 @@ class VendorManagerCore {
         this.vendorAssignment = new VendorAssignment(scene);
         this.vendorInteraction = new VendorInteraction(scene, this);
         this.vendorDialog = new VendorDialog(scene);
+        this.vendorAssignmentDone = false; // Expose assignment status to other systems
     }
 
     assignVendorsToNPCs() {
         this.vendorAssignment.assignVendorsToNPCs(this.vendors);
+        this.vendorAssignmentDone = this.vendorAssignment.vendorAssignmentDone;
     }
 
     setupInteractionPrompt() {
