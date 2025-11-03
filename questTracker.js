@@ -12,24 +12,20 @@ class QuestTracker {
 
         this.questManager.activeQuests.forEach(quest => {
             if (quest.type === 'collection') {
-                // Check if the vendor's domain is one of the quest's required domains
-                const vendor = this.questManager.vendors.find(v => v.id === vendorId);
-                if (vendor && quest.domains.includes(vendor.domain_id)) {
-                    quest.objectives.forEach(objective => {
-                        if (!objective.collected && objective.item.name === itemName) {
-                            objective.collected = true;
-                            objective.vendor = vendorId;
-                            questUpdated = true;
-                            console.log(`Item ${itemName} collected for quest ${quest.id} from domain ${vendor.domain_id}`);
+                quest.objectives.forEach(objective => {
+                    if (!objective.collected && objective.item.name === itemName && objective.vendorId === vendorId) {
+                        objective.collected = true;
+                        objective.vendor = vendorId;
+                        questUpdated = true;
+                        console.log(`Item ${itemName} collected for quest ${quest.id} from vendor ${vendorId}`);
 
-                            // Check if quest is complete
-                            const allObjectivesComplete = quest.objectives.every(obj => obj.collected);
-                            if (allObjectivesComplete) {
-                                this.completeQuest(quest.id);
-                            }
+                        // Check if quest is complete
+                        const allObjectivesComplete = quest.objectives.every(obj => obj.collected);
+                        if (allObjectivesComplete) {
+                            this.completeQuest(quest.id);
                         }
-                    });
-                }
+                    }
+                });
             }
         });
 

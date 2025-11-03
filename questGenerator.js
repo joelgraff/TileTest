@@ -162,11 +162,21 @@ class QuestGenerator {
             domains: selectedDomains.map(d => d.id),
             title: `Collect Retro Treasures`,
             description: `Find and collect these items from ${selectedDomains.map(d => d.name.toLowerCase()).join(' or ')} vendors: ${selectedItems.map(item => item.name).join(', ')}`,
-            objectives: selectedItems.map(item => ({
-                item: item,
-                collected: false,
-                vendor: null // Will be set when collected
-            })),
+            objectives: selectedItems.map((item, index) => {
+                // Assign each item to a specific vendor in the appropriate domain
+                const itemDomain = selectedDomains.find(d => DomainManager.getDomainItems(d.id).some(di => di.name === item.name));
+                const vendorsInDomain = vendorsByDomain[itemDomain.id] || [];
+                const assignedVendor = vendorsInDomain[index % vendorsInDomain.length] || vendorsInDomain[0];
+
+                console.log(`Assigning item ${item.name} (domain: ${itemDomain ? itemDomain.name : 'unknown'}) to vendor ${assignedVendor ? assignedVendor.name : 'none'} (domain: ${assignedVendor ? assignedVendor.domain_id : 'none'})`);
+
+                return {
+                    item: item,
+                    collected: false,
+                    vendorId: assignedVendor ? assignedVendor.id : null,
+                    domainId: itemDomain.id
+                };
+            }),
             reward: {
                 points: selectedItems.length * 10,
                 description: `${selectedItems.length * 10} points for collecting retro treasures`

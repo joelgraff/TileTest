@@ -3,6 +3,7 @@ import DomainManager from './domainManager.js';
 class VendorDialog {
     constructor(scene) {
         this.scene = scene;
+        this.vendorInventories = new Map(); // Cache for static vendor inventories
     }
 
     interactWithVendor(vendorData, npcSprite = null) {
@@ -68,63 +69,51 @@ class VendorDialog {
             return;
         }
 
-        // Quest logic for item distribution
-        let questRequiredItems = [];
-        if (this.scene.questManager) {
-            const activeQuests = this.scene.questManager.getActiveQuests();
-            activeQuests.forEach(quest => {
-                if (quest.domains.includes(vendorData.domain_id)) {
+        // Check if we have a cached inventory for this vendor
+        const cacheKey = vendorData.id;
+        let domainItems;
+
+        if (this.vendorInventories.has(cacheKey)) {
+            // Use cached inventory
+            domainItems = this.vendorInventories.get(cacheKey);
+        } else {
+            // Generate and cache new inventory
+            console.log(`Generating inventory for vendor ${vendorData.name} (${vendorData.domain_id})`);
+
+            // Quest logic for item distribution - now uses pre-assigned vendors from quest generation
+            let questRequiredItems = [];
+            if (this.scene.questManager) {
+                const activeQuests = this.scene.questManager.getActiveQuests();
+                activeQuests.forEach(quest => {
                     quest.objectives.forEach(objective => {
-                        if (!objective.collected) {
+                        if (!objective.collected && objective.vendorId === vendorData.id) {
+                            console.log(`Adding quest item ${objective.item.name} to vendor ${vendorData.name}`);
                             questRequiredItems.push(objective.item);
                         }
                     });
-                }
-            });
-        }
-
-        let distributedQuestItems = [];
-        if (questRequiredItems.length > 0) {
-            const vendorsInDomain = [];
-            this.scene.npcGroup.getChildren().forEach(npc => {
-                if (npc.vendorData && npc.vendorData.domain_id === vendorData.domain_id) {
-                    vendorsInDomain.push(npc.vendorData);
-                }
-            });
-
-            vendorsInDomain.sort((a, b) => a.id.localeCompare(b.id));
-            const vendorIndex = vendorsInDomain.findIndex(v => v.id === vendorData.id);
-
-            if (vendorIndex !== -1) {
-                questRequiredItems.forEach((item, itemIndex) => {
-                    const assignedVendorIndex = itemIndex % vendorsInDomain.length;
-                    if (assignedVendorIndex === vendorIndex) {
-                        distributedQuestItems.push(item);
-                    }
                 });
-
-                if (distributedQuestItems.length === 0 && vendorIndex < questRequiredItems.length) {
-                    distributedQuestItems.push(questRequiredItems[vendorIndex]);
-                }
             }
+
+            let selectedItems = [...questRequiredItems];
+            const remainingItems = allDomainItems.filter(item =>
+                !selectedItems.some(selected => selected.name === item.name)
+            );
+
+            const minItems = 6;
+            const maxItems = 9;
+            const numItemsToShow = Math.min(
+                Math.max(minItems, Math.floor(Math.random() * (maxItems - minItems + 1)) + minItems),
+                allDomainItems.length
+            );
+
+            const additionalItems = this.getRandomItems(remainingItems, numItemsToShow - selectedItems.length);
+            selectedItems = selectedItems.concat(additionalItems);
+
+            domainItems = selectedItems;
+            this.vendorInventories.set(cacheKey, domainItems);
+
+            console.log(`Cached ${domainItems.length} items for vendor ${vendorData.name}:`, domainItems.map(i => i.name));
         }
-
-        let selectedItems = [...distributedQuestItems];
-        const remainingItems = allDomainItems.filter(item =>
-            !selectedItems.some(selected => selected.name === item.name)
-        );
-
-        const minItems = 6;
-        const maxItems = 9;
-        const numItemsToShow = Math.min(
-            Math.max(minItems, Math.floor(Math.random() * (maxItems - minItems + 1)) + minItems),
-            allDomainItems.length
-        );
-
-        const additionalItems = this.getRandomItems(remainingItems, numItemsToShow - selectedItems.length);
-        selectedItems = selectedItems.concat(additionalItems);
-
-        const domainItems = selectedItems;
         const itemsPerPage = 5;
         const totalPages = Math.ceil(domainItems.length / itemsPerPage);
 
@@ -139,28 +128,69 @@ class VendorDialog {
             const itemButtons = pageItems.map((item, index) => ({
                 label: item.name,
                 onClick: () => {
-                    if (this.scene.questManager) {
-                        const questUpdated = this.scene.questManager.checkItemCollection(item.name, vendorData.id);
-                        if (questUpdated) {
-                            this.scene.uiManager.showDialog({
-                                text: `Collected ${item.name}!\n\nQuest progress updated!`,
-                                buttons: [{
-                                    label: 'Continue',
-                                    onClick: () => showItemsDialog(page)
-                                }]
-                            });
+                    // Check if player has inventory space
+                    if (!this.scene.uiManager || !this.scene.uiManager.inventoryManager || !this.scene.uiManager.inventoryManager.hasSpace()) {
+                        this.scene.uiManager.showDialog({
+                            text: 'Your inventory is full! Drop some items first.',
+                            buttons: [{
+                                label: 'Continue',
+                                onClick: () => showItemsDialog(page)
+                            }]
+                        });
+                        return;
+                    }
+
+                    // Add item to player's inventory
+                    const itemAdded = this.scene.uiManager.inventoryManager.addItem(item);
+
+                    if (itemAdded) {
+                        // Remove item from vendor's inventory
+                        const globalIndex = startIndex + index;
+                        domainItems.splice(globalIndex, 1);
+
+                        // Update cached inventory
+                        this.vendorInventories.set(cacheKey, domainItems);
+
+                        // Calculate new page after removal
+                        const newTotalPages = Math.ceil(domainItems.length / itemsPerPage);
+                        let newPage = page;
+
+                        // If current page is now empty and not the first page, go to previous page
+                        if (page >= newTotalPages && newTotalPages > 0) {
+                            newPage = newTotalPages - 1;
+                        }
+
+                        if (this.scene.questManager) {
+                            const questUpdated = this.scene.questManager.checkItemCollection(item.name, vendorData.id);
+                            if (questUpdated) {
+                                this.scene.uiManager.showDialog({
+                                    text: `Collected ${item.name}!\n\nQuest progress updated!`,
+                                    buttons: [{
+                                        label: 'Continue',
+                                        onClick: () => showItemsDialog(newPage)
+                                    }]
+                                });
+                            } else {
+                                this.scene.uiManager.showDialog({
+                                    text: `Collected ${item.name}!\n\n(Item added to your collection)`,
+                                    buttons: [{
+                                        label: 'Continue',
+                                        onClick: () => showItemsDialog(newPage)
+                                    }]
+                                });
+                            }
                         } else {
                             this.scene.uiManager.showDialog({
-                                text: `Collected ${item.name}!\n\n(Item added to your collection)`,
+                                text: `Collected ${item.name}!`,
                                 buttons: [{
                                     label: 'Continue',
-                                    onClick: () => showItemsDialog(page)
+                                    onClick: () => showItemsDialog(newPage)
                                 }]
                             });
                         }
                     } else {
                         this.scene.uiManager.showDialog({
-                            text: `Collected ${item.name}!`,
+                            text: 'Failed to add item to inventory.',
                             buttons: [{
                                 label: 'Continue',
                                 onClick: () => showItemsDialog(page)

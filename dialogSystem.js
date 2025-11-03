@@ -44,6 +44,11 @@ class DialogSystem {
             dialogHeight = Math.min(this.isMobile ? 340 : 360, cam.height * (this.isMobile ? 0.95 : 0.8));
         }
 
+        // Increase dialog height by 40 pixels for inventory dialogs
+        if (dialogData.text && dialogData.text.includes('INVENTORY')) {
+            dialogHeight += 80;
+        }
+
         // Create dialog container and overlay
         this.createDialogStructure(cam, dialogWidth, dialogHeight);
 
@@ -128,8 +133,11 @@ class DialogSystem {
             console.log('Dialog Text Position:', textX, textY);
             text.setPosition(textX, textY);
 
-            // Set word wrap width based on available space
-            const availableWidth = hasImage ? contentWidth - 180 : contentWidth - 40;
+            // Set word wrap width based on available space (use column width for inventory dialogs)
+            const isInventoryDialog = dialogData.text && dialogData.text.includes('INVENTORY');
+            const availableWidth = isInventoryDialog ?
+                (contentWidth * 0.75 - (hasImage ? 140 : 20)) :
+                (hasImage ? contentWidth - 180 : contentWidth - 40);
             text.setWordWrapWidth(availableWidth);
 
             this.dialogContainer.add(text);
@@ -144,8 +152,14 @@ class DialogSystem {
      * Layout buttons based on dialog configuration
      */
     layoutButtons(dialogData, contentWidth, contentHeight, startY, hasImage) {
+        // For inventory dialogs, use 75/25 column split
+        const isInventoryDialog = dialogData.text && dialogData.text.includes('INVENTORY');
         const textColumnLeft = hasImage ? -contentWidth / 2 + 160 : -contentWidth / 2 + 20;
-        const textColumnWidth = hasImage ? contentWidth - 180 : contentWidth - 40;
+        const textColumnWidth = isInventoryDialog ? contentWidth * 0.75 - (hasImage ? 140 : 20) : (hasImage ? contentWidth - 180 : contentWidth - 40);
+
+        // Calculate text Y position (same logic as in createDialogContent)
+        const titleHeight = dialogData.title ? 40 : 0;
+        const textY = -contentHeight / 2 + titleHeight + 20;
 
         // Handle main buttons (vertical stack)
         if (dialogData.buttons && dialogData.buttons.length > 0) {
@@ -155,36 +169,121 @@ class DialogSystem {
             const mainX = dialogData.buttonStyle === 'link' ? -80 : (hasImage ? contentWidth / 4 : 0); // Left edge for bottomLeft, left-align links near center for others, offset regular buttons with images
             const buttonSpacing = dialogData.buttonStyle === 'link' ? 20 : 35; // Closer spacing for links
 
-            dialogData.buttons.forEach((btnConfig, index) => {
-                const buttonType = dialogData.buttonStyle === 'link' ? 'linkButton' : 'button';
-                const btn = this.assetFactory.createAsset({
-                    type: buttonType,
-                    label: btnConfig.label,
-                    onClick: btnConfig.onClick,
-                    disabled: btnConfig.disabled,
-                    options: btnConfig.options
-                });
+            // Adjust positioning for right-side buttons
+            if (dialogData.buttonPosition === 'right') {
+                // For inventory-style dialogs, use column layout
+                if (isInventoryDialog) {
+                    const textContent = Array.isArray(dialogData.text) ? dialogData.text.join('\n') : String(dialogData.text);
+                    const lines = textContent.split('\n');
+                    const lineHeight = 16; // Approximate line height
 
-                let buttonX = mainX;
-                if (dialogData.buttonAlignment === 'textLeft') {
-                    buttonX = textColumnLeft + btn.width / 2;
-                } else if (dialogData.buttonAlignment === 'textCenter') {
-                    buttonX = textColumnLeft + (textColumnWidth / 2);
-                } else if (dialogData.buttonAlignment === 'textRight') {
-                    buttonX = textColumnLeft + textColumnWidth - btn.width / 2;
+                    // Right column starts at 75% of content width
+                    const rightColumnLeft = -contentWidth / 2 + (contentWidth * 0.75);
+
+                    dialogData.buttons.forEach((btnConfig, index) => {
+                        const buttonType = dialogData.buttonStyle === 'link' ? 'linkButton' : 'button';
+                        const btn = this.assetFactory.createAsset({
+                            type: buttonType,
+                            label: btnConfig.label,
+                            onClick: btnConfig.onClick,
+                            disabled: btnConfig.disabled,
+                            options: btnConfig.options
+                        });
+
+                        // Find the line with the item number for this specific button index
+                        // Button index 0 corresponds to item 1, index 1 to item 2, etc.
+                        let itemLineIndex = -1;
+                        let itemCount = 0;
+                        for (let i = 0; i < lines.length; i++) {
+                            if (lines[i].match(/^\d+\.\s/)) {
+                                if (itemCount === index) { // This is the item line for this button
+                                    itemLineIndex = i;
+                                    break;
+                                }
+                                itemCount++;
+                            }
+                        }
+
+                        if (itemLineIndex !== -1) {
+                            // Position button in right column, aligned with close button for inventory dialogs
+                            const itemLineY = textY + (itemLineIndex * lineHeight) + (lineHeight / 2);
+                            let buttonX;
+                            if (isInventoryDialog) {
+                                // Align right edge with close button (center at contentWidth / 2 - 55)
+                                buttonX = contentWidth / 2 - 55;
+                            } else {
+                                buttonX = rightColumnLeft + btn.width / 2 + 10;
+                            }
+                            btn.setPosition(buttonX, itemLineY);
+                        } else {
+                            // Fallback to spaced positioning in right column
+                            let buttonX;
+                            if (isInventoryDialog) {
+                                buttonX = contentWidth / 2 - 55;
+                            } else {
+                                buttonX = rightColumnLeft + btn.width / 2 + 10;
+                            }
+                            btn.setPosition(buttonX, buttonY + (index * buttonSpacing));
+                        }
+                        this.dialogContainer.add(btn);
+                    });
+                } else {
+                    // Default right-side positioning for other dialogs
+                    buttonY = startY - 20; // Start near top of text area
+                    dialogData.buttons.forEach((btnConfig, index) => {
+                        const buttonType = dialogData.buttonStyle === 'link' ? 'linkButton' : 'button';
+                        const btn = this.assetFactory.createAsset({
+                            type: buttonType,
+                            label: btnConfig.label,
+                            onClick: btnConfig.onClick,
+                            disabled: btnConfig.disabled,
+                            options: btnConfig.options
+                        });
+
+                        let buttonX = mainX;
+                        if (dialogData.buttonPosition === 'right') {
+                            // Position buttons to the right of text
+                            buttonX = textColumnLeft + textColumnWidth + 20 + btn.width / 2; // Left edge 20px from text right edge
+                        }
+
+                        btn.setPosition(buttonX, buttonY + (index * buttonSpacing));
+                        this.dialogContainer.add(btn);
+                    });
                 }
+            } else {
+                // Default positioning below text
+                dialogData.buttons.forEach((btnConfig, index) => {
+                    const buttonType = dialogData.buttonStyle === 'link' ? 'linkButton' : 'button';
+                    const btn = this.assetFactory.createAsset({
+                        type: buttonType,
+                        label: btnConfig.label,
+                        onClick: btnConfig.onClick,
+                        disabled: btnConfig.disabled,
+                        options: btnConfig.options
+                    });
 
-                btn.setPosition(buttonX, buttonY + (index * buttonSpacing));
-                this.dialogContainer.add(btn);
-            });
+                    let buttonX = mainX;
+                    if (dialogData.buttonAlignment === 'textLeft') {
+                        buttonX = textColumnLeft + btn.width / 2;
+                    } else if (dialogData.buttonAlignment === 'textCenter') {
+                        buttonX = textColumnLeft + (textColumnWidth / 2);
+                    } else if (dialogData.buttonAlignment === 'textRight') {
+                        buttonX = textColumnLeft + textColumnWidth - btn.width / 2;
+                    }
+
+                    btn.setPosition(buttonX, buttonY + (index * buttonSpacing));
+                    this.dialogContainer.add(btn);
+                });
+            }
         }
 
         // Handle left buttons (horizontal row, typically pagination)
         if (dialogData.leftButtons && dialogData.leftButtons.length > 0) {
             const leftX = hasImage ? -contentWidth / 2 + 80 : -contentWidth / 2;
-            // Position at bottom if no main buttons (topic content screens)
-            const buttonY = dialogData.buttons && dialogData.buttons.length > 0 ? startY + 32 : contentHeight / 2 - 15;
-            console.log('Left buttons positioning - hasMainButtons:', !!(dialogData.buttons && dialogData.buttons.length > 0), 'buttonY:', buttonY);
+            // Position at bottom for inventory dialogs, or relative to content for others
+            const isInventoryDialog = dialogData.text && dialogData.text.includes('INVENTORY');
+            const buttonY = isInventoryDialog ? contentHeight / 2 - 15 : (dialogData.buttons && dialogData.buttons.length > 0 ? startY + 32 : contentHeight / 2 - 15);
+            console.log('Left buttons positioning - isInventory:', isInventoryDialog, 'hasMainButtons:', !!(dialogData.buttons && dialogData.buttons.length > 0), 'buttonY:', buttonY);
 
             let currentX = leftX;
             dialogData.leftButtons.forEach((btnConfig, index) => {
