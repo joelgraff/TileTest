@@ -17,7 +17,7 @@ class VendorInteraction {
         })
         .setOrigin(0.5)
         .setScrollFactor(0)
-        .setDepth(150)
+        .setDepth(40000)
         .setVisible(false);
 
         this.scene.input.keyboard.on('keydown-SPACE', () => {
@@ -79,12 +79,17 @@ class VendorInteraction {
             this.interactionPrompt.x = closestVendor.x - this.scene.cameras.main.scrollX;
             this.interactionPrompt.y = closestVendor.y - this.scene.cameras.main.scrollY - 40;
 
-            // Pulsing circular glow effect
+            // Pulsing circular glow effect - different color for crisis NPCs
             if (closestVendor.glowGraphic) {
                 closestVendor.glowPulse = (closestVendor.glowPulse || 0) + 0.08;
                 const pulse = 0.7 + 0.3 * Math.sin(closestVendor.glowPulse);
                 closestVendor.glowGraphic.clear();
-                closestVendor.glowGraphic.fillStyle(0x00FFFF, 0.25 + 0.25 * pulse);
+
+                // Check if NPC has an active crisis
+                const hasCrisis = closestVendor.crisisState && !closestVendor.crisisState.resolved;
+                const glowColor = hasCrisis ? 0xFF0000 : 0x00FFFF; // Red for crisis, cyan for normal
+
+                closestVendor.glowGraphic.fillStyle(glowColor, 0.25 + 0.25 * pulse);
                 closestVendor.glowGraphic.fillCircle(
                     closestVendor.x,
                     closestVendor.y,

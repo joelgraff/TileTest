@@ -14,17 +14,6 @@ class NPCMovement {
                 const dx = Math.abs(npc.x - scene.player.x);
                 npc.interactable = (dx + dy < 96);
                 if (npc.interactable) {
-                    // Add exclamation mark
-                    if (!npc.exclamation) {
-                        npc.exclamation = scene.add.text(npc.x, npc.y - 32, '!', {
-                            fontFamily: 'Arial',
-                            fontSize: '32px',
-                            fill: '#FF0000',
-                            stroke: '#FFFFFF',
-                            strokeThickness: 3,
-                            align: 'center'
-                        }).setOrigin(0.5).setDepth(npc.depth + 1);
-                    }
                     if (!npc.vendorData) {
                         npc.setInteractive();
                         npc.on('pointerdown', () => {
@@ -48,18 +37,10 @@ class NPCMovement {
                         });
                     }
                 } else {
-                    if (npc.exclamation) {
-                        npc.exclamation.destroy();
-                        npc.exclamation = null;
-                    }
                     npc.disableInteractive();
                 }
             } else if (npc.interactable) {
                 npc.interactable = false;
-                if (npc.exclamation) {
-                    npc.exclamation.destroy();
-                    npc.exclamation = null;
-                }
                 npc.disableInteractive();
             }
         });

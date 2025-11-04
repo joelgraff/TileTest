@@ -440,6 +440,218 @@ class PathfindingManager {
     }
 
     /**
+     * Find closest walkable position along the direct line from player to target
+     */
+    findClosestWalkableOnLine(player, target) {
+        const dx = target.x - player.x;
+        const dy = target.y - player.y;
+        const totalDist = Math.sqrt(dx * dx + dy * dy);
+
+        // Sample points along the line from target back to player
+        const stepSize = this.gridSize / 4; // Quarter grid size for finer precision
+        const steps = Math.ceil(totalDist / stepSize);
+
+        for (let i = 0; i <= steps; i++) {
+            // Calculate position at this step (from target towards player)
+            const ratio = i / steps; // 0 = target, 1 = player
+            const x = target.x - dx * ratio;
+            const y = target.y - dy * ratio;
+
+            // Convert to grid position
+            const gridPos = {
+                x: Math.floor(x / this.gridSize),
+                y: Math.floor(y / this.gridSize)
+            };
+
+            // Check if this grid position is walkable
+            if (this.isWalkable(gridPos)) {
+                // Also check adjacent positions to ensure we can actually reach it
+                const adjacentPositions = [
+                    gridPos, // current
+                    { x: gridPos.x + 1, y: gridPos.y }, // right
+                    { x: gridPos.x - 1, y: gridPos.y }, // left
+                    { x: gridPos.x, y: gridPos.y + 1 }, // down
+                    { x: gridPos.x, y: gridPos.y - 1 }  // up
+                ];
+
+                // If any adjacent position is walkable, this position is reachable
+                for (const adjPos of adjacentPositions) {
+                    if (this.isWalkable(adjPos)) {
+                        // Return world coordinates
+                        return {
+                            x: gridPos.x * this.gridSize + this.gridSize / 2,
+                            y: gridPos.y * this.gridSize + this.gridSize / 2
+                        };
+                    }
+                }
+            }
+        }
+
+        // No walkable position found on direct line
+        return null;
+    }
+
+    /**
+     * Find closest walkable position near the target using expanding search
+     */
+    findClosestWalkableNearTarget(player, target) {
+        const targetGrid = {
+            x: Math.floor(target.x / this.gridSize),
+            y: Math.floor(target.y / this.gridSize)
+        };
+
+        // Search in expanding squares around the target
+        const maxRadius = 10; // Search up to 10 tiles away
+
+        for (let radius = 0; radius <= maxRadius; radius++) {
+            // Check all positions at this radius
+            for (let dx = -radius; dx <= radius; dx++) {
+                for (let dy = -radius; dy <= radius; dy++) {
+                    // Only check perimeter positions to avoid redundant center checks
+                    if (radius > 0 && Math.abs(dx) !== radius && Math.abs(dy) !== radius) {
+                        continue;
+                    }
+
+                    const checkGrid = {
+                        x: targetGrid.x + dx,
+                        y: targetGrid.y + dy
+                    };
+
+                    if (this.isWalkable(checkGrid)) {
+                        // Check if this position is reachable from player's current position
+                        const worldPos = {
+                            x: checkGrid.x * this.gridSize + this.gridSize / 2,
+                            y: checkGrid.y * this.gridSize + this.gridSize / 2
+                        };
+
+                        // Try a quick BFS to see if we can reach this position
+                        if (this.canReachPosition(player, worldPos)) {
+                            return worldPos;
+                        }
+                    }
+                }
+            }
+        }
+
+        // If no reachable position found near target, try to find any walkable position
+        // near the player that gets closer to the target
+        return this.findBestWalkableNearPlayer(player, target);
+    }
+
+    /**
+     * Check if player can reach a target position using quick BFS
+     */
+    canReachPosition(player, target) {
+        const startGrid = {
+            x: Math.floor(player.x / this.gridSize),
+            y: Math.floor(player.y / this.gridSize)
+        };
+        const endGrid = {
+            x: Math.floor(target.x / this.gridSize),
+            y: Math.floor(target.y / this.gridSize)
+        };
+
+        // Quick BFS with limited depth to check reachability
+        const queue = [startGrid];
+        const visited = new Set();
+        const key = (p) => `${p.x},${p.y}`;
+        const maxDepth = 20; // Limit search depth
+
+        visited.add(key(startGrid));
+
+        let depth = 0;
+        while (queue.length > 0 && depth < maxDepth) {
+            const levelSize = queue.length;
+            for (let i = 0; i < levelSize; i++) {
+                const current = queue.shift();
+
+                if (current.x === endGrid.x && current.y === endGrid.y) {
+                    return true; // Found path
+                }
+
+                // Check adjacent cells (4-directional for speed)
+                const neighbors = [
+                    { x: current.x + 1, y: current.y },     // right
+                    { x: current.x - 1, y: current.y },     // left
+                    { x: current.x, y: current.y + 1 },     // down
+                    { x: current.x, y: current.y - 1 }      // up
+                ];
+
+                for (const neighbor of neighbors) {
+                    const neighborKey = key(neighbor);
+                    if (!visited.has(neighborKey) && this.isWalkable(neighbor)) {
+                        visited.add(neighborKey);
+                        queue.push(neighbor);
+                    }
+                }
+            }
+            depth++;
+        }
+
+        return false; // No path found within depth limit
+    }
+
+    /**
+     * Find the best walkable position near player that moves toward target
+     */
+    findBestWalkableNearPlayer(player, target) {
+        const playerGrid = {
+            x: Math.floor(player.x / this.gridSize),
+            y: Math.floor(player.y / this.gridSize)
+        };
+
+        const targetGrid = {
+            x: Math.floor(target.x / this.gridSize),
+            y: Math.floor(target.y / this.gridSize)
+        };
+
+        // Search in expanding radius around player
+        const maxRadius = 5;
+        let bestPosition = null;
+        let bestDistance = Infinity;
+
+        for (let radius = 1; radius <= maxRadius; radius++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+                for (let dy = -radius; dy <= radius; dy++) {
+                    // Only check perimeter
+                    if (Math.abs(dx) !== radius && Math.abs(dy) !== radius) {
+                        continue;
+                    }
+
+                    const checkGrid = {
+                        x: playerGrid.x + dx,
+                        y: playerGrid.y + dy
+                    };
+
+                    if (this.isWalkable(checkGrid)) {
+                        // Calculate if this position gets us closer to target
+                        const distToTarget = Math.sqrt(
+                            Math.pow(checkGrid.x - targetGrid.x, 2) +
+                            Math.pow(checkGrid.y - targetGrid.y, 2)
+                        );
+
+                        if (distToTarget < bestDistance) {
+                            bestDistance = distToTarget;
+                            bestPosition = {
+                                x: checkGrid.x * this.gridSize + this.gridSize / 2,
+                                y: checkGrid.y * this.gridSize + this.gridSize / 2
+                            };
+                        }
+                    }
+                }
+            }
+
+            // If we found a position that gets us closer, return it
+            if (bestPosition) {
+                return bestPosition;
+            }
+        }
+
+        // No better position found, return null
+        return null;
+    }
+
+    /**
      * Get current target
      */
     getTarget() {

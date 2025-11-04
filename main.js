@@ -7,6 +7,7 @@ import VendorManager from './vendorManager.js';
 import UIManager from './uiManager.js';
 import DomainManager from './domainManager.js';
 import QuestManager from './questManager.js';
+import CrisisManager from './CrisisManager.js';
 
 // Determine device type for scaling
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -81,6 +82,9 @@ function create() {
     scene.questManager = new QuestManager();
     scene.questManager.init(scene.vendors, scene.uiManager, scene);
 
+    // Initialize CrisisManager
+    scene.crisisManager = new CrisisManager();
+
     CollisionManager.create(scene);
 
     if (scene.player) {
@@ -116,6 +120,7 @@ function update(time, delta) {
     CollisionManager.update?.(scene, time, delta);
     MapManager.update?.(scene, time, delta);
     scene.inputManager?.update?.(scene, time, delta);
+    scene.crisisManager?.updateCrisisIndicators(scene);
 }
 const game = new Phaser.Game(config);
 

@@ -4,6 +4,39 @@ class QuestTracker {
     }
 
     /**
+     * Check if resolving a crisis completes any quest objectives
+     */
+    checkCrisisResolution(vendorId) {
+        console.log(`Checking crisis resolution for vendor ${vendorId}`);
+        let questCompleted = null;
+
+        this.questManager.activeQuests.forEach(quest => {
+            if (quest.type === 'save_npc') {
+                quest.objectives.forEach(objective => {
+                    if (!objective.resolved && objective.vendorId === vendorId) {
+                        objective.resolved = true;
+                        objective.resolvedAt = Date.now();
+                        console.log(`Crisis resolved for quest ${quest.id} - vendor ${vendorId}`);
+
+                        // Check if quest is complete
+                        const allObjectivesComplete = quest.objectives.every(obj => obj.resolved);
+                        if (allObjectivesComplete) {
+                            this.completeQuest(quest.id);
+                            questCompleted = quest;
+                        }
+                    }
+                });
+            }
+        });
+
+        if (questCompleted) {
+            this.questManager.saveSessionState();
+        }
+
+        return questCompleted;
+    }
+
+    /**
      * Check if a collected item completes any quest objectives
      */
     checkItemCollection(itemName, vendorId) {

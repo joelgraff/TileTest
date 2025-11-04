@@ -31,6 +31,7 @@ The game features a procedural quest system where you collect technology facts f
 ## QUEST TYPES
 
 - Collection Quests: Gather specific technology facts by interacting with NPCs
+- Save the NPC Quests: Help vendors resolve technical crises
 - Domain-based: Each quest focuses on a particular technology category
 - Progressive: Track your completion progress for each quest objective
 
@@ -41,12 +42,74 @@ The game features a procedural quest system where you collect technology facts f
 3. Collect the required number of facts for each quest
 4. Return to complete quests and earn points
 
+## CRISIS RESOLUTION
+
+Some vendors may experience technical difficulties (shown with red glow). You can help them by:
+
+### Collecting Items
+- Talk to vendors and select "Show me your items"
+- Buy the items they need (shown in crisis dialog hints)
+- Return to the vendor in crisis and select "Use Item"
+
+### Collecting Knowledge
+- Talk to vendors and select "Tell me about tech facts"
+- Click "Learn" buttons to collect knowledge
+- Return to the vendor in crisis and select "Share Knowledge"
+
+### Finding What You Need
+- Crisis dialogs show exactly what items/knowledge are needed
+- Use the "Find Help" button for detailed guidance
+- Different vendors specialize in different technology domains
+
 ## QUEST PROGRESS
 
 - Active quests show current progress (collected/total items)
 - Completed quests are marked with ✓ and show reward points
 - Quest progress is saved automatically
 - Multiple quests can be active simultaneously
+
+# Crisis Resolution
+
+## HELPING VENDORS IN CRISIS
+
+Some vendors may experience technical difficulties, indicated by a red glow around their character. You can help resolve their crises using items or knowledge you've collected.
+
+## RECOGNIZING CRISES
+
+- Vendors with crises glow red instead of their normal color
+- Crisis descriptions explain the technical problem
+- Each crisis requires specific items or knowledge to resolve
+
+## CRISIS RESOLUTION
+
+Some vendors may experience technical difficulties, indicated by a red glow around their character. You can help them by providing either items or knowledge.
+
+### RECOGNIZING CRISES
+
+- Vendors with crises glow red instead of their normal color
+- Crisis descriptions clearly state what type of help is needed
+- Each crisis requires either a specific item OR specific knowledge
+
+### RESOLVING CRISES
+
+**Hardware Problems (need items):**
+- Power supply failure → needs Power Supply Unit
+- Hard drive failure → needs Hard Drive
+- Keyboard problems → needs Keyboard
+- Talk to other vendors and buy the required item
+
+**Software/Knowledge Problems (need facts):**
+- Memory crashes → needs knowledge about "memory management"
+- Network issues → needs knowledge about "network protocol"
+- Display problems → needs knowledge about "graphics processing"
+- Printer jams → needs knowledge about "printer maintenance"
+- Talk to vendors and ask about "tech facts" to learn what you need
+
+### COLLECTING RESOURCES
+
+1. **For Items:** Talk to vendors → "Show me your items" → Buy needed items
+2. **For Knowledge:** Talk to vendors → "Tell me about tech facts" → Click "Learn"
+3. **Return to Crisis:** Use the collected item or share the knowledge
 
 # Inventory Management
 

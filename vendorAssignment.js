@@ -1,3 +1,5 @@
+import CrisisManager from './CrisisManager.js';
+
 class VendorAssignment {
     constructor(scene) {
         this.scene = scene;
@@ -57,6 +59,11 @@ class VendorAssignment {
             } else {
                 // Fallback to random if we somehow don't have enough
                 npcSprite.vendorData = vendors[Math.floor(Math.random() * vendors.length)];
+            }
+
+            // Assign crisis to some NPCs (about 30% chance)
+            if (Math.random() < 0.3) {
+                this.scene.crisisManager.assignRandomCrisis(npcSprite);
             }
 
             // Pulsing glow effect

@@ -46,7 +46,7 @@ class DialogSystem {
 
         // Increase dialog height by 40 pixels for inventory dialogs
         if (dialogData.text && dialogData.text.includes('INVENTORY')) {
-            dialogHeight += 80;
+            dialogHeight += 160;
         }
 
         // Create dialog container and overlay
@@ -138,7 +138,11 @@ class DialogSystem {
             const availableWidth = isInventoryDialog ?
                 (contentWidth * 0.75 - (hasImage ? 140 : 20)) :
                 (hasImage ? contentWidth - 180 : contentWidth - 40);
-            text.setWordWrapWidth(availableWidth);
+
+            // Disable word wrapping for inventory dialogs to ensure proper button positioning
+            if (!isInventoryDialog) {
+                text.setWordWrapWidth(availableWidth);
+            }
 
             this.dialogContainer.add(text);
             currentY += text.height + 30;

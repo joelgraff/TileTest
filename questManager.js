@@ -42,6 +42,13 @@ class QuestManager {
     }
 
     /**
+     * Check if resolving a crisis completes any quest objectives
+     */
+    checkCrisisResolution(vendorId) {
+        return this.tracker.checkCrisisResolution(vendorId);
+    }
+
+    /**
      * Check if a collected item completes any quest objectives
      */
     checkItemCollection(itemName, vendorId) {

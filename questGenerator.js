@@ -14,6 +14,12 @@ class QuestGenerator {
         if (collectionQuest) {
             this.questManager.activeQuests.push(collectionQuest);
         }
+
+        // Add a Save the NPC quest if there are assigned vendors
+        const saveNPCQuest = this.generateSaveNPCQuest();
+        if (saveNPCQuest) {
+            this.questManager.activeQuests.push(saveNPCQuest);
+        }
     }
 
     /**
@@ -187,6 +193,54 @@ class QuestGenerator {
 
         console.log(`Generated quest for domains: ${selectedDomains.map(d => d.name).join(', ')}`);
         console.log(`Quest items: ${selectedItems.map(item => item.name).join(', ')}`);
+        return quest;
+    }
+
+    /**
+     * Generate a Save the NPC quest
+     */
+    generateSaveNPCQuest() {
+        // Get assigned vendors from the scene
+        const assignedVendors = [];
+        if (this.questManager.scene && this.questManager.scene.npcGroup) {
+            this.questManager.scene.npcGroup.getChildren().forEach(npc => {
+                if (npc.vendorData) {
+                    assignedVendors.push(npc.vendorData);
+                }
+            });
+        }
+
+        if (assignedVendors.length === 0) {
+            console.warn('No assigned vendors available for Save the NPC quest generation');
+            return null;
+        }
+
+        // Select 1-2 vendors to have crises that need to be resolved
+        const numVendorsToSave = Math.min(2, assignedVendors.length);
+        const selectedVendors = this.shuffleArray(assignedVendors).slice(0, numVendorsToSave);
+
+        console.log('Selected vendors for Save the NPC quest:', selectedVendors.map(v => v.name));
+
+        // Create quest object
+        const quest = {
+            id: 'quest_save_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            type: 'save_npc',
+            title: `Help Fellow Vendors`,
+            description: `Several vendors are experiencing technical difficulties. Help resolve their crises by providing items or sharing knowledge. Talk to vendors with red glows to see what they need, then collect the required items from other vendors or learn the necessary knowledge by asking about "tech facts".`,
+            objectives: selectedVendors.map(vendor => ({
+                vendorId: vendor.id,
+                vendorName: vendor.name,
+                resolved: false
+            })),
+            reward: {
+                points: selectedVendors.length * 15,
+                description: `${selectedVendors.length * 15} points for helping fellow vendors`
+            },
+            created: Date.now(),
+            completed: false
+        };
+
+        console.log(`Generated Save the NPC quest for ${selectedVendors.length} vendors`);
         return quest;
     }
 

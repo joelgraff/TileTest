@@ -349,7 +349,10 @@
       "ENIAC's programmers were six women: Kathleen McNulty, Betty Jennings, Betty Snyder, Marlyn Wescoff, Fran Bilas, and Ruth Lichterman.",
       "The PS/2's Micro Channel Architecture included built-in networking support.",
       "Thick Ethernet (10BASE5) required specialized transceivers called 'vampire taps'.",
-      "The Colossus computer was used by British intelligence to break German codes in WWII."
+      "The Colossus computer was used by British intelligence to break German codes in WWII.",
+      "Memory management involves allocating and deallocating RAM for programs, preventing memory leaks and fragmentation.",
+      "Network protocols like TCP/IP handle data transmission, error checking, and routing between computers on a network.",
+      "Graphics processing units (GPUs) render images, handle 3D transformations, and accelerate video display output."
     ],
     "items": [
       {
@@ -578,7 +581,8 @@
       "Apple's Macintosh was the first successful computer with a mouse and graphical user interface in 1984.",
       "Many famous programmers got their start in local computer clubs and user groups.",
       "The People's Computer Company published newsletters that inspired many early programmers.",
-      "Computer clubs of the 1970s and 1980s shared software and hardware knowledge."
+      "Computer clubs of the 1970s and 1980s shared software and hardware knowledge.",
+      "Printer maintenance includes clearing paper jams, cleaning print heads, and replacing ink ribbons on dot-matrix printers."
     ],
     "items": [
       {

@@ -6,6 +6,7 @@ class InventoryManager {
         this.scene = scene;
         this.uiManager = uiManager;
         this.inventory = [];
+        this.facts = []; // Add facts collection
         this.maxInventorySlots = 8;
         this.isInventoryOpen = false;
         this.currentPage = 0;
@@ -53,6 +54,48 @@ class InventoryManager {
     }
 
     /**
+     * Add a fact to collected knowledge
+     * @param {string} fact - Fact to add
+     * @returns {boolean} Success status
+     */
+    addFact(fact) {
+        if (!this.facts.includes(fact)) {
+            this.facts.push(fact);
+            console.log(`Collected fact: ${fact}`);
+            return true;
+        }
+        return false; // Already have this fact
+    }
+
+    /**
+     * Remove a fact from collected knowledge
+     * @param {string} fact - Fact to remove
+     */
+    removeFact(fact) {
+        const index = this.facts.indexOf(fact);
+        if (index >= 0) {
+            this.facts.splice(index, 1);
+        }
+    }
+
+    /**
+     * Get collected facts
+     * @returns {Array} Collected facts
+     */
+    getCollectedFacts() {
+        return [...this.facts];
+    }
+
+    /**
+     * Check if a fact has been collected
+     * @param {string} fact - Fact to check
+     * @returns {boolean} Has fact
+     */
+    hasFact(fact) {
+        return this.facts.includes(fact);
+    }
+
+    /**
      * Toggle inventory dialog
      */
     toggleInventory() {
@@ -68,10 +111,14 @@ class InventoryManager {
         this.currentPage = 0;
 
         // Calculate pagination
-        const totalPages = Math.ceil(this.inventory.length / this.itemsPerPage);
-        const startIndex = this.currentPage * this.itemsPerPage;
-        const endIndex = Math.min(startIndex + this.itemsPerPage, this.inventory.length);
+        const ITEMS_PER_PAGE = 3;
+        const totalPages = Math.ceil(this.inventory.length / ITEMS_PER_PAGE);
+        const startIndex = this.currentPage * ITEMS_PER_PAGE;
+        const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, this.inventory.length);
         const currentPageItems = this.inventory.slice(startIndex, endIndex);
+
+        // Ensure we don't show more than ITEMS_PER_PAGE items
+        const displayItems = currentPageItems.slice(0, ITEMS_PER_PAGE);
 
         // Create inventory dialog content
         let inventoryText = 'INVENTORY\n\n';
@@ -84,7 +131,7 @@ class InventoryManager {
             }
 
             // Show items for current page
-            currentPageItems.forEach((item, pageIndex) => {
+            displayItems.forEach((item, pageIndex) => {
                 const globalIndex = startIndex + pageIndex;
                 inventoryText += `${globalIndex + 1}. ${item.name}\n`;
                 if (item.description) {
@@ -96,8 +143,8 @@ class InventoryManager {
 
         // Create drop buttons for current page items
         const buttons = [];
-        if (currentPageItems.length > 0) {
-            currentPageItems.forEach((item, pageIndex) => {
+        if (displayItems.length > 0) {
+            displayItems.forEach((item, pageIndex) => {
                 const globalIndex = startIndex + pageIndex;
                 buttons.push({
                     label: 'Drop',
@@ -163,10 +210,14 @@ class InventoryManager {
     }
     refreshInventoryDialog() {
         // Calculate pagination
-        const totalPages = Math.ceil(this.inventory.length / this.itemsPerPage);
-        const startIndex = this.currentPage * this.itemsPerPage;
-        const endIndex = Math.min(startIndex + this.itemsPerPage, this.inventory.length);
+        const ITEMS_PER_PAGE = 3;
+        const totalPages = Math.ceil(this.inventory.length / ITEMS_PER_PAGE);
+        const startIndex = this.currentPage * ITEMS_PER_PAGE;
+        const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, this.inventory.length);
         const currentPageItems = this.inventory.slice(startIndex, endIndex);
+
+        // Ensure we don't show more than ITEMS_PER_PAGE items
+        const displayItems = currentPageItems.slice(0, ITEMS_PER_PAGE);
 
         // Create inventory dialog content
         let inventoryText = 'INVENTORY\n\n';
@@ -179,7 +230,7 @@ class InventoryManager {
             }
 
             // Show items for current page
-            currentPageItems.forEach((item, pageIndex) => {
+            displayItems.forEach((item, pageIndex) => {
                 const globalIndex = startIndex + pageIndex;
                 inventoryText += `${globalIndex + 1}. ${item.name}\n`;
                 if (item.description) {
@@ -191,8 +242,8 @@ class InventoryManager {
 
         // Create drop buttons for current page items
         const buttons = [];
-        if (currentPageItems.length > 0) {
-            currentPageItems.forEach((item, pageIndex) => {
+        if (displayItems.length > 0) {
+            displayItems.forEach((item, pageIndex) => {
                 const globalIndex = startIndex + pageIndex;
                 buttons.push({
                     label: 'Drop',

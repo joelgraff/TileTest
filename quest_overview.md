@@ -5,22 +5,23 @@ TileTest features a comprehensive procedural quest system designed for VCF Midwe
 
 ## Currently Implemented Quest Types
 
-### Collection Quests ✅ (Implemented)
-- **Description**: Players gather specific technology facts by interacting with NPCs from different technology domains
-- **Mechanics**: Domain-based item collection with vendor assignment, progressive tracking, and point rewards
-- **Implementation**: Fully functional in `questGenerator.js` with procedural generation based on available vendors and domains
-- **Features**:
-  - Automatic vendor assignment for quest items
-  - Multi-domain support (up to 2 domains per quest)
-  - Progress tracking with visual indicators
-  - Point-based reward system
+### Crisis Resolution System ✅ (Implemented)
+- **Simplified Crisis Types**: Each crisis requires either an item OR knowledge (not both)
+- **Self-Evident Solutions**: Crisis descriptions clearly indicate what type of help is needed
+- **Hardware Crises**: Require specific replacement items (Power Supply Unit, Hard Drive, etc.)
+- **Software Crises**: Require specific knowledge (memory management, network protocol, graphics processing, printer maintenance)
+- **Complete Knowledge Base**: All required troubleshooting facts are available in vendor tech facts
+- **Streamlined UI**: Single resolution button based on crisis type
+- **Clear Guidance**: Crisis dialogs show exactly what is needed and how to obtain it
+- **Debug Information**: Crisis dialogs display what item/knowledge is needed and which vendors have it available for testing
 
 ## Planned Quest Categories
 
 ### 1. Save the NPC
 - Assist vendors with tech-themed crises using items/facts
 - Emergency response scenarios requiring specific technology knowledge
-- Crisis resolution through item application
+- Crisis resolution through item application OR knowledge sharing
+- Each crisis requires only one type of solution (item OR knowledge)
 
 ### 2. Level Up
 - Progression challenges requiring puzzle-solving for upgrades
