@@ -22,6 +22,14 @@ class DomainManager {
         }
     }
 
+    static initializeWithData(domainsData) {
+        if (!DomainManager.domains) {
+            DomainManager.domains = domainsData;
+            console.log(`Initialized DomainManager with ${DomainManager.domains.length} technology domains`);
+        }
+        return DomainManager.domains;
+    }
+
     static getDomainById(domainId) {
         if (!DomainManager.domains) {
             console.warn('Domains not loaded yet. Call loadDomains() first.');

@@ -1,0 +1,139 @@
+{
+  "description": "Technology domain relationship matrix defining how related different technology domains are for crisis resolution assistance",
+  "relationship_types": {
+    "on-target": {
+      "probability": 0.9,
+      "description": "Vendor's primary specialty domain"
+    },
+    "near": {
+      "probability": 0.6,
+      "description": "Adjacent or related technologies"
+    },
+    "far": {
+      "probability": 0.2,
+      "description": "Unrelated or distant technologies"
+    }
+  },
+  "domain_relationships": {
+    "gaming": {
+      "gaming": "on-target",
+      "commodore": "near",
+      "atari": "near",
+      "apple": "near",
+      "ibm_pc": "near",
+      "homebrew": "far",
+      "calculators": "far",
+      "historical": "far",
+      "british": "far",
+      "hardware": "far"
+    },
+    "ibm_pc": {
+      "ibm_pc": "on-target",
+      "apple": "near",
+      "hardware": "near",
+      "historical": "near",
+      "british": "near",
+      "gaming": "far",
+      "commodore": "far",
+      "atari": "far",
+      "homebrew": "far",
+      "calculators": "far"
+    },
+    "commodore": {
+      "commodore": "on-target",
+      "gaming": "near",
+      "atari": "near",
+      "apple": "near",
+      "british": "near",
+      "ibm_pc": "far",
+      "homebrew": "far",
+      "calculators": "far",
+      "historical": "far",
+      "hardware": "far"
+    },
+    "apple": {
+      "apple": "on-target",
+      "ibm_pc": "near",
+      "hardware": "near",
+      "historical": "near",
+      "british": "near",
+      "gaming": "far",
+      "commodore": "far",
+      "atari": "far",
+      "homebrew": "far",
+      "calculators": "far"
+    },
+    "atari": {
+      "atari": "on-target",
+      "gaming": "near",
+      "commodore": "near",
+      "apple": "near",
+      "ibm_pc": "far",
+      "homebrew": "far",
+      "calculators": "far",
+      "historical": "far",
+      "british": "far",
+      "hardware": "far"
+    },
+    "homebrew": {
+      "homebrew": "on-target",
+      "hardware": "near",
+      "historical": "near",
+      "calculators": "near",
+      "gaming": "far",
+      "ibm_pc": "far",
+      "commodore": "far",
+      "apple": "far",
+      "atari": "far",
+      "british": "far"
+    },
+    "calculators": {
+      "calculators": "on-target",
+      "homebrew": "near",
+      "historical": "near",
+      "hardware": "near",
+      "gaming": "far",
+      "ibm_pc": "far",
+      "commodore": "far",
+      "apple": "far",
+      "atari": "far",
+      "british": "far"
+    },
+    "historical": {
+      "historical": "on-target",
+      "apple": "near",
+      "ibm_pc": "near",
+      "hardware": "near",
+      "homebrew": "near",
+      "calculators": "near",
+      "gaming": "far",
+      "commodore": "far",
+      "atari": "far",
+      "british": "far"
+    },
+    "british": {
+      "british": "on-target",
+      "commodore": "near",
+      "apple": "near",
+      "historical": "near",
+      "gaming": "far",
+      "ibm_pc": "far",
+      "atari": "far",
+      "homebrew": "far",
+      "calculators": "far",
+      "hardware": "far"
+    },
+    "hardware": {
+      "hardware": "on-target",
+      "ibm_pc": "near",
+      "apple": "near",
+      "homebrew": "near",
+      "historical": "near",
+      "calculators": "near",
+      "gaming": "far",
+      "commodore": "far",
+      "atari": "far",
+      "british": "far"
+    }
+  }
+}

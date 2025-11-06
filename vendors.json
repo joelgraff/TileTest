@@ -30,7 +30,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "101",
@@ -63,7 +63,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "102",
@@ -96,7 +96,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "hardware"
+    "domain_id": "hardware_interfaces"
   },
   {
     "id": "103",
@@ -129,7 +129,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "105",
@@ -162,7 +162,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "106",
@@ -195,7 +195,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "107",
@@ -228,7 +228,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "historical"
   },
   {
     "id": "110",
@@ -261,7 +261,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "111",
@@ -294,7 +294,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "historical"
   },
   {
     "id": "112",
@@ -327,7 +327,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "113",
@@ -360,7 +360,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "homebrew"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "114",
@@ -393,7 +393,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "115",
@@ -426,7 +426,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "atari"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "117",
@@ -459,7 +459,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "118",
@@ -492,7 +492,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "120",
@@ -525,7 +525,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "121",
@@ -558,7 +558,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "122",
@@ -591,7 +591,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "123",
@@ -624,7 +624,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "124",
@@ -657,7 +657,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "126",
@@ -690,7 +690,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "homebrew"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "127",
@@ -723,7 +723,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "128",
@@ -756,7 +756,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "129",
@@ -789,7 +789,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "130",
@@ -822,7 +822,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "131",
@@ -855,7 +855,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "homebrew"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "132",
@@ -888,7 +888,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "133",
@@ -921,7 +921,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "134",
@@ -954,7 +954,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "136",
@@ -987,7 +987,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "137",
@@ -1020,7 +1020,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "calculators"
+    "domain_id": "scientific_computing"
   },
   {
     "id": "139",
@@ -1053,7 +1053,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "140",
@@ -1086,7 +1086,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "141",
@@ -1119,7 +1119,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "homebrew"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "142",
@@ -1152,7 +1152,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "143",
@@ -1185,7 +1185,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "144",
@@ -1218,7 +1218,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "145",
@@ -1251,7 +1251,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "146",
@@ -1284,7 +1284,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "147",
@@ -1317,7 +1317,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "148",
@@ -1350,7 +1350,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "151",
@@ -1383,7 +1383,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "152",
@@ -1416,7 +1416,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "153",
@@ -1449,7 +1449,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "154",
@@ -1482,7 +1482,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "156",
@@ -1515,7 +1515,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "157",
@@ -1548,7 +1548,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "158",
@@ -1581,7 +1581,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "159",
@@ -1614,7 +1614,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "160",
@@ -1647,7 +1647,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "atari"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "161",
@@ -1746,7 +1746,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "164",
@@ -1779,7 +1779,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "167",
@@ -1812,7 +1812,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "168",
@@ -1845,7 +1845,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "169",
@@ -1878,7 +1878,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "170",
@@ -1944,7 +1944,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "atari"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "172",
@@ -1977,7 +1977,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "173",
@@ -2010,7 +2010,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "174",
@@ -2043,7 +2043,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "175",
@@ -2076,7 +2076,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "176",
@@ -2109,7 +2109,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "atari"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "177",
@@ -2142,7 +2142,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "178",
@@ -2208,7 +2208,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "182",
@@ -2241,7 +2241,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "183",
@@ -2274,7 +2274,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "184",
@@ -2340,7 +2340,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "186",
@@ -2373,7 +2373,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "187",
@@ -2406,7 +2406,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "188",
@@ -2439,7 +2439,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "189",
@@ -2472,7 +2472,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "190",
@@ -2505,7 +2505,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "191",
@@ -2571,7 +2571,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "193",
@@ -2604,7 +2604,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "194",
@@ -2637,7 +2637,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "195",
@@ -2670,7 +2670,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "196",
@@ -2703,7 +2703,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "197",
@@ -2736,7 +2736,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "calculators"
+    "domain_id": "scientific_computing"
   },
   {
     "id": "198",
@@ -2769,7 +2769,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "199",
@@ -2802,7 +2802,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "200",
@@ -2835,7 +2835,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "203",
@@ -2868,7 +2868,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "204",
@@ -2901,7 +2901,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "205",
@@ -2934,7 +2934,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "206",
@@ -2967,7 +2967,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "207",
@@ -3000,7 +3000,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "208",
@@ -3033,7 +3033,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "209",
@@ -3066,7 +3066,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "210",
@@ -3099,7 +3099,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "211",
@@ -3132,7 +3132,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "212",
@@ -3198,7 +3198,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "214",
@@ -3231,7 +3231,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "216",
@@ -3264,7 +3264,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "217",
@@ -3297,7 +3297,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "218",
@@ -3330,7 +3330,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "219",
@@ -3363,7 +3363,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "220",
@@ -3396,7 +3396,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "221",
@@ -3429,7 +3429,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "222",
@@ -3462,7 +3462,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "223",
@@ -3495,7 +3495,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "224",
@@ -3561,7 +3561,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "227",
@@ -3627,7 +3627,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "229",
@@ -3660,7 +3660,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "230",
@@ -3693,7 +3693,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "231",
@@ -3726,7 +3726,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "232",
@@ -3759,7 +3759,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "233",
@@ -3792,7 +3792,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "atari"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "234",
@@ -3825,7 +3825,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "236",
@@ -3858,7 +3858,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "237",
@@ -3891,7 +3891,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "atari"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "238",
@@ -3924,7 +3924,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "239",
@@ -3957,7 +3957,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "240",
@@ -3990,7 +3990,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "241",
@@ -4023,7 +4023,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "243",
@@ -4056,7 +4056,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "244",
@@ -4089,7 +4089,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "246",
@@ -4122,7 +4122,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "248",
@@ -4155,7 +4155,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "249",
@@ -4188,7 +4188,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "250",
@@ -4221,7 +4221,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "251",
@@ -4254,7 +4254,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "252",
@@ -4287,7 +4287,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "253",
@@ -4320,7 +4320,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "254",
@@ -4353,7 +4353,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "255",
@@ -4386,7 +4386,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "257",
@@ -4419,7 +4419,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "258",
@@ -4452,7 +4452,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "259",
@@ -4485,7 +4485,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "260",
@@ -4518,7 +4518,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "261",
@@ -4551,7 +4551,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "262",
@@ -4584,7 +4584,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "263",
@@ -4617,7 +4617,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "264",
@@ -4650,7 +4650,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "265",
@@ -4683,7 +4683,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "266",
@@ -4716,7 +4716,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "267",
@@ -4749,7 +4749,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "269",
@@ -4782,7 +4782,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "271",
@@ -4815,7 +4815,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "272",
@@ -4848,7 +4848,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "273",
@@ -4881,7 +4881,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "atari"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "274",
@@ -4914,7 +4914,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "276",
@@ -4947,7 +4947,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "277",
@@ -4980,7 +4980,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "278",
@@ -5013,7 +5013,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "279",
@@ -5046,7 +5046,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "280",
@@ -5079,7 +5079,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "281",
@@ -5112,7 +5112,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "283",
@@ -5145,7 +5145,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "284",
@@ -5178,7 +5178,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "285",
@@ -5211,7 +5211,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "286",
@@ -5244,7 +5244,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "287",
@@ -5277,7 +5277,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "288",
@@ -5310,7 +5310,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "289",
@@ -5343,7 +5343,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "290",
@@ -5376,7 +5376,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "291",
@@ -5409,7 +5409,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "292",
@@ -5442,7 +5442,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "293",
@@ -5475,7 +5475,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "294",
@@ -5508,7 +5508,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "295",
@@ -5541,7 +5541,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "296",
@@ -5574,7 +5574,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "297",
@@ -5607,7 +5607,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "298",
@@ -5640,7 +5640,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "299",
@@ -5673,7 +5673,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "300",
@@ -5706,7 +5706,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "301",
@@ -5739,7 +5739,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "302",
@@ -5772,7 +5772,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "303",
@@ -5805,7 +5805,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "304",
@@ -5838,7 +5838,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "305",
@@ -5871,7 +5871,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "306",
@@ -5904,7 +5904,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "307",
@@ -5937,7 +5937,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "308",
@@ -5970,7 +5970,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "309",
@@ -6003,7 +6003,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "310",
@@ -6036,7 +6036,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "311",
@@ -6069,7 +6069,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "312",
@@ -6102,7 +6102,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "313",
@@ -6135,7 +6135,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "314",
@@ -6168,7 +6168,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "315",
@@ -6201,7 +6201,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "316",
@@ -6234,7 +6234,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "317",
@@ -6267,7 +6267,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "318",
@@ -6300,7 +6300,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "319",
@@ -6333,7 +6333,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "320",
@@ -6366,7 +6366,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "321",
@@ -6399,7 +6399,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "322",
@@ -6432,7 +6432,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "323",
@@ -6498,7 +6498,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "atari"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "325",
@@ -6531,7 +6531,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "326",
@@ -6564,7 +6564,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "327",
@@ -6597,7 +6597,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "328",
@@ -6630,7 +6630,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "329",
@@ -6663,7 +6663,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "330",
@@ -6696,7 +6696,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "331",
@@ -6729,7 +6729,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "332",
@@ -6762,7 +6762,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "333",
@@ -6795,7 +6795,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "calculators"
+    "domain_id": "scientific_computing"
   },
   {
     "id": "334",
@@ -6828,7 +6828,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "335",
@@ -6861,7 +6861,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "336",
@@ -6894,7 +6894,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "337",
@@ -6927,7 +6927,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "338",
@@ -6960,7 +6960,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "341",
@@ -6993,7 +6993,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "343",
@@ -7026,7 +7026,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "344",
@@ -7059,7 +7059,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "atari"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "345",
@@ -7092,7 +7092,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "346",
@@ -7125,7 +7125,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "347",
@@ -7158,7 +7158,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "348",
@@ -7191,7 +7191,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "349",
@@ -7257,7 +7257,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "351",
@@ -7290,7 +7290,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "352",
@@ -7356,7 +7356,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "354",
@@ -7389,7 +7389,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "355",
@@ -7422,7 +7422,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "356",
@@ -7455,7 +7455,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "358",
@@ -7488,7 +7488,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "359",
@@ -7521,7 +7521,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "360",
@@ -7554,7 +7554,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "361",
@@ -7587,7 +7587,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "british"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "362",
@@ -7620,7 +7620,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "363",
@@ -7653,7 +7653,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "364",
@@ -7686,7 +7686,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "commodore"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "404",
@@ -7719,7 +7719,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "gaming"
+    "domain_id": "retro_gaming"
   },
   {
     "id": "405",
@@ -7752,7 +7752,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "apple"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "777",
@@ -7785,7 +7785,7 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   },
   {
     "id": "406",
@@ -7818,6 +7818,6 @@
     },
     "puzzle_items": [],
     "puzzle_dialog": {},
-    "domain_id": "ibm_pc"
+    "domain_id": "cpu_architecture"
   }
 ]

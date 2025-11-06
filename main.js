@@ -8,9 +8,25 @@ import UIManager from './uiManager.js';
 import DomainManager from './domainManager.js';
 import QuestManager from './questManager.js';
 import CrisisManager from './CrisisManager.js';
+import MapDuplicationModule from './MapDuplicationModule.js';
+import CameraManager from './cameraManager.js';
 
 // Determine device type for scaling
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+// Configure map duplication based on URL parameter or default setting
+const urlParams = new URLSearchParams(window.location.search);
+const enableDuplication = urlParams.get('duplicated') === 'true' || false; // Default to false
+
+// Store duplication state globally for console access
+window.mapDuplicationEnabled = enableDuplication;
+
+console.log(`Map duplication: ${enableDuplication ? 'ENABLED' : 'DISABLED'} (URL param: "${urlParams.get('duplicated')}")`);
+if (enableDuplication) {
+    console.log('Add ?duplicated=true to URL to enable duplicated map layout');
+} else {
+    console.log('Add ?duplicated=true to URL to enable duplicated map layout');
+}
 
 const config = {
     type: Phaser.AUTO,
@@ -32,7 +48,8 @@ const config = {
         preload,
         create,
         update
-    }
+    },
+    duplicateMap: enableDuplication
 };
 
 let scene;
@@ -43,6 +60,7 @@ function preload() {
     PlayerManager.preload?.(this);
     NPCManager.preload?.(this);
     this.load.json('vendors', 'vendors.json');
+    this.load.json('technology_domains', 'technology_domains.json');
 }
 
 function create() {
@@ -50,6 +68,10 @@ function create() {
 
     // Load vendors data
     scene.vendors = scene.cache.json.get('vendors');
+
+    // Load and initialize domain data synchronously
+    const domainsData = scene.cache.json.get('technology_domains');
+    DomainManager.initializeWithData(domainsData);
 
     console.log('Vendors loaded:', scene.vendors);
     // Set scale mode based on device
@@ -66,6 +88,10 @@ function create() {
         console.error('Map failed to load. Check asset paths and mapManager.js preload.');
         return;
     }
+
+    // Update physics world bounds to match the resized map
+    scene.physics.world.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
+    console.log(`Physics world bounds set to: ${scene.map.widthInPixels}x${scene.map.heightInPixels}`);
 
     PlayerManager.create(scene);
     NPCManager.create(scene, scene.vendors);
@@ -88,9 +114,9 @@ function create() {
     CollisionManager.create(scene);
 
     if (scene.player) {
-        scene.cameras.main.startFollow(scene.player);
-        scene.cameras.main.centerOn(scene.player.x, scene.player.y);
-        scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
+        // Initialize Sierra-style camera system
+        scene.cameraManager = new CameraManager(scene);
+        scene.cameraManager.initialize();
 
         // Zoom in on mobile devices for better visibility
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -110,7 +136,17 @@ function create() {
         CollisionManager.create(scene);
     });
 
+    // Add console commands for map duplication control
+    window.toggleMapDuplication = () => {
+        window.mapDuplicationEnabled = !window.mapDuplicationEnabled;
+        console.log(`Map duplication is now: ${window.mapDuplicationEnabled ? 'ENABLED' : 'DISABLED'}`);
+        console.log('To apply changes: refresh the page');
+        console.log('Or add/remove ?duplicated=true from the URL');
+        return `Current state: ${window.mapDuplicationEnabled}`;
+    };
+
     console.log('Game scene created');
+    console.log('Type toggleMapDuplication() in console to see duplication status and instructions');
 }
 
 function update(time, delta) {
@@ -121,6 +157,10 @@ function update(time, delta) {
     MapManager.update?.(scene, time, delta);
     scene.inputManager?.update?.(scene, time, delta);
     scene.crisisManager?.updateCrisisIndicators(scene);
+
+    // Update Sierra-style camera system
+    scene.cameraManager?.update();
+    scene.cameraManager?.updateTransition();
 }
 const game = new Phaser.Game(config);
 
