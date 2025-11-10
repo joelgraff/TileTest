@@ -10,8 +10,8 @@ class MapDuplicationModule {
             enabled: false, // Master toggle for duplication
             sectionsX: 3,   // Number of horizontal sections
             sectionsY: 3,   // Number of vertical sections
-            spacingX: 960,  // Horizontal spacing in pixels (section width to avoid overlap)
-            spacingY: 640   // Vertical spacing in pixels (section height to avoid overlap)
+            spacingX: 480,  // Horizontal spacing in pixels (reduced for closer booths)
+            spacingY: 320   // Vertical spacing in pixels (reduced for closer booths)
         };
     }
 
@@ -42,26 +42,45 @@ class MapDuplicationModule {
 
         console.log('MapDuplicationModule: Duplicating map elements...');
 
-        // Create a deep copy of the map data
-        const duplicatedMap = JSON.parse(JSON.stringify(originalMapData));
+    // Create a deep copy of the map data
+    const duplicatedMap = JSON.parse(JSON.stringify(originalMapData));
+
+    // Capture original layer datas and dimensions BEFORE we resize them
+    const originalFloorLayer = duplicatedMap.layers.find(layer => layer.name === 'floor');
+    const originalTablesLayer = duplicatedMap.layers.find(layer => layer.name === 'tables');
+    const originalTabletopsLayer = duplicatedMap.layers.find(layer => layer.name === 'tabletops');
+
+    const origFloorData = originalFloorLayer ? [...originalFloorLayer.data] : null;
+    const origFloorWidth = originalFloorLayer ? originalFloorLayer.width : duplicatedMap.width;
+    const origFloorHeight = originalFloorLayer ? originalFloorLayer.height : duplicatedMap.height;
+
+    const origTablesData = originalTablesLayer ? [...originalTablesLayer.data] : null;
+    const origTablesWidth = originalTablesLayer ? originalTablesLayer.width : duplicatedMap.width;
+    const origTablesHeight = originalTablesLayer ? originalTablesLayer.height : duplicatedMap.height;
+
+    const origTabletopsData = originalTabletopsLayer ? [...originalTabletopsLayer.data] : null;
+    const origTabletopsWidth = originalTabletopsLayer ? originalTabletopsLayer.width : duplicatedMap.width;
+    const origTabletopsHeight = originalTabletopsLayer ? originalTabletopsLayer.height : duplicatedMap.height;
 
         // Calculate new map dimensions to fit all sections
-        const newWidth = Math.floor((this.config.sectionsX * this.config.spacingX) / 32) + 30; // Add original width
-        const newHeight = Math.floor((this.config.sectionsY * this.config.spacingY) / 32) + 20; // Add original height
+        const tilesPerScreenX = Math.floor(this.config.spacingX / 32); // 960/32 = 30
+        const tilesPerScreenY = Math.floor(this.config.spacingY / 32); // 640/32 = 20
+        const newWidth = this.config.sectionsX * tilesPerScreenX; // 3 * 30 = 90
+        const newHeight = this.config.sectionsY * tilesPerScreenY; // 3 * 20 = 60
 
         duplicatedMap.width = newWidth;
         duplicatedMap.height = newHeight;
 
-        console.log(`MapDuplicationModule: Resizing map from 30x20 to ${newWidth}x${newHeight} tiles`);
+        console.log(`MapDuplicationModule: Resizing map from 30x20 to ${newWidth}x${newHeight} tiles (${tilesPerScreenX}x${tilesPerScreenY} per screen)`);
 
         // Resize all tile layers
         this.resizeTileLayers(duplicatedMap, newWidth, newHeight);
 
-        // Duplicate layers and objects
-        this.duplicateFloorLayer(duplicatedMap);
-        this.duplicateTablesLayer(duplicatedMap);
-        this.duplicateTabletopsLayer(duplicatedMap);
-        this.duplicateNpcAreaObjects(duplicatedMap);
+    // Duplicate layers and objects using originals captured earlier
+    this.duplicateFloorLayer(duplicatedMap, origFloorData, origFloorWidth, origFloorHeight);
+    this.duplicateTablesLayer(duplicatedMap, origTablesData, origTablesWidth, origTablesHeight);
+    this.duplicateTabletopsLayer(duplicatedMap, origTabletopsData, origTabletopsWidth, origTabletopsHeight);
+    this.duplicateNpcAreaObjects(duplicatedMap);
 
         console.log('MapDuplicationModule: Duplication complete');
         return duplicatedMap;
@@ -99,52 +118,70 @@ class MapDuplicationModule {
     /**
      * Duplicate the floor tile layer across the map
      */
-    duplicateFloorLayer(mapData) {
+    duplicateFloorLayer(mapData, originalData, origWidth, origHeight) {
         const floorLayer = mapData.layers.find(layer => layer.name === 'floor');
         if (!floorLayer) {
             console.warn('MapDuplicationModule: No floor layer found');
             return;
         }
 
-        const originalData = [...floorLayer.data];
-        const width = floorLayer.width;
-        const height = floorLayer.height;
+        // If originals weren't provided, fall back to current layer data
+        const sourceData = originalData ? originalData : [...floorLayer.data];
+        const sourceWidth = origWidth ? origWidth : floorLayer.width;
+        const sourceHeight = origHeight ? origHeight : floorLayer.height;
+
+        const targetWidth = floorLayer.width;
+        const targetHeight = floorLayer.height;
+
+        console.log(`MapDuplicationModule: Duplicating floor layer (source ${sourceWidth}x${sourceHeight}, target ${targetWidth}x${targetHeight})`);
 
         // Clear the layer data to rebuild it
-        floorLayer.data = new Array(width * height).fill(0);
+        floorLayer.data = new Array(targetWidth * targetHeight).fill(0);
 
-        // Place original pattern plus 8 duplicates
+        // Place original pattern plus duplicates across the grid
         for (let sectionY = 0; sectionY < this.config.sectionsY; sectionY++) {
             for (let sectionX = 0; sectionX < this.config.sectionsX; sectionX++) {
                 this.placeFloorSection(
                     floorLayer.data,
-                    originalData,
-                    width,
+                    sourceData,
+                    sourceWidth,
+                    sourceHeight,
+                    targetWidth,
+                    targetHeight,
                     sectionX,
                     sectionY
                 );
             }
         }
+
+        console.log(`MapDuplicationModule: Floor layer duplication complete, ${floorLayer.data.filter(id => id !== 0).length} non-zero tiles placed`);
     }
 
     /**
      * Place a single floor section at the specified grid position
      */
-    placeFloorSection(layerData, originalData, width, sectionX, sectionY) {
-        const offsetX = sectionX * Math.floor(this.config.spacingX / 32); // Convert pixels to tiles
-        const offsetY = sectionY * Math.floor(this.config.spacingY / 32);
+    placeFloorSection(layerData, originalData, sourceWidth, sourceHeight, targetWidth, targetHeight, sectionX, sectionY) {
+        const tilesPerScreenX = Math.floor(this.config.spacingX / 32);
+        const tilesPerScreenY = Math.floor(this.config.spacingY / 32);
+        const offsetX = sectionX * tilesPerScreenX;
+        const offsetY = sectionY * tilesPerScreenY;
 
-        // Only place tiles that are within bounds
-        for (let y = 0; y < 20; y++) {
-            for (let x = 0; x < 30; x++) {
-                const tileId = originalData[y * 30 + x];
+        console.log(`MapDuplicationModule: Placing floor section ${sectionX},${sectionY} at tile offset (${offsetX}, ${offsetY})`);
+
+        // Only place tiles that are within bounds using source dimensions for reads
+        for (let y = 0; y < sourceHeight; y++) {
+            for (let x = 0; x < sourceWidth; x++) {
+                const tileId = originalData[y * sourceWidth + x];
                 if (tileId !== 0) { // Only place non-empty tiles
                     const newX = x + offsetX;
                     const newY = y + offsetY;
 
-                    // Check bounds (now uses full layer width/height)
-                    if (newX < width && newY < layerData.length / width) {
-                        layerData[newY * width + newX] = tileId;
+                    // Check bounds against target dimensions
+                    if (newX >= 0 && newX < targetWidth && newY >= 0 && newY < targetHeight) {
+                        const index = newY * targetWidth + newX;
+                        if (index >= 0 && index < layerData.length) {
+                            layerData[index] = tileId;
+                        }
                     }
                 }
             }
@@ -154,52 +191,67 @@ class MapDuplicationModule {
     /**
      * Duplicate the tables tile layer across the map
      */
-    duplicateTablesLayer(mapData) {
+    duplicateTablesLayer(mapData, originalData, origWidth, origHeight) {
         const tablesLayer = mapData.layers.find(layer => layer.name === 'tables');
         if (!tablesLayer) {
             console.warn('MapDuplicationModule: No tables layer found');
             return;
         }
 
-        const originalData = [...tablesLayer.data];
-        const width = tablesLayer.width;
-        const height = tablesLayer.height;
+        const sourceData = originalData ? originalData : [...tablesLayer.data];
+        const sourceWidth = origWidth ? origWidth : tablesLayer.width;
+        const sourceHeight = origHeight ? origHeight : tablesLayer.height;
+
+        const targetWidth = tablesLayer.width;
+        const targetHeight = tablesLayer.height;
+
+        console.log(`MapDuplicationModule: Duplicating tables layer (source ${sourceWidth}x${sourceHeight}, target ${targetWidth}x${targetHeight})`);
 
         // Clear the layer data to rebuild it
-        tablesLayer.data = new Array(width * height).fill(0);
+        tablesLayer.data = new Array(targetWidth * targetHeight).fill(0);
 
-        // Place original pattern plus 8 duplicates
+        // Place original pattern plus duplicates across the grid
         for (let sectionY = 0; sectionY < this.config.sectionsY; sectionY++) {
             for (let sectionX = 0; sectionX < this.config.sectionsX; sectionX++) {
                 this.placeTablesSection(
                     tablesLayer.data,
-                    originalData,
-                    width,
+                    sourceData,
+                    sourceWidth,
+                    sourceHeight,
+                    targetWidth,
+                    targetHeight,
                     sectionX,
                     sectionY
                 );
             }
         }
+
+        console.log(`MapDuplicationModule: Tables layer duplication complete, ${tablesLayer.data.filter(id => id !== 0).length} non-zero tiles placed`);
     }
 
     /**
      * Place a single tables section at the specified grid position
      */
-    placeTablesSection(layerData, originalData, width, sectionX, sectionY) {
-        const offsetX = sectionX * Math.floor(this.config.spacingX / 32); // Convert pixels to tiles
-        const offsetY = sectionY * Math.floor(this.config.spacingY / 32);
+    placeTablesSection(layerData, originalData, sourceWidth, sourceHeight, targetWidth, targetHeight, sectionX, sectionY) {
+        const tilesPerScreenX = Math.floor(this.config.spacingX / 32);
+        const tilesPerScreenY = Math.floor(this.config.spacingY / 32);
+        const offsetX = sectionX * tilesPerScreenX;
+        const offsetY = sectionY * tilesPerScreenY;
 
-        // Only place tiles that are within bounds
-        for (let y = 0; y < 20; y++) {
-            for (let x = 0; x < 30; x++) {
-                const tileId = originalData[y * 30 + x];
-                if (tileId !== 0) { // Only place non-empty tiles
+        console.log(`MapDuplicationModule: Placing tables section ${sectionX},${sectionY} at tile offset (${offsetX}, ${offsetY})`);
+
+        for (let y = 0; y < sourceHeight; y++) {
+            for (let x = 0; x < sourceWidth; x++) {
+                const tileId = originalData[y * sourceWidth + x];
+                if (tileId !== 0) {
                     const newX = x + offsetX;
                     const newY = y + offsetY;
 
-                    // Check bounds (now uses full layer width/height)
-                    if (newX < width && newY < layerData.length / width) {
-                        layerData[newY * width + newX] = tileId;
+                    if (newX >= 0 && newX < targetWidth && newY >= 0 && newY < targetHeight) {
+                        const index = newY * targetWidth + newX;
+                        if (index >= 0 && index < layerData.length) {
+                            layerData[index] = tileId;
+                        }
                     }
                 }
             }
@@ -209,52 +261,67 @@ class MapDuplicationModule {
     /**
      * Duplicate the tabletops tile layer across the map
      */
-    duplicateTabletopsLayer(mapData) {
+    duplicateTabletopsLayer(mapData, originalData, origWidth, origHeight) {
         const tabletopsLayer = mapData.layers.find(layer => layer.name === 'tabletops');
         if (!tabletopsLayer) {
             console.warn('MapDuplicationModule: No tabletops layer found');
             return;
         }
 
-        const originalData = [...tabletopsLayer.data];
-        const width = tabletopsLayer.width;
-        const height = tabletopsLayer.height;
+        const sourceData = originalData ? originalData : [...tabletopsLayer.data];
+        const sourceWidth = origWidth ? origWidth : tabletopsLayer.width;
+        const sourceHeight = origHeight ? origHeight : tabletopsLayer.height;
+
+        const targetWidth = tabletopsLayer.width;
+        const targetHeight = tabletopsLayer.height;
+
+        console.log(`MapDuplicationModule: Duplicating tabletops layer (source ${sourceWidth}x${sourceHeight}, target ${targetWidth}x${targetHeight})`);
 
         // Clear the layer data to rebuild it
-        tabletopsLayer.data = new Array(width * height).fill(0);
+        tabletopsLayer.data = new Array(targetWidth * targetHeight).fill(0);
 
-        // Place original pattern plus 8 duplicates
+        // Place original pattern plus duplicates across the grid
         for (let sectionY = 0; sectionY < this.config.sectionsY; sectionY++) {
             for (let sectionX = 0; sectionX < this.config.sectionsX; sectionX++) {
                 this.placeTabletopsSection(
                     tabletopsLayer.data,
-                    originalData,
-                    width,
+                    sourceData,
+                    sourceWidth,
+                    sourceHeight,
+                    targetWidth,
+                    targetHeight,
                     sectionX,
                     sectionY
                 );
             }
         }
+
+        console.log(`MapDuplicationModule: Tabletops layer duplication complete, ${tabletopsLayer.data.filter(id => id !== 0).length} non-zero tiles placed`);
     }
 
     /**
      * Place a single tabletops section at the specified grid position
      */
-    placeTabletopsSection(layerData, originalData, width, sectionX, sectionY) {
-        const offsetX = sectionX * Math.floor(this.config.spacingX / 32); // Convert pixels to tiles
-        const offsetY = sectionY * Math.floor(this.config.spacingY / 32);
+    placeTabletopsSection(layerData, originalData, sourceWidth, sourceHeight, targetWidth, targetHeight, sectionX, sectionY) {
+        const tilesPerScreenX = Math.floor(this.config.spacingX / 32);
+        const tilesPerScreenY = Math.floor(this.config.spacingY / 32);
+        const offsetX = sectionX * tilesPerScreenX;
+        const offsetY = sectionY * tilesPerScreenY;
 
-        // Only place tiles that are within bounds
-        for (let y = 0; y < 20; y++) {
-            for (let x = 0; x < 30; x++) {
-                const tileId = originalData[y * 30 + x];
-                if (tileId !== 0) { // Only place non-empty tiles
+        console.log(`MapDuplicationModule: Placing tabletops section ${sectionX},${sectionY} at tile offset (${offsetX}, ${offsetY})`);
+
+        for (let y = 0; y < sourceHeight; y++) {
+            for (let x = 0; x < sourceWidth; x++) {
+                const tileId = originalData[y * sourceWidth + x];
+                if (tileId !== 0) {
                     const newX = x + offsetX;
                     const newY = y + offsetY;
 
-                    // Check bounds (now uses full layer width/height)
-                    if (newX < width && newY < layerData.length / width) {
-                        layerData[newY * width + newX] = tileId;
+                    if (newX >= 0 && newX < targetWidth && newY >= 0 && newY < targetHeight) {
+                        const index = newY * targetWidth + newX;
+                        if (index >= 0 && index < layerData.length) {
+                            layerData[index] = tileId;
+                        }
                     }
                 }
             }
@@ -282,10 +349,13 @@ class MapDuplicationModule {
             newObjects.push(rectObject);
         }
 
-        // Duplicate only the point objects across the 9 sections
+        // Keep the original point objects
         const pointObjects = originalObjects.filter(obj => obj.type === 'point');
+        pointObjects.forEach(originalObj => {
+            newObjects.push(originalObj);
+        });
 
-        // Create 9 sections (3x3 grid) - but only duplicate points, not rects
+        // Duplicate additional point objects across the other 8 sections
         for (let sectionY = 0; sectionY < this.config.sectionsY; sectionY++) {
             for (let sectionX = 0; sectionX < this.config.sectionsX; sectionX++) {
                 // Skip the original section (0,0) since points are already there

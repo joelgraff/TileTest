@@ -27,8 +27,6 @@ class CameraManager {
         // Edge detection state management
         this.edgeDetectionEnabled = true;
         this.lastTransitionDirection = null; // Track which edge triggered the last transition
-        this.transitionTriggerBounds = null; // Store screen bounds when transition was triggered
-        this.transitionTriggerPlayerPos = null; // Store player position when transition was triggered
     }
 
     /**
@@ -64,6 +62,10 @@ class CameraManager {
         const screenRight = camera.scrollX + this.screenWidth;
         const screenTop = camera.scrollY;
         const screenBottom = camera.scrollY + this.screenHeight;
+
+        if (this.scene.debugEnabled) {
+            console.log(`Camera: Player at (${player.x.toFixed(1)}, ${player.y.toFixed(1)}), Screen: [${screenLeft}-${screenRight}, ${screenTop}-${screenBottom}], EdgeDetect: ${this.edgeDetectionEnabled}`);
+        }
 
         // Check if we should re-enable edge detection
         this.checkEdgeDetectionState(player, screenLeft, screenRight, screenTop, screenBottom);
@@ -103,41 +105,69 @@ class CameraManager {
             transitionDirection = 'down';
         }
 
+        if (this.scene.debugEnabled && shouldTransition) {
+            console.log(`Camera: Should transition ${transitionDirection} to screen (${newScreenX}, ${newScreenY})`);
+        }
+
         // Start transition if needed
         if (shouldTransition && (newScreenX !== this.currentScreenX || newScreenY !== this.currentScreenY)) {
             this.startTransition(newScreenX, newScreenY, transitionDirection);
         }
+
+        // Constrain player to current screen to prevent going off-screen, but only when edge detection is enabled
+        if (this.edgeDetectionEnabled) {
+            const margin = this.edgeThreshold;
+            player.x = Phaser.Math.Clamp(player.x, screenLeft + margin, screenRight - margin);
+            player.y = Phaser.Math.Clamp(player.y, screenTop + margin, screenBottom - margin);
+        }
     }
 
     /**
-     * Check if edge detection should be re-enabled based on player position
+     * Check if edge detection should be re-enabled based on player position relative to triggering edge
      */
     checkEdgeDetectionState(player, screenLeft, screenRight, screenTop, screenBottom) {
-        if (this.edgeDetectionEnabled || !this.lastTransitionDirection || !this.transitionTriggerPlayerPos) {
-            if (this.scene.debugEnabled && !this.edgeDetectionEnabled && this.lastTransitionDirection) {
-                console.log(`CameraManager: Edge detection disabled, direction: ${this.lastTransitionDirection}`);
-            }
+        if (this.edgeDetectionEnabled || !this.lastTransitionDirection) {
             return;
         }
 
-        // Check if player has moved sufficiently far from their position when transition was triggered
-        const distanceMoved = Phaser.Math.Distance.Between(
-            player.x, player.y,
-            this.transitionTriggerPlayerPos.x, this.transitionTriggerPlayerPos.y
-        );
+        const buffer = 50; // Additional buffer beyond edge threshold
+        let shouldReEnable = false;
 
-        const minDistanceRequired = 100; // pixels
-
-        if (this.scene.debugEnabled) {
-            console.log(`CameraManager: Distance moved: ${distanceMoved.toFixed(1)}, required: ${minDistanceRequired}`);
+        switch (this.lastTransitionDirection) {
+            case 'left':
+                // Re-enable if player moves right of the left edge plus buffer
+                if (player.x > screenLeft + this.edgeThreshold + buffer) {
+                    shouldReEnable = true;
+                }
+                break;
+            case 'right':
+                // Re-enable if player moves left of the right edge minus buffer
+                if (player.x < screenRight - this.edgeThreshold - buffer) {
+                    shouldReEnable = true;
+                }
+                break;
+            case 'up':
+                // Re-enable if player moves down of the top edge plus buffer
+                if (player.y > screenTop + this.edgeThreshold + buffer) {
+                    shouldReEnable = true;
+                }
+                break;
+            case 'down':
+                // Re-enable if player moves up of the bottom edge minus buffer
+                if (player.y < screenBottom - this.edgeThreshold - buffer) {
+                    shouldReEnable = true;
+                }
+                break;
         }
 
-        if (distanceMoved >= minDistanceRequired) {
+        if (shouldReEnable) {
             this.edgeDetectionEnabled = true;
             this.lastTransitionDirection = null;
             this.transitionTriggerBounds = null;
             this.transitionTriggerPlayerPos = null;
-            console.log('CameraManager: Edge detection re-enabled');
+            if (this.scene.debugEnabled) {
+                console.log('CameraManager: Edge detection re-enabled');
+            }
         }
     }
 
@@ -148,19 +178,6 @@ class CameraManager {
         this.isTransitioning = true;
         this.targetScreenX = targetScreenX;
         this.targetScreenY = targetScreenY;
-
-        // Store the screen bounds and player position at the moment transition was triggered
-        const camera = this.scene.cameras.main;
-        this.transitionTriggerBounds = {
-            left: camera.scrollX,
-            right: camera.scrollX + this.screenWidth,
-            top: camera.scrollY,
-            bottom: camera.scrollY + this.screenHeight
-        };
-        this.transitionTriggerPlayerPos = {
-            x: this.scene.player.x,
-            y: this.scene.player.y
-        };
 
         // Disable edge detection until player leaves the triggering zone
         this.edgeDetectionEnabled = false;
