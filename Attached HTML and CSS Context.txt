@@ -1,0 +1,71 @@
+Attached HTML and CSS Context
+
+<canvas width="960" height="640" style="width: 842px; height: 561.333px; margin-left: 0px; margin-top: 118px;"></canvas>
+
+
+/* Inline style */
+element {
+  width: 842px;
+  height: 561.333px;
+  margin-left: 0px;
+  margin-top: 118px;
+  width: 842px;
+  height: 561.333px;
+  margin-left: 0px;
+  margin-top: 118px;
+}
+
+/* Matched Rule from user-agent */
+video, canvas, img {
+  overflow-x: clip;
+  overflow-y: clip;
+  overflow-clip-margin: content-box;
+}
+
+/* Matched Rule from regular */
+canvas {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* Inherited from ancestor level 1 (user-agent) */
+body {
+  display: block;
+  margin-top: 8px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  margin-left: 8px;
+}
+
+/* Inherited from ancestor level 1 (regular) */
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: black;
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  background-color: black;
+}
+
+/* Inherited from ancestor level 2 (user-agent) */
+html {
+  display: block;
+}
+
+/* Inherited from ancestor level 2 (user-agent) */
+:root {
+  view-transition-name: root;
+}
