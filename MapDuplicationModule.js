@@ -10,8 +10,8 @@ class MapDuplicationModule {
             enabled: false, // Master toggle for duplication
             sectionsX: 3,   // Number of horizontal sections
             sectionsY: 3,   // Number of vertical sections
-            spacingX: 480,  // Horizontal spacing in pixels (reduced for closer booths)
-            spacingY: 320   // Vertical spacing in pixels (reduced for closer booths)
+            spacingX: 640,  // Horizontal spacing in pixels (allows 2 screens horizontally)
+            spacingY: 448   // Vertical spacing in pixels (allows 2 screens vertically)
         };
     }
 

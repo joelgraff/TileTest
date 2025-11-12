@@ -27,6 +27,10 @@ class CameraManager {
         // Edge detection state management
         this.edgeDetectionEnabled = true;
         this.lastTransitionDirection = null; // Track which edge triggered the last transition
+        this.transitionTriggerScreenX = 0; // Screen where transition was triggered
+        this.transitionTriggerScreenY = 0;
+        this.transitionTriggerPlayerX = 0; // Player position when transition was triggered
+        this.transitionTriggerPlayerY = 0;
     }
 
     /**
@@ -130,43 +134,21 @@ class CameraManager {
             return;
         }
 
-        const buffer = 50; // Additional buffer beyond edge threshold
-        let shouldReEnable = false;
+        const minDistance = 100; // Minimum distance player must move from trigger position
+        const currentDistance = Phaser.Math.Distance.Between(
+            player.x, player.y,
+            this.transitionTriggerPlayerX, this.transitionTriggerPlayerY
+        );
 
-        switch (this.lastTransitionDirection) {
-            case 'left':
-                // Re-enable if player moves right of the left edge plus buffer
-                if (player.x > screenLeft + this.edgeThreshold + buffer) {
-                    shouldReEnable = true;
-                }
-                break;
-            case 'right':
-                // Re-enable if player moves left of the right edge minus buffer
-                if (player.x < screenRight - this.edgeThreshold - buffer) {
-                    shouldReEnable = true;
-                }
-                break;
-            case 'up':
-                // Re-enable if player moves down of the top edge plus buffer
-                if (player.y > screenTop + this.edgeThreshold + buffer) {
-                    shouldReEnable = true;
-                }
-                break;
-            case 'down':
-                // Re-enable if player moves up of the bottom edge minus buffer
-                if (player.y < screenBottom - this.edgeThreshold - buffer) {
-                    shouldReEnable = true;
-                }
-                break;
-        }
-
-        if (shouldReEnable) {
+        if (currentDistance > minDistance) {
             this.edgeDetectionEnabled = true;
             this.lastTransitionDirection = null;
-            this.transitionTriggerBounds = null;
-            this.transitionTriggerPlayerPos = null;
+            this.transitionTriggerScreenX = 0;
+            this.transitionTriggerScreenY = 0;
+            this.transitionTriggerPlayerX = 0;
+            this.transitionTriggerPlayerY = 0;
             if (this.scene.debugEnabled) {
-                console.log('CameraManager: Edge detection re-enabled');
+                console.log(`CameraManager: Edge detection re-enabled (moved ${currentDistance.toFixed(1)}px from trigger)`);
             }
         }
     }
@@ -178,6 +160,12 @@ class CameraManager {
         this.isTransitioning = true;
         this.targetScreenX = targetScreenX;
         this.targetScreenY = targetScreenY;
+
+        // Store trigger information for hysteresis
+        this.transitionTriggerScreenX = this.currentScreenX;
+        this.transitionTriggerScreenY = this.currentScreenY;
+        this.transitionTriggerPlayerX = this.scene.player.x;
+        this.transitionTriggerPlayerY = this.scene.player.y;
 
         // Disable edge detection until player leaves the triggering zone
         this.edgeDetectionEnabled = false;
