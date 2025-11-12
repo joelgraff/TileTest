@@ -99,9 +99,9 @@ class NPCSpawner {
         // Reverse the gradient: 1 at top, 0 at bottom
         const gradient = 1 - ((relY - npcAreaRect.y) / npcAreaRect.height);
 
-        // Depth range: above tabletops (10+), width 25
-        const minDepth = 15;
-        const maxDepth = 40;
+        // Depth range: above tables layer
+        const minDepth = tablesLayerDepth + 1;
+        const maxDepth = tablesLayerDepth + 26;
 
         // Interpolate depth
         const npcDepth = Math.floor(Phaser.Math.Linear(minDepth, maxDepth, gradient));

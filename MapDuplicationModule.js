@@ -8,10 +8,12 @@ class MapDuplicationModule {
     constructor() {
         this.config = {
             enabled: false, // Master toggle for duplication
-            sectionsX: 3,   // Number of horizontal sections
-            sectionsY: 3,   // Number of vertical sections
-            spacingX: 640,  // Horizontal spacing in pixels (allows 2 screens horizontally)
-            spacingY: 448   // Vertical spacing in pixels (allows 2 screens vertically)
+            sectionsX: 3,   // 3x3 grid provides 9 booths for testing
+            sectionsY: 3,   // 3x3 grid provides 9 booths for testing
+            spacingX: 540,  // Spacing that creates 1620x1062 map (just over 960x640 viewport)
+            spacingY: 354,  // Spacing that creates 1620x1062 map
+            paddingX: 256,  // 8 tiles padding on right edge (256px)
+            paddingY: 256   // 8 tiles padding on bottom edge (256px)
         };
     }
 
@@ -62,16 +64,18 @@ class MapDuplicationModule {
     const origTabletopsWidth = originalTabletopsLayer ? originalTabletopsLayer.width : duplicatedMap.width;
     const origTabletopsHeight = originalTabletopsLayer ? originalTabletopsLayer.height : duplicatedMap.height;
 
-        // Calculate new map dimensions to fit all sections
+        // Calculate new map dimensions to fit all sections plus padding
         const tilesPerScreenX = Math.floor(this.config.spacingX / 32); // 960/32 = 30
         const tilesPerScreenY = Math.floor(this.config.spacingY / 32); // 640/32 = 20
-        const newWidth = this.config.sectionsX * tilesPerScreenX; // 3 * 30 = 90
-        const newHeight = this.config.sectionsY * tilesPerScreenY; // 3 * 20 = 60
+        const paddingTilesX = Math.floor(this.config.paddingX / 32); // 256/32 = 8
+        const paddingTilesY = Math.floor(this.config.paddingY / 32); // 256/32 = 8
+        const newWidth = this.config.sectionsX * tilesPerScreenX + paddingTilesX; // 3 * 30 + 8 = 98
+        const newHeight = this.config.sectionsY * tilesPerScreenY + paddingTilesY; // 3 * 20 + 8 = 68
 
         duplicatedMap.width = newWidth;
         duplicatedMap.height = newHeight;
 
-        console.log(`MapDuplicationModule: Resizing map from 30x20 to ${newWidth}x${newHeight} tiles (${tilesPerScreenX}x${tilesPerScreenY} per screen)`);
+        console.log(`MapDuplicationModule: Resizing map from 30x20 to ${newWidth}x${newHeight} tiles (${tilesPerScreenX}x${tilesPerScreenY} per screen + ${paddingTilesX}x${paddingTilesY} padding)`);
 
         // Resize all tile layers
         this.resizeTileLayers(duplicatedMap, newWidth, newHeight);
