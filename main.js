@@ -134,6 +134,22 @@ function create() {
             if (child.type === 'Graphics') child.destroy();
         });
         CollisionManager.create(scene);
+
+        // Handle tile ID visualization for debug mode
+        // First, clean up any existing tile ID text objects
+        scene.children.each(child => {
+            if (child.type === 'Text' && child.text && /^\d+$/.test(child.text)) {
+                child.destroy();
+            }
+        });
+
+        if (scene.debugEnabled) {
+            // Import NPCSpawner dynamically to avoid circular imports
+            import('./NPCSpawner.js').then(({ default: NPCSpawner }) => {
+                // Tile ID map is already built during scene creation, just visualize
+                NPCSpawner.visualizeTileIds(scene);
+            });
+        }
     });
 
     // Add console commands for map duplication control

@@ -32,6 +32,10 @@ class CameraManager {
         this.transitionTriggerScreenY = 0;
         this.transitionTriggerPlayerX = 0; // Player position when transition was triggered
         this.transitionTriggerPlayerY = 0;
+
+        // Per-axis hysteresis tracking
+        this.horizontalEdgeDetectionEnabled = true;
+        this.verticalEdgeDetectionEnabled = true;
     }
 
     /**
@@ -93,28 +97,32 @@ class CameraManager {
 
             // Only check for edge triggers if edge detection is enabled
             if (this.edgeDetectionEnabled) {
-                // Horizontal panning - pan toward the edges or by full screen width, whichever brings view closer to that edge
-                if (player.x < screenLeft + this.edgeThreshold) {
-                    // Player at left edge - pan left toward x=0 or by full screen width, whichever is less extreme
-                    panTargetX = Math.max(0, screenLeft - this.screenWidth);
-                    shouldPan = true;
-                } else if (player.x > screenRight - this.edgeThreshold) {
-                    // Player at right edge - pan right toward max scroll or by full screen width, whichever reaches closer to max
-                    const panByFullScreen = screenLeft + this.screenWidth;
-                    panTargetX = Math.min(maxScrollX, panByFullScreen);
-                    shouldPan = true;
+                // Horizontal panning - only if horizontal edge detection is enabled
+                if (this.horizontalEdgeDetectionEnabled) {
+                    if (player.x < screenLeft + this.edgeThreshold) {
+                        // Player at left edge - pan left toward x=0 or by full screen width, whichever is less extreme
+                        panTargetX = Math.max(0, screenLeft - this.screenWidth);
+                        shouldPan = true;
+                    } else if (player.x > screenRight - this.edgeThreshold) {
+                        // Player at right edge - pan right toward max scroll or by full screen width, whichever reaches closer to max
+                        const panByFullScreen = screenLeft + this.screenWidth;
+                        panTargetX = Math.min(maxScrollX, panByFullScreen);
+                        shouldPan = true;
+                    }
                 }
 
-                // Vertical panning - pan toward the edges or by full screen height, whichever brings view closer to that edge
-                if (player.y < screenTop + this.edgeThreshold) {
-                    // Player at top edge - pan up toward y=0 or by full screen height, whichever is less extreme
-                    panTargetY = Math.max(0, screenTop - this.screenHeight);
-                    shouldPan = true;
-                } else if (player.y > screenBottom - this.edgeThreshold) {
-                    // Player at bottom edge - pan down toward max scroll or by full screen height, whichever reaches closer to max
-                    const panByFullScreen = screenTop + this.screenHeight;
-                    panTargetY = Math.min(maxScrollY, panByFullScreen);
-                    shouldPan = true;
+                // Vertical panning - only if vertical edge detection is enabled
+                if (this.verticalEdgeDetectionEnabled) {
+                    if (player.y < screenTop + this.edgeThreshold) {
+                        // Player at top edge - pan up toward y=0 or by full screen height, whichever is less extreme
+                        panTargetY = Math.max(0, screenTop - this.screenHeight);
+                        shouldPan = true;
+                    } else if (player.y > screenBottom - this.edgeThreshold) {
+                        // Player at bottom edge - pan down toward max scroll or by full screen height, whichever reaches closer to max
+                        const panByFullScreen = screenTop + this.screenHeight;
+                        panTargetY = Math.min(maxScrollY, panByFullScreen);
+                        shouldPan = true;
+                    }
                 }
             }
 
@@ -123,12 +131,17 @@ class CameraManager {
                 this.isPanning = true;
                 this.panTargetX = panTargetX;
                 this.panTargetY = panTargetY;
-                // Disable edge detection during pan (hysteresis)
-                this.edgeDetectionEnabled = false;
+                // Disable edge detection for the axis being panned (hysteresis)
+                if (panTargetX !== screenLeft) {
+                    this.horizontalEdgeDetectionEnabled = false;
+                }
+                if (panTargetY !== screenTop) {
+                    this.verticalEdgeDetectionEnabled = false;
+                }
                 this.transitionTriggerPlayerX = player.x;
                 this.transitionTriggerPlayerY = player.y;
                 if (this.scene.debugEnabled) {
-                    console.log(`Camera: Starting pan to (${panTargetX}, ${panTargetY}), edge detection disabled`);
+                    console.log(`Camera: Starting pan to (${panTargetX}, ${panTargetY}), hysteresis enabled`);
                 }
             }
         }
@@ -185,25 +198,30 @@ class CameraManager {
 
     /**
      * Check if edge detection should be re-enabled based on player position
+     * Uses per-axis hysteresis so one axis can re-enable while the other is still locked
      */
     checkEdgeDetectionState(player, screenLeft, screenRight, screenTop, screenBottom) {
-        if (this.edgeDetectionEnabled) {
-            return; // Already enabled
+        const safeZone = 80; // Must be this far from edges on each axis
+
+        // Check horizontal axis
+        if (!this.horizontalEdgeDetectionEnabled) {
+            const isSafeHorizontally = player.x >= screenLeft + safeZone && player.x <= screenRight - safeZone;
+            if (isSafeHorizontally) {
+                this.horizontalEdgeDetectionEnabled = true;
+                if (this.scene.debugEnabled) {
+                    console.log(`CameraManager: Horizontal edge detection re-enabled`);
+                }
+            }
         }
 
-        // Re-enable edge detection only when player is safely away from all edges
-        const safeZone = 80; // Must be this far from all edges to re-enable detection
-        const isSafeFromLeft = player.x >= screenLeft + safeZone;
-        const isSafeFromRight = player.x <= screenRight - safeZone;
-        const isSafeFromTop = player.y >= screenTop + safeZone;
-        const isSafeFromBottom = player.y <= screenBottom - safeZone;
-
-        if (isSafeFromLeft && isSafeFromRight && isSafeFromTop && isSafeFromBottom) {
-            this.edgeDetectionEnabled = true;
-            this.transitionTriggerPlayerX = 0;
-            this.transitionTriggerPlayerY = 0;
-            if (this.scene.debugEnabled) {
-                console.log(`CameraManager: Edge detection re-enabled (player in safe zone)`);
+        // Check vertical axis
+        if (!this.verticalEdgeDetectionEnabled) {
+            const isSafeVertically = player.y >= screenTop + safeZone && player.y <= screenBottom - safeZone;
+            if (isSafeVertically) {
+                this.verticalEdgeDetectionEnabled = true;
+                if (this.scene.debugEnabled) {
+                    console.log(`CameraManager: Vertical edge detection re-enabled`);
+                }
             }
         }
     }

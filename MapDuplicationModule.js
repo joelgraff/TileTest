@@ -365,8 +365,11 @@ class MapDuplicationModule {
                 // Skip the original section (0,0) since points are already there
                 if (sectionX === 0 && sectionY === 0) continue;
 
-                const offsetX = sectionX * this.config.spacingX;
-                const offsetY = sectionY * this.config.spacingY;
+                // Calculate offset in tiles, then convert back to pixels (matches tile layer offsets)
+                const tilesPerScreenX = Math.floor(this.config.spacingX / 32);
+                const tilesPerScreenY = Math.floor(this.config.spacingY / 32);
+                const offsetX = sectionX * tilesPerScreenX * 32;
+                const offsetY = sectionY * tilesPerScreenY * 32;
 
                 // Duplicate each point object with offset coordinates
                 pointObjects.forEach(originalObj => {
