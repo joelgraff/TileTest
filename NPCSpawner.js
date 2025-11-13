@@ -49,7 +49,7 @@ class NPCSpawner {
             scene.npcGroup.add(npc);
 
             // Set depth based on facing direction and Y position
-            NPCSpawner.setNPCDepth(npc, rect, direction, tablesLayerDepth, tabletopsLayerDepth);
+            NPCSpawner.setNPCDepth(npc, rect, direction, tablesLayerDepth, tabletopsLayerDepth, scene);
         });
     }
 
@@ -227,7 +227,56 @@ class NPCSpawner {
         return sprites[Math.floor(Math.random() * sprites.length)];
     }
 
-    static setNPCDepth(npc, npcAreaRect, direction, tablesLayerDepth, tabletopsLayerDepth) {
+    static hasAdjacentTableTile(npc, direction, scene) {
+        if (!scene.tablesLayer) return false;
+
+        // Define which tile indices are considered "table" tiles
+        const tableTileIds = new Set([19, 20, 33, 34, 35, 36, 39, 41, 50]);
+
+        const tileWidth = scene.map.tileWidth;
+        const tileHeight = scene.map.tileHeight;
+        const layerData = scene.tablesLayer.layer.data;
+
+        // Convert NPC world position to tile coordinates
+        const npcTileX = Math.floor(npc.x / tileWidth);
+        const npcTileY = Math.floor(npc.y / tileHeight);
+
+        // Check adjacent tiles based on facing direction
+        let checkTiles = [];
+        if (direction === 'left') {
+            // Check tiles to the left of the NPC
+            checkTiles = [
+                [npcTileX - 1, npcTileY],     // directly left
+                [npcTileX - 1, npcTileY - 1], // left-up
+                [npcTileX - 1, npcTileY + 1]  // left-down
+            ];
+        } else if (direction === 'right') {
+            // Check tiles to the right of the NPC
+            checkTiles = [
+                [npcTileX + 1, npcTileY],     // directly right
+                [npcTileX + 1, npcTileY - 1], // right-up
+                [npcTileX + 1, npcTileY + 1]  // right-down
+            ];
+        }
+
+        // Check if any of the adjacent tiles are table tiles
+        for (const [tileX, tileY] of checkTiles) {
+            if (tileX >= 0 && tileX < layerData[0].length && tileY >= 0 && tileY < layerData.length) {
+                const tile = layerData[tileY][tileX];
+                if (tile && tile.index !== 0 && tile.index !== -1) {
+                    // Get base tile ID without flip flags (mask out bits 29-31)
+                    const baseTileId = tile.index & 0x1FFFFFFF;
+                    if (tableTileIds.has(baseTileId)) {
+                        return true; // Found adjacent table tile
+                    }
+                }
+            }
+        }
+
+        return false; // No adjacent table tiles found
+    }
+
+    static setNPCDepth(npc, npcAreaRect, direction, tablesLayerDepth, tabletopsLayerDepth, scene) {
         // Calculate relative position in npcAreaRect for Y-based depth variation
         const relY = Phaser.Math.Clamp(npc.y, npcAreaRect.y, npcAreaRect.y + npcAreaRect.height);
         const gradient = 1 - ((relY - npcAreaRect.y) / npcAreaRect.height); // 1 at top, 0 at bottom
@@ -240,6 +289,18 @@ class NPCSpawner {
             // NPCs facing up should be above both tables and tabletops
             baseDepth = Math.max(tablesLayerDepth, tabletopsLayerDepth) + 1;
             depthRange = 25; // Range above the highest layer
+        } else if (direction === 'left' || direction === 'right') {
+            // For left/right facing NPCs, check if they're adjacent to table tiles
+            const hasAdjacentTable = NPCSpawner.hasAdjacentTableTile(npc, direction, scene);
+            if (hasAdjacentTable) {
+                // NPCs adjacent to tables they're facing should be above the tables
+                baseDepth = tablesLayerDepth + 1;
+                depthRange = 25; // Range above tables layer
+            } else {
+                // NPCs facing left/right but not adjacent to tables should be below tables
+                baseDepth = Math.min(tablesLayerDepth, tabletopsLayerDepth) - 26;
+                depthRange = 25; // Range below the lowest layer
+            }
         } else {
             // NPCs facing down (or other directions) should be below tables and tabletops
             baseDepth = Math.min(tablesLayerDepth, tabletopsLayerDepth) - 26;
