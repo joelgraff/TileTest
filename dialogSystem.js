@@ -44,9 +44,47 @@ class DialogSystem {
             dialogHeight = Math.min(this.isMobile ? 340 : 360, cam.height * (this.isMobile ? 0.95 : 0.8));
         }
 
+        // Increase dialog height for dialogs with many buttons that may overflow.
+        // Be conservative: only expand when buttons are shown at the bottom (or bottom-left),
+        // and use tighter estimates for 'link' style buttons (e.g. help topics).
+        if (dialogData.buttons && dialogData.buttons.length > 0 && (dialogData.buttonPosition === 'bottomLeft' || dialogData.buttonPosition === 'right' || dialogData.buttonPosition === undefined)) {
+            // Use tighter spacing for link-style buttons (help topics are links)
+            const isLinkStyle = dialogData.buttonStyle === 'link';
+            const buttonSpacing = isLinkStyle ? 8 : 20; // smaller gap for link buttons
+            const estimatedButtonHeight = isLinkStyle ? 20 : 28; // slightly smaller for link buttons
+
+            // Only consider vertical stacking for bottom-positioned buttons
+            const totalButtonSpace = dialogData.buttons.length * (estimatedButtonHeight + buttonSpacing);
+
+            // Estimate available vertical space inside dialog after title/text area
+            const estimatedContentSpace = Math.max(0, dialogHeight - 100); // leave room for title/margins
+            const overflowSpace = Math.max(0, totalButtonSpace - estimatedContentSpace);
+
+            if (overflowSpace > 0) {
+                // Add conservatively: round up in 20px increments and cap the addition
+                const addPixels = Math.min( Math.ceil(overflowSpace / 20) * 20, 120 );
+                dialogHeight += addPixels;
+                // Cap absolute dialog height to a sensible portion of the screen
+                dialogHeight = Math.min(dialogHeight, cam.height * (this.isMobile ? 0.9 : 0.8));
+            }
+        }
+
         // Increase dialog height by 40 pixels for inventory dialogs
         if (dialogData.text && dialogData.text.includes('INVENTORY')) {
-            dialogHeight += 160;
+            // For inventory dialogs, only add significant height if there are items to display
+            // Check if there are drop buttons (indicating items) or pagination buttons
+            const hasItems = (dialogData.buttons && dialogData.buttons.length > 0) ||
+                           (dialogData.leftButtons && dialogData.leftButtons.length > 0);
+            if (hasItems) {
+                dialogHeight += 160; // Full height increase for dialogs with items
+            } else {
+                dialogHeight += 40; // Smaller increase for empty inventory
+            }
+        }
+
+        // Increase dialog height for quests with leftButtons (pagination)
+        if (dialogData.leftButtons && dialogData.leftButtons.length > 0) {
+            dialogHeight += 60; // Add height for pagination buttons
         }
 
         // Create dialog container and overlay
@@ -72,8 +110,9 @@ class DialogSystem {
             .setInteractive()
             .on('pointerdown', () => this.hideDialog());
 
-        // Create main container
+        // Create main container - position at screen center and make it fixed to camera
         this.dialogContainer = this.scene.add.container(cam.width / 2, cam.height / 2);
+        this.dialogContainer.setScrollFactor(0, 0); // Make it fixed to screen, not world
 
         // Create background
         const bg = this.scene.add.rectangle(0, 0, dialogWidth, dialogHeight, 0x333333, 1)
@@ -283,29 +322,111 @@ class DialogSystem {
 
         // Handle left buttons (horizontal row, typically pagination)
         if (dialogData.leftButtons && dialogData.leftButtons.length > 0) {
-            const leftX = hasImage ? -contentWidth / 2 + 80 : -contentWidth / 2;
-            // Position at bottom for inventory dialogs, or relative to content for others
-            const isInventoryDialog = dialogData.text && dialogData.text.includes('INVENTORY');
-            const buttonY = isInventoryDialog ? contentHeight / 2 - 15 : (dialogData.buttons && dialogData.buttons.length > 0 ? startY + 32 : contentHeight / 2 - 15);
-            console.log('Left buttons positioning - isInventory:', isInventoryDialog, 'hasMainButtons:', !!(dialogData.buttons && dialogData.buttons.length > 0), 'buttonY:', buttonY);
+            // For quest dialogs, use special positioning with page indicator in upper right
+            const isQuestDialog = dialogData.isQuestDialog === true;
+            const buttonMargin = 15; // Consistent margin from dialog edges
 
-            let currentX = leftX;
-            dialogData.leftButtons.forEach((btnConfig, index) => {
-                const btn = this.assetFactory.createAsset({
-                    type: 'button',
-                    label: btnConfig.label,
-                    onClick: btnConfig.onClick,
-                    disabled: btnConfig.disabled,
-                    options: btnConfig.options || {}
-                });
-                console.log('Left Button Positioning - index:', index, 'currentX:', currentX, 'buttonY:', buttonY, 'name:', btnConfig.label);
-                // Position button so its left edge is at currentX
-                btn.setPosition(currentX + btn.width / 2, buttonY);
-                this.dialogContainer.add(btn);
-                console.log('button width:', btn.width);
-                // Move to next position with some spacing
-                currentX += btn.width + 10; // Add 10px spacing between buttons
+            let leftButton = null;
+            let pageButton = null;
+            let rightButton = null;
+
+            // Separate buttons by type
+            dialogData.leftButtons.forEach((btnConfig) => {
+                if (btnConfig.label === '<') {
+                    leftButton = btnConfig;
+                } else if (btnConfig.label === '>') {
+                    rightButton = btnConfig;
+                } else {
+                    pageButton = btnConfig;
+                }
             });
+
+            if (isQuestDialog) {
+                // Page indicator in upper right (as text, not a button)
+                if (pageButton) {
+                    const pageText = this.assetFactory.createAsset({
+                        type: 'text',
+                        text: pageButton.label,
+                        style: { fontSize: '14px', fontStyle: 'normal', color: '#ffffff', align: 'right' }
+                    });
+                    const pageX = contentWidth / 2 - 20; // Right side with margin
+                    const pageY = -contentHeight / 2 + buttonMargin + 5;
+                    pageText.setOrigin(1, 0); // Right-align the text
+                    pageText.setPosition(pageX, pageY);
+                    this.dialogContainer.add(pageText);
+                }
+
+                // Navigation buttons at bottom left
+                const bottomButtonY = contentHeight / 2 - buttonMargin - 5;
+                let currentX = -contentWidth / 2 + buttonMargin;
+
+                if (leftButton) {
+                    const btn = this.assetFactory.createAsset({
+                        type: 'button',
+                        label: leftButton.label,
+                        onClick: leftButton.onClick,
+                        disabled: leftButton.disabled,
+                        options: leftButton.options || {}
+                    });
+                    btn.setPosition(currentX + btn.width / 2, bottomButtonY);
+                    this.dialogContainer.add(btn);
+                    currentX += btn.width + 5;
+                }
+
+                if (rightButton) {
+                    const btn = this.assetFactory.createAsset({
+                        type: 'button',
+                        label: rightButton.label,
+                        onClick: rightButton.onClick,
+                        disabled: rightButton.disabled,
+                        options: rightButton.options || {}
+                    });
+                    btn.setPosition(currentX + btn.width / 2, bottomButtonY);
+                    this.dialogContainer.add(btn);
+                }
+            } else {
+                // Standard positioning for non-quest dialogs (legacy behavior)
+                const buttonY = contentHeight / 2 - 20;
+                let currentX = -contentWidth / 2 + 20;
+
+                if (leftButton) {
+                    const btn = this.assetFactory.createAsset({
+                        type: 'button',
+                        label: leftButton.label,
+                        onClick: leftButton.onClick,
+                        disabled: leftButton.disabled,
+                        options: leftButton.options || {}
+                    });
+                    btn.setPosition(currentX + btn.width / 2, buttonY);
+                    this.dialogContainer.add(btn);
+                    currentX += btn.width + 5;
+                }
+
+                if (rightButton) {
+                    const btn = this.assetFactory.createAsset({
+                        type: 'button',
+                        label: rightButton.label,
+                        onClick: rightButton.onClick,
+                        disabled: rightButton.disabled,
+                        options: rightButton.options || {}
+                    });
+                    btn.setPosition(currentX + btn.width / 2, buttonY);
+                    this.dialogContainer.add(btn);
+                }
+
+                if (pageButton) {
+                    const btn = this.assetFactory.createAsset({
+                        type: 'button',
+                        label: pageButton.label,
+                        onClick: pageButton.onClick,
+                        disabled: pageButton.disabled,
+                        options: pageButton.options || {}
+                    });
+                    const pageX = contentWidth / 2 - btn.width / 2 - 20;
+                    btn.setPosition(pageX, buttonY);
+                    this.dialogContainer.add(btn);
+                }
+            }
         }
 
         // Handle bottom buttons (horizontal row at bottom)
@@ -396,8 +517,19 @@ class DialogSystem {
                 onClick: dialogData.exitButton.onClick,
                 options: dialogData.exitButton.options
             });
-            const exitX = dialogData.exitButtonPosition === 'right' ? contentWidth / 2 - 55 : 0; // Right side with margin
-            exitBtn.setPosition(exitX, contentHeight / 2 - 15); // Slightly lower
+
+            // For quest dialogs, position close button in lower right with consistent margins
+            if (dialogData.isQuestDialog === true) {
+                const buttonMargin = 15;
+                const exitX = contentWidth / 2 - exitBtn.width / 2 - buttonMargin;
+                const exitY = contentHeight / 2 - buttonMargin - 5;
+                exitBtn.setPosition(exitX, exitY);
+            } else {
+                // Standard positioning for other dialogs
+                const exitX = dialogData.exitButtonPosition === 'right' ? contentWidth / 2 - 55 : 0;
+                exitBtn.setPosition(exitX, contentHeight / 2 - 15);
+            }
+
             this.dialogContainer.add(exitBtn);
         }
     }

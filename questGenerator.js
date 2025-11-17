@@ -26,7 +26,7 @@ class QuestGenerator {
      * Generate a basic collection quest
      */
     generateCollectionQuest() {
-        // Get assigned vendors from the scene
+        // Get assigned vendors from the scene (don't deduplicate - allow same vendor at multiple booths)
         const assignedVendors = [];
         if (this.questManager.scene && this.questManager.scene.npcGroup) {
             this.questManager.scene.npcGroup.getChildren().forEach(npc => {
@@ -200,33 +200,35 @@ class QuestGenerator {
      * Generate a Save the NPC quest
      */
     generateSaveNPCQuest() {
-        // Get assigned vendors from the scene
-        const assignedVendors = [];
+        // Get NPCs with actual crises (only vendors that need help)
+        const vendorsNeedingHelp = [];
         if (this.questManager.scene && this.questManager.scene.npcGroup) {
             this.questManager.scene.npcGroup.getChildren().forEach(npc => {
-                if (npc.vendorData) {
-                    assignedVendors.push(npc.vendorData);
+                if (npc.vendorData && npc.crisisState && !npc.crisisState.resolved) {
+                    vendorsNeedingHelp.push(npc.vendorData);
                 }
             });
         }
 
-        if (assignedVendors.length === 0) {
-            console.warn('No assigned vendors available for Save the NPC quest generation');
+        if (vendorsNeedingHelp.length === 0) {
+            console.warn('No vendors with active crises available for Save the NPC quest generation');
             return null;
         }
 
-        // Select 1-2 vendors to have crises that need to be resolved
-        const numVendorsToSave = Math.min(2, assignedVendors.length);
-        const selectedVendors = this.shuffleArray(assignedVendors).slice(0, numVendorsToSave);
+        console.log(`Found ${vendorsNeedingHelp.length} vendors with active crises for quest generation`);
+        console.log('Vendors needing help:', vendorsNeedingHelp.map(v => `${v.name} (${v.domain_id})`));
 
-        console.log('Selected vendors for Save the NPC quest:', selectedVendors.map(v => v.name));
+        // Use all vendors that have crises (don't scale down - they already have crises assigned)
+        const selectedVendors = vendorsNeedingHelp;
+
+        console.log(`Selected ${selectedVendors.length} vendors for Save the NPC quest`);
 
         // Create quest object
         const quest = {
             id: 'quest_save_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
             type: 'save_npc',
             title: `Help Fellow Vendors`,
-            description: `Several vendors are experiencing technical difficulties. Help resolve their crises by providing items or sharing knowledge. Talk to vendors with red glows to see what they need, then collect the required items from other vendors or learn the necessary knowledge by asking about "tech facts".`,
+            description: `${selectedVendors.length} vendor${selectedVendors.length > 1 ? 's need' : ' needs'} your help with technical difficulties. Talk to vendor${selectedVendors.length > 1 ? 's' : ''} with red glows to see what they need, then collect the required items from other vendors or learn the necessary knowledge by asking about "tech facts".`,
             objectives: selectedVendors.map(vendor => ({
                 vendorId: vendor.id,
                 vendorName: vendor.name,

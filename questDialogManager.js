@@ -26,8 +26,8 @@ class QuestDialogManager {
     }
 
     /**
-     * Show quest dialog with pagination
-     * @param {number} page - Page number to display
+     * Show quest dialog with pagination - one quest per page
+     * @param {number} page - Quest page number to display (0-indexed)
      */
     showQuestDialog(page = 0) {
         if (!this.scene.questManager) {
@@ -48,50 +48,78 @@ class QuestDialogManager {
 
         const activeQuests = this.scene.questManager.getActiveQuests();
         const completedQuests = this.scene.questManager.getCompletedQuests();
+        const allQuests = [...activeQuests, ...completedQuests];
 
-        // Create quest list for pagination
-        const questItems = [];
-        if (activeQuests.length > 0) {
-            questItems.push('=== ACTIVE QUESTS ===');
-            activeQuests.forEach((quest, index) => {
-                questItems.push(`\n${index + 1}. ${quest.title}`);
-                questItems.push(`\n${quest.description}`);
-                const completedObjectives = quest.objectives.filter(obj => obj.collected).length;
-                const totalObjectives = quest.objectives.length;
-                questItems.push(`\nProgress: ${completedObjectives}/${totalObjectives} items collected`);
-                questItems.push('');
-            });
+        if (allQuests.length === 0) {
+            const dialogData = {
+                title: 'Quests',
+                text: 'No quests available',
+                exitButton: {
+                    label: 'Close',
+                    onClick: () => {
+                        this.isQuestsOpen = false;
+                        this.uiManager.closeDialog();
+                    }
+                }
+            };
+            this.uiManager.showDialog(dialogData);
+            return;
+        }
+
+        // Clamp page to valid range
+        const currentPage = Math.max(0, Math.min(page, allQuests.length - 1));
+        const currentQuest = allQuests[currentPage];
+
+        // Format current quest display
+        const questText = [];
+        const isCompleted = completedQuests.includes(currentQuest);
+
+        // Add title with reward in parentheses
+        questText.push(`${currentQuest.title} (${currentQuest.reward.points} pts)`);
+        if (isCompleted) {
+            questText.push('✓ COMPLETED');
+        }
+        questText.push('');
+        questText.push(currentQuest.description);
+        questText.push('');
+
+        // Show progress based on quest type
+        if (currentQuest.type === 'save_npc') {
+            const completedObjectives = currentQuest.objectives.filter(obj => obj.resolved).length;
+            const totalObjectives = currentQuest.objectives.length;
+            questText.push(`Progress: ${completedObjectives}/${totalObjectives} vendor${totalObjectives > 1 ? 's' : ''} helped`);
         } else {
-            questItems.push('No active quests');
-            questItems.push('');
+            const completedObjectives = currentQuest.objectives.filter(obj => obj.collected).length;
+            const totalObjectives = currentQuest.objectives.length;
+            questText.push(`Progress: ${completedObjectives}/${totalObjectives} items collected`);
+
+            // List items to collect
+            if (currentQuest.objectives.length > 0) {
+                questText.push('');
+                questText.push('Items to collect:');
+                currentQuest.objectives.forEach(obj => {
+                    const status = obj.collected ? '✓' : '○';
+                    questText.push(`  ${status} ${obj.item.name}`);
+                });
+            }
         }
 
-        // Add completed quests
-        if (completedQuests.length > 0) {
-            questItems.push('=== COMPLETED QUESTS ===');
-            completedQuests.forEach((quest, index) => {
-                questItems.push(`\n${index + 1}. ${quest.title}`);
-                questItems.push(`\n${quest.description}`);
-                questItems.push('');
-            });
-        }
-
-        const pages = this.contentProcessor.paginateText(questItems.join('\n'), 9);
-        const totalPages = pages.length;
-        const currentPage = Math.min(page, totalPages - 1);
-        const displayText = pages[currentPage] || 'No quest information available.';
-
-        // Create pagination buttons if needed
+        // Create pagination buttons
         const leftButtons = [];
-        if (totalPages > 1) {
+        if (allQuests.length > 1) {
             leftButtons.push({
                 label: '<',
                 disabled: currentPage <= 0,
                 onClick: () => this.showQuestDialog(currentPage - 1)
             });
             leftButtons.push({
+                label: `${currentPage + 1}/${allQuests.length}`,
+                disabled: true,
+                options: { style: 'link' }
+            });
+            leftButtons.push({
                 label: '>',
-                disabled: currentPage >= totalPages - 1,
+                disabled: currentPage >= allQuests.length - 1,
                 onClick: () => this.showQuestDialog(currentPage + 1)
             });
         }
@@ -99,8 +127,9 @@ class QuestDialogManager {
         // Create dialog content object
         const dialogData = {
             title: 'Quests',
-            text: displayText,
+            text: questText.join('\n'),
             leftButtons: leftButtons.length > 0 ? leftButtons : undefined,
+            isQuestDialog: true, // Flag to indicate special layout for quests
             exitButton: {
                 label: 'Close',
                 onClick: () => {
