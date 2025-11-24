@@ -403,39 +403,47 @@ class VendorDialog {
         const crisisDescription = this.scene.crisisManager.getCrisisDescription(crisis);
         const solution = crisis.solutions[0]; // Each crisis now has only one solution
 
-        // Add debugging information
-        let debugInfo = '';
+        // Add suggestion about where to find the needed item/knowledge
+        let suggestion = '';
         if (solution.type === 'item') {
-            // Find vendors who have this item in their domain
-            const vendorsWithItem = [];
+            // Find vendors who have this item and get their domain types
+            const vendorDomainsWithItem = new Set();
             if (this.scene.npcGroup) {
                 this.scene.npcGroup.getChildren().forEach(npc => {
                     if (npc.vendorData && npc.vendorData.id !== vendorData.id) {
                         const domainItems = DomainManager.getDomainItems(npc.vendorData.domain_id);
                         if (domainItems.some(item => item.name === solution.itemName)) {
-                            vendorsWithItem.push(npc.vendorData.name);
+                            const domainName = DomainManager.getDomainName(npc.vendorData.domain_id);
+                            vendorDomainsWithItem.add(domainName);
                         }
                     }
                 });
             }
-            debugInfo = `DEBUG: Needs item "${solution.itemName}"\nAvailable from: ${vendorsWithItem.join(', ') || 'None'}`;
+            if (vendorDomainsWithItem.size > 0) {
+                const domains = Array.from(vendorDomainsWithItem).join(' or ');
+                suggestion = `\nTry talking to vendors in the ${domains} section.`;
+            }
         } else {
             // Find vendors whose domain contains the required knowledge
-            const vendorsWithKnowledge = [];
+            const vendorDomainsWithKnowledge = new Set();
             if (this.scene.npcGroup) {
                 this.scene.npcGroup.getChildren().forEach(npc => {
                     if (npc.vendorData && npc.vendorData.id !== vendorData.id) {
                         const domainFacts = DomainManager.getDomainFacts(npc.vendorData.domain_id);
                         if (domainFacts.some(fact => fact.toLowerCase().includes(solution.factKeyword))) {
-                            vendorsWithKnowledge.push(npc.vendorData.name);
+                            const domainName = DomainManager.getDomainName(npc.vendorData.domain_id);
+                            vendorDomainsWithKnowledge.add(domainName);
                         }
                     }
                 });
             }
-            debugInfo = `DEBUG: Needs knowledge about "${solution.factKeyword}"\nAvailable from: ${vendorsWithKnowledge.join(', ') || 'None'}`;
+            if (vendorDomainsWithKnowledge.size > 0) {
+                const domains = Array.from(vendorDomainsWithKnowledge).join(' or ');
+                suggestion = `\nTry talking to vendors in the ${domains} section.`;
+            }
         }
 
-        const dialogText = `${vendorData.name} is having a crisis!\n\n${crisisDescription.description}\n\n${debugInfo}\n\nCan you help resolve this issue?`;
+        const dialogText = `${vendorData.name} is having a crisis!\n\n${crisisDescription.description}${suggestion}\n\nCan you help resolve this issue?`;
 
         const buttons = [
             {
