@@ -12,6 +12,10 @@ class VendorManager {
         this.setupInteractionPrompt();
     }
 
+    isInteractionAvailable() {
+        return DomainManager.isLoaded() && !this.scene.uiManager.isDialogOpen;
+    }
+
     assignVendorsToNPCs() {
         if (this.vendorAssignmentDone) return;
         if (!this.scene.npcGroup || !this.vendors.length) return;
@@ -47,22 +51,18 @@ class VendorManager {
         .setVisible(false);
 
         this.scene.input.keyboard.on('keydown-SPACE', () => {
-            if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
+            if (this.nearbyVendor && this.isInteractionAvailable()) {
                 this.interactWithVendor(this.nearbyVendor.vendorData, this.nearbyVendor);
             }
         });
 
         // Global mouse click handler for vendors
         this.scene.input.on('pointerdown', (pointer) => {
-            if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
+            if (this.nearbyVendor && this.isInteractionAvailable()) {
                 const bounds = this.nearbyVendor.getBounds();
                 if (Phaser.Geom.Rectangle.Contains(bounds, pointer.worldX, pointer.worldY)) {
                     // Clear any existing input state to prevent player movement
-                    if (this.scene.inputManager) {
-                        this.scene.inputManager.target = null;
-                        this.scene.inputManager.isDragging = false;
-                        this.scene.inputManager.direction = { x: 0, y: 0 };
-                    }
+                    this.scene.inputManager?.clearMovementState?.();
                     this.interactWithVendor(this.nearbyVendor.vendorData, this.nearbyVendor);
                 }
             }
@@ -71,7 +71,7 @@ class VendorManager {
 
     interactWithVendor(vendorData, npcSprite = null) {
         console.log('Attempting to interact with vendor:', vendorData);
-        if (!vendorData) return;
+        if (!vendorData || !DomainManager.isLoaded()) return;
         this.interactionPrompt.setVisible(false);
 
         // Use the NPC sprite's texture key if available, else fallback
@@ -98,6 +98,29 @@ class VendorManager {
                             const itemButtons = pageItems.map((item, index) => ({
                                 label: item.name,
                                 onClick: () => {
+                                    if (this.scene.uiManager.hasItem(item)) {
+                                        this.scene.uiManager.showDialog({
+                                            text: `You already collected ${item.name}.`,
+                                            buttons: [{
+                                                label: 'Continue',
+                                                onClick: () => showItemsDialog(page)
+                                            }]
+                                        });
+                                        return;
+                                    }
+
+                                    const itemAdded = this.scene.uiManager.addItem(item);
+                                    if (!itemAdded) {
+                                        this.scene.uiManager.showDialog({
+                                            text: `Inventory full. Make room before taking ${item.name}.`,
+                                            buttons: [{
+                                                label: 'Continue',
+                                                onClick: () => showItemsDialog(page)
+                                            }]
+                                        });
+                                        return;
+                                    }
+
                                     if (this.scene.questManager) {
                                         const questUpdated = this.scene.questManager.checkItemCollection(item.name, vendorData.id);
                                         if (questUpdated) {
@@ -256,6 +279,12 @@ class VendorManager {
 
         if (!this.scene.player || !this.scene.npcGroup) return;
 
+        if (!DomainManager.isLoaded()) {
+            this.nearbyVendor = null;
+            this.interactionPrompt.setVisible(false);
+            return;
+        }
+
         this.nearbyVendor = null;
 
         // Clear all effects
@@ -306,7 +335,7 @@ class VendorManager {
             this.nearbyVendor = null;
         }
 
-        if (this.nearbyVendor && !this.scene.uiManager.isDialogOpen) {
+        if (this.nearbyVendor && this.isInteractionAvailable()) {
             this.interactionPrompt.setVisible(true);
         } else {
             this.interactionPrompt.setVisible(false);

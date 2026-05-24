@@ -19,11 +19,7 @@ class DialogManager {
         this.isDialogOpen = true;
 
         // Clear any existing input state to prevent player movement
-        if (this.scene.inputManager) {
-            this.scene.inputManager.target = null;
-            this.scene.inputManager.isDragging = false;
-            this.scene.inputManager.direction = { x: 0, y: 0 };
-        }
+        this.scene.inputManager?.clearMovementState?.();
 
         const cam = this.scene.cameras.main;
 

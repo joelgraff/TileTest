@@ -47,18 +47,13 @@ function preload() {
 function create() {
     scene = this;
 
+    // Start loading domain data before interactions are enabled.
+    DomainManager.loadDomains();
+
     // Load vendors data
     scene.vendors = scene.cache.json.get('vendors');
 
     console.log('Vendors loaded:', scene.vendors);
-    // Set scale mode based on device
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (isMobile) {
-        scene.scale.scaleMode = Phaser.Scale.ENVELOP;
-    } else {
-        scene.scale.scaleMode = Phaser.Scale.NONE;
-    }
-    scene.scale.refresh();
     MapManager.create(scene);
 
     if (!scene.map) {
@@ -118,11 +113,5 @@ function update(time, delta) {
     scene.inputManager?.update?.(scene, time, delta);
 }
 const game = new Phaser.Game(config);
-
-// Find object layer by name
-function getObjectLayer(map, layerName) {
-    if (!map || !map.layers) return null;
-    return map.layers.find(layer => layer.type === 'objectgroup' && layer.name === layerName);
-}
 
 export default game;

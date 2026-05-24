@@ -42,15 +42,15 @@
 
 ## Phase 1: Stop The Bleeding
 
-- [ ] Normalize score updates to one API.
-- [ ] Centralize modal and dialog state ownership.
-- [ ] Unify item collection so quests and inventory update through one path.
-- [ ] Remove or rebuild dead inventory actions such as item removal.
-- [ ] Gate vendor interactions on domain readiness.
+- [x] Normalize score updates to one API.
+- [x] Centralize modal and dialog state ownership.
+- [x] Unify item collection so quests and inventory update through one path.
+- [x] Remove or rebuild dead inventory actions such as item removal.
+- [x] Gate vendor interactions on domain readiness.
 - [ ] Normalize boot order and interaction enablement.
-- [ ] Remove fake cache-busting strings from index.html.
+- [x] Remove fake cache-busting strings from index.html.
 - [ ] Replace repeated scale and device checks with one boot-time decision.
-- [ ] Consolidate input suspension and movement reset behavior.
+- [x] Consolidate input suspension and movement reset behavior.
 - [ ] Remove duplicate pointer interaction ownership.
 - [ ] Add regression tests for every defect fixed here.
 

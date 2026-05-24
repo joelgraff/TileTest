@@ -141,11 +141,7 @@ class UIManager {
         this.invButton.on('pointerdown', (pointer, localX, localY, event) => {
             event.stopPropagation();
             // Clear any existing input state to prevent player movement
-            if (this.scene.inputManager) {
-                this.scene.inputManager.target = null;
-                this.scene.inputManager.isDragging = false;
-                this.scene.inputManager.direction = { x: 0, y: 0 };
-            }
+            this.scene.inputManager?.clearMovementState?.();
             this.toggleInventory();
         });
     }
@@ -178,11 +174,7 @@ class UIManager {
         this.questButton.on('pointerdown', (pointer, localX, localY, event) => {
             event.stopPropagation();
             // Clear any existing input state to prevent player movement
-            if (this.scene.inputManager) {
-                this.scene.inputManager.target = null;
-                this.scene.inputManager.isDragging = false;
-                this.scene.inputManager.direction = { x: 0, y: 0 };
-            }
+            this.scene.inputManager?.clearMovementState?.();
             this.toggleQuests();
         });
     }
@@ -232,13 +224,24 @@ class UIManager {
     }
 
     // Inventory Management
+    hasItem(item) {
+        const itemKey = item?.id ?? item?.name;
+
+        return this.inventory.some(existingItem => (existingItem.id ?? existingItem.name) === itemKey);
+    }
+
     addItem(item) {
-        if (this.inventory.length < this.maxInventorySlots) {
-            this.inventory.push(item);
-            this.updateScore(item.value || 0);
-            return true;
+        if (this.hasItem(item)) {
+            return false;
         }
-        return false;
+
+        if (this.inventory.length >= this.maxInventorySlots) {
+            return false;
+        }
+
+        this.inventory.push(item);
+        this.addScore(item.value || 0);
+        return true;
     }
 
     toggleInventory() {
@@ -264,25 +267,10 @@ class UIManager {
             });
         }
 
-        // Create inventory management buttons
-        const buttons = [];
-        if (this.inventory.length > 0) {
-            // Add buttons for each item to potentially remove/use them
-            this.inventory.forEach((item, index) => {
-                buttons.push({
-                    label: `Drop ${item.name}`,
-                    onClick: () => {
-                        this.removeItem(index);
-                        this.toggleInventory(); // Refresh dialog
-                    }
-                });
-            });
-        }
-
         this.showDialog({
             title: 'Inventory',
             text: inventoryText,
-            buttons: buttons,
+            buttons: [],
             exitButton: {
                 label: 'Close',
                 onClick: () => {

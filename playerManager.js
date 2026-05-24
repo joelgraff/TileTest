@@ -107,7 +107,7 @@ class PlayerManager {
                 PlayerManager.stuckCounter++;
                 if (PlayerManager.stuckCounter > 1) {
                     // Player hasn't moved for 2 frames, cancel target
-                    scene.inputManager.target = null;
+                    scene.inputManager.clearMovementState();
                     scene.player.setVelocity(0, 0);
                     PlayerManager.stuckCounter = 0;
                 }

@@ -1,12 +1,18 @@
 class DomainManager {
     static domains = null;
+    static loadingPromise = null;
 
     static async loadDomains() {
         if (DomainManager.domains) {
             return DomainManager.domains;
         }
 
-        try {
+        if (DomainManager.loadingPromise) {
+            return DomainManager.loadingPromise;
+        }
+
+        DomainManager.loadingPromise = (async () => {
+            try {
             const response = await fetch('technology_domains.json');
             if (!response.ok) {
                 throw new Error(`Failed to load domains: ${response.status}`);
@@ -14,12 +20,21 @@ class DomainManager {
             DomainManager.domains = await response.json();
             console.log(`Loaded ${DomainManager.domains.length} technology domains`);
             return DomainManager.domains;
-        } catch (error) {
-            console.error('Error loading technology domains:', error);
-            // Return empty array as fallback
-            DomainManager.domains = [];
-            return DomainManager.domains;
-        }
+            } catch (error) {
+                console.error('Error loading technology domains:', error);
+                // Return empty array as fallback
+                DomainManager.domains = [];
+                return DomainManager.domains;
+            } finally {
+                DomainManager.loadingPromise = null;
+            }
+        })();
+
+        return DomainManager.loadingPromise;
+    }
+
+    static isLoaded() {
+        return Array.isArray(DomainManager.domains);
     }
 
     static getDomainById(domainId) {

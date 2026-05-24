@@ -74,6 +74,12 @@ class InputManager {
         });
     }
 
+    clearMovementState() {
+        this.target = null;
+        this.isDragging = false;
+        this.direction = { x: 0, y: 0 };
+    }
+
     updateDirection(pointer) {
         const dx = pointer.x - this.scene.player.x; // Distance from player to cursor
         const dy = pointer.y - this.scene.player.y;
@@ -91,8 +97,7 @@ class InputManager {
         // Don't allow player movement when dialog is open
         if (this.scene.isDialogOpen) {
             // Clear any existing targets to prevent movement
-            this.target = null;
-            this.isDragging = false;
+            this.clearMovementState();
             return { x: 0, y: 0 };
         }
 
