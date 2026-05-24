@@ -11,33 +11,34 @@
 
 ### Tooling
 
-- [ ] Add a package manifest and repeatable project scripts.
-- [ ] Add a repo ignore file for tooling artifacts.
-- [ ] Add baseline JavaScript project configuration for editor support.
-- [ ] Add ESLint configuration for the current browser and test code.
-- [ ] Add Vitest configuration for content validation and future unit tests.
-- [ ] Add Playwright configuration for browser smoke tests.
-- [ ] Add a top-level setup and test document.
+- [x] Add a package manifest and repeatable project scripts.
+- [x] Add a repo ignore file for tooling artifacts.
+- [x] Add baseline JavaScript project configuration for editor support.
+- [x] Add ESLint configuration for the current browser and test code.
+- [x] Add Vitest configuration for content validation and future unit tests.
+- [x] Add Playwright configuration for browser smoke tests.
+- [x] Add a top-level setup and test document.
 
 ### Environment
 
-- [ ] Install Node.js and npm on the development machine.
-- [ ] Install npm dependencies.
-- [ ] Install Playwright browser binaries.
+- [x] Install Node.js and npm on the development machine.
+- [x] Install npm dependencies.
+- [x] Install Playwright browser binaries.
 
 ### Initial Test Coverage
 
-- [ ] Validate technology_domains.json structure.
-- [ ] Validate vendors.json structure and domain references.
-- [ ] Validate required map layers and object markers.
-- [ ] Add a browser smoke test for boot and runtime errors.
+- [x] Validate technology_domains.json structure.
+- [x] Validate vendors.json structure and domain references.
+- [x] Validate required map layers and object markers.
+- [x] Add a browser smoke test for boot and runtime errors.
 
 ### Phase 0 Validation
 
-- [ ] Run lint.
-- [ ] Run content validation tests.
-- [ ] Run browser smoke tests.
-- [ ] Document any environment blockers or failing baseline checks.
+- [x] Run lint.
+- [x] Run content validation tests.
+- [x] Run browser smoke tests.
+- [x] Document any environment blockers or failing baseline checks.
+- [ ] Triage the remaining baseline ESLint warnings.
 
 ## Phase 1: Stop The Bleeding
 

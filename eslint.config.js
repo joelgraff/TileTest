@@ -23,6 +23,10 @@ export default [
         },
         rules: {
             ...js.configs.recommended.rules,
+            'no-unused-vars': ['warn', {
+                args: 'none',
+                ignoreRestSiblings: true
+            }],
             'no-console': 'off'
         }
     },

@@ -389,13 +389,21 @@ class UIManager {
     }
 
     // Score Management
-    updateScore(points) {
+    addScore(points) {
         this.score += points;
         this.scoreText.setText(`SCORE: ${this.score}`);
     }
 
+    updateScore(points) {
+        this.addScore(points);
+    }
+
     getScore() {
         return this.score;
+    }
+
+    get isDialogOpen() {
+        return this.dialogManager?.isDialogOpen ?? false;
     }
 
     // Dialog System (delegated to DialogManager)

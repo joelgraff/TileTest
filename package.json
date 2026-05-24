@@ -7,7 +7,7 @@
     "lint": "eslint . --ext .js",
     "test:content": "vitest run tests/content",
     "test:e2e": "playwright test",
-    "test:e2e:install": "playwright install --with-deps chromium",
+    "test:e2e:install": "playwright install chromium",
     "check": "npm run lint && npm run test:content",
     "test": "npm run check && npm run test:e2e"
   },

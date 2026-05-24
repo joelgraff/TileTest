@@ -30,6 +30,8 @@ Install Playwright browser binaries:
 npm run test:e2e:install
 ```
 
+If the browser install reports missing OS libraries, install those separately through your system package manager.
+
 Serve the game locally:
 
 ```bash
