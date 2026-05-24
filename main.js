@@ -4,6 +4,7 @@ import NPCManager from './npcManager.js';
 import CollisionManager from './collisionManager.js';
 import InputManager from './input_Manager.js';
 import VendorManager from './vendorManager.js';
+import InteractionCoordinator from './interactionCoordinator.js';
 import UIManager from './uiManager.js';
 import DomainManager from './domainManager.js';
 import QuestManager from './questManager.js';
@@ -85,6 +86,10 @@ function create() {
         uiManager: scene.uiManager,
         inputManager: scene.inputManager,
         questManager: scene.questManager
+    });
+    scene.interactionCoordinator = new InteractionCoordinator(scene, {
+        vendorManager: scene.vendorManager,
+        inputManager: scene.inputManager
     });
     scene.bootReadyPromise = scene.questManager.init(scene.vendors, scene.uiManager, scene)
         .then(isReady => {

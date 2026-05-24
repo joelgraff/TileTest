@@ -12,7 +12,7 @@ class VendorManager {
         this.vendorAssignmentDone = false;
 
         this.assignVendorsToNPCs();
-        this.setupInteractionPrompt();
+        this.createInteractionPrompt();
     }
 
     isInteractionAvailable() {
@@ -47,7 +47,7 @@ class VendorManager {
         return this.vendors[Math.floor(Math.random() * this.vendors.length)];
     }
 
-    setupInteractionPrompt() {
+    createInteractionPrompt() {
         this.interactionPrompt = this.scene.add.text(400, 100, 'PRESS SPACE TO TALK', {
             fontFamily: 'Courier New, monospace',
             fontSize: '12px',
@@ -59,47 +59,6 @@ class VendorManager {
         .setScrollFactor(0)
         .setDepth(150)
         .setVisible(false);
-
-        this.scene.input.keyboard.on('keydown-SPACE', () => {
-            this.interactWithNearbyVendor();
-        });
-
-        // Global mouse click handler for vendors
-        this.scene.input.on('pointerdown', (pointer) => {
-            this.interactWithNearbyVendor(pointer);
-        });
-    }
-
-    getNearbyVendorForInteraction(pointer = null) {
-        if (!this.nearbyVendor || !this.isInteractionAvailable()) {
-            return null;
-        }
-
-        if (!pointer) {
-            return this.nearbyVendor;
-        }
-
-        const bounds = this.nearbyVendor.getBounds();
-        if (!Phaser.Geom.Rectangle.Contains(bounds, pointer.worldX, pointer.worldY)) {
-            return null;
-        }
-
-        return this.nearbyVendor;
-    }
-
-    interactWithNearbyVendor(pointer = null) {
-        const nearbyVendor = this.getNearbyVendorForInteraction(pointer);
-        if (!nearbyVendor) {
-            return false;
-        }
-
-        if (pointer) {
-            // Clear any existing input state to prevent player movement.
-            this.inputManager?.suppressPointerUntilRelease?.();
-        }
-
-        this.interactWithVendor(nearbyVendor.vendorData, nearbyVendor);
-        return true;
     }
 
     interactWithVendor(vendorData, npcSprite = null) {
