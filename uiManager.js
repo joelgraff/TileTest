@@ -322,6 +322,38 @@ class UIManager {
         return true;
     }
 
+    collectVendorItem(item, vendorId) {
+        if (this.hasItem(item)) {
+            return {
+                status: 'duplicate',
+                message: `You already collected ${item.name}.`
+            };
+        }
+
+        const itemAdded = this.addItem(item);
+        if (!itemAdded) {
+            return {
+                status: 'inventory-full',
+                message: `Inventory full. Make room before taking ${item.name}.`
+            };
+        }
+
+        const questUpdated = this.questManager?.checkItemCollection(item.name, vendorId) ?? false;
+        if (questUpdated) {
+            return {
+                status: 'quest-updated',
+                message: `Collected ${item.name}!\n\nQuest progress updated!`
+            };
+        }
+
+        return {
+            status: 'collected',
+            message: this.questManager
+                ? `Collected ${item.name}!\n\n(Item added to your collection)`
+                : `Collected ${item.name}!`
+        };
+    }
+
     toggleInventory() {
         if (this.isInventoryOpen) {
             this.closeDialog();
@@ -452,6 +484,11 @@ class UIManager {
             // Refresh the quest dialog if it's currently open
             this.showQuestDialog();
         }
+    }
+
+    handleQuestCompletion(quest) {
+        this.addScore(quest.reward?.points || 0);
+        this.showQuestCompletion(quest);
     }
 
     // Score Management

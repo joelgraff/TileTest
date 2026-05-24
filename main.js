@@ -83,9 +83,7 @@ function create() {
     scene.questManager = new QuestManager({ state: gameState });
     scene.uiManager.setQuestManager(scene.questManager);
     scene.vendorManager = new VendorManager(scene, {
-        uiManager: scene.uiManager,
-        inputManager: scene.inputManager,
-        questManager: scene.questManager
+        uiManager: scene.uiManager
     });
     scene.interactionCoordinator = new InteractionCoordinator(scene, {
         vendorManager: scene.vendorManager,

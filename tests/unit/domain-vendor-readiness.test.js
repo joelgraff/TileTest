@@ -56,4 +56,18 @@ describe('domain and vendor readiness', () => {
         context.uiManager.isDialogOpen = true;
         expect(VendorManager.prototype.isInteractionAvailable.call(context)).toBe(false);
     });
+
+    it('routes sprite-based interaction through the vendor dialog entry point', () => {
+        const npcSprite = {
+            vendorData: { id: 'vendor-1' }
+        };
+        const context = {
+            interactWithVendor: vi.fn(() => true)
+        };
+
+        const interacted = VendorManager.prototype.interactWithVendorSprite.call(context, npcSprite);
+
+        expect(interacted).toBe(true);
+        expect(context.interactWithVendor).toHaveBeenCalledWith(npcSprite.vendorData, npcSprite);
+    });
 });

@@ -269,8 +269,12 @@ class QuestManager {
 
         // Award points
         if (this.uiManager && quest.reward) {
-            this.uiManager.addScore(quest.reward.points);
-            this.uiManager.showQuestCompletion(quest);
+            if (typeof this.uiManager.handleQuestCompletion === 'function') {
+                this.uiManager.handleQuestCompletion(quest);
+            } else {
+                this.uiManager.addScore(quest.reward.points);
+                this.uiManager.showQuestCompletion(quest);
+            }
         }
 
         console.log('Quest completed:', quest.title);

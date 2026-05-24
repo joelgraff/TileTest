@@ -45,8 +45,7 @@ class InteractionCoordinator {
             this.inputManager?.suppressPointerUntilRelease?.();
         }
 
-        this.vendorManager?.interactWithVendor?.(nearbyVendor.vendorData, nearbyVendor);
-        return true;
+        return this.vendorManager?.interactWithVendorSprite?.(nearbyVendor) ?? false;
     }
 }
 

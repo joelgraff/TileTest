@@ -17,12 +17,10 @@ describe('QuestManager completion flow', () => {
 
     it('awards score and shows completion when a quest finishes', () => {
         const manager = new QuestManager();
-        const addScore = vi.fn();
-        const showQuestCompletion = vi.fn();
+        const handleQuestCompletion = vi.fn();
 
         manager.uiManager = {
-            addScore,
-            showQuestCompletion
+            handleQuestCompletion
         };
 
         manager.activeQuests = [{
@@ -37,8 +35,11 @@ describe('QuestManager completion flow', () => {
 
         manager.completeQuest('quest-1');
 
-        expect(addScore).toHaveBeenCalledWith(30);
-        expect(showQuestCompletion).toHaveBeenCalledTimes(1);
+        expect(handleQuestCompletion).toHaveBeenCalledTimes(1);
+        expect(handleQuestCompletion).toHaveBeenCalledWith(expect.objectContaining({
+            id: 'quest-1',
+            completed: true
+        }));
         expect(manager.activeQuests).toHaveLength(0);
         expect(manager.completedQuests).toHaveLength(1);
         expect(manager.completedQuests[0].completed).toBe(true);

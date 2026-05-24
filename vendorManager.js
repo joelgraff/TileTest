@@ -1,12 +1,10 @@
 import DomainManager from './domainManager.js';
 
 class VendorManager {
-    constructor(scene, { uiManager = null, inputManager = null, questManager = null } = {}) {
+    constructor(scene, { uiManager = null } = {}) {
         this.scene = scene;
         this.vendors = scene.vendors || [];
         this.uiManager = uiManager;
-        this.inputManager = inputManager;
-        this.questManager = questManager;
         this.interactionRange = 60;
         this.nearbyVendor = null;
         this.vendorAssignmentDone = false;
@@ -61,13 +59,22 @@ class VendorManager {
         .setVisible(false);
     }
 
+    interactWithVendorSprite(npcSprite = null) {
+        const vendorData = npcSprite?.vendorData;
+        if (!vendorData) {
+            return false;
+        }
+
+        return this.interactWithVendor(vendorData, npcSprite);
+    }
+
     interactWithVendor(vendorData, npcSprite = null) {
         console.log('Attempting to interact with vendor:', vendorData);
-        if (!vendorData || !DomainManager.isLoaded() || !this.uiManager) return;
+        if (!vendorData || !DomainManager.isLoaded() || !this.uiManager) {
+            return false;
+        }
 
         const uiManager = this.uiManager;
-        const questManager = this.questManager;
-
         this.interactionPrompt.setVisible(false);
 
         // Use the NPC sprite's texture key if available, else fallback
@@ -94,57 +101,15 @@ class VendorManager {
                             const itemButtons = pageItems.map((item, index) => ({
                                 label: item.name,
                                 onClick: () => {
-                                    if (uiManager.hasItem(item)) {
-                                        uiManager.showDialog({
-                                            text: `You already collected ${item.name}.`,
-                                            buttons: [{
-                                                label: 'Continue',
-                                                onClick: () => showItemsDialog(page)
-                                            }]
-                                        });
-                                        return;
-                                    }
+                                    const collectionResult = uiManager.collectVendorItem(item, vendorData.id);
 
-                                    const itemAdded = uiManager.addItem(item);
-                                    if (!itemAdded) {
-                                        uiManager.showDialog({
-                                            text: `Inventory full. Make room before taking ${item.name}.`,
-                                            buttons: [{
-                                                label: 'Continue',
-                                                onClick: () => showItemsDialog(page)
-                                            }]
-                                        });
-                                        return;
-                                    }
-
-                                    if (questManager) {
-                                        const questUpdated = questManager.checkItemCollection(item.name, vendorData.id);
-                                        if (questUpdated) {
-                                            uiManager.showDialog({
-                                                text: `Collected ${item.name}!\n\nQuest progress updated!`,
-                                                buttons: [{
-                                                    label: 'Continue',
-                                                    onClick: () => showItemsDialog(page)
-                                                }]
-                                            });
-                                        } else {
-                                            uiManager.showDialog({
-                                                text: `Collected ${item.name}!\n\n(Item added to your collection)`,
-                                                buttons: [{
-                                                    label: 'Continue',
-                                                    onClick: () => showItemsDialog(page)
-                                                }]
-                                            });
-                                        }
-                                    } else {
-                                        uiManager.showDialog({
-                                            text: `Collected ${item.name}!`,
-                                            buttons: [{
-                                                label: 'Continue',
-                                                onClick: () => showItemsDialog(page)
-                                            }]
-                                        });
-                                    }
+                                    uiManager.showDialog({
+                                        text: collectionResult.message,
+                                        buttons: [{
+                                            label: 'Continue',
+                                            onClick: () => showItemsDialog(page)
+                                        }]
+                                    });
                                 }
                             }));
 
@@ -254,6 +219,7 @@ class VendorManager {
             exitButton: exitButton  // Separate exit button for bottom positioning
         };
         uiManager.showDialog(originalDialogData);
+        return true;
     }
 
     getRandomFacts(factsArray, count) {

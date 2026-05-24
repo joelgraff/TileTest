@@ -29,7 +29,7 @@ describe('InteractionCoordinator', () => {
             vendorData: { id: 'vendor-1' },
             getBounds: () => ({})
         };
-        const interactWithVendor = vi.fn();
+        const interactWithVendorSprite = vi.fn(() => true);
         const coordinator = new InteractionCoordinator({
             input: {
                 keyboard: { on: vi.fn() },
@@ -39,14 +39,14 @@ describe('InteractionCoordinator', () => {
             vendorManager: {
                 nearbyVendor,
                 isInteractionAvailable: () => true,
-                interactWithVendor
+                interactWithVendorSprite
             }
         });
 
         const interacted = coordinator.interactWithNearbyVendor();
 
         expect(interacted).toBe(true);
-        expect(interactWithVendor).toHaveBeenCalledWith(nearbyVendor.vendorData, nearbyVendor);
+        expect(interactWithVendorSprite).toHaveBeenCalledWith(nearbyVendor);
     });
 
     it('suppresses pointer movement before opening a clicked nearby vendor', () => {
@@ -63,7 +63,7 @@ describe('InteractionCoordinator', () => {
             vendorData: { id: 'vendor-1' },
             getBounds: () => ({ x: 0, y: 0, width: 32, height: 32 })
         };
-        const interactWithVendor = vi.fn();
+        const interactWithVendorSprite = vi.fn(() => true);
         const coordinator = new InteractionCoordinator({
             input: {
                 keyboard: { on: vi.fn() },
@@ -73,7 +73,7 @@ describe('InteractionCoordinator', () => {
             vendorManager: {
                 nearbyVendor,
                 isInteractionAvailable: () => true,
-                interactWithVendor
+                interactWithVendorSprite
             },
             inputManager: {
                 suppressPointerUntilRelease
@@ -84,6 +84,6 @@ describe('InteractionCoordinator', () => {
 
         expect(interacted).toBe(true);
         expect(suppressPointerUntilRelease).toHaveBeenCalledTimes(1);
-        expect(interactWithVendor).toHaveBeenCalledWith(nearbyVendor.vendorData, nearbyVendor);
+        expect(interactWithVendorSprite).toHaveBeenCalledWith(nearbyVendor);
     });
 });

@@ -70,9 +70,10 @@
 - [ ] Introduce a small shared state boundary for core gameplay state.
 	- In progress: `gameState.js` now owns score, inventory, active/completed quest lists, dialog/panel visibility flags, and the interaction readiness gate, with `UIManager`, `QuestManager`, and `DialogManager` bound to the same store.
 - [ ] Introduce a single interaction coordinator.
-	- In progress: `interactionCoordinator.js` now owns nearby-vendor keyboard and pointer dispatch, while `VendorManager` is reduced to prompt state plus vendor dialog behavior.
+	- In progress: `interactionCoordinator.js` now owns nearby-vendor keyboard and pointer dispatch, and `VendorManager` now owns the sprite-to-dialog handoff without carrying the old input collaborator.
 - [ ] Separate pure quest and content logic from rendering concerns.
 - [ ] Route UI actions through one facade instead of direct gameplay mutations.
+	- In progress: vendor item collection now routes through `UIManager.collectVendorItem(...)`, and quest completion now routes through `UIManager.handleQuestCompletion(...)` instead of scattered cross-manager calls.
 - [ ] Centralize readiness and initialization state.
 	- In progress: `interactionsEnabled` now lives in shared state and is exposed back through the scene via `stateBindings.js`.
 

@@ -10,6 +10,8 @@ describe('UIManager contracts', () => {
     it('exposes a score increment method for gameplay systems', () => {
         expect(typeof UIManager.prototype.addScore).toBe('function');
         expect(typeof UIManager.prototype.updateScore).toBe('function');
+        expect(typeof UIManager.prototype.collectVendorItem).toBe('function');
+        expect(typeof UIManager.prototype.handleQuestCompletion).toBe('function');
     });
 
     it('exposes dialog state through a UIManager accessor', () => {
