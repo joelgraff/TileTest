@@ -7,6 +7,7 @@ import VendorManager from './vendorManager.js';
 import UIManager from './uiManager.js';
 import DomainManager from './domainManager.js';
 import QuestManager from './questManager.js';
+import GameState from './gameState.js';
 
 // Determine device type for scaling
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -49,6 +50,7 @@ function create() {
     scene = this;
     scene.testMode = isTestMode;
     scene.interactionsEnabled = false;
+    const gameState = new GameState();
 
     // Start loading domain data before interactions are enabled.
     DomainManager.loadDomains();
@@ -68,14 +70,14 @@ function create() {
     NPCManager.create(scene);
 
     // Instance UIManager and attach to scene
-    scene.uiManager = new UIManager(scene);
+    scene.uiManager = new UIManager(scene, { state: gameState });
     console.log('[main.js] UIManager instanced and attached to scene:', scene.uiManager);
 
     scene.inputManager = new InputManager(scene);
 
     // Initialize QuestManager (needs access to vendors data and scene)
     // QuestManager will handle loading DomainManager internally
-    scene.questManager = new QuestManager();
+    scene.questManager = new QuestManager({ state: gameState });
     scene.uiManager.setQuestManager(scene.questManager);
     scene.vendorManager = new VendorManager(scene, {
         uiManager: scene.uiManager,

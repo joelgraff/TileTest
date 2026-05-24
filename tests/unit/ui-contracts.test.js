@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import GameState from '../../gameState.js';
+import QuestManager from '../../questManager.js';
 import UIManager from '../../uiManager.js';
 
 describe('UIManager contracts', () => {
@@ -39,5 +41,26 @@ describe('UIManager contracts', () => {
         expect(dialog.title).toBe('Quests');
         expect(dialog.textPagination.text.some(item => item.includes('Injected Quest'))).toBe(true);
         expect(dialog.textPagination.text).toContain('   Progress: 1/2 items collected');
+    });
+
+    it('can bind shared gameplay state without changing the public manager API', () => {
+        const state = new GameState();
+        const uiContext = {};
+        const questContext = {};
+
+        UIManager.prototype.setState.call(uiContext, state);
+        QuestManager.prototype.setState.call(questContext, state);
+
+        uiContext.inventory = [{ id: 'item-1', name: 'Shared Item' }];
+        uiContext.score = 12;
+        questContext.activeQuests = [{ id: 'quest-1', title: 'Shared Quest' }];
+        questContext.completedQuests = [{ id: 'quest-2', title: 'Done Quest' }];
+
+        expect(state.inventory).toEqual([{ id: 'item-1', name: 'Shared Item' }]);
+        expect(state.score).toBe(12);
+        expect(state.activeQuests).toEqual([{ id: 'quest-1', title: 'Shared Quest' }]);
+        expect(state.completedQuests).toEqual([{ id: 'quest-2', title: 'Done Quest' }]);
+        expect(uiContext.inventory).toBe(state.inventory);
+        expect(questContext.activeQuests).toBe(state.activeQuests);
     });
 });

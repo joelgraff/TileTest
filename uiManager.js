@@ -1,11 +1,9 @@
 import DialogManager from './dialogManager.js';
 
 class UIManager {
-    constructor(scene) {
+    constructor(scene, { state = null } = {}) {
         this.scene = scene;
         this.questManager = null;
-        this.inventory = [];
-        this.score = 0;
         this.maxInventorySlots = 8;
         this.isInventoryOpen = false;
         this.isQuestsOpen = false; // Track quest panel visibility
@@ -21,6 +19,8 @@ class UIManager {
             button: 0x808080,       // Gray
             buttonHover: 0xC0C0C0   // Light gray
         };
+
+        this.setState(state);
 
         this.createUI();
 
@@ -103,7 +103,7 @@ class UIManager {
             .setDepth(100)
             .setStrokeStyle(2, 0xFFFFFF);  // White border to match buttons
 
-        this.scoreText = this.scene.add.text(100, 25, 'SCORE: 0', {
+        this.scoreText = this.scene.add.text(100, 25, `SCORE: ${this.score}`, {
             fontFamily: 'Courier New, monospace',
             fontSize: '14px',
             fill: '#FFFFFF',
@@ -222,6 +222,43 @@ class UIManager {
         .setOrigin(0)
         .setScrollFactor(0)
         .setDepth(100);
+    }
+
+    setState(state) {
+        const nextState = state ?? this.state ?? {
+            score: 0,
+            inventory: [],
+            activeQuests: [],
+            completedQuests: []
+        };
+
+        nextState.score = Number.isFinite(nextState.score) ? nextState.score : 0;
+        nextState.inventory = Array.isArray(nextState.inventory) ? nextState.inventory : [];
+        nextState.activeQuests = Array.isArray(nextState.activeQuests) ? nextState.activeQuests : [];
+        nextState.completedQuests = Array.isArray(nextState.completedQuests) ? nextState.completedQuests : [];
+
+        this.state = nextState;
+
+        Object.defineProperty(this, 'inventory', {
+            configurable: true,
+            enumerable: true,
+            get: () => this.state.inventory,
+            set: (inventory) => {
+                this.state.inventory = Array.isArray(inventory) ? inventory : [];
+            }
+        });
+
+        Object.defineProperty(this, 'score', {
+            configurable: true,
+            enumerable: true,
+            get: () => this.state.score,
+            set: (score) => {
+                this.state.score = Number.isFinite(score) ? score : 0;
+                this.scoreText?.setText(`SCORE: ${this.state.score}`);
+            }
+        });
+
+        return this;
     }
 
     setQuestManager(questManager) {
@@ -385,7 +422,6 @@ class UIManager {
     // Score Management
     addScore(points) {
         this.score += points;
-        this.scoreText.setText(`SCORE: ${this.score}`);
     }
 
     updateScore(points) {

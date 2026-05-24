@@ -7,14 +7,49 @@
 import DomainManager from './domainManager.js';
 
 class QuestManager {
-    constructor() {
-        this.activeQuests = [];
-        this.completedQuests = [];
+    constructor({ state = null } = {}) {
         this.sessionId = null;
         this.domainManager = null;
         this.npcManager = null;
         this.uiManager = null;
         this.testQuestCounter = 0;
+        this.setState(state);
+    }
+
+    setState(state) {
+        const nextState = state ?? this.state ?? {
+            score: 0,
+            inventory: [],
+            activeQuests: [],
+            completedQuests: []
+        };
+
+        nextState.score = Number.isFinite(nextState.score) ? nextState.score : 0;
+        nextState.inventory = Array.isArray(nextState.inventory) ? nextState.inventory : [];
+        nextState.activeQuests = Array.isArray(nextState.activeQuests) ? nextState.activeQuests : [];
+        nextState.completedQuests = Array.isArray(nextState.completedQuests) ? nextState.completedQuests : [];
+
+        this.state = nextState;
+
+        Object.defineProperty(this, 'activeQuests', {
+            configurable: true,
+            enumerable: true,
+            get: () => this.state.activeQuests,
+            set: (activeQuests) => {
+                this.state.activeQuests = Array.isArray(activeQuests) ? activeQuests : [];
+            }
+        });
+
+        Object.defineProperty(this, 'completedQuests', {
+            configurable: true,
+            enumerable: true,
+            get: () => this.state.completedQuests,
+            set: (completedQuests) => {
+                this.state.completedQuests = Array.isArray(completedQuests) ? completedQuests : [];
+            }
+        });
+
+        return this;
     }
 
     /**

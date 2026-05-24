@@ -68,6 +68,7 @@
 - [ ] Reduce direct scene-global coupling between managers.
 	- In progress: `main.js` now injects explicit collaborators into `UIManager` and `VendorManager` for quest, input, and UI coordination.
 - [ ] Introduce a small shared state boundary for core gameplay state.
+	- In progress: `gameState.js` now owns score, inventory, and active/completed quest lists, with `UIManager` and `QuestManager` bound to the same store.
 - [ ] Introduce a single interaction coordinator.
 - [ ] Separate pure quest and content logic from rendering concerns.
 - [ ] Route UI actions through one facade instead of direct gameplay mutations.
