@@ -25,7 +25,7 @@ class UIManager {
         this.createUI();
 
         // DialogManager instance
-        this.dialogManager = new DialogManager(scene);
+        this.dialogManager = new DialogManager(scene, { state: this.state });
 
         // Movement indicator (reticle)
         this.movementIndicator = this.scene.add.graphics();
@@ -229,13 +229,21 @@ class UIManager {
             score: 0,
             inventory: [],
             activeQuests: [],
-            completedQuests: []
+            completedQuests: [],
+            isDialogOpen: false,
+            isInventoryOpen: false,
+            isQuestsOpen: false,
+            isHelpOpen: false
         };
 
         nextState.score = Number.isFinite(nextState.score) ? nextState.score : 0;
         nextState.inventory = Array.isArray(nextState.inventory) ? nextState.inventory : [];
         nextState.activeQuests = Array.isArray(nextState.activeQuests) ? nextState.activeQuests : [];
         nextState.completedQuests = Array.isArray(nextState.completedQuests) ? nextState.completedQuests : [];
+        nextState.isDialogOpen = Boolean(nextState.isDialogOpen);
+        nextState.isInventoryOpen = Boolean(nextState.isInventoryOpen);
+        nextState.isQuestsOpen = Boolean(nextState.isQuestsOpen);
+        nextState.isHelpOpen = Boolean(nextState.isHelpOpen);
 
         this.state = nextState;
 
@@ -255,6 +263,33 @@ class UIManager {
             set: (score) => {
                 this.state.score = Number.isFinite(score) ? score : 0;
                 this.scoreText?.setText(`SCORE: ${this.state.score}`);
+            }
+        });
+
+        Object.defineProperty(this, 'isInventoryOpen', {
+            configurable: true,
+            enumerable: true,
+            get: () => this.state.isInventoryOpen,
+            set: (isInventoryOpen) => {
+                this.state.isInventoryOpen = Boolean(isInventoryOpen);
+            }
+        });
+
+        Object.defineProperty(this, 'isQuestsOpen', {
+            configurable: true,
+            enumerable: true,
+            get: () => this.state.isQuestsOpen,
+            set: (isQuestsOpen) => {
+                this.state.isQuestsOpen = Boolean(isQuestsOpen);
+            }
+        });
+
+        Object.defineProperty(this, 'isHelpOpen', {
+            configurable: true,
+            enumerable: true,
+            get: () => this.state.isHelpOpen,
+            set: (isHelpOpen) => {
+                this.state.isHelpOpen = Boolean(isHelpOpen);
             }
         });
 
@@ -433,7 +468,7 @@ class UIManager {
     }
 
     get isDialogOpen() {
-        return this.dialogManager?.isDialogOpen ?? false;
+        return this.state?.isDialogOpen ?? this.dialogManager?.isDialogOpen ?? false;
     }
 
     // Dialog System (delegated to DialogManager)

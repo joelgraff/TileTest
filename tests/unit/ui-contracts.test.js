@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import DialogManager from '../../dialogManager.js';
 import GameState from '../../gameState.js';
 import QuestManager from '../../questManager.js';
 import UIManager from '../../uiManager.js';
@@ -62,5 +63,32 @@ describe('UIManager contracts', () => {
         expect(state.completedQuests).toEqual([{ id: 'quest-2', title: 'Done Quest' }]);
         expect(uiContext.inventory).toBe(state.inventory);
         expect(questContext.activeQuests).toBe(state.activeQuests);
+    });
+
+    it('can bind shared dialog and panel visibility state across UI surfaces', () => {
+        const state = new GameState();
+        const uiContext = {};
+        const dialogContext = {
+            scene: {}
+        };
+
+        UIManager.prototype.setState.call(uiContext, state);
+        DialogManager.prototype.setState.call(dialogContext, state);
+
+        uiContext.isInventoryOpen = true;
+        uiContext.isQuestsOpen = true;
+        uiContext.isHelpOpen = true;
+        dialogContext.isDialogOpen = true;
+
+        expect(state.isInventoryOpen).toBe(true);
+        expect(state.isQuestsOpen).toBe(true);
+        expect(state.isHelpOpen).toBe(true);
+        expect(state.isDialogOpen).toBe(true);
+        expect(dialogContext.scene.isDialogOpen).toBe(true);
+
+        dialogContext.scene.isDialogOpen = false;
+
+        expect(dialogContext.isDialogOpen).toBe(false);
+        expect(state.isDialogOpen).toBe(false);
     });
 });

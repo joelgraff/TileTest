@@ -1,13 +1,42 @@
 import { DialogLayout } from './ui/index.js';
 
 class DialogManager {
-    constructor(scene) {
+    constructor(scene, { state = null } = {}) {
         this.scene = scene;
         this.dialogContainer = null;
         this.overlay = null;
-        this.isDialogOpen = false;
+        this.setState(state);
         // Cache mobile detection for performance
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    setState(state) {
+        const nextState = state ?? this.state ?? {
+            isDialogOpen: false
+        };
+
+        nextState.isDialogOpen = Boolean(nextState.isDialogOpen);
+        this.state = nextState;
+
+        Object.defineProperty(this, 'isDialogOpen', {
+            configurable: true,
+            enumerable: true,
+            get: () => this.state.isDialogOpen,
+            set: (isDialogOpen) => {
+                this.state.isDialogOpen = Boolean(isDialogOpen);
+            }
+        });
+
+        Object.defineProperty(this.scene, 'isDialogOpen', {
+            configurable: true,
+            enumerable: true,
+            get: () => this.state.isDialogOpen,
+            set: (isDialogOpen) => {
+                this.state.isDialogOpen = Boolean(isDialogOpen);
+            }
+        });
+
+        return this;
     }
 
     showDialog({ imageKey, title = '', text = '', buttons = [], exitButton = null, pagination = null, bottomButtons = null, textPagination = null }) {
