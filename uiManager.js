@@ -8,6 +8,7 @@ class UIManager {
         this.maxInventorySlots = 8;
         this.isInventoryOpen = false;
         this.isQuestsOpen = false; // Track quest panel visibility
+        this.isHelpOpen = false; // Track help dialog visibility
 
         // Sierra-style EGA color palette
         this.colors = {
@@ -183,6 +184,38 @@ class UIManager {
                 this.scene.inputManager.direction = { x: 0, y: 0 };
             }
             this.toggleQuests();
+        });
+    }
+
+    createHelpButton() {
+        // Help button implementation
+        this.helpButton = this.scene.add.rectangle(10, 60, 80, 30, this.colors.button)
+            .setScrollFactor(0)
+            .setDepth(100)
+            .setStrokeStyle(2, 0xFFFFFF)
+            .setInteractive({ cursor: 'pointer' });
+
+        this.helpButtonText = this.scene.add.text(10, 60, 'HELP', {
+            fontFamily: 'Courier New, monospace',
+            fontSize: '12px',
+            fill: '#FFFFFF',
+            align: 'center'
+        })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(101);
+
+        this.helpButton.on('pointerover', () => {
+            this.helpButton.setFillStyle(this.colors.buttonHover);
+        });
+
+        this.helpButton.on('pointerout', () => {
+            this.helpButton.setFillStyle(this.colors.button);
+        });
+
+        this.helpButton.on('pointerdown', (pointer, localX, localY, event) => {
+            event.stopPropagation();
+            this.toggleHelp();
         });
     }
 
@@ -387,8 +420,51 @@ class UIManager {
                 // Reset panel states when dialog is closed via ESC
                 this.isInventoryOpen = false;
                 this.isQuestsOpen = false;
+                this.isHelpOpen = false;
             }
         }
+    }
+
+    toggleHelp() {
+        if (this.isHelpOpen) {
+            this.closeDialog();
+            this.isHelpOpen = false;
+            return;
+        }
+
+        this.isHelpOpen = true;
+
+        const helpText = 'HELP\n\n' +
+            'Controls:\n' +
+            'WASD or Arrow Keys: Move player\n' +
+            'Mouse Click: Interact with NPCs\n' +
+            'Spacebar: Interact with nearby vendor\n' +
+            'ESC: Close dialogs\n' +
+            'Backtick (`): Toggle debug mode\n\n' +
+            'Gameplay:\n' +
+            'Talk to vendors to collect items and complete quests.\n' +
+            'Check your inventory and quests using the buttons.\n' +
+            'Explore the map to find more vendors!';
+
+        this.showDialog({
+            title: 'Help',
+            text: helpText,
+            exitButton: {
+                label: 'Close',
+                onClick: () => {
+                    this.isHelpOpen = false;
+                    this.closeDialog();
+                }
+            }
+        });
+    }
+
+    createInventoryPanel() {
+        // Panel is created on toggle, not here
+    }
+
+    createQuestPanel() {
+        // Panel is created on toggle, not here
     }
 }
 
