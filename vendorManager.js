@@ -61,22 +61,45 @@ class VendorManager {
         .setVisible(false);
 
         this.scene.input.keyboard.on('keydown-SPACE', () => {
-            if (this.nearbyVendor && this.isInteractionAvailable()) {
-                this.interactWithVendor(this.nearbyVendor.vendorData, this.nearbyVendor);
-            }
+            this.interactWithNearbyVendor();
         });
 
         // Global mouse click handler for vendors
         this.scene.input.on('pointerdown', (pointer) => {
-            if (this.nearbyVendor && this.isInteractionAvailable()) {
-                const bounds = this.nearbyVendor.getBounds();
-                if (Phaser.Geom.Rectangle.Contains(bounds, pointer.worldX, pointer.worldY)) {
-                    // Clear any existing input state to prevent player movement
-                    this.inputManager?.suppressPointerUntilRelease?.();
-                    this.interactWithVendor(this.nearbyVendor.vendorData, this.nearbyVendor);
-                }
-            }
+            this.interactWithNearbyVendor(pointer);
         });
+    }
+
+    getNearbyVendorForInteraction(pointer = null) {
+        if (!this.nearbyVendor || !this.isInteractionAvailable()) {
+            return null;
+        }
+
+        if (!pointer) {
+            return this.nearbyVendor;
+        }
+
+        const bounds = this.nearbyVendor.getBounds();
+        if (!Phaser.Geom.Rectangle.Contains(bounds, pointer.worldX, pointer.worldY)) {
+            return null;
+        }
+
+        return this.nearbyVendor;
+    }
+
+    interactWithNearbyVendor(pointer = null) {
+        const nearbyVendor = this.getNearbyVendorForInteraction(pointer);
+        if (!nearbyVendor) {
+            return false;
+        }
+
+        if (pointer) {
+            // Clear any existing input state to prevent player movement.
+            this.inputManager?.suppressPointerUntilRelease?.();
+        }
+
+        this.interactWithVendor(nearbyVendor.vendorData, nearbyVendor);
+        return true;
     }
 
     interactWithVendor(vendorData, npcSprite = null) {

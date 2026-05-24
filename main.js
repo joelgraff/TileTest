@@ -8,6 +8,7 @@ import UIManager from './uiManager.js';
 import DomainManager from './domainManager.js';
 import QuestManager from './questManager.js';
 import GameState from './gameState.js';
+import { bindSceneBooleanFlag } from './stateBindings.js';
 
 // Determine device type for scaling
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -49,8 +50,9 @@ function preload() {
 function create() {
     scene = this;
     scene.testMode = isTestMode;
-    scene.interactionsEnabled = false;
     const gameState = new GameState();
+    scene.gameState = gameState;
+    bindSceneBooleanFlag(scene, gameState, 'interactionsEnabled');
 
     // Start loading domain data before interactions are enabled.
     DomainManager.loadDomains();

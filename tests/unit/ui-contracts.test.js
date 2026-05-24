@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import DialogManager from '../../dialogManager.js';
 import GameState from '../../gameState.js';
 import QuestManager from '../../questManager.js';
+import { bindSceneBooleanFlag } from '../../stateBindings.js';
 import UIManager from '../../uiManager.js';
 
 describe('UIManager contracts', () => {
@@ -90,5 +91,22 @@ describe('UIManager contracts', () => {
 
         expect(dialogContext.isDialogOpen).toBe(false);
         expect(state.isDialogOpen).toBe(false);
+    });
+
+    it('can bind a scene readiness flag directly to shared gameplay state', () => {
+        const state = new GameState();
+        const scene = {};
+
+        bindSceneBooleanFlag(scene, state, 'interactionsEnabled');
+
+        expect(scene.interactionsEnabled).toBe(false);
+
+        scene.interactionsEnabled = true;
+
+        expect(state.interactionsEnabled).toBe(true);
+
+        state.interactionsEnabled = false;
+
+        expect(scene.interactionsEnabled).toBe(false);
     });
 });

@@ -66,13 +66,15 @@
 ## Phase 3: Architecture Hardening
 
 - [ ] Reduce direct scene-global coupling between managers.
-	- In progress: `main.js` now injects explicit collaborators into `UIManager` and `VendorManager` for quest, input, and UI coordination.
+	- In progress: `main.js` now injects explicit collaborators into `UIManager` and `VendorManager`, and scene boolean flags are bound through `stateBindings.js` instead of ad hoc ownership.
 - [ ] Introduce a small shared state boundary for core gameplay state.
-	- In progress: `gameState.js` now owns score, inventory, active/completed quest lists, and dialog/panel visibility flags, with `UIManager`, `QuestManager`, and `DialogManager` bound to the same store.
+	- In progress: `gameState.js` now owns score, inventory, active/completed quest lists, dialog/panel visibility flags, and the interaction readiness gate, with `UIManager`, `QuestManager`, and `DialogManager` bound to the same store.
 - [ ] Introduce a single interaction coordinator.
+	- In progress: `VendorManager` now routes nearby-vendor keyboard and pointer interaction through one control path before opening dialogs.
 - [ ] Separate pure quest and content logic from rendering concerns.
 - [ ] Route UI actions through one facade instead of direct gameplay mutations.
 - [ ] Centralize readiness and initialization state.
+	- In progress: `interactionsEnabled` now lives in shared state and is exposed back through the scene via `stateBindings.js`.
 
 ## Phase 4: Collision And Map Hardening
 

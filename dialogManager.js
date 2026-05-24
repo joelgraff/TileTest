@@ -1,4 +1,5 @@
 import { DialogLayout } from './ui/index.js';
+import { bindSceneBooleanFlag } from './stateBindings.js';
 
 class DialogManager {
     constructor(scene, { state = null } = {}) {
@@ -27,14 +28,7 @@ class DialogManager {
             }
         });
 
-        Object.defineProperty(this.scene, 'isDialogOpen', {
-            configurable: true,
-            enumerable: true,
-            get: () => this.state.isDialogOpen,
-            set: (isDialogOpen) => {
-                this.state.isDialogOpen = Boolean(isDialogOpen);
-            }
-        });
+        bindSceneBooleanFlag(this.scene, this.state, 'isDialogOpen');
 
         return this;
     }

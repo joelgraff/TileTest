@@ -4,6 +4,7 @@ class GameState {
         inventory = [],
         activeQuests = [],
         completedQuests = [],
+        interactionsEnabled = false,
         isDialogOpen = false,
         isInventoryOpen = false,
         isQuestsOpen = false,
@@ -13,6 +14,7 @@ class GameState {
         this.inventory = Array.isArray(inventory) ? inventory : [];
         this.activeQuests = Array.isArray(activeQuests) ? activeQuests : [];
         this.completedQuests = Array.isArray(completedQuests) ? completedQuests : [];
+        this.interactionsEnabled = Boolean(interactionsEnabled);
         this.isDialogOpen = Boolean(isDialogOpen);
         this.isInventoryOpen = Boolean(isInventoryOpen);
         this.isQuestsOpen = Boolean(isQuestsOpen);
