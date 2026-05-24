@@ -1,14 +1,28 @@
-import { DialogLayout } from './ui/index.js';
+import { renderDialogSurface } from './dialogRenderSurface.js';
+import {
+    createDialogPaginationButtons,
+    createDialogTextPaginationButtons,
+    resolveDialogBottomButtons,
+    resolveDialogButtons
+} from './dialogButtonPagination.js';
+import { renderDialogImageContent, renderDialogTextContent } from './dialogContentRenderer.js';
+import { calculateDialogTextPages, resolveDialogTextPage } from './dialogTextPagination.js';
 import { bindSceneBooleanFlag } from './stateBindings.js';
 
 class DialogManager {
-    constructor(scene, { state = null } = {}) {
+    constructor(scene, { state = null, inputManager = null } = {}) {
         this.scene = scene;
+        this.inputManager = inputManager;
         this.dialogContainer = null;
         this.overlay = null;
         this.setState(state);
         // Cache mobile detection for performance
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    setInputManager(inputManager) {
+        this.inputManager = inputManager;
+        return this;
     }
 
     setState(state) {
@@ -42,33 +56,18 @@ class DialogManager {
         this.isDialogOpen = true;
 
         // Clear any existing input state to prevent player movement
-        this.scene.inputManager?.prepareUiInteraction?.();
+        this.inputManager?.prepareUiInteraction?.();
 
-        const cam = this.scene.cameras.main;
-
-        const dialogWidth = Math.min(this.isMobile ? 400 : 600, cam.width * (this.isMobile ? 0.9 : 0.85));
-        const dialogHeight = Math.min(this.isMobile ? 260 : 340, cam.height * (this.isMobile ? 0.8 : 0.65));
-
-        // Store dialog parameters for pagination callbacks
-        this.currentDialogParams = { imageKey, title, text, buttons, exitButton, pagination, bottomButtons, textPagination };
-
-        // Initialize the layout system first
-        this.dialogLayout = new DialogLayout(this.scene, cam.width / 2, cam.height - dialogHeight / 2 - 16, dialogWidth, dialogHeight);
-
-        // Create overlay and container using the layout system
-        this.overlay = this.createOverlay(cam);
-        this.dialogContainer = this.createContainer(cam, dialogWidth, dialogHeight);
-
-        // Create dialog structure
-        this.renderBackground(dialogWidth, dialogHeight);
-        this.renderTitleBar(title, dialogWidth, dialogHeight);
-        this.renderNpcImage(imageKey, dialogWidth, dialogHeight);
-        this.renderDialogText(this.handleTextPagination(text, textPagination), dialogWidth, dialogHeight);
-        this.renderButtons(this.handleButtonPagination(buttons, pagination, textPagination));
-        this.renderBottomButtons(this.handleBottomButtonPagination(bottomButtons, textPagination));
-        this.renderExitButton(exitButton);
-
-        this.addElementsToContainer();
+        renderDialogSurface(this, {
+            imageKey,
+            title,
+            text,
+            buttons,
+            exitButton,
+            pagination,
+            bottomButtons,
+            textPagination
+        });
     }
 
     createOverlay(cam) {
@@ -89,28 +88,11 @@ class DialogManager {
     }
 
     renderNpcImage(imageKey, dialogWidth, dialogHeight) {
-        if (!imageKey) return null;
-        const npcImage = this.scene.add.image(0, 0, imageKey)
-            .setDisplaySize(dialogWidth / 6, dialogWidth / 6)
-            .setOrigin(0.5, 0.5);
-        this.dialogLayout.setImage(npcImage);
-        return npcImage;
+        return renderDialogImageContent(this, { imageKey, dialogWidth });
     }
 
     renderDialogText(displayText, dialogWidth, dialogHeight) {
-        // Calculate word wrap width for approximately 36 characters per line
-        // Average character width is ~0.6 * fontSize, so 36 * (0.6 * 18) ≈ 389 pixels
-        const textAreaWidth = Math.floor(2 * dialogWidth / 3 - 16);
-        const targetWidth = Math.min(textAreaWidth, 389); // Cap at 36 chars worth
-
-        const dialogText = this.scene.add.text(0, 0, displayText, {
-            fontSize: '18px',
-            fontStyle: 'bold',
-            wordWrap: { width: targetWidth },
-            color: '#000',
-            align: 'left'
-        }).setOrigin(0, 0);
-        this.dialogLayout.setText(dialogText);
+        return renderDialogTextContent(this, { displayText, dialogWidth });
     }
 
     renderButtons(displayButtons) {
@@ -145,16 +127,9 @@ class DialogManager {
     }
 
     handleTextPagination(text, textPagination) {
-        let displayText = text;
-        if (textPagination && Array.isArray(text)) {
-            const { currentPage = 0 } = textPagination;
-            const pages = this.calculateTextPages(text);
-            if (currentPage < pages.length) {
-                // Join facts with blank lines for readability
-                displayText = pages[currentPage].join('\n\n');
-            }
-        }
-        return displayText;
+        return resolveDialogTextPage(text, textPagination, {
+            calculateTextPages: (textArray) => this.calculateTextPages(textArray)
+        });
     }
 
     /**
@@ -163,99 +138,35 @@ class DialogManager {
      * @returns {Array<Array<string>>} Array of pages, each containing an array of text items
      */
     calculateTextPages(textArray) {
-        const pages = [];
-        const maxLinesPerPage = 8; // Compromise between button area and no button area dialogs
-        const charsPerLine = 36;
-        const maxCharsPerPage = maxLinesPerPage * charsPerLine; // ~288 characters per page
-
-        let currentPage = [];
-        let currentChars = 0;
-
-        for (const item of textArray) {
-            // Calculate characters this item will take (including bullet and spacing)
-            const itemChars = item.length + 2; // +2 for bullet and space
-
-            // If adding this item would exceed the page limit, start a new page
-            if (currentChars + itemChars > maxCharsPerPage && currentPage.length > 0) {
-                pages.push([...currentPage]);
-                currentPage = [];
-                currentChars = 0;
-            }
-
-            // If this single item is too long for any page, we still need to add it
-            if (itemChars > maxCharsPerPage) {
-                if (currentPage.length > 0) {
-                    pages.push([...currentPage]);
-                    currentPage = [];
-                    currentChars = 0;
-                }
-                pages.push([item]);
-                continue;
-            }
-
-            // Add the item to current page
-            currentPage.push(item);
-            currentChars += itemChars;
-
-            // If we've reached the character limit, start a new page
-            if (currentChars >= maxCharsPerPage) {
-                pages.push([...currentPage]);
-                currentPage = [];
-                currentChars = 0;
-            }
-        }
-
-        // Add any remaining items to the last page
-        if (currentPage.length > 0) {
-            pages.push(currentPage);
-        }
-
-        return pages;
+        return calculateDialogTextPages(textArray);
     }
 
     handleButtonPagination(buttons, pagination, textPagination) {
-        let displayButtons = buttons;
-        if (pagination) {
-            const { currentPage, itemsPerPage } = pagination;
-            const startIndex = currentPage * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, buttons.length);
-            displayButtons = buttons.slice(startIndex, endIndex);
-            displayButtons = displayButtons.concat(this.getPaginationButtons(pagination));
-        }
-        return displayButtons;
+        return resolveDialogButtons(buttons, pagination, {
+            createPaginationButtons: (nextPagination, totalItems) => this.getPaginationButtons(nextPagination, totalItems)
+        });
     }
 
     handleBottomButtonPagination(bottomButtons, textPagination) {
-        let displayBottomButtons = bottomButtons || [];
-        if (textPagination) {
-            displayBottomButtons = displayBottomButtons.concat(this.getTextPaginationButtons(textPagination));
-        }
-        return displayBottomButtons;
+        return resolveDialogBottomButtons(bottomButtons, textPagination, {
+            getTextPaginationButtons: (nextTextPagination) => this.getTextPaginationButtons(nextTextPagination)
+        });
+    }
+
+    getPaginationButtons(pagination, totalItems = 0) {
+        return createDialogPaginationButtons(pagination, {
+            totalItems,
+            getDialogParams: () => this.getDialogParams(),
+            showDialog: (dialogParams) => this.showDialog(dialogParams)
+        });
     }
 
     getTextPaginationButtons(textPagination) {
-        const buttons = [];
-        if (textPagination && Array.isArray(textPagination.text)) {
-            const { currentPage = 0, text } = textPagination;
-            const pages = this.calculateTextPages(text);
-            const totalPages = pages.length;
-
-            // Only show navigation buttons if there are multiple pages
-            if (totalPages > 1) {
-                // Always show both navigation buttons, disable when not applicable
-                buttons.push({
-                    label: '<',
-                    disabled: currentPage <= 0,
-                    onClick: currentPage > 0 ? () => this.showDialog({ ...this.getDialogParams(), textPagination: { ...textPagination, currentPage: currentPage - 1 } }) : () => {}
-                });
-                buttons.push({
-                    label: '>',
-                    disabled: currentPage >= totalPages - 1,
-                    onClick: currentPage < totalPages - 1 ? () => this.showDialog({ ...this.getDialogParams(), textPagination: { ...textPagination, currentPage: currentPage + 1 } }) : () => {}
-                });
-            }
-        }
-        return buttons;
+        return createDialogTextPaginationButtons(textPagination, {
+            calculateTextPages: (textArray) => this.calculateTextPages(textArray),
+            getDialogParams: () => this.getDialogParams(),
+            showDialog: (dialogParams) => this.showDialog(dialogParams)
+        });
     }
 
     getDialogParams() {
@@ -270,8 +181,8 @@ class DialogManager {
         }
 
         // If pointer is still down when dialog closes, ignore subsequent pointer events until release
-        if (this.scene.inputManager && this.scene.input.activePointer.isDown) {
-            this.scene.inputManager.prepareUiInteraction({ suppressPointer: true });
+        if (this.inputManager && this.scene.input.activePointer.isDown) {
+            this.inputManager.prepareUiInteraction({ suppressPointer: true });
         }
 
         // Clear the layout system (elements will be destroyed with container)

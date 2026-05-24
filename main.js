@@ -2,14 +2,12 @@ import MapManager from './mapManager.js';
 import PlayerManager from './playerManager.js';
 import NPCManager from './npcManager.js';
 import CollisionManager from './collisionManager.js';
-import InputManager from './input_Manager.js';
-import VendorManager from './vendorManager.js';
-import InteractionCoordinator from './interactionCoordinator.js';
-import UIManager from './uiManager.js';
 import { initializeInteractionReadiness } from './bootReadiness.js';
 import DomainManager from './domainManager.js';
-import QuestManager from './questManager.js';
 import GameState from './gameState.js';
+import { initializeSceneManagers } from './sceneComposition.js';
+import { initializeSceneRuntime } from './sceneRuntimeSetup.js';
+import { initializeSceneWorld } from './sceneWorldSetup.js';
 import { bindSceneBooleanFlag } from './stateBindings.js';
 
 // Determine device type for scaling
@@ -63,59 +61,19 @@ function create() {
     scene.vendors = scene.cache.json.get('vendors');
 
     console.log('Vendors loaded:', scene.vendors);
-    MapManager.create(scene);
-
-    if (!scene.map) {
-        console.error('Map failed to load. Check asset paths and mapManager.js preload.');
+    if (!initializeSceneWorld(scene)) {
         return;
     }
 
-    PlayerManager.create(scene);
-    NPCManager.create(scene);
+    initializeSceneManagers(scene, { state: gameState });
 
-    // Instance UIManager and attach to scene
-    scene.uiManager = new UIManager(scene, { state: gameState });
     console.log('[main.js] UIManager instanced and attached to scene:', scene.uiManager);
 
-    scene.inputManager = new InputManager(scene, {
-        uiManager: scene.uiManager
-    });
-
-    // Initialize QuestManager (needs access to vendors data and scene)
-    // QuestManager will handle loading DomainManager internally
-    scene.questManager = new QuestManager({ state: gameState });
-    scene.uiManager.setQuestManager(scene.questManager);
-    scene.vendorManager = new VendorManager(scene, {
-        uiManager: scene.uiManager
-    });
-    scene.interactionCoordinator = new InteractionCoordinator(scene, {
-        vendorManager: scene.vendorManager,
-        inputManager: scene.inputManager
-    });
     initializeInteractionReadiness(scene);
 
-    CollisionManager.create(scene);
-
-    if (scene.player) {
-        scene.cameras.main.startFollow(scene.player);
-        scene.cameras.main.centerOn(scene.player.x, scene.player.y);
-        scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
-
-        // Zoom in on mobile devices for better visibility
-        if (isMobile) {
-            // Apply zoom for mobile devices
-            scene.cameras.main.setZoom(1.5);
-        }
-    } else {
-        console.error('Player not created. Check playerManager.js and asset paths.');
-    }
-
-    scene.input.keyboard.on('keydown-BACKTICK', () => {
-        scene.debugEnabled = !scene.debugEnabled;
-        scene.children.each(child => {
-            if (child.type === 'Graphics') child.destroy();
-        });
-        CollisionManager.create(scene);
+    initializeSceneRuntime(scene, {
+        isMobile,
+        recreateCollision: CollisionManager.create
     });
 
     console.log('Game scene created');

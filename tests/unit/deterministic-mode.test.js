@@ -20,17 +20,16 @@ describe('deterministic test mode', () => {
             }
         };
         const context = {
-            scene: {
-                testMode: true,
-                npcGroup: {
-                    getChildren: () => npcs
-                },
-                add: {
-                    graphics: () => ({ ...graphicsStub })
-                }
+            npcGroup: {
+                getChildren: () => npcs
             },
+            gameObjectFactory: {
+                graphics: () => ({ ...graphicsStub })
+            },
+            testMode: true,
             vendors,
             vendorAssignmentDone: false,
+            getNPCSprites: VendorManager.prototype.getNPCSprites,
             getAssignedVendor: VendorManager.prototype.getAssignedVendor
         };
 

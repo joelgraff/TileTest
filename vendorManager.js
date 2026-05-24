@@ -1,10 +1,15 @@
 import DomainManager from './domainManager.js';
 
 class VendorManager {
-    constructor(scene, { uiManager = null } = {}) {
+    constructor(scene, { uiManager = null, npcGroup = null, player = null, camera = null, gameObjectFactory = null, testMode = null } = {}) {
         this.scene = scene;
         this.vendors = scene.vendors || [];
         this.uiManager = uiManager;
+        this.npcGroup = npcGroup ?? scene.npcGroup ?? null;
+        this.player = player ?? scene.player ?? null;
+        this.camera = camera ?? scene.cameras?.main ?? null;
+        this.gameObjectFactory = gameObjectFactory ?? scene.add ?? null;
+        this.testMode = testMode ?? scene.testMode ?? false;
         this.interactionRange = 60;
         this.nearbyVendor = null;
         this.vendorAssignmentDone = false;
@@ -13,22 +18,26 @@ class VendorManager {
         this.createInteractionPrompt();
     }
 
+    getNPCSprites() {
+        return this.npcGroup?.getChildren?.() ?? [];
+    }
+
     isInteractionAvailable() {
         return this.scene.interactionsEnabled && DomainManager.isLoaded() && !this.uiManager?.isDialogOpen;
     }
 
     assignVendorsToNPCs() {
         if (this.vendorAssignmentDone) return;
-        if (!this.scene.npcGroup || !this.vendors.length) return;
+        if (!this.npcGroup || !this.vendors.length || !this.gameObjectFactory) return;
 
-        this.scene.npcGroup.getChildren().forEach((npcSprite, index) => {
+        this.getNPCSprites().forEach((npcSprite, index) => {
             npcSprite.vendorData = this.getAssignedVendor(index);
 
             // Pulsing glow effect
             if (npcSprite.glowGraphic) {
                 npcSprite.glowGraphic.destroy();
             }
-            const glow = this.scene.add.graphics();
+            const glow = this.gameObjectFactory.graphics();
             glow.setDepth(npcSprite.depth ? npcSprite.depth - 1 : 0);
             glow.setVisible(false);
             npcSprite.glowGraphic = glow;
@@ -38,7 +47,7 @@ class VendorManager {
     }
 
     getAssignedVendor(index) {
-        if (this.scene.testMode) {
+        if (this.testMode) {
             return this.vendors[index % this.vendors.length];
         }
 
@@ -46,7 +55,7 @@ class VendorManager {
     }
 
     createInteractionPrompt() {
-        this.interactionPrompt = this.scene.add.text(400, 100, 'PRESS SPACE TO TALK', {
+        this.interactionPrompt = this.gameObjectFactory.text(400, 100, 'PRESS SPACE TO TALK', {
             fontFamily: 'Courier New, monospace',
             fontSize: '12px',
             fill: '#FFFFFF',
@@ -272,7 +281,7 @@ class VendorManager {
     update() {
         this.assignVendorsToNPCs();
 
-        if (!this.scene.player || !this.scene.npcGroup) return;
+        if (!this.player || !this.npcGroup || !this.camera) return;
 
         if (!DomainManager.isLoaded()) {
             this.nearbyVendor = null;
@@ -283,7 +292,7 @@ class VendorManager {
         this.nearbyVendor = null;
 
         // Clear all effects
-        this.scene.npcGroup.getChildren().forEach(npcSprite => {
+        this.getNPCSprites().forEach(npcSprite => {
             if (npcSprite.glowGraphic) npcSprite.glowGraphic.setVisible(false);
         });
 
@@ -291,12 +300,12 @@ class VendorManager {
         let closestVendor = null;
         let closestDistance = this.interactionRange;
 
-        this.scene.npcGroup.getChildren().forEach(npcSprite => {
+        this.getNPCSprites().forEach(npcSprite => {
             if (!npcSprite.vendorData) return;
 
             const distance = Phaser.Math.Distance.Between(
-                this.scene.player.x,
-                this.scene.player.y,
+                this.player.x,
+                this.player.y,
                 npcSprite.x,
                 npcSprite.y
             );
@@ -310,8 +319,8 @@ class VendorManager {
         // Apply effect to the closest one
         if (closestVendor) {
             this.nearbyVendor = closestVendor;
-            this.interactionPrompt.x = closestVendor.x - this.scene.cameras.main.scrollX;
-            this.interactionPrompt.y = closestVendor.y - this.scene.cameras.main.scrollY - 40;
+            this.interactionPrompt.x = closestVendor.x - this.camera.scrollX;
+            this.interactionPrompt.y = closestVendor.y - this.camera.scrollY - 40;
 
             // Pulsing circular glow effect
             if (closestVendor.glowGraphic) {

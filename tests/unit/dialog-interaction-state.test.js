@@ -3,6 +3,46 @@ import { describe, expect, it, vi } from 'vitest';
 import DialogManager from '../../dialogManager.js';
 
 describe('DialogManager interaction state', () => {
+    it('clears movement through the injected InputManager when a dialog opens', () => {
+        const prepareUiInteraction = vi.fn();
+        const context = {
+            isDialogOpen: false,
+            scene: {
+                isDialogOpen: false,
+                cameras: {
+                    main: {
+                        width: 800,
+                        height: 600
+                    }
+                }
+            },
+            inputManager: {
+                prepareUiInteraction
+            },
+            createOverlay: vi.fn(() => ({ destroy: vi.fn() })),
+            createContainer: vi.fn(() => ({ add: vi.fn(), setDepth: vi.fn() })),
+            renderBackground: vi.fn(),
+            renderTitleBar: vi.fn(),
+            renderNpcImage: vi.fn(),
+            renderDialogText: vi.fn(),
+            renderButtons: vi.fn(),
+            renderBottomButtons: vi.fn(),
+            renderExitButton: vi.fn(),
+            addElementsToContainer: vi.fn(),
+            handleTextPagination: vi.fn(text => text),
+            handleButtonPagination: vi.fn(buttons => buttons),
+            handleBottomButtonPagination: vi.fn(buttons => buttons),
+            isMobile: false
+        };
+
+        DialogManager.prototype.showDialog.call(context, { text: 'Test dialog' });
+
+        expect(prepareUiInteraction).toHaveBeenCalledTimes(1);
+        expect(context.isDialogOpen).toBe(true);
+        expect(context.scene.isDialogOpen).toBe(true);
+        expect(context.dialogLayout.buttonFactory.inputManager).toBe(context.inputManager);
+    });
+
     it('suppresses pointer movement through InputManager when a dialog closes mid-click', () => {
         const prepareUiInteraction = vi.fn();
         const dialogLayout = { clear: vi.fn() };
@@ -16,10 +56,10 @@ describe('DialogManager interaction state', () => {
                     activePointer: {
                         isDown: true
                     }
-                },
-                inputManager: {
-                    prepareUiInteraction
                 }
+            },
+            inputManager: {
+                prepareUiInteraction
             },
             dialogLayout,
             dialogContainer,

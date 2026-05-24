@@ -12,6 +12,7 @@ describe('UIManager contracts', () => {
         expect(typeof UIManager.prototype.updateScore).toBe('function');
         expect(typeof UIManager.prototype.collectVendorItem).toBe('function');
         expect(typeof UIManager.prototype.handleQuestCompletion).toBe('function');
+        expect(typeof UIManager.prototype.setInputManager).toBe('function');
     });
 
     it('exposes dialog state through a UIManager accessor', () => {
@@ -110,5 +111,21 @@ describe('UIManager contracts', () => {
         state.interactionsEnabled = false;
 
         expect(scene.interactionsEnabled).toBe(false);
+    });
+
+    it('can inject input handling explicitly into UI and dialog surfaces', () => {
+        const inputManager = { prepareUiInteraction: vi.fn() };
+        const dialogManager = {
+            setInputManager: vi.fn()
+        };
+        const context = {
+            dialogManager
+        };
+
+        const returned = UIManager.prototype.setInputManager.call(context, inputManager);
+
+        expect(returned).toBe(context);
+        expect(context.inputManager).toBe(inputManager);
+        expect(dialogManager.setInputManager).toHaveBeenCalledWith(inputManager);
     });
 });

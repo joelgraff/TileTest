@@ -3,6 +3,7 @@ import DialogManager from './dialogManager.js';
 class UIManager {
     constructor(scene, { state = null } = {}) {
         this.scene = scene;
+        this.inputManager = null;
         this.questManager = null;
         this.maxInventorySlots = 8;
         this.isInventoryOpen = false;
@@ -34,6 +35,13 @@ class UIManager {
         this.movementIndicator.alpha = 1;
         this.movementIndicatorFadeTween = null;
     }
+
+    setInputManager(inputManager) {
+        this.inputManager = inputManager;
+        this.dialogManager?.setInputManager?.(inputManager);
+        return this;
+    }
+
     // Movement indicator (reticle)
     showMovementIndicator(x, y) {
         this.movementIndicator.clear();
@@ -142,7 +150,7 @@ class UIManager {
         this.invButton.on('pointerdown', (pointer, localX, localY, event) => {
             event.stopPropagation();
             // Clear any existing input state to prevent player movement
-            this.scene.inputManager?.prepareUiInteraction?.();
+            this.inputManager?.prepareUiInteraction?.();
             this.toggleInventory();
         });
     }
@@ -175,7 +183,7 @@ class UIManager {
         this.questButton.on('pointerdown', (pointer, localX, localY, event) => {
             event.stopPropagation();
             // Clear any existing input state to prevent player movement
-            this.scene.inputManager?.prepareUiInteraction?.();
+            this.inputManager?.prepareUiInteraction?.();
             this.toggleQuests();
         });
     }

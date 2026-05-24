@@ -5,15 +5,16 @@ import ButtonFactory from './ButtonFactory.js';
  * Orchestrates grid and column layouts for flexible dialog positioning
  */
 class DialogLayout {
-    constructor(scene, dialogX, dialogY, dialogWidth, dialogHeight) {
+    constructor(scene, dialogX, dialogY, dialogWidth, dialogHeight, { inputManager = null } = {}) {
         this.scene = scene;
+        this.inputManager = inputManager;
         this.dialogX = dialogX;
         this.dialogY = dialogY;
         this.dialogWidth = dialogWidth;
         this.dialogHeight = dialogHeight;
 
         // Initialize button factory
-        this.buttonFactory = new ButtonFactory(scene);
+        this.buttonFactory = new ButtonFactory(scene, { inputManager: this.inputManager });
 
         // Define layout areas (relative to dialog container origin at 0,0)
         const titleBarHeight = 40;
