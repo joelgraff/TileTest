@@ -1,5 +1,3 @@
-import GridLayout from './GridLayout.js';
-import ColumnLayout from './ColumnLayout.js';
 import ButtonFactory from './ButtonFactory.js';
 
 /**

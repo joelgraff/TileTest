@@ -46,6 +46,7 @@ function preload() {
 
 function create() {
     scene = this;
+    scene.interactionsEnabled = false;
 
     // Start loading domain data before interactions are enabled.
     DomainManager.loadDomains();
@@ -62,19 +63,23 @@ function create() {
     }
 
     PlayerManager.create(scene);
-    NPCManager.create(scene, scene.vendors);
+    NPCManager.create(scene);
 
     // Instance UIManager and attach to scene
     scene.uiManager = new UIManager(scene);
     console.log('[main.js] UIManager instanced and attached to scene:', scene.uiManager);
 
-    scene.vendorManager = new VendorManager(scene);
     scene.inputManager = new InputManager(scene);
+    scene.vendorManager = new VendorManager(scene);
 
     // Initialize QuestManager (needs access to vendors data and scene)
     // QuestManager will handle loading DomainManager internally
     scene.questManager = new QuestManager();
-    scene.questManager.init(scene.vendors, scene.uiManager, scene);
+    scene.bootReadyPromise = scene.questManager.init(scene.vendors, scene.uiManager, scene)
+        .then(isReady => {
+            scene.interactionsEnabled = isReady;
+            return isReady;
+        });
 
     CollisionManager.create(scene);
 
@@ -84,7 +89,6 @@ function create() {
         scene.cameras.main.setBounds(0, 0, scene.map.widthInPixels, scene.map.heightInPixels);
 
         // Zoom in on mobile devices for better visibility
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         if (isMobile) {
             // Apply zoom for mobile devices
             scene.cameras.main.setZoom(1.5);
@@ -113,5 +117,16 @@ function update(time, delta) {
     scene.inputManager?.update?.(scene, time, delta);
 }
 const game = new Phaser.Game(config);
+
+if (typeof window !== 'undefined') {
+    window.__tileTest = {
+        get game() {
+            return game;
+        },
+        get scene() {
+            return scene;
+        }
+    };
+}
 
 export default game;

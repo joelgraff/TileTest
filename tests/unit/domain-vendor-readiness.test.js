@@ -39,6 +39,7 @@ describe('domain and vendor readiness', () => {
     it('only allows vendor interaction once domains are loaded and no dialog is open', () => {
         const context = {
             scene: {
+                interactionsEnabled: false,
                 uiManager: {
                     isDialogOpen: false
                 }
@@ -48,6 +49,7 @@ describe('domain and vendor readiness', () => {
         DomainManager.domains = null;
         expect(VendorManager.prototype.isInteractionAvailable.call(context)).toBe(false);
 
+        context.scene.interactionsEnabled = true;
         DomainManager.domains = [];
         expect(VendorManager.prototype.isInteractionAvailable.call(context)).toBe(true);
 

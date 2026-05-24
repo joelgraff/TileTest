@@ -20,7 +20,28 @@ describe('InputManager movement reset', () => {
     it('resets movement immediately when dialog state blocks input', () => {
         const context = {
             scene: {
+                interactionsEnabled: true,
                 isDialogOpen: true
+            },
+            target: { x: 5, y: 9 },
+            isDragging: true,
+            direction: { x: 1, y: 1 },
+            clearMovementState: InputManager.prototype.clearMovementState
+        };
+
+        const direction = InputManager.prototype.getDirection.call(context);
+
+        expect(direction).toEqual({ x: 0, y: 0 });
+        expect(context.target).toBe(null);
+        expect(context.isDragging).toBe(false);
+        expect(context.direction).toEqual({ x: 0, y: 0 });
+    });
+
+    it('returns no movement while interactions are disabled', () => {
+        const context = {
+            scene: {
+                interactionsEnabled: false,
+                isDialogOpen: false
             },
             target: { x: 5, y: 9 },
             isDragging: true,

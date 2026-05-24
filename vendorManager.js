@@ -13,7 +13,7 @@ class VendorManager {
     }
 
     isInteractionAvailable() {
-        return DomainManager.isLoaded() && !this.scene.uiManager.isDialogOpen;
+        return this.scene.interactionsEnabled && DomainManager.isLoaded() && !this.scene.uiManager.isDialogOpen;
     }
 
     assignVendorsToNPCs() {
@@ -62,7 +62,7 @@ class VendorManager {
                 const bounds = this.nearbyVendor.getBounds();
                 if (Phaser.Geom.Rectangle.Contains(bounds, pointer.worldX, pointer.worldY)) {
                     // Clear any existing input state to prevent player movement
-                    this.scene.inputManager?.clearMovementState?.();
+                    this.scene.inputManager?.suppressPointerUntilRelease?.();
                     this.interactWithVendor(this.nearbyVendor.vendorData, this.nearbyVendor);
                 }
             }

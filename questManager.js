@@ -28,9 +28,11 @@ class QuestManager {
         this.loadSessionState();
 
         // Wait for DomainManager to load, then start session
-        this.waitForDomainsAndStart();
+        const startupPromise = this.waitForDomainsAndStart();
 
         console.log('QuestManager initialized, waiting for domains...');
+
+        return startupPromise;
     }
 
     /**
@@ -45,8 +47,11 @@ class QuestManager {
             if (!this.sessionId) {
                 this.startNewSession();
             }
+
+            return true;
         } catch (error) {
             console.error('Failed to load domains for quest system:', error);
+            return false;
         }
     }
 

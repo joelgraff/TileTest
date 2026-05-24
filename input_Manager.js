@@ -12,6 +12,11 @@ class InputManager {
 
         // Touch and mouse events
         scene.input.on('pointerdown', (pointer) => {
+            if (!scene.interactionsEnabled) {
+                this.ignorePointerUntilRelease = true;
+                return;
+            }
+
             // Don't process player movement input when dialog is open
             if (scene.isDialogOpen) {
                 this.ignorePointerUntilRelease = true;
@@ -34,6 +39,8 @@ class InputManager {
             }
         });
         scene.input.on('pointermove', (pointer) => {
+            if (!scene.interactionsEnabled) return;
+
             // Don't process player movement input when dialog is open
             if (scene.isDialogOpen) return;
 
@@ -80,6 +87,11 @@ class InputManager {
         this.direction = { x: 0, y: 0 };
     }
 
+    suppressPointerUntilRelease() {
+        this.clearMovementState();
+        this.ignorePointerUntilRelease = true;
+    }
+
     updateDirection(pointer) {
         const dx = pointer.x - this.scene.player.x; // Distance from player to cursor
         const dy = pointer.y - this.scene.player.y;
@@ -94,6 +106,11 @@ class InputManager {
     }
 
     getDirection() {
+        if (!this.scene.interactionsEnabled) {
+            this.clearMovementState();
+            return { x: 0, y: 0 };
+        }
+
         // Don't allow player movement when dialog is open
         if (this.scene.isDialogOpen) {
             // Clear any existing targets to prevent movement

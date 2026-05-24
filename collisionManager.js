@@ -148,11 +148,7 @@ class CollisionManager {
     static addColliders(scene) {
         if (scene.player) {
             scene.customCollisionBodies.forEach(body => {
-                scene.physics.add.collider(scene.player, body, () => {
-                    // Log tile and player info on collision
-                    const info = body.tileInfo || {};
-                    const playerDepth = scene.player.depth;
-                });
+                scene.physics.add.collider(scene.player, body);
             });
         }
         if (scene.npcGroup) {

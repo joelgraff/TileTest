@@ -193,7 +193,7 @@ class DialogManager {
     handleButtonPagination(buttons, pagination, textPagination) {
         let displayButtons = buttons;
         if (pagination) {
-            const { currentPage, totalPages, itemsPerPage } = pagination;
+            const { currentPage, itemsPerPage } = pagination;
             const startIndex = currentPage * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, buttons.length);
             displayButtons = buttons.slice(startIndex, endIndex);

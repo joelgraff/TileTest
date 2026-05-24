@@ -1,5 +1,4 @@
 import CONFIG from './config.js';
-import DomainManager from './domainManager.js';
 
 class NPCManager {
     static preload(scene) {
@@ -8,7 +7,7 @@ class NPCManager {
         });
     }
 
-    static create(scene, vendors) {
+    static create(scene) {
         const npcAreaLayer = NPCManager.getNPCAreaLayer(scene);
         if (!npcAreaLayer) return;
 
@@ -57,49 +56,23 @@ class NPCManager {
 
                 npc.interactable = (dx + dy < 96);
 
-                    if (npc.interactable) {
-                        // Add exclamation mark
-                        if (!npc.exclamation) {
-                            npc.exclamation = scene.add.text(npc.x, npc.y - 32, '!', {
-                                fontFamily: 'Arial',
-                                fontSize: '32px',
-                                fill: '#FF0000',
-                                stroke: '#FFFFFF',
-                                strokeThickness: 3,
-                                align: 'center'
-                            }).setOrigin(0.5).setDepth(npc.depth + 1);
-                        }
-                        if (!npc.vendorData) {
-                        npc.setInteractive();
-                        npc.on('pointerdown', () => {
-                            if (npc.interactable && !scene.uiManager.isDialogOpen) {  // Add dialog-open check for consistency
-                                console.log('NPC clicked:', npc);
-                                if (npc.vendorData) {
-                                    // Delegate to VendorManager for vendor interactions
-                                    scene.vendorManager.interactWithVendor(npc.vendorData, npc);
-                                } else {
-                                    // Fallback generic dialog for non-vendor NPCs
-                                    const dialogData = {
-                                        text: "Hello! I'm a vendor. What can I do for you?",
-                                        buttons: [
-                                            { label: "Buy", onClick: () => console.log("Buy action") },
-                                            { label: "Sell", onClick: () => console.log("Sell action") },
-                                            { label: "Talk", onClick: () => console.log("Talk action") },
-                                            { label: "Close", onClick: () => scene.uiManager.closeDialog() }
-                                        ]
-                                    };
-                                    scene.uiManager.showDialog(dialogData);
-                                }
-                            }
-                        });
+                if (npc.interactable) {
+                    if (!npc.exclamation) {
+                        npc.exclamation = scene.add.text(npc.x, npc.y - 32, '!', {
+                            fontFamily: 'Arial',
+                            fontSize: '32px',
+                            fill: '#FF0000',
+                            stroke: '#FFFFFF',
+                            strokeThickness: 3,
+                            align: 'center'
+                        }).setOrigin(0.5).setDepth(npc.depth + 1);
                     }
-        } else {
-            if (npc.exclamation) {
-                npc.exclamation.destroy();
-                npc.exclamation = null;
-            }
-            npc.disableInteractive();
-        }
+                } else {
+                    if (npc.exclamation) {
+                        npc.exclamation.destroy();
+                        npc.exclamation = null;
+                    }
+                }
 
             } else if (npc.interactable) {
                 npc.interactable = false;
@@ -107,7 +80,6 @@ class NPCManager {
                     npc.exclamation.destroy();
                     npc.exclamation = null;
                 }
-                npc.disableInteractive();
             }
         });
     }
