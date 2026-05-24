@@ -99,7 +99,7 @@ class PlayerManager {
         scene.player.setVelocity(direction.x * speed, direction.y * speed);
 
         // Check if stuck trying to reach target
-        if (scene.inputManager.target) {
+        if (scene.inputManager.hasMovementTarget()) {
             const deltas = { x: Math.abs(scene.player.x - PlayerManager.lastX), y: Math.abs(scene.player.y - PlayerManager.lastY) };
 
             if (deltas.x + deltas.y < .2) {
@@ -107,7 +107,7 @@ class PlayerManager {
                 PlayerManager.stuckCounter++;
                 if (PlayerManager.stuckCounter > 1) {
                     // Player hasn't moved for 2 frames, cancel target
-                    scene.inputManager.clearMovementState();
+                    scene.inputManager.cancelMovementTarget();
                     scene.player.setVelocity(0, 0);
                     PlayerManager.stuckCounter = 0;
                 }

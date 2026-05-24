@@ -66,16 +66,17 @@
 ## Phase 3: Architecture Hardening
 
 - [ ] Reduce direct scene-global coupling between managers.
-	- In progress: `main.js` now injects explicit collaborators into `UIManager` and `VendorManager`, scene boolean flags are bound through `stateBindings.js`, and UI/dialog surfaces now route input suspension through `InputManager.prepareUiInteraction(...)` instead of mutating input state directly.
+	- In progress: `main.js` now injects explicit collaborators into `UIManager`, `VendorManager`, and `InputManager`, scene boolean flags are bound through `stateBindings.js`, and player/input target ownership now routes through `InputManager` methods instead of direct `PlayerManager` access to input internals.
 - [ ] Introduce a small shared state boundary for core gameplay state.
 	- In progress: `gameState.js` now owns score, inventory, active/completed quest lists, dialog/panel visibility flags, and the interaction readiness gate, with `UIManager`, `QuestManager`, and `DialogManager` bound to the same store.
 - [ ] Introduce a single interaction coordinator.
 	- In progress: `interactionCoordinator.js` now owns nearby-vendor keyboard and pointer dispatch, and `VendorManager` now owns the sprite-to-dialog handoff without carrying the old input collaborator.
 - [ ] Separate pure quest and content logic from rendering concerns.
+	- In progress: vendor dialog-model construction now lives in smaller `VendorManager` helper methods instead of one large nested `interactWithVendor(...)` flow, which makes the vendor dialog tree directly unit-testable.
 - [ ] Route UI actions through one facade instead of direct gameplay mutations.
-	- In progress: vendor item collection now routes through `UIManager.collectVendorItem(...)`, quest completion now routes through `UIManager.handleQuestCompletion(...)`, and UI-triggered movement reset/pointer suppression now routes through `InputManager.prepareUiInteraction(...)` instead of scattered cross-manager calls.
+	- In progress: vendor item collection now routes through `UIManager.collectVendorItem(...)`, quest completion now routes through `UIManager.handleQuestCompletion(...)`, UI-triggered movement reset/pointer suppression now routes through `InputManager.prepareUiInteraction(...)`, and pointer-move forwarding now routes through the injected `uiManager` collaborator inside `InputManager`.
 - [ ] Centralize readiness and initialization state.
-	- In progress: `interactionsEnabled` now lives in shared state and is exposed back through the scene via `stateBindings.js`.
+	- In progress: `interactionsEnabled` now lives in shared state and is exposed back through the scene via `stateBindings.js`, and boot-time quest readiness composition is now isolated in `bootReadiness.js` instead of remaining inline on `scene`.
 
 ## Phase 4: Collision And Map Hardening
 

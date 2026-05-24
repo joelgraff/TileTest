@@ -1,6 +1,7 @@
 class InputManager {
-    constructor(scene) {
+    constructor(scene, { uiManager = null } = {}) {
         this.scene = scene;
+        this.uiManager = uiManager;
         this.cursors = scene.input.keyboard.createCursorKeys();
         this.touchStart = { x: 0, y: 0 };
         this.touchEnd = { x: 0, y: 0 };
@@ -34,9 +35,7 @@ class InputManager {
             this.touchEnd.y = pointer.y;
             this.target = scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
             this.isDragging = false;
-            if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
-                scene.uiManager.handlePointerMove(pointer.x, pointer.y, true);
-            }
+            this.forwardPointerMove(pointer, true);
         });
         scene.input.on('pointermove', (pointer) => {
             if (!scene.interactionsEnabled) return;
@@ -59,9 +58,7 @@ class InputManager {
             }
             if (this.isDragging) {
                 this.target = scene.cameras.main.getWorldPoint(pointer.x, pointer.y); // Update target during drag
-                if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
-                    scene.uiManager.handlePointerMove(pointer.x, pointer.y, true);
-                }
+                this.forwardPointerMove(pointer, true);
             }
         });
         scene.input.on('pointerup', (pointer) => {
@@ -75,16 +72,26 @@ class InputManager {
                 this.direction = { x: 0, y: 0 };
             }
             this.isDragging = false;
-            if (scene.uiManager && typeof scene.uiManager.handlePointerMove === 'function') {
-                scene.uiManager.handlePointerMove(pointer.x, pointer.y, false);
-            }
+            this.forwardPointerMove(pointer, false);
         });
+    }
+
+    forwardPointerMove(pointer, isDown) {
+        this.uiManager?.handlePointerMove?.(pointer.x, pointer.y, isDown);
     }
 
     clearMovementState() {
         this.target = null;
         this.isDragging = false;
         this.direction = { x: 0, y: 0 };
+    }
+
+    hasMovementTarget() {
+        return this.target !== null;
+    }
+
+    cancelMovementTarget() {
+        this.clearMovementState();
     }
 
     prepareUiInteraction({ suppressPointer = false } = {}) {

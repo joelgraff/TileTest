@@ -6,6 +6,7 @@ import InputManager from './input_Manager.js';
 import VendorManager from './vendorManager.js';
 import InteractionCoordinator from './interactionCoordinator.js';
 import UIManager from './uiManager.js';
+import { initializeInteractionReadiness } from './bootReadiness.js';
 import DomainManager from './domainManager.js';
 import QuestManager from './questManager.js';
 import GameState from './gameState.js';
@@ -76,7 +77,9 @@ function create() {
     scene.uiManager = new UIManager(scene, { state: gameState });
     console.log('[main.js] UIManager instanced and attached to scene:', scene.uiManager);
 
-    scene.inputManager = new InputManager(scene);
+    scene.inputManager = new InputManager(scene, {
+        uiManager: scene.uiManager
+    });
 
     // Initialize QuestManager (needs access to vendors data and scene)
     // QuestManager will handle loading DomainManager internally
@@ -89,11 +92,7 @@ function create() {
         vendorManager: scene.vendorManager,
         inputManager: scene.inputManager
     });
-    scene.bootReadyPromise = scene.questManager.init(scene.vendors, scene.uiManager, scene)
-        .then(isReady => {
-            scene.interactionsEnabled = isReady;
-            return isReady;
-        });
+    initializeInteractionReadiness(scene);
 
     CollisionManager.create(scene);
 

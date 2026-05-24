@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import InputManager from '../../input_Manager.js';
 
@@ -20,12 +20,23 @@ describe('InputManager movement reset', () => {
     it('routes UI interaction resets through one method', () => {
         const context = {
             clearMovementState: InputManager.prototype.clearMovementState,
+            forwardPointerMove: InputManager.prototype.forwardPointerMove,
+            hasMovementTarget: InputManager.prototype.hasMovementTarget,
+            cancelMovementTarget: InputManager.prototype.cancelMovementTarget,
             suppressPointerUntilRelease: InputManager.prototype.suppressPointerUntilRelease,
             target: { x: 12, y: 34 },
             isDragging: true,
             direction: { x: 1, y: -1 },
             ignorePointerUntilRelease: false
         };
+
+        expect(context.hasMovementTarget()).toBe(true);
+
+        context.cancelMovementTarget();
+
+        expect(context.target).toBe(null);
+        expect(context.isDragging).toBe(false);
+        expect(context.direction).toEqual({ x: 0, y: 0 });
 
         InputManager.prototype.prepareUiInteraction.call(context);
 
@@ -44,6 +55,22 @@ describe('InputManager movement reset', () => {
         expect(context.isDragging).toBe(false);
         expect(context.direction).toEqual({ x: 0, y: 0 });
         expect(context.ignorePointerUntilRelease).toBe(true);
+        expect(context.hasMovementTarget()).toBe(false);
+    });
+
+    it('forwards pointer move state through the injected UI collaborator', () => {
+        const handlePointerMove = vi.fn();
+        const context = {
+            uiManager: {
+                handlePointerMove
+            }
+        };
+
+        InputManager.prototype.forwardPointerMove.call(context, { x: 14, y: 28 }, true);
+        InputManager.prototype.forwardPointerMove.call(context, { x: 14, y: 28 }, false);
+
+        expect(handlePointerMove).toHaveBeenNthCalledWith(1, 14, 28, true);
+        expect(handlePointerMove).toHaveBeenNthCalledWith(2, 14, 28, false);
     });
 
     it('resets movement immediately when dialog state blocks input', () => {

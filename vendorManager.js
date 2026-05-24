@@ -68,157 +68,190 @@ class VendorManager {
         return this.interactWithVendor(vendorData, npcSprite);
     }
 
+    getVendorImageKey(vendorData, npcSprite = null) {
+        return npcSprite ? npcSprite.texture.key : (vendorData.imageKey || 'npc1');
+    }
+
+    createReturnButton(dialogData, label = 'Back') {
+        return {
+            label,
+            onClick: () => this.uiManager.showDialog(dialogData)
+        };
+    }
+
+    buildVendorMessageDialogData(text, originalDialogData) {
+        return {
+            text,
+            buttons: [this.createReturnButton(originalDialogData)]
+        };
+    }
+
+    buildVendorContinueDialogData(message, onContinue) {
+        return {
+            text: message,
+            buttons: [{
+                label: 'Continue',
+                onClick: onContinue
+            }]
+        };
+    }
+
+    buildVendorBoothInfoDialogData(vendorData, imageKey, originalDialogData) {
+        return {
+            imageKey,
+            title: vendorData.name,
+            text: `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${DomainManager.getDomainName(vendorData.domain_id)}`,
+            buttons: [this.createReturnButton(originalDialogData)]
+        };
+    }
+
+    getVendorFactDisplayItems(vendorData) {
+        const allDomainFacts = DomainManager.getDomainFacts(vendorData.domain_id);
+        if (allDomainFacts.length === 0) {
+            return [];
+        }
+
+        const maxFactsPerVendor = 6;
+        const selectedFacts = allDomainFacts.length <= maxFactsPerVendor
+            ? allDomainFacts
+            : this.getRandomFacts(allDomainFacts, maxFactsPerVendor);
+
+        return selectedFacts.map(fact => `• ${fact}`);
+    }
+
+    buildVendorFactsDialogData(vendorData, imageKey, originalDialogData) {
+        const formattedFacts = this.getVendorFactDisplayItems(vendorData);
+        if (formattedFacts.length === 0) {
+            return this.buildVendorMessageDialogData('No facts available at this time.', originalDialogData);
+        }
+
+        return {
+            imageKey,
+            title: vendorData.name,
+            text: formattedFacts,
+            textPagination: {
+                currentPage: 0,
+                text: formattedFacts
+            },
+            buttons: [],
+            exitButton: this.createReturnButton(originalDialogData)
+        };
+    }
+
+    buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page = 0) {
+        const domainItems = DomainManager.getDomainItems(vendorData.domain_id);
+        if (domainItems.length === 0) {
+            return this.buildVendorMessageDialogData('No items available at this time.', originalDialogData);
+        }
+
+        const itemsPerPage = 4;
+        const totalPages = Math.ceil(domainItems.length / itemsPerPage);
+        const startIndex = page * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, domainItems.length);
+        const pageItems = domainItems.slice(startIndex, endIndex);
+
+        const itemButtons = pageItems.map(item => ({
+            label: item.name,
+            onClick: () => {
+                const collectionResult = this.uiManager.collectVendorItem(item, vendorData.id);
+
+                this.uiManager.showDialog(this.buildVendorContinueDialogData(
+                    collectionResult.message,
+                    () => this.uiManager.showDialog(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page))
+                ));
+            }
+        }));
+
+        const bottomButtons = [];
+        if (totalPages > 1) {
+            bottomButtons.push({
+                label: '<',
+                disabled: page <= 0,
+                onClick: page > 0
+                    ? () => this.uiManager.showDialog(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page - 1))
+                    : () => {}
+            });
+            bottomButtons.push({
+                label: '>',
+                disabled: page >= totalPages - 1,
+                onClick: page < totalPages - 1
+                    ? () => this.uiManager.showDialog(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page + 1))
+                    : () => {}
+            });
+        } else {
+            bottomButtons.push({ label: '<', disabled: true, onClick: () => {} });
+            bottomButtons.push({ label: '>', disabled: true, onClick: () => {} });
+        }
+
+        return {
+            imageKey,
+            title: vendorData.name,
+            text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)} (Page ${page + 1}/${totalPages}):`,
+            buttons: itemButtons,
+            bottomButtons,
+            exitButton: this.createReturnButton(originalDialogData)
+        };
+    }
+
+    handleVendorResponse(response, vendorData, imageKey, originalDialogData) {
+        if (response.action === 'show_items') {
+            this.uiManager.showDialog(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData));
+            return;
+        }
+
+        if (response.action === 'booth_info') {
+            this.uiManager.showDialog(this.buildVendorBoothInfoDialogData(vendorData, imageKey, originalDialogData));
+            return;
+        }
+
+        if (response.action === 'tech_facts') {
+            this.uiManager.showDialog(this.buildVendorFactsDialogData(vendorData, imageKey, originalDialogData));
+            return;
+        }
+
+        this.uiManager.showDialog(this.buildVendorMessageDialogData('', originalDialogData));
+    }
+
+    createVendorResponseButtons(vendorData, imageKey, originalDialogData) {
+        return vendorData.dialog.responses
+            .filter(response => response.action !== 'end' && response.text !== 'Tell me about your booth')
+            .map(response => ({
+                label: response.text,
+                onClick: () => this.handleVendorResponse(response, vendorData, imageKey, originalDialogData)
+            }));
+    }
+
+    createVendorExitButton(vendorData) {
+        const exitResponse = vendorData.dialog.responses.find(response => response.action === 'end');
+        return exitResponse ? {
+            label: exitResponse.text,
+            onClick: () => this.uiManager.closeDialog()
+        } : null;
+    }
+
+    buildVendorRootDialogData(vendorData, imageKey) {
+        const dialogData = {
+            imageKey,
+            title: vendorData.name,
+            text: vendorData.description,
+            buttons: [],
+            exitButton: this.createVendorExitButton(vendorData)
+        };
+
+        dialogData.buttons = this.createVendorResponseButtons(vendorData, imageKey, dialogData);
+        return dialogData;
+    }
+
     interactWithVendor(vendorData, npcSprite = null) {
         console.log('Attempting to interact with vendor:', vendorData);
         if (!vendorData || !DomainManager.isLoaded() || !this.uiManager) {
             return false;
         }
 
-        const uiManager = this.uiManager;
         this.interactionPrompt.setVisible(false);
 
-        // Use the NPC sprite's texture key if available, else fallback
-        const imageKey = npcSprite ? npcSprite.texture.key : (vendorData.imageKey || 'npc1');
-
-        // Separate response buttons from the exit button
-        const responseButtons = vendorData.dialog.responses
-            .filter(response => response.action !== 'end' && response.text !== 'Tell me about your booth')
-            .map(response => ({
-            label: response.text,
-            onClick: () => {
-                let newText = '';
-                if (response.action === 'show_items') {
-                    const domainItems = DomainManager.getDomainItems(vendorData.domain_id);
-                    if (domainItems.length > 0) {
-                        const itemsPerPage = 4; // Show 4 items per page
-                        const totalPages = Math.ceil(domainItems.length / itemsPerPage);
-
-                        const showItemsDialog = (page = 0) => {
-                            const startIndex = page * itemsPerPage;
-                            const endIndex = Math.min(startIndex + itemsPerPage, domainItems.length);
-                            const pageItems = domainItems.slice(startIndex, endIndex);
-
-                            const itemButtons = pageItems.map((item, index) => ({
-                                label: item.name,
-                                onClick: () => {
-                                    const collectionResult = uiManager.collectVendorItem(item, vendorData.id);
-
-                                    uiManager.showDialog({
-                                        text: collectionResult.message,
-                                        buttons: [{
-                                            label: 'Continue',
-                                            onClick: () => showItemsDialog(page)
-                                        }]
-                                    });
-                                }
-                            }));
-
-                            const bottomButtons = [];
-                            const exitButton = {
-                                label: 'Back',
-                                onClick: () => uiManager.showDialog(originalDialogData)
-                            };
-
-                            // Add pagination buttons - always show both, disable when not applicable
-                            if (totalPages > 1) {
-                                bottomButtons.push({
-                                    label: '<',
-                                    disabled: page <= 0,
-                                    onClick: page > 0 ? () => showItemsDialog(page - 1) : () => {}
-                                });
-                                bottomButtons.push({
-                                    label: '>',
-                                    disabled: page >= totalPages - 1,
-                                    onClick: page < totalPages - 1 ? () => showItemsDialog(page + 1) : () => {}
-                                });
-                            } else {
-                                // Single page - show disabled buttons
-                                bottomButtons.push({ label: '<', disabled: true, onClick: () => {} });
-                                bottomButtons.push({ label: '>', disabled: true, onClick: () => {} });
-                            }
-
-                            uiManager.showDialog({
-                                imageKey: imageKey,
-                                title: vendorData.name,
-                                text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)} (Page ${page + 1}/${totalPages}):`,
-                                buttons: itemButtons,
-                                bottomButtons: bottomButtons,
-                                exitButton: exitButton
-                            });
-                        };
-
-                        showItemsDialog(0); // Start with first page
-                        return;
-                    } else {
-                        newText = 'No items available at this time.';
-                    }
-                } else if (response.action === 'booth_info') {
-                    uiManager.showDialog({
-                        imageKey: imageKey,
-                        title: vendorData.name,
-                        text: `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${DomainManager.getDomainName(vendorData.domain_id)}`,
-                        buttons: [{
-                            label: 'Back',
-                            onClick: () => uiManager.showDialog(originalDialogData)
-                        }]
-                    });
-                    return;
-                } else if (response.action === 'tech_facts') {
-                    const allDomainFacts = DomainManager.getDomainFacts(vendorData.domain_id);
-                    if (allDomainFacts.length > 0) {
-                        // Limit to maximum 6 randomly selected facts per vendor
-                        const maxFactsPerVendor = 6;
-                        const selectedFacts = allDomainFacts.length <= maxFactsPerVendor
-                            ? allDomainFacts
-                            : this.getRandomFacts(allDomainFacts, maxFactsPerVendor);
-
-                        // Format facts with bullet points for display (no extra newlines - pagination handles spacing)
-                        const formattedFacts = selectedFacts.map(fact => `• ${fact}`);
-
-                        // Show facts using intelligent text pagination based on line limits
-                        uiManager.showDialog({
-                            imageKey: imageKey,
-                            title: vendorData.name,
-                            text: formattedFacts,
-                            textPagination: {
-                                currentPage: 0,
-                                text: formattedFacts
-                            },
-                            buttons: [],
-                            exitButton: {
-                                label: 'Back',
-                                onClick: () => uiManager.showDialog(originalDialogData)
-                            }
-                        });
-                        return;
-                    } else {
-                        newText = 'No facts available at this time.';
-                    }
-                }
-                uiManager.showDialog({
-                    text: newText,
-                    buttons: [{
-                        label: 'Back',
-                        onClick: () => uiManager.showDialog(originalDialogData)
-                    }]
-                });
-            }
-        }));
-
-        const exitButton = vendorData.dialog.responses.find(response => response.action === 'end') ? {
-            label: vendorData.dialog.responses.find(response => response.action === 'end').text,
-            onClick: () => uiManager.closeDialog()
-        } : null;  // Fallback if no 'end' action
-
-        // Full dialog logic adapted from NPCManager (using DomainManager for items/facts)
-        const originalDialogData = {
-            imageKey: imageKey,
-            title: vendorData.name,
-            text: vendorData.description,  // Changed from 'description' to 'text' to match dialog system expectations
-            buttons: responseButtons,  // Main button stack (response buttons)
-            exitButton: exitButton  // Separate exit button for bottom positioning
-        };
-        uiManager.showDialog(originalDialogData);
+        const imageKey = this.getVendorImageKey(vendorData, npcSprite);
+        this.uiManager.showDialog(this.buildVendorRootDialogData(vendorData, imageKey));
         return true;
     }
 
