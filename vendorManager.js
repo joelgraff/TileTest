@@ -20,9 +20,8 @@ class VendorManager {
         if (this.vendorAssignmentDone) return;
         if (!this.scene.npcGroup || !this.vendors.length) return;
 
-        // Change to random assignment (matches original NPCManager behavior for consistency)
-        this.scene.npcGroup.getChildren().forEach(npcSprite => {
-            npcSprite.vendorData = this.vendors[Math.floor(Math.random() * this.vendors.length)];
+        this.scene.npcGroup.getChildren().forEach((npcSprite, index) => {
+            npcSprite.vendorData = this.getAssignedVendor(index);
 
             // Pulsing glow effect
             if (npcSprite.glowGraphic) {
@@ -35,6 +34,14 @@ class VendorManager {
             npcSprite.glowPulse = 0;
         });
         this.vendorAssignmentDone = true;
+    }
+
+    getAssignedVendor(index) {
+        if (this.scene.testMode) {
+            return this.vendors[index % this.vendors.length];
+        }
+
+        return this.vendors[Math.floor(Math.random() * this.vendors.length)];
     }
 
     setupInteractionPrompt() {

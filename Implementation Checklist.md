@@ -38,7 +38,7 @@
 - [x] Run content validation tests.
 - [x] Run browser smoke tests.
 - [x] Document any environment blockers or failing baseline checks.
-- [ ] Triage the remaining baseline ESLint warnings.
+- [x] Triage the remaining baseline ESLint warnings.
 
 ## Phase 1: Stop The Bleeding
 
@@ -56,12 +56,12 @@
 
 ## Phase 2: Regression Harness
 
-- [ ] Add deterministic test mode or stable fixtures.
-- [ ] Add quest generation tests with fixed data.
-- [ ] Add quest progress tests for item collection.
-- [ ] Add session persistence tests.
-- [ ] Add dialog pagination tests.
-- [ ] Expand browser tests for vendor interaction, quest progress, and modal behavior.
+- [x] Add deterministic test mode or stable fixtures.
+- [x] Add quest generation tests with fixed data.
+- [x] Add quest progress tests for item collection.
+- [x] Add session persistence tests.
+- [x] Add dialog pagination tests.
+- [x] Expand browser tests for vendor interaction, quest progress, and modal behavior.
 
 ## Phase 3: Architecture Hardening
 

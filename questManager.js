@@ -14,6 +14,7 @@ class QuestManager {
         this.domainManager = null;
         this.npcManager = null;
         this.uiManager = null;
+        this.testQuestCounter = 0;
     }
 
     /**
@@ -24,8 +25,14 @@ class QuestManager {
         this.uiManager = uiManager;
         this.scene = scene;
 
-        // Load session state from cookies
-        this.loadSessionState();
+        if (this.scene.testMode) {
+            this.sessionId = null;
+            this.activeQuests = [];
+            this.completedQuests = [];
+        } else {
+            // Load session state from cookies
+            this.loadSessionState();
+        }
 
         // Wait for DomainManager to load, then start session
         const startupPromise = this.waitForDomainsAndStart();
@@ -59,9 +66,10 @@ class QuestManager {
      * Start a new quest session
      */
     startNewSession() {
-        this.sessionId = 'session_' + Date.now();
+        this.sessionId = this.scene?.testMode ? 'test_session' : 'session_' + Date.now();
         this.activeQuests = [];
         this.completedQuests = [];
+        this.testQuestCounter = 0;
 
         // Generate initial quests
         this.generateInitialQuests();
@@ -87,43 +95,40 @@ class QuestManager {
      * Generate a basic collection quest
      */
     generateCollectionQuest() {
-        // Get available domains
-        const domains = DomainManager.getAllDomains();
-        if (!domains || domains.length === 0) {
-            console.warn('No domains available for quest generation');
+        const candidateDomains = this.getQuestCandidateDomains();
+        if (candidateDomains.length === 0) {
+            console.warn('No valid domains available for quest generation');
             return null;
         }
 
-        // Select a random domain
-        const randomDomain = domains[Math.floor(Math.random() * domains.length)];
+        const selectedDomain = this.selectQuestDomain(candidateDomains);
 
         // Get items from this domain
-        const domainItems = DomainManager.getDomainItems(randomDomain.id);
+        const domainItems = DomainManager.getDomainItems(selectedDomain.id);
         if (!domainItems || domainItems.length === 0) {
-            console.warn('No items available in domain:', randomDomain.id);
+            console.warn('No items available in domain:', selectedDomain.id);
             return null;
         }
 
-        // Select 3 random items from the domain
-        const selectedItems = this.shuffleArray(domainItems).slice(0, Math.min(3, domainItems.length));
+        const selectedItems = this.selectQuestItems(domainItems);
 
         // Get vendors in this domain (for now, use all vendors - will be limited to active set later)
         const domainVendors = this.vendors.filter(vendor =>
-            vendor.domain_id === randomDomain.id
+            vendor.domain_id === selectedDomain.id
         );
 
         if (domainVendors.length === 0) {
-            console.warn('No vendors in domain:', randomDomain.id);
+            console.warn('No vendors in domain:', selectedDomain.id);
             return null;
         }
 
         // Create quest object
         const quest = {
-            id: 'quest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            id: this.createQuestId(),
             type: 'collection',
-            domain: randomDomain.id,
-            title: `Collect ${randomDomain.name} Treasures`,
-            description: `Find and collect these items from ${randomDomain.name} vendors: ${selectedItems.map(item => item.name).join(', ')}`,
+            domain: selectedDomain.id,
+            title: `Collect ${selectedDomain.name} Treasures`,
+            description: `Find and collect these items from ${selectedDomain.name} vendors: ${selectedItems.map(item => item.name).join(', ')}`,
             objectives: selectedItems.map(item => ({
                 item: item,
                 collected: false,
@@ -131,13 +136,54 @@ class QuestManager {
             })),
             reward: {
                 points: selectedItems.length * 10,
-                description: `${selectedItems.length * 10} points for collecting ${randomDomain.name} items`
+                description: `${selectedItems.length * 10} points for collecting ${selectedDomain.name} items`
             },
             created: Date.now(),
             completed: false
         };
 
         return quest;
+    }
+
+    getQuestCandidateDomains() {
+        const domains = DomainManager.getAllDomains();
+        if (!domains || domains.length === 0) {
+            return [];
+        }
+
+        return domains.filter(domain => {
+            const items = DomainManager.getDomainItems(domain.id);
+            const vendors = this.vendors.filter(vendor => vendor.domain_id === domain.id);
+
+            return items.length > 0 && vendors.length > 0;
+        });
+    }
+
+    selectQuestDomain(domains) {
+        if (this.scene?.testMode) {
+            return domains[0];
+        }
+
+        return domains[Math.floor(Math.random() * domains.length)];
+    }
+
+    selectQuestItems(items) {
+        const maxItems = Math.min(3, items.length);
+
+        if (this.scene?.testMode) {
+            return items.slice(0, maxItems);
+        }
+
+        return this.shuffleArray(items).slice(0, maxItems);
+    }
+
+    createQuestId() {
+        if (this.scene?.testMode) {
+            this.testQuestCounter += 1;
+            return `test_quest_${this.testQuestCounter}`;
+        }
+
+        return 'quest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
     /**
@@ -214,6 +260,10 @@ class QuestManager {
      * Save session state to cookies
      */
     saveSessionState() {
+        if (this.scene?.testMode) {
+            return;
+        }
+
         const sessionData = {
             sessionId: this.sessionId,
             activeQuests: this.activeQuests,
@@ -232,6 +282,10 @@ class QuestManager {
      * Load session state from cookies
      */
     loadSessionState() {
+        if (this.scene?.testMode) {
+            return;
+        }
+
         const cookieName = 'vcf_quest_session=';
         const decodedCookie = decodeURIComponent(document.cookie);
         const cookies = decodedCookie.split(';');

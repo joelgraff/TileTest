@@ -10,6 +10,7 @@ import QuestManager from './questManager.js';
 
 // Determine device type for scaling
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const isTestMode = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('test');
 
 const config = {
     type: Phaser.AUTO,
@@ -46,6 +47,7 @@ function preload() {
 
 function create() {
     scene = this;
+    scene.testMode = isTestMode;
     scene.interactionsEnabled = false;
 
     // Start loading domain data before interactions are enabled.

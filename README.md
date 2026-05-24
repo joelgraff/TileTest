@@ -44,6 +44,8 @@ Run static checks and content validation:
 npm run check
 ```
 
+This now runs ESLint, content validation, and unit regression tests.
+
 Run browser smoke tests:
 
 ```bash
@@ -59,6 +61,6 @@ npm test
 ## Current Test Scope
 
 - Content validation for domains, vendors, and map structure
+- Unit regression coverage for quest generation, quest progress, session persistence, dialog pagination, input handling, inventory behavior, and readiness guards
 - Browser smoke coverage for boot and runtime errors during initial load
-
-Gameplay-flow and UI regression coverage will expand in later stabilization phases.
+- Browser smoke coverage for vendor interaction, item collection, and panel open/close behavior
