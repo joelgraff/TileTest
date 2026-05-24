@@ -72,11 +72,16 @@ function create() {
     console.log('[main.js] UIManager instanced and attached to scene:', scene.uiManager);
 
     scene.inputManager = new InputManager(scene);
-    scene.vendorManager = new VendorManager(scene);
 
     // Initialize QuestManager (needs access to vendors data and scene)
     // QuestManager will handle loading DomainManager internally
     scene.questManager = new QuestManager();
+    scene.uiManager.setQuestManager(scene.questManager);
+    scene.vendorManager = new VendorManager(scene, {
+        uiManager: scene.uiManager,
+        inputManager: scene.inputManager,
+        questManager: scene.questManager
+    });
     scene.bootReadyPromise = scene.questManager.init(scene.vendors, scene.uiManager, scene)
         .then(isReady => {
             scene.interactionsEnabled = isReady;

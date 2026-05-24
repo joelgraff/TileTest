@@ -3,6 +3,7 @@ import DialogManager from './dialogManager.js';
 class UIManager {
     constructor(scene) {
         this.scene = scene;
+        this.questManager = null;
         this.inventory = [];
         this.score = 0;
         this.maxInventorySlots = 8;
@@ -223,6 +224,11 @@ class UIManager {
         .setDepth(100);
     }
 
+    setQuestManager(questManager) {
+        this.questManager = questManager;
+        return this;
+    }
+
     // Inventory Management
     hasItem(item) {
         const itemKey = item?.id ?? item?.name;
@@ -293,7 +299,7 @@ class UIManager {
     }
 
     showQuestDialog(page = 0) {
-        if (!this.scene.questManager) {
+        if (!this.questManager) {
             this.showDialog({
                 title: 'Quests',
                 text: 'Quest system not available',
@@ -308,8 +314,8 @@ class UIManager {
             return;
         }
 
-        const activeQuests = this.scene.questManager.getActiveQuests();
-        const completedQuests = this.scene.questManager.getCompletedQuests();
+        const activeQuests = this.questManager.getActiveQuests();
+        const completedQuests = this.questManager.getCompletedQuests();
 
         // Create quest list for pagination
         const questItems = [];
@@ -411,7 +417,7 @@ class UIManager {
             this.toggleQuests();
         } else if (key === 'ESCAPE') {
             // Close any open dialog first
-            if (this.scene.isDialogOpen) {
+            if (this.isDialogOpen) {
                 this.closeDialog();
                 // Reset panel states when dialog is closed via ESC
                 this.isInventoryOpen = false;

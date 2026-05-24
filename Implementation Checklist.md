@@ -66,6 +66,7 @@
 ## Phase 3: Architecture Hardening
 
 - [ ] Reduce direct scene-global coupling between managers.
+	- In progress: `main.js` now injects explicit collaborators into `UIManager` and `VendorManager` for quest, input, and UI coordination.
 - [ ] Introduce a small shared state boundary for core gameplay state.
 - [ ] Introduce a single interaction coordinator.
 - [ ] Separate pure quest and content logic from rendering concerns.

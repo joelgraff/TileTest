@@ -99,9 +99,11 @@ describe('QuestManager completion flow', () => {
 
     it('ignores invalid quest session cookies', () => {
         const manager = new QuestManager();
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
         globalThis.document.cookie = 'vcf_quest_session={invalid-json}; path=/';
 
         expect(() => manager.loadSessionState()).not.toThrow();
+        expect(warn).toHaveBeenCalled();
         expect(manager.sessionId).toBeNull();
         expect(manager.activeQuests).toEqual([]);
         expect(manager.completedQuests).toEqual([]);

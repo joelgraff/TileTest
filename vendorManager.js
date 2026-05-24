@@ -1,9 +1,12 @@
 import DomainManager from './domainManager.js';
 
 class VendorManager {
-    constructor(scene) {
+    constructor(scene, { uiManager = null, inputManager = null, questManager = null } = {}) {
         this.scene = scene;
         this.vendors = scene.vendors || [];
+        this.uiManager = uiManager;
+        this.inputManager = inputManager;
+        this.questManager = questManager;
         this.interactionRange = 60;
         this.nearbyVendor = null;
         this.vendorAssignmentDone = false;
@@ -13,7 +16,7 @@ class VendorManager {
     }
 
     isInteractionAvailable() {
-        return this.scene.interactionsEnabled && DomainManager.isLoaded() && !this.scene.uiManager.isDialogOpen;
+        return this.scene.interactionsEnabled && DomainManager.isLoaded() && !this.uiManager?.isDialogOpen;
     }
 
     assignVendorsToNPCs() {
@@ -69,7 +72,7 @@ class VendorManager {
                 const bounds = this.nearbyVendor.getBounds();
                 if (Phaser.Geom.Rectangle.Contains(bounds, pointer.worldX, pointer.worldY)) {
                     // Clear any existing input state to prevent player movement
-                    this.scene.inputManager?.suppressPointerUntilRelease?.();
+                    this.inputManager?.suppressPointerUntilRelease?.();
                     this.interactWithVendor(this.nearbyVendor.vendorData, this.nearbyVendor);
                 }
             }
@@ -78,7 +81,11 @@ class VendorManager {
 
     interactWithVendor(vendorData, npcSprite = null) {
         console.log('Attempting to interact with vendor:', vendorData);
-        if (!vendorData || !DomainManager.isLoaded()) return;
+        if (!vendorData || !DomainManager.isLoaded() || !this.uiManager) return;
+
+        const uiManager = this.uiManager;
+        const questManager = this.questManager;
+
         this.interactionPrompt.setVisible(false);
 
         // Use the NPC sprite's texture key if available, else fallback
@@ -105,8 +112,8 @@ class VendorManager {
                             const itemButtons = pageItems.map((item, index) => ({
                                 label: item.name,
                                 onClick: () => {
-                                    if (this.scene.uiManager.hasItem(item)) {
-                                        this.scene.uiManager.showDialog({
+                                    if (uiManager.hasItem(item)) {
+                                        uiManager.showDialog({
                                             text: `You already collected ${item.name}.`,
                                             buttons: [{
                                                 label: 'Continue',
@@ -116,9 +123,9 @@ class VendorManager {
                                         return;
                                     }
 
-                                    const itemAdded = this.scene.uiManager.addItem(item);
+                                    const itemAdded = uiManager.addItem(item);
                                     if (!itemAdded) {
-                                        this.scene.uiManager.showDialog({
+                                        uiManager.showDialog({
                                             text: `Inventory full. Make room before taking ${item.name}.`,
                                             buttons: [{
                                                 label: 'Continue',
@@ -128,10 +135,10 @@ class VendorManager {
                                         return;
                                     }
 
-                                    if (this.scene.questManager) {
-                                        const questUpdated = this.scene.questManager.checkItemCollection(item.name, vendorData.id);
+                                    if (questManager) {
+                                        const questUpdated = questManager.checkItemCollection(item.name, vendorData.id);
                                         if (questUpdated) {
-                                            this.scene.uiManager.showDialog({
+                                            uiManager.showDialog({
                                                 text: `Collected ${item.name}!\n\nQuest progress updated!`,
                                                 buttons: [{
                                                     label: 'Continue',
@@ -139,7 +146,7 @@ class VendorManager {
                                                 }]
                                             });
                                         } else {
-                                            this.scene.uiManager.showDialog({
+                                            uiManager.showDialog({
                                                 text: `Collected ${item.name}!\n\n(Item added to your collection)`,
                                                 buttons: [{
                                                     label: 'Continue',
@@ -148,7 +155,7 @@ class VendorManager {
                                             });
                                         }
                                     } else {
-                                        this.scene.uiManager.showDialog({
+                                        uiManager.showDialog({
                                             text: `Collected ${item.name}!`,
                                             buttons: [{
                                                 label: 'Continue',
@@ -162,7 +169,7 @@ class VendorManager {
                             const bottomButtons = [];
                             const exitButton = {
                                 label: 'Back',
-                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                                onClick: () => uiManager.showDialog(originalDialogData)
                             };
 
                             // Add pagination buttons - always show both, disable when not applicable
@@ -183,7 +190,7 @@ class VendorManager {
                                 bottomButtons.push({ label: '>', disabled: true, onClick: () => {} });
                             }
 
-                            this.scene.uiManager.showDialog({
+                            uiManager.showDialog({
                                 imageKey: imageKey,
                                 title: vendorData.name,
                                 text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)} (Page ${page + 1}/${totalPages}):`,
@@ -199,13 +206,13 @@ class VendorManager {
                         newText = 'No items available at this time.';
                     }
                 } else if (response.action === 'booth_info') {
-                    this.scene.uiManager.showDialog({
+                    uiManager.showDialog({
                         imageKey: imageKey,
                         title: vendorData.name,
                         text: `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${DomainManager.getDomainName(vendorData.domain_id)}`,
                         buttons: [{
                             label: 'Back',
-                            onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                            onClick: () => uiManager.showDialog(originalDialogData)
                         }]
                     });
                     return;
@@ -222,7 +229,7 @@ class VendorManager {
                         const formattedFacts = selectedFacts.map(fact => `• ${fact}`);
 
                         // Show facts using intelligent text pagination based on line limits
-                        this.scene.uiManager.showDialog({
+                        uiManager.showDialog({
                             imageKey: imageKey,
                             title: vendorData.name,
                             text: formattedFacts,
@@ -233,7 +240,7 @@ class VendorManager {
                             buttons: [],
                             exitButton: {
                                 label: 'Back',
-                                onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                                onClick: () => uiManager.showDialog(originalDialogData)
                             }
                         });
                         return;
@@ -241,11 +248,11 @@ class VendorManager {
                         newText = 'No facts available at this time.';
                     }
                 }
-                this.scene.uiManager.showDialog({
+                uiManager.showDialog({
                     text: newText,
                     buttons: [{
                         label: 'Back',
-                        onClick: () => this.scene.uiManager.showDialog(originalDialogData)
+                        onClick: () => uiManager.showDialog(originalDialogData)
                     }]
                 });
             }
@@ -253,7 +260,7 @@ class VendorManager {
 
         const exitButton = vendorData.dialog.responses.find(response => response.action === 'end') ? {
             label: vendorData.dialog.responses.find(response => response.action === 'end').text,
-            onClick: () => this.scene.uiManager.closeDialog()
+            onClick: () => uiManager.closeDialog()
         } : null;  // Fallback if no 'end' action
 
         // Full dialog logic adapted from NPCManager (using DomainManager for items/facts)
@@ -264,7 +271,7 @@ class VendorManager {
             buttons: responseButtons,  // Main button stack (response buttons)
             exitButton: exitButton  // Separate exit button for bottom positioning
         };
-        this.scene.uiManager.showDialog(originalDialogData);
+        uiManager.showDialog(originalDialogData);
     }
 
     getRandomFacts(factsArray, count) {
