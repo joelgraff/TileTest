@@ -87,6 +87,15 @@ class InputManager {
         this.direction = { x: 0, y: 0 };
     }
 
+    prepareUiInteraction({ suppressPointer = false } = {}) {
+        if (suppressPointer) {
+            this.suppressPointerUntilRelease();
+            return;
+        }
+
+        this.clearMovementState();
+    }
+
     suppressPointerUntilRelease() {
         this.clearMovementState();
         this.ignorePointerUntilRelease = true;

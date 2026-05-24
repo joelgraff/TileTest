@@ -17,6 +17,35 @@ describe('InputManager movement reset', () => {
         expect(context.direction).toEqual({ x: 0, y: 0 });
     });
 
+    it('routes UI interaction resets through one method', () => {
+        const context = {
+            clearMovementState: InputManager.prototype.clearMovementState,
+            suppressPointerUntilRelease: InputManager.prototype.suppressPointerUntilRelease,
+            target: { x: 12, y: 34 },
+            isDragging: true,
+            direction: { x: 1, y: -1 },
+            ignorePointerUntilRelease: false
+        };
+
+        InputManager.prototype.prepareUiInteraction.call(context);
+
+        expect(context.target).toBe(null);
+        expect(context.isDragging).toBe(false);
+        expect(context.direction).toEqual({ x: 0, y: 0 });
+        expect(context.ignorePointerUntilRelease).toBe(false);
+
+        context.target = { x: 3, y: 4 };
+        context.isDragging = true;
+        context.direction = { x: -1, y: 1 };
+
+        InputManager.prototype.prepareUiInteraction.call(context, { suppressPointer: true });
+
+        expect(context.target).toBe(null);
+        expect(context.isDragging).toBe(false);
+        expect(context.direction).toEqual({ x: 0, y: 0 });
+        expect(context.ignorePointerUntilRelease).toBe(true);
+    });
+
     it('resets movement immediately when dialog state blocks input', () => {
         const context = {
             scene: {

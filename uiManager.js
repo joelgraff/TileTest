@@ -142,7 +142,7 @@ class UIManager {
         this.invButton.on('pointerdown', (pointer, localX, localY, event) => {
             event.stopPropagation();
             // Clear any existing input state to prevent player movement
-            this.scene.inputManager?.clearMovementState?.();
+            this.scene.inputManager?.prepareUiInteraction?.();
             this.toggleInventory();
         });
     }
@@ -175,7 +175,7 @@ class UIManager {
         this.questButton.on('pointerdown', (pointer, localX, localY, event) => {
             event.stopPropagation();
             // Clear any existing input state to prevent player movement
-            this.scene.inputManager?.clearMovementState?.();
+            this.scene.inputManager?.prepareUiInteraction?.();
             this.toggleQuests();
         });
     }

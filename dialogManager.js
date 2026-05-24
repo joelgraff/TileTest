@@ -42,7 +42,7 @@ class DialogManager {
         this.isDialogOpen = true;
 
         // Clear any existing input state to prevent player movement
-        this.scene.inputManager?.clearMovementState?.();
+        this.scene.inputManager?.prepareUiInteraction?.();
 
         const cam = this.scene.cameras.main;
 
@@ -271,7 +271,7 @@ class DialogManager {
 
         // If pointer is still down when dialog closes, ignore subsequent pointer events until release
         if (this.scene.inputManager && this.scene.input.activePointer.isDown) {
-            this.scene.inputManager.ignorePointerUntilRelease = true;
+            this.scene.inputManager.prepareUiInteraction({ suppressPointer: true });
         }
 
         // Clear the layout system (elements will be destroyed with container)
