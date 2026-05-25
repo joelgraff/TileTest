@@ -56,7 +56,10 @@ describe('scene composition', () => {
         expect(InputManagerClass).toHaveBeenCalledWith(scene, { uiManager });
         expect(QuestManagerClass).toHaveBeenCalledWith({ state: scene.gameState, testMode: true });
         expect(VendorManagerClass).toHaveBeenCalledWith(scene, {
-            uiManager,
+            showDialog: expect.any(Function),
+            closeDialog: expect.any(Function),
+            collectVendorItem: expect.any(Function),
+            isDialogOpen: expect.any(Function),
             npcGroup: scene.npcGroup,
             player: scene.player,
             camera: scene.cameras.main,
@@ -65,7 +68,8 @@ describe('scene composition', () => {
         });
         expect(InteractionCoordinatorClass).toHaveBeenCalledWith(scene, {
             vendorManager,
-            inputManager
+            inputManager,
+            uiManager
         });
         expect(uiManager.setInputManager).toHaveBeenCalledWith(inputManager);
         expect(uiManager.setQuestManager).toHaveBeenCalledWith(questManager);

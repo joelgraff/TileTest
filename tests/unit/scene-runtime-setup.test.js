@@ -10,7 +10,7 @@ describe('scene runtime setup', () => {
         const setZoom = vi.fn();
         const destroyGraphics = vi.fn();
         const preserveSprite = vi.fn();
-        const keyboardOn = vi.fn();
+        const setDebugToggleHandler = vi.fn();
         const recreateCollision = vi.fn();
         const scene = {
             player: { x: 10, y: 20 },
@@ -25,7 +25,7 @@ describe('scene runtime setup', () => {
             },
             input: {
                 keyboard: {
-                    on: keyboardOn
+                    on: vi.fn()
                 }
             },
             children: {
@@ -39,7 +39,10 @@ describe('scene runtime setup', () => {
 
         initializeSceneRuntime(scene, {
             isMobile: true,
-            recreateCollision
+            recreateCollision,
+            interactionCoordinator: {
+                setDebugToggleHandler
+            }
         });
 
         expect(recreateCollision).toHaveBeenCalledTimes(1);
@@ -48,9 +51,9 @@ describe('scene runtime setup', () => {
         expect(centerOn).toHaveBeenCalledWith(10, 20);
         expect(setBounds).toHaveBeenCalledWith(0, 0, 640, 480);
         expect(setZoom).toHaveBeenCalledWith(1.5);
-        expect(keyboardOn).toHaveBeenCalledWith('keydown-BACKTICK', expect.any(Function));
+        expect(setDebugToggleHandler).toHaveBeenCalledWith(expect.any(Function));
 
-        const debugHandler = keyboardOn.mock.calls[0][1];
+        const debugHandler = setDebugToggleHandler.mock.calls[0][0];
         debugHandler();
 
         expect(scene.debugEnabled).toBe(true);

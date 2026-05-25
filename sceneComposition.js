@@ -21,7 +21,10 @@ export function initializeSceneManagers(
     });
     const questManager = new QuestManagerClass({ state, testMode: scene.testMode });
     const vendorManager = new VendorManagerClass(scene, {
-        uiManager,
+        showDialog: (dialogData) => uiManager.showDialog(dialogData),
+        closeDialog: () => uiManager.closeDialog(),
+        collectVendorItem: (item, vendorId) => uiManager.collectVendorItem(item, vendorId),
+        isDialogOpen: () => uiManager.isDialogOpen,
         npcGroup: scene.npcGroup,
         player: scene.player,
         camera: scene.cameras.main,
@@ -30,7 +33,8 @@ export function initializeSceneManagers(
     });
     const interactionCoordinator = new InteractionCoordinatorClass(scene, {
         vendorManager,
-        inputManager
+        inputManager,
+        uiManager
     });
 
     uiManager.setInputManager(inputManager);

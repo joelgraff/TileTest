@@ -79,7 +79,8 @@ function create() {
 
     initializeSceneRuntime(scene, {
         isMobile,
-        recreateCollision: CollisionManager.create
+        recreateCollision: CollisionManager.create,
+        interactionCoordinator: scene.interactionCoordinator
     });
 
     console.log('Game scene created');

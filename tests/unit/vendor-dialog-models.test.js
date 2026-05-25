@@ -22,11 +22,9 @@ describe('VendorManager dialog models', () => {
     });
 
     it('builds a root dialog with filtered responses and an exit action', () => {
-        const uiManager = {
-            closeDialog: vi.fn()
-        };
+        const closeDialog = vi.fn();
         const context = {
-            uiManager,
+            closeDialog,
             createVendorExitButton: VendorManager.prototype.createVendorExitButton,
             createVendorResponseButtons: VendorManager.prototype.createVendorResponseButtons,
             handleVendorResponse: vi.fn(),
@@ -64,17 +62,16 @@ describe('VendorManager dialog models', () => {
 
         dialogData.exitButton.onClick();
 
-        expect(uiManager.closeDialog).toHaveBeenCalledTimes(1);
+        expect(closeDialog).toHaveBeenCalledTimes(1);
     });
 
     it('builds an item fallback dialog when a vendor has no domain items', () => {
-        const uiManager = {
-            showDialog: vi.fn(),
-            collectVendorItem: vi.fn()
-        };
+        const showDialog = vi.fn();
+        const collectVendorItem = vi.fn();
         const originalDialogData = { title: 'Vendor Root' };
         const context = {
-            uiManager,
+            showDialog,
+            collectVendorItem,
             createReturnButton: VendorManager.prototype.createReturnButton,
             buildVendorMessageDialogData: VendorManager.prototype.buildVendorMessageDialogData,
             buildVendorItemsDialogData: VendorManager.prototype.buildVendorItemsDialogData
@@ -92,7 +89,7 @@ describe('VendorManager dialog models', () => {
 
         dialogData.buttons[0].onClick();
 
-        expect(uiManager.showDialog).toHaveBeenCalledWith(originalDialogData);
-        expect(uiManager.collectVendorItem).not.toHaveBeenCalled();
+        expect(showDialog).toHaveBeenCalledWith(originalDialogData);
+        expect(collectVendorItem).not.toHaveBeenCalled();
     });
 });

@@ -1,5 +1,13 @@
-export function initializeSceneRuntime(scene, { isMobile = false, recreateCollision = null } = {}) {
+export function initializeSceneRuntime(scene, { isMobile = false, recreateCollision = null, interactionCoordinator = null } = {}) {
     recreateCollision?.(scene);
+
+    const toggleDebug = () => {
+        scene.debugEnabled = !scene.debugEnabled;
+        scene.children.each(child => {
+            if (child.type === 'Graphics') child.destroy();
+        });
+        recreateCollision?.(scene);
+    };
 
     if (scene.player) {
         scene.cameras.main.startFollow(scene.player);
@@ -13,11 +21,10 @@ export function initializeSceneRuntime(scene, { isMobile = false, recreateCollis
         console.error('Player not created. Check playerManager.js and asset paths.');
     }
 
-    scene.input.keyboard.on('keydown-BACKTICK', () => {
-        scene.debugEnabled = !scene.debugEnabled;
-        scene.children.each(child => {
-            if (child.type === 'Graphics') child.destroy();
-        });
-        recreateCollision?.(scene);
-    });
+    if (interactionCoordinator?.setDebugToggleHandler) {
+        interactionCoordinator.setDebugToggleHandler(toggleDebug);
+        return;
+    }
+
+    scene.input.keyboard.on('keydown-BACKTICK', toggleDebug);
 }

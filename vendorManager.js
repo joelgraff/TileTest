@@ -1,10 +1,26 @@
 import DomainManager from './domainManager.js';
 
 class VendorManager {
-    constructor(scene, { uiManager = null, npcGroup = null, player = null, camera = null, gameObjectFactory = null, testMode = null } = {}) {
+    constructor(scene, {
+        uiManager = null,
+        showDialog = null,
+        closeDialog = null,
+        collectVendorItem = null,
+        isDialogOpen = null,
+        npcGroup = null,
+        player = null,
+        camera = null,
+        gameObjectFactory = null,
+        testMode = null
+    } = {}) {
         this.scene = scene;
         this.vendors = scene.vendors || [];
-        this.uiManager = uiManager;
+        this.showDialog = showDialog ?? uiManager?.showDialog?.bind(uiManager) ?? null;
+        this.closeDialog = closeDialog ?? uiManager?.closeDialog?.bind(uiManager) ?? null;
+        this.collectVendorItem = collectVendorItem ?? uiManager?.collectVendorItem?.bind(uiManager) ?? null;
+        this.isDialogOpen = typeof isDialogOpen === 'function'
+            ? isDialogOpen
+            : () => Boolean(uiManager?.isDialogOpen);
         this.npcGroup = npcGroup ?? scene.npcGroup ?? null;
         this.player = player ?? scene.player ?? null;
         this.camera = camera ?? scene.cameras?.main ?? null;
@@ -23,7 +39,11 @@ class VendorManager {
     }
 
     isInteractionAvailable() {
-        return this.scene.interactionsEnabled && DomainManager.isLoaded() && !this.uiManager?.isDialogOpen;
+        const isDialogOpen = typeof this.isDialogOpen === 'function'
+            ? this.isDialogOpen()
+            : Boolean(this.isDialogOpen ?? this.uiManager?.isDialogOpen);
+
+        return this.scene.interactionsEnabled && DomainManager.isLoaded() && !isDialogOpen;
     }
 
     assignVendorsToNPCs() {
@@ -84,7 +104,7 @@ class VendorManager {
     createReturnButton(dialogData, label = 'Back') {
         return {
             label,
-            onClick: () => this.uiManager.showDialog(dialogData)
+            onClick: () => this.showDialog?.(dialogData)
         };
     }
 
@@ -162,11 +182,11 @@ class VendorManager {
         const itemButtons = pageItems.map(item => ({
             label: item.name,
             onClick: () => {
-                const collectionResult = this.uiManager.collectVendorItem(item, vendorData.id);
+                const collectionResult = this.collectVendorItem?.(item, vendorData.id);
 
-                this.uiManager.showDialog(this.buildVendorContinueDialogData(
+                this.showDialog?.(this.buildVendorContinueDialogData(
                     collectionResult.message,
-                    () => this.uiManager.showDialog(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page))
+                    () => this.showDialog?.(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page))
                 ));
             }
         }));
@@ -177,14 +197,14 @@ class VendorManager {
                 label: '<',
                 disabled: page <= 0,
                 onClick: page > 0
-                    ? () => this.uiManager.showDialog(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page - 1))
+                    ? () => this.showDialog?.(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page - 1))
                     : () => {}
             });
             bottomButtons.push({
                 label: '>',
                 disabled: page >= totalPages - 1,
                 onClick: page < totalPages - 1
-                    ? () => this.uiManager.showDialog(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page + 1))
+                    ? () => this.showDialog?.(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page + 1))
                     : () => {}
             });
         } else {
@@ -204,21 +224,21 @@ class VendorManager {
 
     handleVendorResponse(response, vendorData, imageKey, originalDialogData) {
         if (response.action === 'show_items') {
-            this.uiManager.showDialog(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData));
+            this.showDialog?.(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData));
             return;
         }
 
         if (response.action === 'booth_info') {
-            this.uiManager.showDialog(this.buildVendorBoothInfoDialogData(vendorData, imageKey, originalDialogData));
+            this.showDialog?.(this.buildVendorBoothInfoDialogData(vendorData, imageKey, originalDialogData));
             return;
         }
 
         if (response.action === 'tech_facts') {
-            this.uiManager.showDialog(this.buildVendorFactsDialogData(vendorData, imageKey, originalDialogData));
+            this.showDialog?.(this.buildVendorFactsDialogData(vendorData, imageKey, originalDialogData));
             return;
         }
 
-        this.uiManager.showDialog(this.buildVendorMessageDialogData('', originalDialogData));
+        this.showDialog?.(this.buildVendorMessageDialogData('', originalDialogData));
     }
 
     createVendorResponseButtons(vendorData, imageKey, originalDialogData) {
@@ -234,7 +254,7 @@ class VendorManager {
         const exitResponse = vendorData.dialog.responses.find(response => response.action === 'end');
         return exitResponse ? {
             label: exitResponse.text,
-            onClick: () => this.uiManager.closeDialog()
+            onClick: () => this.closeDialog?.()
         } : null;
     }
 
@@ -253,14 +273,14 @@ class VendorManager {
 
     interactWithVendor(vendorData, npcSprite = null) {
         console.log('Attempting to interact with vendor:', vendorData);
-        if (!vendorData || !DomainManager.isLoaded() || !this.uiManager) {
+        if (!vendorData || !DomainManager.isLoaded() || !this.showDialog) {
             return false;
         }
 
         this.interactionPrompt.setVisible(false);
 
         const imageKey = this.getVendorImageKey(vendorData, npcSprite);
-        this.uiManager.showDialog(this.buildVendorRootDialogData(vendorData, imageKey));
+        this.showDialog(this.buildVendorRootDialogData(vendorData, imageKey));
         return true;
     }
 

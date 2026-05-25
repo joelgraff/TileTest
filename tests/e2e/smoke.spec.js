@@ -177,7 +177,7 @@ test('collecting a vendor item updates inventory and completes a matching quest'
 test('help, inventory, and quest panels open and close cleanly', async ({ page }) => {
     await gotoGame(page);
 
-    const state = await page.evaluate(() => {
+    await page.evaluate(() => {
         const scene = window.__tileTest.scene;
 
         scene.uiManager.inventory = [{
@@ -206,63 +206,71 @@ test('help, inventory, and quest panels open and close cleanly', async ({ page }
         scene.questManager.completedQuests = [];
 
         scene.uiManager.toggleHelp();
-        const helpState = {
-            title: scene.uiManager.dialogManager.currentDialogParams.title,
-            text: scene.uiManager.dialogManager.currentDialogParams.text,
-            isDialogOpen: scene.uiManager.isDialogOpen,
-            isHelpOpen: scene.uiManager.isHelpOpen
-        };
-        scene.uiManager.handleInput('ESCAPE');
-
-        scene.uiManager.handleInput('I');
-        const inventoryState = {
-            title: scene.uiManager.dialogManager.currentDialogParams.title,
-            text: scene.uiManager.dialogManager.currentDialogParams.text,
-            isDialogOpen: scene.uiManager.isDialogOpen,
-            isInventoryOpen: scene.uiManager.isInventoryOpen,
-            movement: scene.inputManager.getDirection()
-        };
-        scene.uiManager.handleInput('ESCAPE');
-
-        scene.uiManager.handleInput('Q');
-        const questState = {
-            title: scene.uiManager.dialogManager.currentDialogParams.title,
-            textItems: scene.uiManager.dialogManager.currentDialogParams.textPagination.text,
-            isDialogOpen: scene.uiManager.isDialogOpen,
-            isQuestsOpen: scene.uiManager.isQuestsOpen
-        };
-        scene.uiManager.handleInput('ESCAPE');
-
-        return {
-            helpState,
-            inventoryState,
-            questState,
-            finalFlags: {
-                isDialogOpen: scene.uiManager.isDialogOpen,
-                isHelpOpen: scene.uiManager.isHelpOpen,
-                isInventoryOpen: scene.uiManager.isInventoryOpen,
-                isQuestsOpen: scene.uiManager.isQuestsOpen
-            }
-        };
     });
 
-    expect(state.helpState.title).toBe('Help');
-    expect(state.helpState.text).toContain('Controls:');
-    expect(state.helpState.isDialogOpen).toBe(true);
-    expect(state.helpState.isHelpOpen).toBe(true);
+    const helpState = await page.evaluate(() => ({
+        title: window.__tileTest.scene.uiManager.dialogManager.currentDialogParams.title,
+        text: window.__tileTest.scene.uiManager.dialogManager.currentDialogParams.text,
+        isDialogOpen: window.__tileTest.scene.uiManager.isDialogOpen,
+        isHelpOpen: window.__tileTest.scene.uiManager.isHelpOpen
+    }));
 
-    expect(state.inventoryState.title).toBe('Inventory');
-    expect(state.inventoryState.text).toContain('Fixture Item');
-    expect(state.inventoryState.isDialogOpen).toBe(true);
-    expect(state.inventoryState.isInventoryOpen).toBe(true);
-    expect(state.inventoryState.movement).toEqual({ x: 0, y: 0 });
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !window.__tileTest.scene.uiManager.isDialogOpen);
 
-    expect(state.questState.title).toBe('Quests');
-    expect(state.questState.textItems.some(item => item.includes('Panel Quest'))).toBe(true);
-    expect(state.questState.isDialogOpen).toBe(true);
-    expect(state.questState.isQuestsOpen).toBe(true);
+    await page.keyboard.press('i');
+    await page.waitForFunction(() => window.__tileTest.scene.uiManager.isInventoryOpen && window.__tileTest.scene.uiManager.isDialogOpen);
 
-    expect(state.finalFlags).toEqual({
+    const inventoryState = await page.evaluate(() => ({
+        title: window.__tileTest.scene.uiManager.dialogManager.currentDialogParams.title,
+        text: window.__tileTest.scene.uiManager.dialogManager.currentDialogParams.text,
+        isDialogOpen: window.__tileTest.scene.uiManager.isDialogOpen,
+        isInventoryOpen: window.__tileTest.scene.uiManager.isInventoryOpen,
+        movement: window.__tileTest.scene.inputManager.getDirection()
+    }));
+
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !window.__tileTest.scene.uiManager.isDialogOpen);
+
+    await page.keyboard.press('q');
+    await page.waitForFunction(() => window.__tileTest.scene.uiManager.isQuestsOpen && window.__tileTest.scene.uiManager.isDialogOpen);
+
+    const questState = await page.evaluate(() => ({
+        title: window.__tileTest.scene.uiManager.dialogManager.currentDialogParams.title,
+        textItems: window.__tileTest.scene.uiManager.dialogManager.currentDialogParams.textPagination.text,
+        isDialogOpen: window.__tileTest.scene.uiManager.isDialogOpen,
+        isQuestsOpen: window.__tileTest.scene.uiManager.isQuestsOpen
+    }));
+
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !window.__tileTest.scene.uiManager.isDialogOpen);
+
+    const finalState = await page.evaluate(() => ({
+        finalFlags: {
+            isDialogOpen: window.__tileTest.scene.uiManager.isDialogOpen,
+            isHelpOpen: window.__tileTest.scene.uiManager.isHelpOpen,
+            isInventoryOpen: window.__tileTest.scene.uiManager.isInventoryOpen,
+            isQuestsOpen: window.__tileTest.scene.uiManager.isQuestsOpen
+        }
+    }));
+
+    expect(helpState.title).toBe('Help');
+    expect(helpState.text).toContain('Controls:');
+    expect(helpState.isDialogOpen).toBe(true);
+    expect(helpState.isHelpOpen).toBe(true);
+
+    expect(inventoryState.title).toBe('Inventory');
+    expect(inventoryState.text).toContain('Fixture Item');
+    expect(inventoryState.isDialogOpen).toBe(true);
+    expect(inventoryState.isInventoryOpen).toBe(true);
+    expect(inventoryState.movement).toEqual({ x: 0, y: 0 });
+
+    expect(questState.title).toBe('Quests');
+    expect(questState.textItems.some(item => item.includes('Panel Quest'))).toBe(true);
+    expect(questState.isDialogOpen).toBe(true);
+    expect(questState.isQuestsOpen).toBe(true);
+
+    expect(finalState.finalFlags).toEqual({
         isDialogOpen: false,
         isHelpOpen: false,
         isInventoryOpen: false,
