@@ -2,8 +2,9 @@ import { resolveMovementDirection, updateDragDirection } from './inputDirectionR
 import { registerPointerHandlers } from './inputPointerHandlers.js';
 
 class InputManager {
-    constructor(scene, { uiManager = null, handlePointerMove = null } = {}) {
+    constructor(scene, { uiManager = null, handlePointerMove = null, state = null } = {}) {
         this.scene = scene;
+        this.state = state ?? scene.gameState ?? null;
         this.handlePointerMove = handlePointerMove ?? uiManager?.handlePointerMove?.bind(uiManager) ?? null;
         this.interactionCoordinator = null;
         this.cursors = scene.input.keyboard.createCursorKeys();

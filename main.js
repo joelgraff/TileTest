@@ -3,6 +3,7 @@ import PlayerManager from './playerManager.js';
 import NPCManager from './npcManager.js';
 import CollisionManager from './collisionManager.js';
 import { initializeSceneBootstrap } from './sceneBootstrap.js';
+import { createTestModeApi } from './testModeApi.js';
 
 // Determine device type for scaling
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -32,6 +33,7 @@ const config = {
 };
 
 let scene;
+const testApi = typeof window !== 'undefined' ? createTestModeApi(() => scene) : null;
 
 function preload() {
     // Load assets and map data via MapManager
@@ -73,6 +75,9 @@ if (typeof window !== 'undefined') {
         },
         get scene() {
             return scene;
+        },
+        get testApi() {
+            return isTestMode ? testApi : undefined;
         }
     };
 }

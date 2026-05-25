@@ -32,7 +32,7 @@ class NPCManager {
     static update(scene, time, delta) {
         if (!scene.player || !scene.npcGroup) return;
 
-        if (scene.isDialogOpen) return; // Don't update NPCs when dialog is open
+        if (scene.gameState?.isDialogOpen) return; // Don't update NPCs when dialog is open
 
         scene.npcGroup.getChildren().forEach(npc => {
             syncNPCInteractionState(scene, npc, scene.player);

@@ -73,9 +73,12 @@ describe('InputManager movement reset', () => {
 
     it('resets movement immediately when dialog state blocks input', () => {
         const context = {
-            scene: {
+            state: {
                 interactionsEnabled: true,
                 isDialogOpen: true
+            },
+            scene: {
+                player: { x: 0, y: 0 }
             },
             target: { x: 5, y: 9 },
             isDragging: true,
@@ -93,9 +96,12 @@ describe('InputManager movement reset', () => {
 
     it('returns no movement while interactions are disabled', () => {
         const context = {
-            scene: {
+            state: {
                 interactionsEnabled: false,
                 isDialogOpen: false
+            },
+            scene: {
+                player: { x: 0, y: 0 }
             },
             target: { x: 5, y: 9 },
             isDragging: true,
@@ -113,9 +119,11 @@ describe('InputManager movement reset', () => {
 
     it('prefers keyboard direction over pointer target and drag state', () => {
         const context = {
-            scene: {
+            state: {
                 interactionsEnabled: true,
-                isDialogOpen: false,
+                isDialogOpen: false
+            },
+            scene: {
                 player: { x: 100, y: 100 }
             },
             cursors: {
@@ -139,9 +147,11 @@ describe('InputManager movement reset', () => {
 
     it('clears a nearby movement target once the player reaches it', () => {
         const context = {
-            scene: {
+            state: {
                 interactionsEnabled: true,
-                isDialogOpen: false,
+                isDialogOpen: false
+            },
+            scene: {
                 player: { x: 100, y: 100 }
             },
             cursors: {
@@ -165,9 +175,11 @@ describe('InputManager movement reset', () => {
 
     it('falls back to drag direction when no keyboard or tap target is active', () => {
         const context = {
-            scene: {
+            state: {
                 interactionsEnabled: true,
-                isDialogOpen: false,
+                isDialogOpen: false
+            },
+            scene: {
                 player: { x: 100, y: 100 }
             },
             cursors: {

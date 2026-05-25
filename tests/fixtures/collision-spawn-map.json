@@ -1,0 +1,122 @@
+{
+  "height": 4,
+  "width": 4,
+  "tileheight": 32,
+  "tilewidth": 32,
+  "layers": [
+    {
+      "name": "tables",
+      "type": "tilelayer",
+      "data": [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "properties": [
+        {
+          "name": "depth",
+          "type": "int",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "tabletops",
+      "type": "tilelayer",
+      "data": [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "properties": [
+        {
+          "name": "depth",
+          "type": "int",
+          "value": 100
+        }
+      ]
+    },
+    {
+      "name": "player",
+      "type": "objectgroup",
+      "objects": [
+        {
+          "name": "start",
+          "x": 96,
+          "y": 128,
+          "point": true
+        }
+      ]
+    },
+    {
+      "name": "npc_area",
+      "type": "objectgroup",
+      "objects": [
+        {
+          "type": "point",
+          "x": 64,
+          "y": 64,
+          "point": true
+        },
+        {
+          "type": "point",
+          "x": 96,
+          "y": 64,
+          "point": true
+        },
+        {
+          "type": "rect",
+          "x": 32,
+          "y": 32,
+          "width": 96,
+          "height": 64
+        }
+      ]
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "tiles",
+      "tiles": [
+        {
+          "id": 0,
+          "objectgroup": {
+            "objects": [
+              {
+                "x": 0,
+                "y": 24,
+                "width": 32,
+                "height": 8
+              }
+            ]
+          }
+        },
+        {
+          "id": 1,
+          "objectgroup": {
+            "objects": [
+              {
+                "x": 0,
+                "y": 0,
+                "width": 8,
+                "height": 32
+              },
+              {
+                "x": 24,
+                "y": 0,
+                "width": 8,
+                "height": 32
+              }
+            ]
+          }
+        },
+        {
+          "id": 2,
+          "objectgroup": {
+            "objects": [
+              {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 6
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

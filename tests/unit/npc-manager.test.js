@@ -58,7 +58,9 @@ describe('NPCManager interaction state', () => {
         };
         const scene = {
             player: { x: 100, y: 100 },
-            isDialogOpen: false,
+            gameState: {
+                isDialogOpen: false
+            },
             add: {
                 text: vi.fn(() => indicator)
             },
@@ -94,7 +96,9 @@ describe('NPCManager interaction state', () => {
         };
         const scene = {
             player: { x: 100, y: 100 },
-            isDialogOpen: false,
+            gameState: {
+                isDialogOpen: false
+            },
             add: {
                 text: vi.fn()
             },

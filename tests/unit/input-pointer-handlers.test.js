@@ -8,8 +8,10 @@ function createScene() {
     return {
         handlers,
         scene: {
-            interactionsEnabled: true,
-            isDialogOpen: false,
+            gameState: {
+                interactionsEnabled: true,
+                isDialogOpen: false
+            },
             player: { x: 0, y: 0 },
             cameras: {
                 main: {
@@ -38,7 +40,7 @@ describe('InputManager pointer handlers', () => {
         const { scene, handlers } = createScene();
         const uiManager = { handlePointerMove: vi.fn() };
 
-        const manager = new InputManager(scene, { uiManager });
+        const manager = new InputManager(scene, { uiManager, state: scene.gameState });
 
         expect(scene.input.on).toHaveBeenCalledWith('pointerdown', expect.any(Function));
         expect(scene.input.on).toHaveBeenCalledWith('pointermove', expect.any(Function));
@@ -61,7 +63,7 @@ describe('InputManager pointer handlers', () => {
             handlePointerDown: vi.fn(() => true)
         };
 
-        const manager = new InputManager(scene, { uiManager });
+        const manager = new InputManager(scene, { uiManager, state: scene.gameState });
         manager.setInteractionCoordinator(interactionCoordinator);
 
         handlers.pointerdown({ x: 10, y: 20 });
@@ -76,7 +78,7 @@ describe('InputManager pointer handlers', () => {
         const { scene, handlers } = createScene();
         const uiManager = { handlePointerMove: vi.fn() };
 
-        const manager = new InputManager(scene, { uiManager });
+        const manager = new InputManager(scene, { uiManager, state: scene.gameState });
 
         handlers.pointerdown({ x: 0, y: 0 });
         scene.cameras.main.getWorldPoint.mockClear();
@@ -95,9 +97,9 @@ describe('InputManager pointer handlers', () => {
         const { scene, handlers } = createScene();
         const uiManager = { handlePointerMove: vi.fn() };
 
-        const manager = new InputManager(scene, { uiManager });
+        const manager = new InputManager(scene, { uiManager, state: scene.gameState });
         manager.ignorePointerUntilRelease = true;
-        scene.isDialogOpen = true;
+        scene.gameState.isDialogOpen = true;
 
         handlers.pointerup({ x: 5, y: 9 });
 

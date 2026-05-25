@@ -2,15 +2,20 @@ function projectPointerToWorld(scene, pointer) {
     return scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
 }
 
+function getInputState(inputManager) {
+    return inputManager.state ?? inputManager.scene?.gameState ?? null;
+}
+
 export function handlePointerDown(inputManager, pointer) {
     const { scene } = inputManager;
+    const state = getInputState(inputManager);
 
-    if (!scene.interactionsEnabled) {
+    if (!state?.interactionsEnabled) {
         inputManager.ignorePointerUntilRelease = true;
         return null;
     }
 
-    if (scene.isDialogOpen) {
+    if (state.isDialogOpen) {
         inputManager.ignorePointerUntilRelease = true;
         return null;
     }
@@ -37,8 +42,9 @@ export function handlePointerDown(inputManager, pointer) {
 
 export function handlePointerMove(inputManager, pointer) {
     const { scene } = inputManager;
+    const state = getInputState(inputManager);
 
-    if (!scene.interactionsEnabled || scene.isDialogOpen || inputManager.ignorePointerUntilRelease) {
+    if (!state?.interactionsEnabled || state.isDialogOpen || inputManager.ignorePointerUntilRelease) {
         return null;
     }
 
@@ -67,7 +73,7 @@ export function handlePointerMove(inputManager, pointer) {
 }
 
 export function handlePointerUp(inputManager, pointer) {
-    if (inputManager.scene.isDialogOpen) {
+    if (getInputState(inputManager)?.isDialogOpen) {
         return null;
     }
 

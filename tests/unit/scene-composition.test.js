@@ -55,10 +55,12 @@ describe('scene composition', () => {
 
         expect(UIManagerClass).toHaveBeenCalledWith(scene, { state: scene.gameState });
         expect(InputManagerClass).toHaveBeenCalledWith(scene, {
-            handlePointerMove: expect.any(Function)
+            handlePointerMove: expect.any(Function),
+            state: scene.gameState
         });
         expect(QuestManagerClass).toHaveBeenCalledWith({ state: scene.gameState, testMode: true });
         expect(VendorManagerClass).toHaveBeenCalledWith(scene, {
+            state: scene.gameState,
             showDialog: expect.any(Function),
             closeDialog: expect.any(Function),
             collectVendorItem: expect.any(Function),

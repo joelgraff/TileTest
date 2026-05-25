@@ -17,10 +17,12 @@ export function initializeSceneManagers(
 ) {
     const uiManager = new UIManagerClass(scene, { state });
     const inputManager = new InputManagerClass(scene, {
-        handlePointerMove: (screenX, screenY, isDown) => uiManager.handlePointerMove(screenX, screenY, isDown)
+        handlePointerMove: (screenX, screenY, isDown) => uiManager.handlePointerMove(screenX, screenY, isDown),
+        state
     });
     const questManager = new QuestManagerClass({ state, testMode: scene.testMode });
     const vendorManager = new VendorManagerClass(scene, {
+        state,
         showDialog: (dialogData) => uiManager.showDialog(dialogData),
         closeDialog: () => uiManager.closeDialog(),
         collectVendorItem: (item, vendorId) => uiManager.collectVendorItem(item, vendorId),

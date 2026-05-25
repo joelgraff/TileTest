@@ -17,7 +17,7 @@ class PlayerManager {
 
     static update(scene, time, delta) {
         if (!scene.player || !scene.inputManager) return;
-        if (scene.isDialogOpen) return; // Don't update player when dialog is open
+        if (scene.gameState?.isDialogOpen) return; // Don't update player when dialog is open
         const direction = scene.inputManager.getDirection();
         PlayerManager.handlePlayerMovement(scene, direction);
         PlayerManager.handlePlayerAnimation(scene, direction);

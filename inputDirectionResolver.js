@@ -23,6 +23,10 @@ function resolveKeyboardDirection(cursors) {
     return direction;
 }
 
+function getInputState(inputManager) {
+    return inputManager.state ?? inputManager.scene?.gameState ?? null;
+}
+
 export function updateDragDirection(inputManager, pointer) {
     const dx = pointer.x - inputManager.scene.player.x;
     const dy = pointer.y - inputManager.scene.player.y;
@@ -33,12 +37,14 @@ export function updateDragDirection(inputManager, pointer) {
 }
 
 export function resolveMovementDirection(inputManager) {
-    if (!inputManager.scene.interactionsEnabled) {
+    const state = getInputState(inputManager);
+
+    if (!state?.interactionsEnabled) {
         inputManager.clearMovementState();
         return { x: 0, y: 0 };
     }
 
-    if (inputManager.scene.isDialogOpen) {
+    if (state.isDialogOpen) {
         inputManager.clearMovementState();
         return { x: 0, y: 0 };
     }

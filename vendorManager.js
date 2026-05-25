@@ -1,8 +1,20 @@
 import DomainManager from './domainManager.js';
+import {
+    createVendorBoothInfoDialogData,
+    createVendorContinueDialogData,
+    createVendorExitButton,
+    createVendorFactsDialogData,
+    createVendorItemsDialogData,
+    createVendorMessageDialogData,
+    createVendorResponseButtons,
+    createVendorReturnButton,
+    createVendorRootDialogData
+} from './vendorDialogModels.js';
 
 class VendorManager {
     constructor(scene, {
         uiManager = null,
+        state = null,
         showDialog = null,
         closeDialog = null,
         collectVendorItem = null,
@@ -14,6 +26,7 @@ class VendorManager {
         testMode = null
     } = {}) {
         this.scene = scene;
+        this.state = state ?? scene.gameState ?? null;
         this.vendors = scene.vendors || [];
         this.showDialog = showDialog ?? uiManager?.showDialog?.bind(uiManager) ?? null;
         this.closeDialog = closeDialog ?? uiManager?.closeDialog?.bind(uiManager) ?? null;
@@ -43,7 +56,7 @@ class VendorManager {
             ? this.isDialogOpen()
             : Boolean(this.isDialogOpen ?? this.uiManager?.isDialogOpen);
 
-        return this.scene.interactionsEnabled && DomainManager.isLoaded() && !isDialogOpen;
+        return Boolean(this.state?.interactionsEnabled) && DomainManager.isLoaded() && !isDialogOpen;
     }
 
     assignVendorsToNPCs() {
@@ -102,36 +115,27 @@ class VendorManager {
     }
 
     createReturnButton(dialogData, label = 'Back') {
-        return {
-            label,
-            onClick: () => this.showDialog?.(dialogData)
-        };
+        return createVendorReturnButton(dialogData, {
+            showDialog: this.showDialog,
+            label
+        });
     }
 
     buildVendorMessageDialogData(text, originalDialogData) {
-        return {
-            text,
-            buttons: [this.createReturnButton(originalDialogData)]
-        };
+        return createVendorMessageDialogData(text, {
+            returnButton: this.createReturnButton(originalDialogData)
+        });
     }
 
     buildVendorContinueDialogData(message, onContinue) {
-        return {
-            text: message,
-            buttons: [{
-                label: 'Continue',
-                onClick: onContinue
-            }]
-        };
+        return createVendorContinueDialogData(message, { onContinue });
     }
 
     buildVendorBoothInfoDialogData(vendorData, imageKey, originalDialogData) {
-        return {
-            imageKey,
-            title: vendorData.name,
-            text: `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${DomainManager.getDomainName(vendorData.domain_id)}`,
-            buttons: [this.createReturnButton(originalDialogData)]
-        };
+        return createVendorBoothInfoDialogData(vendorData, imageKey, {
+            domainName: DomainManager.getDomainName(vendorData.domain_id),
+            returnButton: this.createReturnButton(originalDialogData)
+        });
     }
 
     getVendorFactDisplayItems(vendorData) {
@@ -154,17 +158,10 @@ class VendorManager {
             return this.buildVendorMessageDialogData('No facts available at this time.', originalDialogData);
         }
 
-        return {
-            imageKey,
-            title: vendorData.name,
-            text: formattedFacts,
-            textPagination: {
-                currentPage: 0,
-                text: formattedFacts
-            },
-            buttons: [],
+        return createVendorFactsDialogData(vendorData, imageKey, {
+            formattedFacts,
             exitButton: this.createReturnButton(originalDialogData)
-        };
+        });
     }
 
     buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page = 0) {
@@ -212,14 +209,14 @@ class VendorManager {
             bottomButtons.push({ label: '>', disabled: true, onClick: () => {} });
         }
 
-        return {
-            imageKey,
-            title: vendorData.name,
-            text: `Available items from ${DomainManager.getDomainName(vendorData.domain_id)} (Page ${page + 1}/${totalPages}):`,
-            buttons: itemButtons,
+        return createVendorItemsDialogData(vendorData, imageKey, {
+            page,
+            totalPages,
+            domainName: DomainManager.getDomainName(vendorData.domain_id),
+            itemButtons,
             bottomButtons,
             exitButton: this.createReturnButton(originalDialogData)
-        };
+        });
     }
 
     handleVendorResponse(response, vendorData, imageKey, originalDialogData) {
@@ -242,30 +239,27 @@ class VendorManager {
     }
 
     createVendorResponseButtons(vendorData, imageKey, originalDialogData) {
-        return vendorData.dialog.responses
-            .filter(response => response.action !== 'end' && response.text !== 'Tell me about your booth')
-            .map(response => ({
-                label: response.text,
-                onClick: () => this.handleVendorResponse(response, vendorData, imageKey, originalDialogData)
-            }));
+        return createVendorResponseButtons(vendorData, {
+            imageKey,
+            originalDialogData,
+            handleVendorResponse: (response, dialogVendorData, dialogImageKey, dialogData) => {
+                this.handleVendorResponse(response, dialogVendorData, dialogImageKey, dialogData);
+            }
+        });
     }
 
     createVendorExitButton(vendorData) {
-        const exitResponse = vendorData.dialog.responses.find(response => response.action === 'end');
-        return exitResponse ? {
-            label: exitResponse.text,
-            onClick: () => this.closeDialog?.()
-        } : null;
+        return createVendorExitButton(vendorData, {
+            closeDialog: () => this.closeDialog?.()
+        });
     }
 
     buildVendorRootDialogData(vendorData, imageKey) {
-        const dialogData = {
+        const dialogData = createVendorRootDialogData(vendorData, {
             imageKey,
-            title: vendorData.name,
-            text: vendorData.description,
             buttons: [],
             exitButton: this.createVendorExitButton(vendorData)
-        };
+        });
 
         dialogData.buttons = this.createVendorResponseButtons(vendorData, imageKey, dialogData);
         return dialogData;

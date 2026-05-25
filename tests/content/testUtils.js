@@ -16,3 +16,11 @@ export function loadJson(relativePath) {
 export function getLayer(map, layerName) {
     return map.layers.find(layer => layer.name === layerName);
 }
+
+export function getPropertyValue(entity, propertyName) {
+    if (!Array.isArray(entity?.properties)) {
+        return undefined;
+    }
+
+    return entity.properties.find(property => property.name === propertyName)?.value;
+}

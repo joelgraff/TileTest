@@ -17,7 +17,9 @@ describe('PlayerManager movement ownership', () => {
             inputManager: {
                 getDirection: vi.fn(() => direction)
             },
-            isDialogOpen: false
+            gameState: {
+                isDialogOpen: false
+            }
         };
         const movementSpy = vi.spyOn(PlayerManager, 'handlePlayerMovement').mockImplementation(() => {});
         const animationSpy = vi.spyOn(PlayerManager, 'handlePlayerAnimation').mockImplementation(() => {});
