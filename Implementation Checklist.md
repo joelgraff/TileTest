@@ -81,8 +81,8 @@
 - [x] Define one collision authoring convention.
 - [x] Validate required map layers, objects, and metadata automatically.
 - [x] Add a small fixture map for collision and spawn tests.
-- [ ] Move hidden map conventions into explicit configuration or validation.
-- [ ] Add a debug-only collision verification mode if needed.
+- [x] Move hidden map conventions into explicit configuration or validation.
+- [x] Add a debug-only collision verification mode if needed.
 
 ## Phase 5: UI Rebuild
 

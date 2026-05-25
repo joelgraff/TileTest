@@ -17,6 +17,10 @@ export function getLayer(map, layerName) {
     return map.layers.find(layer => layer.name === layerName);
 }
 
+export function getTileset(map, tilesetName) {
+    return map.tilesets.find(tileset => tileset.name === tilesetName);
+}
+
 export function getPropertyValue(entity, propertyName) {
     if (!Array.isArray(entity?.properties)) {
         return undefined;

@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { getLayer, getPropertyValue, loadJson } from './testUtils.js';
+import { getLayer, getPropertyValue, getTileset, loadJson } from './testUtils.js';
 
 const TILE_FLIP_FLAGS_MASK = 0x1fffffff;
 const collisionLayerNames = ['tables', 'tabletops'];
+const runtimeTilesetName = 'tiles';
 
 function toLocalTileId(globalTileId) {
     const unflippedTileId = globalTileId & TILE_FLIP_FLAGS_MASK;
@@ -12,7 +13,7 @@ function toLocalTileId(globalTileId) {
 }
 
 function getEmbeddedTilesetCollisionObjects(map, tileId) {
-    const embeddedTileset = map.tilesets[0];
+    const embeddedTileset = getTileset(map, runtimeTilesetName);
     const tileDefinition = embeddedTileset?.tiles?.find(tile => tile.id === tileId);
 
     return tileDefinition?.objectgroup?.objects ?? [];
@@ -29,21 +30,35 @@ describe('map validation', () => {
         }
     });
 
-    it('defines a player start marker', () => {
+    it('includes the tileset used by the runtime map renderer', () => {
+        expect(
+            getTileset(map, runtimeTilesetName),
+            `Missing required tileset: ${runtimeTilesetName}`
+        ).toBeTruthy();
+    });
+
+    it('defines exactly one player start point marker', () => {
         const playerLayer = getLayer(map, 'player');
+        const startMarkers = playerLayer.objects.filter(object => object.name === 'start');
 
         expect(playerLayer.type).toBe('objectgroup');
         expect(Array.isArray(playerLayer.objects)).toBe(true);
-        expect(playerLayer.objects.some(object => object.name === 'start')).toBe(true);
+        expect(startMarkers).toHaveLength(1);
+        expect(startMarkers[0].point).toBe(true);
     });
 
-    it('defines an npc area rectangle and spawn points', () => {
+    it('defines exactly one npc area rectangle and one or more point spawns', () => {
         const npcLayer = getLayer(map, 'npc_area');
+        const rectObjects = npcLayer.objects.filter(object => object.type === 'rect');
+        const pointObjects = npcLayer.objects.filter(object => object.type === 'point');
 
         expect(npcLayer.type).toBe('objectgroup');
         expect(Array.isArray(npcLayer.objects)).toBe(true);
-        expect(npcLayer.objects.some(object => object.type === 'rect')).toBe(true);
-        expect(npcLayer.objects.some(object => object.type === 'point')).toBe(true);
+        expect(rectObjects).toHaveLength(1);
+        expect(pointObjects.length).toBeGreaterThan(0);
+        pointObjects.forEach(pointObject => {
+            expect(pointObject.point).toBe(true);
+        });
     });
 
     it('defines explicit collision layer depth metadata', () => {

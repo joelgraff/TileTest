@@ -77,3 +77,14 @@ Collision is authored through embedded tileset object metadata in `assets/map.js
 The runtime reads collision rectangles from every non-empty tile used by the `tables` and `tabletops` layers.
 If a tile is added to either collision layer, its tileset entry must define at least one rectangle with positive `width` and `height`.
 Those layers should also keep an explicit `depth` property so rendering order remains data-driven.
+
+## Map Runtime Contracts
+
+The runtime expects a tileset named `tiles` in `assets/map.json`.
+The `player` object layer must contain exactly one `start` point marker.
+The `npc_area` object layer must contain exactly one `rect` object plus one or more `point` spawn markers.
+
+## Collision Debug Verification
+
+The existing backquote debug toggle is the collision verification mode for runtime checks.
+When enabled, it recreates collision state and draws tile-authored collision shapes plus instantiated collision bodies so collision authoring mismatches are visible during manual inspection.
