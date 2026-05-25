@@ -1,4 +1,5 @@
 import { renderDialogSurface } from './dialogRenderSurface.js';
+import { renderDomDialogSurface } from './domDialogSurface.js';
 import {
     createDialogPaginationButtons,
     createDialogTextPaginationButtons,
@@ -23,6 +24,7 @@ class DialogManager {
         this.isPointerDown = isPointerDown ?? (() => Boolean(this.scene.input?.activePointer?.isDown));
         this.dialogContainer = null;
         this.overlay = null;
+        this.domDialogRoot = null;
         this.setState(state);
         // Cache mobile detection for performance
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -56,27 +58,31 @@ class DialogManager {
         return this;
     }
 
-    showDialog({ imageKey, title = '', text = '', buttons = [], exitButton = null, pagination = null, bottomButtons = null, textPagination = null }) {
+    getOverlayRoot(documentRef = globalThis.document) {
+        return documentRef?.getElementById?.('ui-overlay-root') ?? null;
+    }
+
+    showDialog(dialogParams = {}) {
+        const {
+            renderMode = 'canvas'
+        } = dialogParams;
+
         if (this.isDialogOpen) {
             this.hideDialog();
         }
 
         this.scene.isDialogOpen = true;
         this.isDialogOpen = true;
+        this.currentDialogParams = { ...dialogParams };
 
         // Clear any existing input state to prevent player movement
         this.prepareUiInteraction?.();
 
-        renderDialogSurface(this, {
-            imageKey,
-            title,
-            text,
-            buttons,
-            exitButton,
-            pagination,
-            bottomButtons,
-            textPagination
-        });
+        if (renderMode === 'dom' && renderDomDialogSurface(this, dialogParams)) {
+            return;
+        }
+
+        renderDialogSurface(this, dialogParams);
     }
 
     createOverlay(cam) {
@@ -212,6 +218,11 @@ class DialogManager {
         if (this.overlay) {
             this.overlay.destroy();
             this.overlay = null;
+        }
+
+        if (this.domDialogRoot) {
+            this.domDialogRoot.remove?.();
+            this.domDialogRoot = null;
         }
     }
 }

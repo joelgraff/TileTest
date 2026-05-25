@@ -49,6 +49,7 @@ describe('DialogManager interaction state', () => {
         const dialogLayout = { clear: vi.fn() };
         const dialogContainer = { destroy: vi.fn() };
         const overlay = { destroy: vi.fn() };
+        const domDialogRoot = { remove: vi.fn() };
         const context = {
             isDialogOpen: true,
             scene: {
@@ -61,7 +62,8 @@ describe('DialogManager interaction state', () => {
             },
             dialogLayout,
             dialogContainer,
-            overlay
+            overlay,
+            domDialogRoot
         };
 
         DialogManager.prototype.hideDialog.call(context);
@@ -72,9 +74,11 @@ describe('DialogManager interaction state', () => {
         expect(dialogLayout.clear).toHaveBeenCalledTimes(1);
         expect(dialogContainer.destroy).toHaveBeenCalledTimes(1);
         expect(overlay.destroy).toHaveBeenCalledTimes(1);
+        expect(domDialogRoot.remove).toHaveBeenCalledTimes(1);
         expect(context.dialogLayout).toBe(null);
         expect(context.dialogContainer).toBe(null);
         expect(context.overlay).toBe(null);
+        expect(context.domDialogRoot).toBe(null);
     });
 
     it('releases pointer suppression when a dialog closes after the pointer is already up', () => {

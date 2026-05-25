@@ -98,6 +98,12 @@ test('help, inventory, and quest panels open and close cleanly', async ({ page }
         window.__tileTest.testApi.openHelpDialog();
     });
 
+    const domDialogSurface = page.locator('#ui-overlay-root [data-dialog-surface="dom"]');
+
+    await expect(domDialogSurface).toBeVisible();
+    await expect(domDialogSurface).toContainText('Help');
+    await expect(domDialogSurface).toContainText('Controls:');
+
     const helpState = await page.evaluate(() => ({
         flags: window.__tileTest.testApi.getFlags(),
         dialog: window.__tileTest.testApi.getDialogSnapshot()
@@ -105,12 +111,17 @@ test('help, inventory, and quest panels open and close cleanly', async ({ page }
 
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !window.__tileTest.testApi.getFlags().isDialogOpen);
+    await expect(domDialogSurface).toHaveCount(0);
 
     await page.keyboard.press('i');
     await page.waitForFunction(() => {
         const flags = window.__tileTest.testApi.getFlags();
         return flags.isInventoryOpen && flags.isDialogOpen;
     });
+
+    await expect(domDialogSurface).toBeVisible();
+    await expect(domDialogSurface).toContainText('Inventory');
+    await expect(domDialogSurface).toContainText('Fixture Item');
 
     const inventoryState = await page.evaluate(() => ({
         flags: window.__tileTest.testApi.getFlags(),
@@ -120,12 +131,17 @@ test('help, inventory, and quest panels open and close cleanly', async ({ page }
 
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !window.__tileTest.testApi.getFlags().isDialogOpen);
+    await expect(domDialogSurface).toHaveCount(0);
 
     await page.keyboard.press('q');
     await page.waitForFunction(() => {
         const flags = window.__tileTest.testApi.getFlags();
         return flags.isQuestsOpen && flags.isDialogOpen;
     });
+
+    await expect(domDialogSurface).toBeVisible();
+    await expect(domDialogSurface).toContainText('Quests');
+    await expect(domDialogSurface).toContainText('Panel Quest');
 
     const questState = await page.evaluate(() => ({
         flags: window.__tileTest.testApi.getFlags(),
@@ -134,6 +150,7 @@ test('help, inventory, and quest panels open and close cleanly', async ({ page }
 
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !window.__tileTest.testApi.getFlags().isDialogOpen);
+    await expect(domDialogSurface).toHaveCount(0);
 
     const finalState = await page.evaluate(() => ({
         finalFlags: window.__tileTest.testApi.getFlags()

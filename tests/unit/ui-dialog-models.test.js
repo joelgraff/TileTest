@@ -21,6 +21,7 @@ describe('ui dialog models', () => {
         });
 
         expect(dialog).toEqual({
+            renderMode: 'dom',
             title: 'Inventory',
             text: 'INVENTORY\n\n1. Test Item\n   A fixture item\n   Value: 5 points\n\n',
             buttons: [],
@@ -48,6 +49,7 @@ describe('ui dialog models', () => {
         });
 
         expect(dialog.title).toBe('Quests');
+        expect(dialog.renderMode).toBe('dom');
         expect(dialog.text).toContain('=== ACTIVE QUESTS ===');
         expect(dialog.text).toContain('1. Injected Quest');
         expect(dialog.text).toContain('   Progress: 1/2 items collected');
@@ -79,8 +81,10 @@ describe('ui dialog models', () => {
         });
 
         expect(helpDialog.title).toBe('Help');
+        expect(helpDialog.renderMode).toBe('dom');
         expect(helpDialog.text).toContain('Spacebar: Interact with nearby vendor');
         expect(unavailableDialog).toEqual({
+            renderMode: 'dom',
             title: 'Quests',
             text: 'Quest system not available',
             exitButton: {

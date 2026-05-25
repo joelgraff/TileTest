@@ -64,6 +64,12 @@ Browser smoke tests should use `window.__tileTest.testApi` when the game is runn
 Keep browser setup and assertions on that test surface instead of reaching through `window.__tileTest.scene` or manager internals.
 The API is defined in `testModeApi.js` and is intended to remain stable across refactors unless runtime behavior changes.
 
+## DOM Overlay Status
+
+The Phaser canvas now sits under `#ui-overlay-root`.
+The help, inventory, and quest panel flows now render into that DOM overlay.
+Vendor dialogs and quest-completion dialogs still render through the legacy Phaser dialog surface for now.
+
 ## Current Test Scope
 
 - Content validation for domains, vendors, and map structure

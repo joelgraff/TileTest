@@ -87,8 +87,8 @@
 ## Phase 5: UI Rebuild
 
 - [x] Mount a DOM overlay above the Phaser canvas.
-- [ ] Port one dialog flow end to end.
-- [ ] Port help, inventory, and quest views.
+- [x] Port one dialog flow end to end.
+- [x] Port help, inventory, and quest views.
 - [ ] Port HUD controls and score display.
 - [ ] Add responsive layout checks.
 - [ ] Add modal behavior checks.

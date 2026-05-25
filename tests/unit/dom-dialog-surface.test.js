@@ -1,0 +1,144 @@
+import { describe, expect, it, vi } from 'vitest';
+
+import { renderDomDialogSurface } from '../../domDialogSurface.js';
+
+function createFakeDocument() {
+    class FakeElement {
+        constructor(tagName, ownerDocument) {
+            this.tagName = tagName;
+            this.ownerDocument = ownerDocument;
+            this.children = [];
+            this.dataset = {};
+            this.attributes = {};
+            this.listeners = new Map();
+            this.parentNode = null;
+            this.className = '';
+            this.textContent = '';
+            this.type = undefined;
+        }
+
+        append(...children) {
+            children.filter(Boolean).forEach(child => {
+                child.parentNode = this;
+                this.children.push(child);
+            });
+
+            return this;
+        }
+
+        setAttribute(name, value) {
+            this.attributes[name] = value;
+        }
+
+        addEventListener(type, listener) {
+            const listeners = this.listeners.get(type) ?? [];
+            listeners.push(listener);
+            this.listeners.set(type, listeners);
+        }
+
+        emit(type, event = {}) {
+            const listeners = this.listeners.get(type) ?? [];
+
+            listeners.forEach(listener => {
+                listener({
+                    preventDefault: vi.fn(),
+                    stopPropagation: vi.fn(),
+                    ...event
+                });
+            });
+        }
+
+        remove() {
+            if (!this.parentNode) {
+                return;
+            }
+
+            this.parentNode.children = this.parentNode.children.filter(child => child !== this);
+            this.parentNode = null;
+        }
+    }
+
+    const elementsById = new Map();
+    const documentRef = {
+        createElement: (tagName) => new FakeElement(tagName, documentRef),
+        getElementById: (id) => elementsById.get(id) ?? null
+    };
+    const overlayRoot = new FakeElement('div', documentRef);
+
+    elementsById.set('ui-overlay-root', overlayRoot);
+
+    return {
+        documentRef,
+        overlayRoot
+    };
+}
+
+describe('dom dialog surface', () => {
+    it('renders a dialog into the overlay root and wires dismissal buttons', () => {
+        const { documentRef, overlayRoot } = createFakeDocument();
+        const onClose = vi.fn();
+        const manager = {
+            getOverlayRoot: () => overlayRoot,
+            handleTextPagination: vi.fn(text => text),
+            handleButtonPagination: vi.fn(buttons => buttons),
+            handleBottomButtonPagination: vi.fn(buttons => buttons)
+        };
+
+        const dialogRoot = renderDomDialogSurface(manager, {
+            title: 'Help',
+            text: 'Controls:\nSpacebar',
+            exitButton: {
+                label: 'Close',
+                onClick: onClose
+            }
+        }, { documentRef });
+
+        expect(dialogRoot).toBe(overlayRoot.children[0]);
+        expect(dialogRoot.dataset.dialogSurface).toBe('dom');
+        expect(dialogRoot.children[0].attributes.role).toBe('dialog');
+        expect(dialogRoot.children[0].children[0].textContent).toBe('Help');
+        expect(dialogRoot.children[0].children[1].textContent).toBe('Controls:\nSpacebar');
+
+        const closeButton = dialogRoot.children[0].children[2].children[0];
+        closeButton.emit('click');
+
+        expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('falls back cleanly when the overlay root is unavailable', () => {
+        const documentRef = {
+            createElement: vi.fn(),
+            getElementById: vi.fn(() => null)
+        };
+
+        const result = renderDomDialogSurface({}, { title: 'Help' }, { documentRef });
+
+        expect(result).toBe(null);
+        expect(documentRef.createElement).not.toHaveBeenCalled();
+    });
+
+    it('marks disabled pagination buttons as non-interactive', () => {
+        const { documentRef, overlayRoot } = createFakeDocument();
+        const onClick = vi.fn();
+        const manager = {
+            getOverlayRoot: () => overlayRoot,
+            handleTextPagination: vi.fn(text => text),
+            handleButtonPagination: vi.fn(buttons => buttons),
+            handleBottomButtonPagination: vi.fn(buttons => buttons)
+        };
+
+        const dialogRoot = renderDomDialogSurface(manager, {
+            title: 'Paged Dialog',
+            text: 'Page 1',
+            buttons: [{ label: '<', disabled: true, onClick }]
+        }, { documentRef });
+
+        const disabledButton = dialogRoot.children[0].children[2].children[0];
+
+        expect(disabledButton.disabled).toBe(true);
+
+        disabledButton.emit('click');
+
+        expect(onClick).not.toHaveBeenCalled();
+    });
+});

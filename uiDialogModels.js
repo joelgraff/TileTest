@@ -16,6 +16,7 @@ export function createInventoryDialogData({ inventory = [], onClose }) {
     }
 
     return {
+        renderMode: 'dom',
         title: 'Inventory',
         text: inventoryText,
         buttons: [],
@@ -28,6 +29,7 @@ export function createInventoryDialogData({ inventory = [], onClose }) {
 
 export function createQuestUnavailableDialogData({ onClose }) {
     return {
+        renderMode: 'dom',
         title: 'Quests',
         text: 'Quest system not available',
         exitButton: {
@@ -68,6 +70,7 @@ export function createQuestDialogData({ activeQuests = [], completedQuests = [],
     }
 
     return {
+        renderMode: 'dom',
         title: 'Quests',
         text: questItems,
         textPagination: {
@@ -95,6 +98,7 @@ export function createQuestCompletionDialogData({ quest, onClose }) {
 
 export function createHelpDialogData({ onClose }) {
     return {
+        renderMode: 'dom',
         title: 'Help',
         text: 'HELP\n\n'
             + 'Controls:\n'

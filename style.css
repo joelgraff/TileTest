@@ -30,6 +30,78 @@ body {
     pointer-events: none;
 }
 
+.dom-dialog-backdrop {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 16px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.45) 100%);
+    pointer-events: auto;
+}
+
+.dom-dialog-panel {
+    width: min(600px, calc(100% - 8px));
+    max-height: min(340px, calc(100% - 8px));
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px 18px 18px;
+    overflow: auto;
+    color: #ffffff;
+    background: #000080;
+    border: 3px solid #00ffff;
+    box-shadow: 0 0 0 3px #000000;
+    font-family: "Courier New", Courier, monospace;
+}
+
+.dom-dialog-title {
+    margin: 0;
+    padding-bottom: 10px;
+    color: #ffff00;
+    font-size: 1.15rem;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid rgba(0, 255, 255, 0.6);
+}
+
+.dom-dialog-text {
+    white-space: pre-wrap;
+    line-height: 1.45;
+}
+
+.dom-dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.dom-dialog-button {
+    min-width: 110px;
+    padding: 10px 14px;
+    color: #000000;
+    background: #c0c0c0;
+    border: 2px solid #ffffff;
+    box-shadow: 2px 2px 0 #000000;
+    font: inherit;
+    cursor: pointer;
+}
+
+.dom-dialog-button:hover,
+.dom-dialog-button:focus-visible {
+    background: #ffff00;
+    outline: none;
+}
+
+.dom-dialog-button:disabled {
+    color: #404040;
+    background: #808080;
+    border-color: #a0a0a0;
+    box-shadow: none;
+    cursor: default;
+}
+
 canvas {
     display: block;
     image-rendering: pixelated;
