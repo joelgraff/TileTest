@@ -1,3 +1,6 @@
+import { setupCollisionLayers } from './collisionLayerSetup.js';
+import { bindCollisionBodies } from './collisionColliderBinding.js';
+
 class CollisionManager {
     static preload(scene) {}
 
@@ -17,15 +20,9 @@ class CollisionManager {
         const map = scene.map;
         if (!map) return;
 
-        const collidableLayers = ['tables', 'tabletops'];
-        scene.customCollisionBodies = [];
-
-        collidableLayers.forEach(layerName => {
-            const layer = map.getLayer(layerName);
-            if (layer && layer.tilemapLayer) {
-                CollisionManager.createTileCollisionBodies(scene, layer.tilemapLayer);
-                CollisionManager.drawTileCollisionDebug(scene, layer.tilemapLayer);
-            }
+        setupCollisionLayers(scene, ['tables', 'tabletops'], {
+            createTileCollisionBodies: CollisionManager.createTileCollisionBodies,
+            drawTileCollisionDebug: CollisionManager.drawTileCollisionDebug
         });
 
         CollisionManager.addColliders(scene);
@@ -146,18 +143,7 @@ class CollisionManager {
     }
 
     static addColliders(scene) {
-        if (scene.player) {
-            scene.customCollisionBodies.forEach(body => {
-                scene.physics.add.collider(scene.player, body);
-            });
-        }
-        if (scene.npcGroup) {
-            scene.npcGroup.getChildren().forEach(npc => {
-                scene.customCollisionBodies.forEach(body => {
-                    scene.physics.add.collider(npc, body);
-                });
-            });
-        }
+        bindCollisionBodies(scene, scene.customCollisionBodies);
     }
 }
 

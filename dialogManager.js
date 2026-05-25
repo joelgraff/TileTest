@@ -180,9 +180,13 @@ class DialogManager {
             this.isDialogOpen = false;
         }
 
+        const isPointerDown = Boolean(this.scene.input?.activePointer?.isDown);
+
         // If pointer is still down when dialog closes, ignore subsequent pointer events until release
-        if (this.inputManager && this.scene.input.activePointer.isDown) {
+        if (this.inputManager && isPointerDown) {
             this.inputManager.prepareUiInteraction({ suppressPointer: true });
+        } else {
+            this.inputManager?.releasePointerSuppression?.();
         }
 
         // Clear the layout system (elements will be destroyed with container)

@@ -1,3 +1,5 @@
+import { resolvePlayerAnimationKey } from './playerAnimationResolver.js';
+
 class PlayerManager {
     static lastX = 0;
     static lastY = 0;
@@ -16,10 +18,11 @@ class PlayerManager {
     static update(scene, time, delta) {
         if (!scene.player || !scene.inputManager) return;
         if (scene.isDialogOpen) return; // Don't update player when dialog is open
-        PlayerManager.handlePlayerMovement(scene);
-        PlayerManager.handlePlayerAnimation(scene);
+        const direction = scene.inputManager.getDirection();
+        PlayerManager.handlePlayerMovement(scene, direction);
+        PlayerManager.handlePlayerAnimation(scene, direction);
         PlayerManager.updatePlayerDepth(scene); // Progressive depth
-        PlayerManager.drawPlayerDebug(scene);
+        PlayerManager.drawPlayerDebug(scene, direction);
     }
 
     // --- Helper Functions ---
@@ -93,8 +96,7 @@ class PlayerManager {
         });
     }
 
-    static handlePlayerMovement(scene) {
-        const direction = scene.inputManager.getDirection();
+    static handlePlayerMovement(scene, direction = scene.inputManager.getDirection()) {
         const speed = 200;
         scene.player.setVelocity(direction.x * speed, direction.y * speed);
 
@@ -121,18 +123,13 @@ class PlayerManager {
         }
     }
 
-    static handlePlayerAnimation(scene) {
-        const direction = scene.inputManager.getDirection();
-        if (direction.x === 0 && direction.y === 0) {
+    static handlePlayerAnimation(scene, direction = scene.inputManager.getDirection()) {
+        const animKey = resolvePlayerAnimationKey(direction);
+
+        if (!animKey) {
             scene.player.anims.stop();
             scene.player.setFrame(0); // Idle frame (down)
         } else {
-            let animKey = 'down';
-            if (Math.abs(direction.x) > Math.abs(direction.y)) {
-                animKey = direction.x > 0 ? 'right' : 'left';
-            } else if (direction.y !== 0) {
-                animKey = direction.y > 0 ? 'down' : 'up';
-            }
             scene.player.anims.play(animKey, true);
         }
     }
@@ -146,8 +143,7 @@ class PlayerManager {
 
     }
 
-    static drawPlayerDebug(scene) {
-        const direction = scene.inputManager.getDirection();
+    static drawPlayerDebug(scene, direction = scene.inputManager.getDirection()) {
         if (scene.debugEnabled) {
             if (!scene.playerDebugGraphics) {
                 scene.playerDebugGraphics = scene.add.graphics().setDepth(999);

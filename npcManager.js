@@ -1,4 +1,6 @@
 import CONFIG from './config.js';
+import { syncNPCInteractionState } from './npcInteractionState.js';
+import { createNPCGroup, resolveNPCTablesLayerDepth } from './npcSpawnFactory.js';
 
 class NPCManager {
     static preload(scene) {
@@ -17,26 +19,13 @@ class NPCManager {
         const rect = NPCManager.getRectObject(npcAreaLayer);
         if (!rect) return;
 
-        // Get tables layer depth from scene (set by mapManager)
-        let tablesLayerDepth = 0;
-        if (scene.tablesLayer && typeof scene.tablesLayer.depth === 'number') {
-            tablesLayerDepth = scene.tablesLayer.depth;
-        } else {
-            tablesLayerDepth = Math.floor(scene.map.heightInPixels);
-        }
+        const tablesLayerDepth = resolveNPCTablesLayerDepth(scene);
 
-        scene.npcGroup = scene.add.group();
-
-        spawnPoints.forEach(point => {
-            const direction = NPCManager.getNearestEdgeDirection(point, rect);
-            const frame = NPCManager.getFrameForDirection(direction);
-            const spriteKey = NPCManager.getRandomSpriteKey();
-
-            const npc = scene.add.sprite(point.x, point.y, spriteKey, frame);
-            scene.npcGroup.add(npc);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-            // Set progressive depth for NPC (reversed gradient)
-            NPCManager.setNPCDepth(npc, rect, tablesLayerDepth);
+        scene.npcGroup = createNPCGroup(scene, spawnPoints, rect, tablesLayerDepth, {
+            getNearestEdgeDirection: NPCManager.getNearestEdgeDirection,
+            getFrameForDirection: NPCManager.getFrameForDirection,
+            getRandomSpriteKey: NPCManager.getRandomSpriteKey,
+            setNPCDepth: NPCManager.setNPCDepth
         });
     }
 
@@ -46,41 +35,7 @@ class NPCManager {
         if (scene.isDialogOpen) return; // Don't update NPCs when dialog is open
 
         scene.npcGroup.getChildren().forEach(npc => {
-
-            //check vertical first for performance
-            const dy = Math.abs(npc.y - scene.player.y);
-
-            // If under 96 pixels, check full distance, otherwise clear interactable, if set
-            if (dy < 96) {
-                const dx = Math.abs(npc.x - scene.player.x);
-
-                npc.interactable = (dx + dy < 96);
-
-                if (npc.interactable) {
-                    if (!npc.exclamation) {
-                        npc.exclamation = scene.add.text(npc.x, npc.y - 32, '!', {
-                            fontFamily: 'Arial',
-                            fontSize: '32px',
-                            fill: '#FF0000',
-                            stroke: '#FFFFFF',
-                            strokeThickness: 3,
-                            align: 'center'
-                        }).setOrigin(0.5).setDepth(npc.depth + 1);
-                    }
-                } else {
-                    if (npc.exclamation) {
-                        npc.exclamation.destroy();
-                        npc.exclamation = null;
-                    }
-                }
-
-            } else if (npc.interactable) {
-                npc.interactable = false;
-                if (npc.exclamation) {
-                    npc.exclamation.destroy();
-                    npc.exclamation = null;
-                }
-            }
+            syncNPCInteractionState(scene, npc, scene.player);
         });
     }
 

@@ -1,4 +1,18 @@
 import DialogManager from './dialogManager.js';
+import {
+    createHelpHudButton,
+    createInventoryHudButton,
+    createQuestHudButton,
+    createScoreHud,
+    createUiHud,
+    createVersionHud
+} from './uiHudFactory.js';
+import {
+    hideMovementIndicatorReticle,
+    initializeMovementIndicator,
+    showMovementIndicatorReticle,
+    updateMovementIndicatorFromPointer
+} from './uiMovementIndicator.js';
 
 class UIManager {
     constructor(scene, { state = null } = {}) {
@@ -29,11 +43,7 @@ class UIManager {
         this.dialogManager = new DialogManager(scene, { state: this.state });
 
         // Movement indicator (reticle)
-        this.movementIndicator = this.scene.add.graphics();
-        this.movementIndicator.setDepth(999);
-        this.movementIndicator.setVisible(false);
-        this.movementIndicator.alpha = 1;
-        this.movementIndicatorFadeTween = null;
+        initializeMovementIndicator(this);
     }
 
     setInputManager(inputManager) {
@@ -44,192 +54,40 @@ class UIManager {
 
     // Movement indicator (reticle)
     showMovementIndicator(x, y) {
-        this.movementIndicator.clear();
-        // Draw reticle: circle + crosshair
-        this.movementIndicator.lineStyle(4, 0xFFFF00, 1);
-        this.movementIndicator.strokeCircle(x, y, 16);
-        this.movementIndicator.lineStyle(2, 0xFFFFFF, 1);
-        this.movementIndicator.beginPath();
-        this.movementIndicator.moveTo(x - 12, y);
-        this.movementIndicator.lineTo(x + 12, y);
-        this.movementIndicator.moveTo(x, y - 12);
-        this.movementIndicator.lineTo(x, y + 12);
-        this.movementIndicator.strokePath();
-        this.movementIndicator.setVisible(true);
-        this.movementIndicator.alpha = 1;
-        if (this.movementIndicatorFadeTween) {
-            this.movementIndicatorFadeTween.stop();
-            this.movementIndicatorFadeTween = null;
-        }
+        return showMovementIndicatorReticle(this, x, y);
     }
 
     hideMovementIndicator() {
-        if (this.movementIndicatorFadeTween) {
-            this.movementIndicatorFadeTween.stop();
-        }
-        this.movementIndicatorFadeTween = this.scene.tweens.add({
-            targets: this.movementIndicator,
-            alpha: 0,
-            duration: 200,
-            onComplete: () => {
-                this.movementIndicator.setVisible(false);
-            }
-        });
+        return hideMovementIndicatorReticle(this);
     }
 
     // Call this from InputManager after pointerdown/up events
     handlePointerMove(screenX, screenY, isDown) {
-        if (isDown) {
-            // Convert screen coordinates to world coordinates
-            const worldPoint = this.scene.cameras.main.getWorldPoint(screenX, screenY);
-            this.showMovementIndicator(worldPoint.x, worldPoint.y);
-        } else {
-            this.hideMovementIndicator();
-        }
+        return updateMovementIndicatorFromPointer(this, screenX, screenY, isDown);
     }
 
     createUI() {
-        // Create score display
-        this.createScoreDisplay();
-
-        // Create inventory button
-        this.createInventoryButton();
-
-        // Create quest button
-        this.createQuestButton();
-
-        // Create help button
-        this.createHelpButton();
-
-        // Create version display
-        this.createVersionDisplay();
+        return createUiHud(this);
     }
 
     createScoreDisplay() {
-        this.scoreBackground = this.scene.add.rectangle(100, 25, 180, 40, this.colors.button)
-            .setScrollFactor(0)
-            .setDepth(100)
-            .setStrokeStyle(2, 0xFFFFFF);  // White border to match buttons
-
-        this.scoreText = this.scene.add.text(100, 25, `SCORE: ${this.score}`, {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '14px',
-            fill: '#FFFFFF',
-            align: 'center'
-        })
-        .setOrigin(0.5)
-        .setScrollFactor(0)
-        .setDepth(101);
+        return createScoreHud(this);
     }
 
     createInventoryButton() {
-        this.invButton = this.scene.add.rectangle(720, 60, 80, 30, this.colors.button)  // Moved to right edge, below QUESTS
-            .setScrollFactor(0)
-            .setDepth(100)
-            .setStrokeStyle(2, 0xFFFFFF)  // White border
-            .setInteractive({ cursor: 'pointer' });
-
-        this.invButtonText = this.scene.add.text(720, 60, 'PACK', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '12px',
-            fill: '#FFFFFF',
-            align: 'center'
-        })
-        .setOrigin(0.5)
-        .setScrollFactor(0)
-        .setDepth(101);
-
-        this.invButton.on('pointerover', () => {
-            this.invButton.setFillStyle(this.colors.buttonHover);
-        });
-
-        this.invButton.on('pointerout', () => {
-            this.invButton.setFillStyle(this.colors.button);
-        });
-
-        this.invButton.on('pointerdown', (pointer, localX, localY, event) => {
-            event.stopPropagation();
-            // Clear any existing input state to prevent player movement
-            this.inputManager?.prepareUiInteraction?.();
-            this.toggleInventory();
-        });
+        return createInventoryHudButton(this);
     }
 
     createQuestButton() {
-        this.questButton = this.scene.add.rectangle(720, 25, 80, 30, this.colors.button)  // Moved to right edge, top position
-            .setScrollFactor(0)
-            .setDepth(100)
-            .setStrokeStyle(2, 0xFFFFFF)  // White border
-            .setInteractive({ cursor: 'pointer' });
-
-        this.questButtonText = this.scene.add.text(720, 25, 'QUESTS', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '12px',
-            fill: '#FFFFFF',
-            align: 'center'
-        })
-        .setOrigin(0.5)
-        .setScrollFactor(0)
-        .setDepth(101);
-
-        this.questButton.on('pointerover', () => {
-            this.questButton.setFillStyle(this.colors.buttonHover);
-        });
-
-        this.questButton.on('pointerout', () => {
-            this.questButton.setFillStyle(this.colors.button);
-        });
-
-        this.questButton.on('pointerdown', (pointer, localX, localY, event) => {
-            event.stopPropagation();
-            // Clear any existing input state to prevent player movement
-            this.inputManager?.prepareUiInteraction?.();
-            this.toggleQuests();
-        });
+        return createQuestHudButton(this);
     }
 
     createHelpButton() {
-        // Help button implementation
-        this.helpButton = this.scene.add.rectangle(10, 60, 80, 30, this.colors.button)
-            .setScrollFactor(0)
-            .setDepth(100)
-            .setStrokeStyle(2, 0xFFFFFF)
-            .setInteractive({ cursor: 'pointer' });
-
-        this.helpButtonText = this.scene.add.text(10, 60, 'HELP', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '12px',
-            fill: '#FFFFFF',
-            align: 'center'
-        })
-        .setOrigin(0.5)
-        .setScrollFactor(0)
-        .setDepth(101);
-
-        this.helpButton.on('pointerover', () => {
-            this.helpButton.setFillStyle(this.colors.buttonHover);
-        });
-
-        this.helpButton.on('pointerout', () => {
-            this.helpButton.setFillStyle(this.colors.button);
-        });
-
-        this.helpButton.on('pointerdown', (pointer, localX, localY, event) => {
-            event.stopPropagation();
-            this.toggleHelp();
-        });
+        return createHelpHudButton(this);
     }
 
     createVersionDisplay() {
-        this.versionText = this.scene.add.text(10, 620, 'Version 1.6', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '12px',
-            fill: '#FFFFFF',
-            align: 'left'
-        })
-        .setOrigin(0)
-        .setScrollFactor(0)
-        .setDepth(100);
+        return createVersionHud(this);
     }
 
     setState(state) {

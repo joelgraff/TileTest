@@ -112,4 +112,102 @@ describe('InputManager movement reset', () => {
         expect(context.isDragging).toBe(false);
         expect(context.direction).toEqual({ x: 0, y: 0 });
     });
+
+    it('prefers keyboard direction over pointer target and drag state', () => {
+        const context = {
+            scene: {
+                interactionsEnabled: true,
+                isDialogOpen: false,
+                player: { x: 100, y: 100 }
+            },
+            cursors: {
+                left: { isDown: false },
+                right: { isDown: true },
+                up: { isDown: true },
+                down: { isDown: false }
+            },
+            target: { x: 200, y: 200 },
+            isDragging: true,
+            direction: { x: -1, y: 0 },
+            ignorePointerUntilRelease: false,
+            clearMovementState: InputManager.prototype.clearMovementState
+        };
+
+        const direction = InputManager.prototype.getDirection.call(context);
+
+        expect(direction).toEqual({ x: 1, y: -1 });
+        expect(context.target).toEqual({ x: 200, y: 200 });
+    });
+
+    it('clears a nearby movement target once the player reaches it', () => {
+        const context = {
+            scene: {
+                interactionsEnabled: true,
+                isDialogOpen: false,
+                player: { x: 100, y: 100 }
+            },
+            cursors: {
+                left: { isDown: false },
+                right: { isDown: false },
+                up: { isDown: false },
+                down: { isDown: false }
+            },
+            target: { x: 110, y: 110 },
+            isDragging: false,
+            direction: { x: 0, y: 0 },
+            ignorePointerUntilRelease: false,
+            clearMovementState: InputManager.prototype.clearMovementState
+        };
+
+        const direction = InputManager.prototype.getDirection.call(context);
+
+        expect(direction).toEqual({ x: 0, y: 0 });
+        expect(context.target).toBe(null);
+    });
+
+    it('falls back to drag direction when no keyboard or tap target is active', () => {
+        const context = {
+            scene: {
+                interactionsEnabled: true,
+                isDialogOpen: false,
+                player: { x: 100, y: 100 }
+            },
+            cursors: {
+                left: { isDown: false },
+                right: { isDown: false },
+                up: { isDown: false },
+                down: { isDown: false }
+            },
+            target: null,
+            isDragging: true,
+            direction: { x: 0.6, y: 0.8 },
+            ignorePointerUntilRelease: false,
+            clearMovementState: InputManager.prototype.clearMovementState
+        };
+
+        const direction = InputManager.prototype.getDirection.call(context);
+
+        expect(direction).toEqual({ x: 0.6, y: 0.8 });
+    });
+
+    it('normalizes drag direction relative to the player position', () => {
+        const context = {
+            scene: {
+                player: { x: 10, y: 20 }
+            },
+            threshold: 20,
+            direction: { x: 0, y: 0 }
+        };
+
+        const direction = InputManager.prototype.updateDirection.call(context, { x: 40, y: 60 });
+
+        expect(direction.x).toBeCloseTo(0.6, 5);
+        expect(direction.y).toBeCloseTo(0.8, 5);
+        expect(context.direction).toEqual(direction);
+
+        const zeroDirection = InputManager.prototype.updateDirection.call(context, { x: 20, y: 30 });
+
+        expect(zeroDirection).toEqual({ x: 0, y: 0 });
+        expect(context.direction).toEqual({ x: 0, y: 0 });
+    });
 });
