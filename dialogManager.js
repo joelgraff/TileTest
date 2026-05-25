@@ -10,9 +10,17 @@ import { calculateDialogTextPages, resolveDialogTextPage } from './dialogTextPag
 import { bindSceneBooleanFlag } from './stateBindings.js';
 
 class DialogManager {
-    constructor(scene, { state = null, inputManager = null } = {}) {
+    constructor(scene, {
+        state = null,
+        inputManager = null,
+        prepareUiInteraction = null,
+        releasePointerSuppression = null,
+        isPointerDown = null
+    } = {}) {
         this.scene = scene;
-        this.inputManager = inputManager;
+        this.prepareUiInteraction = prepareUiInteraction ?? inputManager?.prepareUiInteraction?.bind(inputManager) ?? null;
+        this.releasePointerSuppression = releasePointerSuppression ?? inputManager?.releasePointerSuppression?.bind(inputManager) ?? null;
+        this.isPointerDown = isPointerDown ?? (() => Boolean(this.scene.input?.activePointer?.isDown));
         this.dialogContainer = null;
         this.overlay = null;
         this.setState(state);
@@ -21,7 +29,8 @@ class DialogManager {
     }
 
     setInputManager(inputManager) {
-        this.inputManager = inputManager;
+        this.prepareUiInteraction = inputManager?.prepareUiInteraction?.bind(inputManager) ?? null;
+        this.releasePointerSuppression = inputManager?.releasePointerSuppression?.bind(inputManager) ?? null;
         return this;
     }
 
@@ -56,7 +65,7 @@ class DialogManager {
         this.isDialogOpen = true;
 
         // Clear any existing input state to prevent player movement
-        this.inputManager?.prepareUiInteraction?.();
+        this.prepareUiInteraction?.();
 
         renderDialogSurface(this, {
             imageKey,
@@ -180,13 +189,13 @@ class DialogManager {
             this.isDialogOpen = false;
         }
 
-        const isPointerDown = Boolean(this.scene.input?.activePointer?.isDown);
+        const isPointerDown = this.isPointerDown();
 
         // If pointer is still down when dialog closes, ignore subsequent pointer events until release
-        if (this.inputManager && isPointerDown) {
-            this.inputManager.prepareUiInteraction({ suppressPointer: true });
+        if (this.prepareUiInteraction && isPointerDown) {
+            this.prepareUiInteraction({ suppressPointer: true });
         } else {
-            this.inputManager?.releasePointerSuppression?.();
+            this.releasePointerSuppression?.();
         }
 
         // Clear the layout system (elements will be destroyed with container)

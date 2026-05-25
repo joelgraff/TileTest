@@ -61,9 +61,7 @@ describe('InputManager movement reset', () => {
     it('forwards pointer move state through the injected UI collaborator', () => {
         const handlePointerMove = vi.fn();
         const context = {
-            uiManager: {
-                handlePointerMove
-            }
+            handlePointerMove
         };
 
         InputManager.prototype.forwardPointerMove.call(context, { x: 14, y: 28 }, true);

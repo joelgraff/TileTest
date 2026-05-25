@@ -1,9 +1,17 @@
 class InteractionCoordinator {
-    constructor(scene, { vendorManager = null, inputManager = null, uiManager = null } = {}) {
+    constructor(scene, {
+        vendorManager = null,
+        inputManager = null,
+        uiManager = null,
+        handleUiInput = null,
+        suppressPointerUntilRelease = null
+    } = {}) {
         this.scene = scene;
         this.vendorManager = vendorManager;
-        this.inputManager = inputManager;
-        this.uiManager = uiManager;
+        this.handleUiInput = handleUiInput ?? uiManager?.handleInput?.bind(uiManager) ?? null;
+        this.suppressPointerUntilRelease = suppressPointerUntilRelease
+            ?? inputManager?.suppressPointerUntilRelease?.bind(inputManager)
+            ?? null;
         this.debugToggleHandler = null;
 
         this.bindInteractionInputs();
@@ -18,10 +26,10 @@ class InteractionCoordinator {
         this.scene.input.keyboard.on('keydown', (event) => {
             this.handleKeyDown(event);
         });
+    }
 
-        this.scene.input.on('pointerdown', (pointer) => {
-            this.interactWithNearbyVendor(pointer);
-        });
+    handlePointerDown(pointer) {
+        return this.interactWithNearbyVendor(pointer);
     }
 
     handleKeyDown(event = {}) {
@@ -39,19 +47,19 @@ class InteractionCoordinator {
 
         if (code === 'KeyI' || key === 'i' || key === 'I') {
             event.preventDefault?.();
-            this.uiManager?.handleInput?.('I');
+            this.handleUiInput?.('I');
             return true;
         }
 
         if (code === 'KeyQ' || key === 'q' || key === 'Q') {
             event.preventDefault?.();
-            this.uiManager?.handleInput?.('Q');
+            this.handleUiInput?.('Q');
             return true;
         }
 
         if (code === 'Escape' || key === 'Escape' || key === 'Esc') {
             event.preventDefault?.();
-            this.uiManager?.handleInput?.('ESCAPE');
+            this.handleUiInput?.('ESCAPE');
             return true;
         }
 
@@ -89,7 +97,7 @@ class InteractionCoordinator {
         }
 
         if (pointer) {
-            this.inputManager?.suppressPointerUntilRelease?.();
+            this.suppressPointerUntilRelease?.();
         }
 
         return this.vendorManager?.interactWithVendorSprite?.(nearbyVendor) ?? false;

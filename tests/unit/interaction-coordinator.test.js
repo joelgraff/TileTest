@@ -9,19 +9,17 @@ describe('InteractionCoordinator', () => {
         globalThis.Phaser = originalPhaser;
     });
 
-    it('binds generic keyboard and pointer handlers on construction', () => {
+    it('binds the generic keyboard handler on construction', () => {
         const keyboardOn = vi.fn();
-        const inputOn = vi.fn();
 
         new InteractionCoordinator({
             input: {
                 keyboard: { on: keyboardOn },
-                on: inputOn
+                on: vi.fn()
             }
         });
 
         expect(keyboardOn).toHaveBeenCalledWith('keydown', expect.any(Function));
-        expect(inputOn).toHaveBeenCalledWith('pointerdown', expect.any(Function));
     });
 
     it('routes UI and debug keyboard shortcuts through the injected collaborators', () => {
@@ -34,9 +32,7 @@ describe('InteractionCoordinator', () => {
                 on: vi.fn()
             }
         }, {
-            uiManager: {
-                handleInput
-            }
+            handleUiInput: handleInput
         });
 
         coordinator.setDebugToggleHandler(debugToggleHandler);
@@ -104,12 +100,10 @@ describe('InteractionCoordinator', () => {
                 isInteractionAvailable: () => true,
                 interactWithVendorSprite
             },
-            inputManager: {
-                suppressPointerUntilRelease
-            }
+            suppressPointerUntilRelease
         });
 
-        const interacted = coordinator.interactWithNearbyVendor({ worldX: 10, worldY: 12 });
+        const interacted = coordinator.handlePointerDown({ worldX: 10, worldY: 12 });
 
         expect(interacted).toBe(true);
         expect(suppressPointerUntilRelease).toHaveBeenCalledTimes(1);

@@ -54,6 +54,24 @@ describe('InputManager pointer handlers', () => {
         expect(uiManager.handlePointerMove).toHaveBeenCalledWith(10, 20, true);
     });
 
+    it('does not start click-to-move when the interaction coordinator consumes pointerdown', () => {
+        const { scene, handlers } = createScene();
+        const uiManager = { handlePointerMove: vi.fn() };
+        const interactionCoordinator = {
+            handlePointerDown: vi.fn(() => true)
+        };
+
+        const manager = new InputManager(scene, { uiManager });
+        manager.setInteractionCoordinator(interactionCoordinator);
+
+        handlers.pointerdown({ x: 10, y: 20 });
+
+        expect(interactionCoordinator.handlePointerDown).toHaveBeenCalledWith({ x: 10, y: 20 });
+        expect(manager.target).toBe(null);
+        expect(scene.cameras.main.getWorldPoint).not.toHaveBeenCalled();
+        expect(uiManager.handlePointerMove).not.toHaveBeenCalled();
+    });
+
     it('promotes drag input after the movement threshold and updates the projected target once', () => {
         const { scene, handlers } = createScene();
         const uiManager = { handlePointerMove: vi.fn() };

@@ -16,6 +16,7 @@ describe('DialogManager interaction state', () => {
                     }
                 }
             },
+            prepareUiInteraction,
             inputManager: {
                 prepareUiInteraction
             },
@@ -40,7 +41,7 @@ describe('DialogManager interaction state', () => {
         expect(prepareUiInteraction).toHaveBeenCalledTimes(1);
         expect(context.isDialogOpen).toBe(true);
         expect(context.scene.isDialogOpen).toBe(true);
-        expect(context.dialogLayout.buttonFactory.inputManager).toBe(context.inputManager);
+        expect(context.dialogLayout.buttonFactory.prepareUiInteraction).toBe(prepareUiInteraction);
     });
 
     it('suppresses pointer movement through InputManager when a dialog closes mid-click', () => {
@@ -52,12 +53,9 @@ describe('DialogManager interaction state', () => {
             isDialogOpen: true,
             scene: {
                 isDialogOpen: true,
-                input: {
-                    activePointer: {
-                        isDown: true
-                    }
-                }
             },
+            prepareUiInteraction,
+            isPointerDown: () => true,
             inputManager: {
                 prepareUiInteraction
             },
@@ -88,13 +86,11 @@ describe('DialogManager interaction state', () => {
         const context = {
             isDialogOpen: true,
             scene: {
-                isDialogOpen: true,
-                input: {
-                    activePointer: {
-                        isDown: false
-                    }
-                }
+                isDialogOpen: true
             },
+            prepareUiInteraction,
+            releasePointerSuppression,
+            isPointerDown: () => false,
             inputManager: {
                 prepareUiInteraction,
                 releasePointerSuppression

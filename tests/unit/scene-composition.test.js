@@ -24,6 +24,7 @@ describe('scene composition', () => {
         const InputManagerClass = vi.fn(function (sceneArg, options) {
             this.sceneArg = sceneArg;
             this.options = options;
+            this.setInteractionCoordinator = vi.fn();
         });
         const QuestManagerClass = vi.fn(function (options) {
             this.options = options;
@@ -53,7 +54,9 @@ describe('scene composition', () => {
         const interactionCoordinator = InteractionCoordinatorClass.mock.instances[0];
 
         expect(UIManagerClass).toHaveBeenCalledWith(scene, { state: scene.gameState });
-        expect(InputManagerClass).toHaveBeenCalledWith(scene, { uiManager });
+        expect(InputManagerClass).toHaveBeenCalledWith(scene, {
+            handlePointerMove: expect.any(Function)
+        });
         expect(QuestManagerClass).toHaveBeenCalledWith({ state: scene.gameState, testMode: true });
         expect(VendorManagerClass).toHaveBeenCalledWith(scene, {
             showDialog: expect.any(Function),
@@ -68,10 +71,11 @@ describe('scene composition', () => {
         });
         expect(InteractionCoordinatorClass).toHaveBeenCalledWith(scene, {
             vendorManager,
-            inputManager,
-            uiManager
+            handleUiInput: expect.any(Function),
+            suppressPointerUntilRelease: expect.any(Function)
         });
         expect(uiManager.setInputManager).toHaveBeenCalledWith(inputManager);
+        expect(inputManager.setInteractionCoordinator).toHaveBeenCalledWith(interactionCoordinator);
         expect(uiManager.setQuestManager).toHaveBeenCalledWith(questManager);
         expect(questManager.setQuestCompletionHandler).toHaveBeenCalledWith(expect.any(Function));
         expect(scene.uiManager).toBe(uiManager);

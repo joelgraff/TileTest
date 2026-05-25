@@ -2,9 +2,10 @@ import { resolveMovementDirection, updateDragDirection } from './inputDirectionR
 import { registerPointerHandlers } from './inputPointerHandlers.js';
 
 class InputManager {
-    constructor(scene, { uiManager = null } = {}) {
+    constructor(scene, { uiManager = null, handlePointerMove = null } = {}) {
         this.scene = scene;
-        this.uiManager = uiManager;
+        this.handlePointerMove = handlePointerMove ?? uiManager?.handlePointerMove?.bind(uiManager) ?? null;
+        this.interactionCoordinator = null;
         this.cursors = scene.input.keyboard.createCursorKeys();
         this.touchStart = { x: 0, y: 0 };
         this.touchEnd = { x: 0, y: 0 };
@@ -17,8 +18,13 @@ class InputManager {
         registerPointerHandlers(this, scene);
     }
 
+    setInteractionCoordinator(interactionCoordinator) {
+        this.interactionCoordinator = interactionCoordinator;
+        return this;
+    }
+
     forwardPointerMove(pointer, isDown) {
-        this.uiManager?.handlePointerMove?.(pointer.x, pointer.y, isDown);
+        this.handlePointerMove?.(pointer.x, pointer.y, isDown);
     }
 
     clearMovementState() {

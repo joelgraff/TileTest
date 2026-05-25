@@ -3,9 +3,9 @@
  * Provides methods for creating different types of buttons with consistent styling
  */
 class ButtonFactory {
-    constructor(scene, { inputManager = null } = {}) {
+    constructor(scene, { inputManager = null, prepareUiInteraction = null } = {}) {
         this.scene = scene;
-        this.inputManager = inputManager;
+        this.prepareUiInteraction = prepareUiInteraction ?? inputManager?.prepareUiInteraction?.bind(inputManager) ?? null;
     }
 
     /**
@@ -54,7 +54,7 @@ class ButtonFactory {
                 .on('pointerdown', (pointer, localX, localY, event) => {
                     event.stopPropagation();
                     // Clear any existing input state to prevent player movement
-                    this.inputManager?.prepareUiInteraction?.();
+                    this.prepareUiInteraction?.();
                     onClick();
                 });
         }

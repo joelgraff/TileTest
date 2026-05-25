@@ -19,6 +19,11 @@ export function handlePointerDown(inputManager, pointer) {
         return null;
     }
 
+    const interactionHandled = inputManager.interactionCoordinator?.handlePointerDown?.(pointer);
+    if (interactionHandled) {
+        return null;
+    }
+
     inputManager.touchStart.x = pointer.x;
     inputManager.touchEnd.x = pointer.x;
     inputManager.touchStart.y = pointer.y;

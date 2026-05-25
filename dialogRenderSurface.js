@@ -16,7 +16,7 @@ export function renderDialogSurface(
         cam.height - dialogHeight / 2 - 16,
         dialogWidth,
         dialogHeight,
-        { inputManager: manager.inputManager }
+        { prepareUiInteraction: manager.prepareUiInteraction }
     );
     manager.overlay = manager.createOverlay(cam);
     manager.dialogContainer = manager.createContainer(cam, dialogWidth, dialogHeight);

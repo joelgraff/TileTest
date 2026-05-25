@@ -23,7 +23,7 @@ describe('dialog render surface', () => {
         const manager = {
             scene,
             isMobile: false,
-            inputManager: { id: 'input-1' },
+            prepareUiInteraction: vi.fn(),
             createOverlay: vi.fn(() => ({ id: 'overlay-1' })),
             createContainer: vi.fn(() => ({ id: 'container-1' })),
             renderBackground: vi.fn(),
@@ -58,7 +58,7 @@ describe('dialog render surface', () => {
             414,
             600,
             340,
-            { inputManager: manager.inputManager }
+            { prepareUiInteraction: manager.prepareUiInteraction }
         );
         expect(manager.dialogLayout).toBe(DialogLayoutClass.mock.instances[0]);
         expect(manager.createOverlay).toHaveBeenCalledWith(scene.cameras.main);

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import ButtonFactory from '../../ui/ButtonFactory.js';
 
 describe('ButtonFactory', () => {
-    it('uses the injected InputManager for button clicks instead of scene-global input', () => {
+    it('uses the injected interaction-prep callback for button clicks instead of scene-global input', () => {
         const handlers = {};
         const stopPropagation = vi.fn();
         const sceneInputPrepare = vi.fn();
@@ -50,9 +50,7 @@ describe('ButtonFactory', () => {
             }
         };
         const factory = new ButtonFactory(scene, {
-            inputManager: {
-                prepareUiInteraction: injectedPrepare
-            }
+            prepareUiInteraction: injectedPrepare
         });
 
         factory.createButton('Talk', onClick);

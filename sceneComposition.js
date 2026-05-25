@@ -17,7 +17,7 @@ export function initializeSceneManagers(
 ) {
     const uiManager = new UIManagerClass(scene, { state });
     const inputManager = new InputManagerClass(scene, {
-        uiManager
+        handlePointerMove: (screenX, screenY, isDown) => uiManager.handlePointerMove(screenX, screenY, isDown)
     });
     const questManager = new QuestManagerClass({ state, testMode: scene.testMode });
     const vendorManager = new VendorManagerClass(scene, {
@@ -33,11 +33,12 @@ export function initializeSceneManagers(
     });
     const interactionCoordinator = new InteractionCoordinatorClass(scene, {
         vendorManager,
-        inputManager,
-        uiManager
+        handleUiInput: (key) => uiManager.handleInput(key),
+        suppressPointerUntilRelease: () => inputManager.suppressPointerUntilRelease()
     });
 
     uiManager.setInputManager(inputManager);
+    inputManager.setInteractionCoordinator?.(interactionCoordinator);
     uiManager.setQuestManager(questManager);
     questManager.setQuestCompletionHandler((quest) => uiManager.handleQuestCompletion(quest));
 
