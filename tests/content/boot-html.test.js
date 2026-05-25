@@ -11,4 +11,12 @@ describe('boot html', () => {
 
         expect(indexHtml.includes('${Date.now()}')).toBe(false);
     });
+
+    it('provides explicit game and overlay mount points', () => {
+        const indexHtml = fs.readFileSync(path.join(repoRoot, 'index.html'), 'utf8');
+
+        expect(indexHtml.includes('id="game-container"')).toBe(true);
+        expect(indexHtml.includes('id="ui-overlay-root"')).toBe(true);
+        expect(indexHtml.indexOf('id="game-container"')).toBeLessThan(indexHtml.indexOf('id="ui-overlay-root"'));
+    });
 });

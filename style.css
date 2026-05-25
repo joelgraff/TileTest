@@ -3,6 +3,31 @@ body {
     padding: 0;
     overflow: hidden;
     background-color: black;
+    min-height: 100vh;
+}
+
+#app-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#game-frame {
+    position: relative;
+    display: inline-block;
+}
+
+#game-container {
+    position: relative;
+    z-index: 1;
+}
+
+#ui-overlay-root {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
 }
 
 canvas {
