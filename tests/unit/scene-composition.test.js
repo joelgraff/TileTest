@@ -27,6 +27,7 @@ describe('scene composition', () => {
         });
         const QuestManagerClass = vi.fn(function (options) {
             this.options = options;
+            this.setQuestCompletionHandler = vi.fn();
         });
         const VendorManagerClass = vi.fn(function (sceneArg, options) {
             this.sceneArg = sceneArg;
@@ -53,7 +54,7 @@ describe('scene composition', () => {
 
         expect(UIManagerClass).toHaveBeenCalledWith(scene, { state: scene.gameState });
         expect(InputManagerClass).toHaveBeenCalledWith(scene, { uiManager });
-        expect(QuestManagerClass).toHaveBeenCalledWith({ state: scene.gameState });
+        expect(QuestManagerClass).toHaveBeenCalledWith({ state: scene.gameState, testMode: true });
         expect(VendorManagerClass).toHaveBeenCalledWith(scene, {
             uiManager,
             npcGroup: scene.npcGroup,
@@ -68,6 +69,7 @@ describe('scene composition', () => {
         });
         expect(uiManager.setInputManager).toHaveBeenCalledWith(inputManager);
         expect(uiManager.setQuestManager).toHaveBeenCalledWith(questManager);
+        expect(questManager.setQuestCompletionHandler).toHaveBeenCalledWith(expect.any(Function));
         expect(scene.uiManager).toBe(uiManager);
         expect(scene.inputManager).toBe(inputManager);
         expect(scene.questManager).toBe(questManager);

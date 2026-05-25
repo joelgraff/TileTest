@@ -19,9 +19,7 @@ describe('QuestManager completion flow', () => {
         const manager = new QuestManager();
         const handleQuestCompletion = vi.fn();
 
-        manager.uiManager = {
-            handleQuestCompletion
-        };
+        manager.setQuestCompletionHandler(handleQuestCompletion);
 
         manager.activeQuests = [{
             id: 'quest-1',
@@ -111,8 +109,7 @@ describe('QuestManager completion flow', () => {
     });
 
     it('skips cookie persistence in test mode', () => {
-        const manager = new QuestManager();
-        manager.scene = { testMode: true };
+        const manager = new QuestManager({ testMode: true });
         manager.sessionId = 'test-session';
         manager.activeQuests = [{ id: 'active-1' }];
 

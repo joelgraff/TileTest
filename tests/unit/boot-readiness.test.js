@@ -13,9 +13,15 @@ describe('boot readiness', () => {
             interactionsEnabled: false
         };
 
-        const isReady = await initializeInteractionReadiness(scene);
+        const isReady = await initializeInteractionReadiness({
+            questManager: scene.questManager,
+            vendors: scene.vendors,
+            setInteractionsEnabled: (value) => {
+                scene.interactionsEnabled = value;
+            }
+        });
 
-        expect(scene.questManager.init).toHaveBeenCalledWith(scene.vendors, scene.uiManager, scene);
+        expect(scene.questManager.init).toHaveBeenCalledWith(scene.vendors);
         expect(scene.interactionsEnabled).toBe(true);
         expect(isReady).toBe(true);
     });
@@ -30,7 +36,13 @@ describe('boot readiness', () => {
             interactionsEnabled: true
         };
 
-        const isReady = await initializeInteractionReadiness(scene);
+        const isReady = await initializeInteractionReadiness({
+            questManager: scene.questManager,
+            vendors: scene.vendors,
+            setInteractionsEnabled: (value) => {
+                scene.interactionsEnabled = value;
+            }
+        });
 
         expect(scene.interactionsEnabled).toBe(false);
         expect(isReady).toBe(false);

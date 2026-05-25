@@ -1,7 +1,11 @@
-export function initializeInteractionReadiness(scene) {
-    return scene.questManager.init(scene.vendors, scene.uiManager, scene)
+export function initializeInteractionReadiness({
+    questManager,
+    vendors,
+    setInteractionsEnabled
+}) {
+    return questManager.init(vendors)
         .then(isReady => {
-            scene.interactionsEnabled = isReady;
+            setInteractionsEnabled(isReady);
             return isReady;
         });
 }

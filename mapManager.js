@@ -6,6 +6,7 @@ class MapManager {
 
     static create(scene) {
         scene.map = scene.make.tilemap({ key: 'map' });
+        scene.mapLayers = {};
         const tileset = scene.map.addTilesetImage('tiles');
         const mapHeight = scene.map.heightInPixels;
 
@@ -33,9 +34,10 @@ class MapManager {
             let finalDepth = Phaser.Math.Clamp(baseDepth + offset, 0, 2 * mapHeight);
             layer.setDepth(finalDepth);
 
-            // Store reference for other managers if needed
-            scene[layerData.name + 'Layer'] = layer;
+            scene.mapLayers[layerData.name] = layer;
         });
+
+        return scene.mapLayers;
     }
 }
 

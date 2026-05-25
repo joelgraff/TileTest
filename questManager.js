@@ -7,11 +7,12 @@
 import DomainManager from './domainManager.js';
 
 class QuestManager {
-    constructor({ state = null } = {}) {
+    constructor({ state = null, testMode = false } = {}) {
         this.sessionId = null;
         this.domainManager = null;
         this.npcManager = null;
-        this.uiManager = null;
+        this.onQuestCompletion = null;
+        this.testMode = Boolean(testMode);
         this.testQuestCounter = 0;
         this.setState(state);
     }
@@ -55,12 +56,10 @@ class QuestManager {
     /**
      * Initialize the quest manager with required dependencies
      */
-    init(vendors, uiManager, scene) {
+    init(vendors) {
         this.vendors = vendors;
-        this.uiManager = uiManager;
-        this.scene = scene;
 
-        if (this.scene.testMode) {
+        if (this.testMode) {
             this.sessionId = null;
             this.activeQuests = [];
             this.completedQuests = [];
@@ -75,6 +74,11 @@ class QuestManager {
         console.log('QuestManager initialized, waiting for domains...');
 
         return startupPromise;
+    }
+
+    setQuestCompletionHandler(onQuestCompletion) {
+        this.onQuestCompletion = onQuestCompletion;
+        return this;
     }
 
     /**
@@ -101,7 +105,7 @@ class QuestManager {
      * Start a new quest session
      */
     startNewSession() {
-        this.sessionId = this.scene?.testMode ? 'test_session' : 'session_' + Date.now();
+        this.sessionId = this.testMode ? 'test_session' : 'session_' + Date.now();
         this.activeQuests = [];
         this.completedQuests = [];
         this.testQuestCounter = 0;
@@ -195,7 +199,7 @@ class QuestManager {
     }
 
     selectQuestDomain(domains) {
-        if (this.scene?.testMode) {
+        if (this.testMode) {
             return domains[0];
         }
 
@@ -205,7 +209,7 @@ class QuestManager {
     selectQuestItems(items) {
         const maxItems = Math.min(3, items.length);
 
-        if (this.scene?.testMode) {
+        if (this.testMode) {
             return items.slice(0, maxItems);
         }
 
@@ -213,7 +217,7 @@ class QuestManager {
     }
 
     createQuestId() {
-        if (this.scene?.testMode) {
+        if (this.testMode) {
             this.testQuestCounter += 1;
             return `test_quest_${this.testQuestCounter}`;
         }
@@ -267,14 +271,8 @@ class QuestManager {
         this.completedQuests.push(quest);
         this.activeQuests.splice(questIndex, 1);
 
-        // Award points
-        if (this.uiManager && quest.reward) {
-            if (typeof this.uiManager.handleQuestCompletion === 'function') {
-                this.uiManager.handleQuestCompletion(quest);
-            } else {
-                this.uiManager.addScore(quest.reward.points);
-                this.uiManager.showQuestCompletion(quest);
-            }
+        if (quest.reward) {
+            this.onQuestCompletion?.(quest);
         }
 
         console.log('Quest completed:', quest.title);
@@ -299,7 +297,7 @@ class QuestManager {
      * Save session state to cookies
      */
     saveSessionState() {
-        if (this.scene?.testMode) {
+        if (this.testMode) {
             return;
         }
 
@@ -321,7 +319,7 @@ class QuestManager {
      * Load session state from cookies
      */
     loadSessionState() {
-        if (this.scene?.testMode) {
+        if (this.testMode) {
             return;
         }
 

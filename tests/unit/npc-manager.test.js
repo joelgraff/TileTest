@@ -26,7 +26,9 @@ describe('NPCManager interaction state', () => {
                     ]
                 }))
             },
-            tablesLayer: { depth: 350 },
+            mapLayers: {
+                tables: { depth: 350 }
+            },
             add: {
                 group: vi.fn(() => group),
                 sprite: vi.fn(() => sprite)

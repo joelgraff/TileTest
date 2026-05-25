@@ -19,7 +19,7 @@ export function initializeSceneManagers(
     const inputManager = new InputManagerClass(scene, {
         uiManager
     });
-    const questManager = new QuestManagerClass({ state });
+    const questManager = new QuestManagerClass({ state, testMode: scene.testMode });
     const vendorManager = new VendorManagerClass(scene, {
         uiManager,
         npcGroup: scene.npcGroup,
@@ -35,6 +35,7 @@ export function initializeSceneManagers(
 
     uiManager.setInputManager(inputManager);
     uiManager.setQuestManager(questManager);
+    questManager.setQuestCompletionHandler((quest) => uiManager.handleQuestCompletion(quest));
 
     scene.uiManager = uiManager;
     scene.inputManager = inputManager;

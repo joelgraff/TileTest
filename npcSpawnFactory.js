@@ -1,6 +1,8 @@
 export function resolveNPCTablesLayerDepth(scene) {
-    if (scene.tablesLayer && typeof scene.tablesLayer.depth === 'number') {
-        return scene.tablesLayer.depth;
+    const tablesLayer = scene.mapLayers?.tables;
+
+    if (tablesLayer && typeof tablesLayer.depth === 'number') {
+        return tablesLayer.depth;
     }
 
     return Math.floor(scene.map.heightInPixels);

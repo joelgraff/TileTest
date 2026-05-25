@@ -5,12 +5,14 @@ import { createNPCGroup, resolveNPCTablesLayerDepth } from '../../npcSpawnFactor
 describe('NPC spawn factory', () => {
     it('uses the tables layer depth when available and falls back to map height otherwise', () => {
         expect(resolveNPCTablesLayerDepth({
-            tablesLayer: { depth: 275 },
+            mapLayers: {
+                tables: { depth: 275 }
+            },
             map: { heightInPixels: 640 }
         })).toBe(275);
 
         expect(resolveNPCTablesLayerDepth({
-            tablesLayer: null,
+            mapLayers: {},
             map: { heightInPixels: 640.8 }
         })).toBe(640);
     });

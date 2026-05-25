@@ -60,8 +60,7 @@ describe('deterministic test mode', () => {
             }
         ];
 
-        const manager = new QuestManager();
-        manager.scene = { testMode: true };
+        const manager = new QuestManager({ testMode: true });
         manager.vendors = [
             { id: 'v1', domain_id: 'alpha' },
             { id: 'v2', domain_id: 'beta' }

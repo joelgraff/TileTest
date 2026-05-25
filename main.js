@@ -69,7 +69,13 @@ function create() {
 
     console.log('[main.js] UIManager instanced and attached to scene:', scene.uiManager);
 
-    initializeInteractionReadiness(scene);
+    initializeInteractionReadiness({
+        questManager: scene.questManager,
+        vendors: scene.vendors,
+        setInteractionsEnabled: (isReady) => {
+            scene.interactionsEnabled = isReady;
+        }
+    });
 
     initializeSceneRuntime(scene, {
         isMobile,
