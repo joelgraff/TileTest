@@ -89,10 +89,10 @@
 - [x] Mount a DOM overlay above the Phaser canvas.
 - [x] Port one dialog flow end to end.
 - [x] Port help, inventory, and quest views.
-- [ ] Port HUD controls and score display.
-- [ ] Add responsive layout checks.
-- [ ] Add modal behavior checks.
-- [ ] Add visual regression coverage for the main UI states.
+- [x] Port HUD controls and score display.
+- [x] Add responsive layout checks.
+- [x] Add modal behavior checks.
+- [x] Add visual regression coverage for the main UI states.
 - [ ] Remove the old canvas UI after parity is confirmed.
 
 ## Phase 6: Stabilization Gate

@@ -1,3 +1,13 @@
+import {
+    createDomHelpHudButton,
+    createDomInventoryHudButton,
+    createDomQuestHudButton,
+    createDomScoreHud,
+    createDomUiHud,
+    createDomVersionHud,
+    supportsDomHud
+} from './domHudSurface.js';
+
 function configureHudRectangle(rectangle) {
     return rectangle
         .setScrollFactor(0)
@@ -50,6 +60,10 @@ function createHudButton(uiManager, key, { x, y, label, onClick, preparesUiInter
 }
 
 export function createScoreHud(uiManager) {
+    if (supportsDomHud()) {
+        return createDomScoreHud(uiManager);
+    }
+
     uiManager.scoreBackground = configureHudRectangle(
         uiManager.scene.add.rectangle(100, 25, 180, 40, uiManager.colors.button)
     );
@@ -70,6 +84,10 @@ export function createScoreHud(uiManager) {
 }
 
 export function createInventoryHudButton(uiManager) {
+    if (supportsDomHud()) {
+        return createDomInventoryHudButton(uiManager);
+    }
+
     return createHudButton(uiManager, 'inv', {
         x: 720,
         y: 60,
@@ -82,6 +100,10 @@ export function createInventoryHudButton(uiManager) {
 }
 
 export function createQuestHudButton(uiManager) {
+    if (supportsDomHud()) {
+        return createDomQuestHudButton(uiManager);
+    }
+
     return createHudButton(uiManager, 'quest', {
         x: 720,
         y: 25,
@@ -94,6 +116,10 @@ export function createQuestHudButton(uiManager) {
 }
 
 export function createHelpHudButton(uiManager) {
+    if (supportsDomHud()) {
+        return createDomHelpHudButton(uiManager);
+    }
+
     return createHudButton(uiManager, 'help', {
         x: 10,
         y: 60,
@@ -105,6 +131,10 @@ export function createHelpHudButton(uiManager) {
 }
 
 export function createVersionHud(uiManager) {
+    if (supportsDomHud()) {
+        return createDomVersionHud(uiManager);
+    }
+
     uiManager.versionText = uiManager.scene.add.text(10, 620, 'Version 1.6', {
         fontFamily: 'Courier New, monospace',
         fontSize: '12px',
@@ -119,6 +149,10 @@ export function createVersionHud(uiManager) {
 }
 
 export function createUiHud(uiManager) {
+    if (supportsDomHud()) {
+        return createDomUiHud(uiManager);
+    }
+
     createScoreHud(uiManager);
     createInventoryHudButton(uiManager);
     createQuestHudButton(uiManager);

@@ -141,4 +141,53 @@ describe('dom dialog surface', () => {
 
         expect(onClick).not.toHaveBeenCalled();
     });
+
+    it('dismisses a dialog when the backdrop is clicked', () => {
+        const { documentRef, overlayRoot } = createFakeDocument();
+        const onClose = vi.fn();
+        const manager = {
+            getOverlayRoot: () => overlayRoot,
+            handleTextPagination: vi.fn(text => text),
+            handleButtonPagination: vi.fn(buttons => buttons),
+            handleBottomButtonPagination: vi.fn(buttons => buttons)
+        };
+
+        const dialogRoot = renderDomDialogSurface(manager, {
+            title: 'Help',
+            text: 'Controls',
+            exitButton: {
+                label: 'Close',
+                onClick: onClose
+            }
+        }, { documentRef });
+
+        dialogRoot.emit('click');
+
+        expect(onClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the dialog open when clicks stay inside the panel', () => {
+        const { documentRef, overlayRoot } = createFakeDocument();
+        const hideDialog = vi.fn();
+        const stopPropagation = vi.fn();
+        const manager = {
+            getOverlayRoot: () => overlayRoot,
+            hideDialog,
+            handleTextPagination: vi.fn(text => text),
+            handleButtonPagination: vi.fn(buttons => buttons),
+            handleBottomButtonPagination: vi.fn(buttons => buttons)
+        };
+
+        const dialogRoot = renderDomDialogSurface(manager, {
+            title: 'Help',
+            text: 'Controls'
+        }, { documentRef });
+
+        const dialogPanel = dialogRoot.children[0];
+
+        dialogPanel.emit('click', { stopPropagation });
+
+        expect(stopPropagation).toHaveBeenCalledTimes(1);
+        expect(hideDialog).not.toHaveBeenCalled();
+    });
 });
