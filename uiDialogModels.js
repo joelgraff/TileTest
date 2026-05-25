@@ -1,0 +1,115 @@
+export function createInventoryDialogData({ inventory = [], onClose }) {
+    let inventoryText = 'INVENTORY\n\n';
+
+    if (inventory.length === 0) {
+        inventoryText += 'No items collected yet.';
+    } else {
+        inventory.forEach((item, index) => {
+            inventoryText += `${index + 1}. ${item.name}\n`;
+
+            if (item.description) {
+                inventoryText += `   ${item.description}\n`;
+            }
+
+            inventoryText += `   Value: ${item.value || 0} points\n\n`;
+        });
+    }
+
+    return {
+        title: 'Inventory',
+        text: inventoryText,
+        buttons: [],
+        exitButton: {
+            label: 'Close',
+            onClick: onClose
+        }
+    };
+}
+
+export function createQuestUnavailableDialogData({ onClose }) {
+    return {
+        title: 'Quests',
+        text: 'Quest system not available',
+        exitButton: {
+            label: 'Close',
+            onClick: onClose
+        }
+    };
+}
+
+export function createQuestDialogData({ activeQuests = [], completedQuests = [], page = 0, onClose }) {
+    const questItems = [];
+
+    if (activeQuests.length > 0) {
+        questItems.push('=== ACTIVE QUESTS ===');
+        activeQuests.forEach((quest, index) => {
+            questItems.push(`${index + 1}. ${quest.title}`);
+            questItems.push(`   ${quest.description}`);
+
+            const completedObjectives = quest.objectives.filter((objective) => objective.collected).length;
+            const totalObjectives = quest.objectives.length;
+
+            questItems.push(`   Progress: ${completedObjectives}/${totalObjectives} items collected`);
+            questItems.push('');
+        });
+    } else {
+        questItems.push('=== ACTIVE QUESTS ===');
+        questItems.push('No active quests');
+        questItems.push('');
+    }
+
+    if (completedQuests.length > 0) {
+        questItems.push('=== COMPLETED QUESTS ===');
+        completedQuests.forEach((quest, index) => {
+            questItems.push(`${index + 1}. ${quest.title} ✓`);
+            questItems.push(`   Reward: ${quest.reward.points} points`);
+            questItems.push('');
+        });
+    }
+
+    return {
+        title: 'Quests',
+        text: questItems,
+        textPagination: {
+            currentPage: page,
+            text: questItems
+        },
+        buttons: [],
+        exitButton: {
+            label: 'Close',
+            onClick: onClose
+        }
+    };
+}
+
+export function createQuestCompletionDialogData({ quest, onClose }) {
+    return {
+        title: 'Quest Completed!',
+        text: `${quest.title}\n\nReward: ${quest.reward.points} points\n\n${quest.reward.description}`,
+        buttons: [{
+            label: 'Great!',
+            onClick: onClose
+        }]
+    };
+}
+
+export function createHelpDialogData({ onClose }) {
+    return {
+        title: 'Help',
+        text: 'HELP\n\n'
+            + 'Controls:\n'
+            + 'WASD or Arrow Keys: Move player\n'
+            + 'Mouse Click: Interact with NPCs\n'
+            + 'Spacebar: Interact with nearby vendor\n'
+            + 'ESC: Close dialogs\n'
+            + 'Backtick (`): Toggle debug mode\n\n'
+            + 'Gameplay:\n'
+            + 'Talk to vendors to collect items and complete quests.\n'
+            + 'Check your inventory and quests using the buttons.\n'
+            + 'Explore the map to find more vendors!',
+        exitButton: {
+            label: 'Close',
+            onClick: onClose
+        }
+    };
+}

@@ -52,6 +52,7 @@ describe('scene runtime setup', () => {
         expect(setBounds).toHaveBeenCalledWith(0, 0, 640, 480);
         expect(setZoom).toHaveBeenCalledWith(1.5);
         expect(setDebugToggleHandler).toHaveBeenCalledWith(expect.any(Function));
+        expect(scene.input.keyboard.on).not.toHaveBeenCalled();
 
         const debugHandler = setDebugToggleHandler.mock.calls[0][0];
         debugHandler();

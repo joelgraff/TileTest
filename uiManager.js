@@ -13,6 +13,13 @@ import {
     showMovementIndicatorReticle,
     updateMovementIndicatorFromPointer
 } from './uiMovementIndicator.js';
+import {
+    createHelpDialogData,
+    createInventoryDialogData,
+    createQuestCompletionDialogData,
+    createQuestDialogData,
+    createQuestUnavailableDialogData
+} from './uiDialogModels.js';
 
 class UIManager {
     constructor(scene, { state = null } = {}) {
@@ -229,32 +236,13 @@ class UIManager {
 
         this.isInventoryOpen = true;
 
-        // Create inventory dialog content
-        let inventoryText = 'INVENTORY\n\n';
-        if (this.inventory.length === 0) {
-            inventoryText += 'No items collected yet.';
-        } else {
-            this.inventory.forEach((item, index) => {
-                inventoryText += `${index + 1}. ${item.name}\n`;
-                if (item.description) {
-                    inventoryText += `   ${item.description}\n`;
-                }
-                inventoryText += `   Value: ${item.value || 0} points\n\n`;
-            });
-        }
-
-        this.showDialog({
-            title: 'Inventory',
-            text: inventoryText,
-            buttons: [],
-            exitButton: {
-                label: 'Close',
-                onClick: () => {
-                    this.isInventoryOpen = false;
-                    this.closeDialog();
-                }
+        this.showDialog(createInventoryDialogData({
+            inventory: this.inventory,
+            onClose: () => {
+                this.isInventoryOpen = false;
+                this.closeDialog();
             }
-        });
+        }));
     }
 
     toggleQuests() {
@@ -270,80 +258,34 @@ class UIManager {
 
     showQuestDialog(page = 0) {
         if (!this.questManager) {
-            this.showDialog({
-                title: 'Quests',
-                text: 'Quest system not available',
-                exitButton: {
-                    label: 'Close',
-                    onClick: () => {
-                        this.isQuestsOpen = false;
-                        this.closeDialog();
-                    }
+            this.showDialog(createQuestUnavailableDialogData({
+                onClose: () => {
+                    this.isQuestsOpen = false;
+                    this.closeDialog();
                 }
-            });
+            }));
             return;
         }
 
         const activeQuests = this.questManager.getActiveQuests();
         const completedQuests = this.questManager.getCompletedQuests();
 
-        // Create quest list for pagination
-        const questItems = [];
-
-        // Add active quests
-        if (activeQuests.length > 0) {
-            questItems.push('=== ACTIVE QUESTS ===');
-            activeQuests.forEach((quest, index) => {
-                questItems.push(`${index + 1}. ${quest.title}`);
-                questItems.push(`   ${quest.description}`);
-                const completedObjectives = quest.objectives.filter(obj => obj.collected).length;
-                const totalObjectives = quest.objectives.length;
-                questItems.push(`   Progress: ${completedObjectives}/${totalObjectives} items collected`);
-                questItems.push(''); // Empty line for spacing
-            });
-        } else {
-            questItems.push('=== ACTIVE QUESTS ===');
-            questItems.push('No active quests');
-            questItems.push('');
-        }
-
-        // Add completed quests
-        if (completedQuests.length > 0) {
-            questItems.push('=== COMPLETED QUESTS ===');
-            completedQuests.forEach((quest, index) => {
-                questItems.push(`${index + 1}. ${quest.title} ✓`);
-                questItems.push(`   Reward: ${quest.reward.points} points`);
-                questItems.push('');
-            });
-        }
-
-        this.showDialog({
-            title: 'Quests',
-            text: questItems,
-            textPagination: {
-                currentPage: page,
-                text: questItems
-            },
-            buttons: [],
-            exitButton: {
-                label: 'Close',
-                onClick: () => {
-                    this.isQuestsOpen = false;
-                    this.closeDialog();
-                }
+        this.showDialog(createQuestDialogData({
+            activeQuests,
+            completedQuests,
+            page,
+            onClose: () => {
+                this.isQuestsOpen = false;
+                this.closeDialog();
             }
-        });
+        }));
     }
 
     showQuestCompletion(quest) {
-        this.showDialog({
-            title: 'Quest Completed!',
-            text: `${quest.title}\n\nReward: ${quest.reward.points} points\n\n${quest.reward.description}`,
-            buttons: [{
-                label: 'Great!',
-                onClick: () => this.closeDialog()
-            }]
-        });
+        this.showDialog(createQuestCompletionDialogData({
+            quest,
+            onClose: () => this.closeDialog()
+        }));
 
         // Update quest display if it's open
         if (this.isQuestsOpen) {
@@ -410,29 +352,12 @@ class UIManager {
 
         this.isHelpOpen = true;
 
-        const helpText = 'HELP\n\n' +
-            'Controls:\n' +
-            'WASD or Arrow Keys: Move player\n' +
-            'Mouse Click: Interact with NPCs\n' +
-            'Spacebar: Interact with nearby vendor\n' +
-            'ESC: Close dialogs\n' +
-            'Backtick (`): Toggle debug mode\n\n' +
-            'Gameplay:\n' +
-            'Talk to vendors to collect items and complete quests.\n' +
-            'Check your inventory and quests using the buttons.\n' +
-            'Explore the map to find more vendors!';
-
-        this.showDialog({
-            title: 'Help',
-            text: helpText,
-            exitButton: {
-                label: 'Close',
-                onClick: () => {
-                    this.isHelpOpen = false;
-                    this.closeDialog();
-                }
+        this.showDialog(createHelpDialogData({
+            onClose: () => {
+                this.isHelpOpen = false;
+                this.closeDialog();
             }
-        });
+        }));
     }
 
     createInventoryPanel() {

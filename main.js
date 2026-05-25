@@ -2,13 +2,7 @@ import MapManager from './mapManager.js';
 import PlayerManager from './playerManager.js';
 import NPCManager from './npcManager.js';
 import CollisionManager from './collisionManager.js';
-import { initializeInteractionReadiness } from './bootReadiness.js';
-import DomainManager from './domainManager.js';
-import GameState from './gameState.js';
-import { initializeSceneManagers } from './sceneComposition.js';
-import { initializeSceneRuntime } from './sceneRuntimeSetup.js';
-import { initializeSceneWorld } from './sceneWorldSetup.js';
-import { bindSceneBooleanFlag } from './stateBindings.js';
+import { initializeSceneBootstrap } from './sceneBootstrap.js';
 
 // Determine device type for scaling
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -49,39 +43,15 @@ function preload() {
 
 function create() {
     scene = this;
-    scene.testMode = isTestMode;
-    const gameState = new GameState();
-    scene.gameState = gameState;
-    bindSceneBooleanFlag(scene, gameState, 'interactionsEnabled');
+    const bootstrap = initializeSceneBootstrap(scene, {
+        isTestMode,
+        isMobile,
+        recreateCollision: CollisionManager.create
+    });
 
-    // Start loading domain data before interactions are enabled.
-    DomainManager.loadDomains();
-
-    // Load vendors data
-    scene.vendors = scene.cache.json.get('vendors');
-
-    console.log('Vendors loaded:', scene.vendors);
-    if (!initializeSceneWorld(scene)) {
+    if (!bootstrap.initialized) {
         return;
     }
-
-    initializeSceneManagers(scene, { state: gameState });
-
-    console.log('[main.js] UIManager instanced and attached to scene:', scene.uiManager);
-
-    initializeInteractionReadiness({
-        questManager: scene.questManager,
-        vendors: scene.vendors,
-        setInteractionsEnabled: (isReady) => {
-            scene.interactionsEnabled = isReady;
-        }
-    });
-
-    initializeSceneRuntime(scene, {
-        isMobile,
-        recreateCollision: CollisionManager.create,
-        interactionCoordinator: scene.interactionCoordinator
-    });
 
     console.log('Game scene created');
 }

@@ -21,10 +21,5 @@ export function initializeSceneRuntime(scene, { isMobile = false, recreateCollis
         console.error('Player not created. Check playerManager.js and asset paths.');
     }
 
-    if (interactionCoordinator?.setDebugToggleHandler) {
-        interactionCoordinator.setDebugToggleHandler(toggleDebug);
-        return;
-    }
-
-    scene.input.keyboard.on('keydown-BACKTICK', toggleDebug);
+    interactionCoordinator?.setDebugToggleHandler?.(toggleDebug);
 }
