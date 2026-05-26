@@ -17,6 +17,6 @@
     "@playwright/test": "^1.52.0",
     "eslint": "^9.3.0",
     "globals": "^15.3.0",
-    "vitest": "^2.1.8"
+    "vitest": "^4.1.7"
   }
 }

@@ -109,6 +109,41 @@ test('collecting a vendor item updates inventory and completes a matching quest'
     await expect(page.locator('[data-hud-score]')).toContainText(`SCORE: ${state.progress.score}`);
 });
 
+test('vendor item dialogs use a grid layout and crop the avatar portrait', async ({ page }) => {
+    await gotoGame(page);
+
+    await page.evaluate(() => {
+        window.__tileTest.testApi.openFirstVendorItemsDialog();
+    });
+
+    const dialogSurface = page.locator('#ui-overlay-root [data-dialog-surface="dom"]');
+    const itemList = dialogSurface.locator('.dom-dialog-item-list');
+    const itemButtons = itemList.locator('.dom-dialog-item-button');
+    const dialogImage = dialogSurface.locator('.dom-dialog-image');
+    const portraitMedia = dialogSurface.locator('.dom-dialog-media');
+
+    const portraitBox = await portraitMedia.boundingBox();
+    const itemListBox = await itemList.boundingBox();
+
+    await expect(dialogSurface).toContainText('Available items from');
+    await expect(itemList).toBeVisible();
+    await expect(itemButtons).toHaveCount(4);
+    await expect(dialogImage).toHaveCSS('object-fit', 'none');
+    await expect(dialogImage).toHaveCSS('object-position', '0% 0%');
+    await expect(portraitMedia).toHaveCSS('overflow', 'hidden');
+    expect(portraitBox).toBeTruthy();
+    expect(itemListBox).toBeTruthy();
+    expect(itemListBox.x).toBeGreaterThan(portraitBox.x + portraitBox.width);
+
+    const buttonBoxes = [];
+    for (let index = 0; index < 4; index += 1) {
+        buttonBoxes.push(await itemButtons.nth(index).boundingBox());
+    }
+
+    expect(buttonBoxes.every(Boolean)).toBe(true);
+    expect(buttonBoxes.some(box => box.y > buttonBoxes[0].y)).toBe(true);
+});
+
 test('help, inventory, and quest panels open and close cleanly', async ({ page }) => {
     await gotoGame(page);
 

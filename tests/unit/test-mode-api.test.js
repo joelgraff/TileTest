@@ -56,6 +56,18 @@ function createScene() {
                         label: 'Show me your inventory',
                         onClick: () => {
                             scene.uiManager.dialogManager.currentDialogParams = {
+                                    itemButtons: [{
+                                        label: 'Fixture Item',
+                                        onClick: () => {
+                                            scene.uiManager.inventory = [{ name: 'Fixture Item' }];
+                                            scene.uiManager.score = 15;
+                                            scene.questManager.activeQuests = [];
+                                            scene.questManager.completedQuests = [{ id: 'test-quest' }];
+                                            scene.uiManager.dialogManager.currentDialogParams = {
+                                                text: 'Quest progress updated'
+                                            };
+                                        }
+                                    }],
                                 buttons: [{
                                     label: 'Fixture Item',
                                     onClick: () => {
@@ -239,5 +251,17 @@ describe('test mode api', () => {
             text: 'Controls:',
             textItems: null
         });
+    });
+
+    it('opens the vendor item dialog for layout validation', () => {
+        const scene = createScene();
+        const api = createTestModeApi(() => scene);
+
+        const dialog = api.openFirstVendorItemsDialog();
+
+        expect(dialog.title).toBe(null);
+        expect(dialog.text).toBe(null);
+        expect(scene.uiManager.dialogManager.currentDialogParams.itemButtons).toBeDefined();
+        expect(scene.uiManager.dialogManager.currentDialogParams.itemButtons).toHaveLength(1);
     });
 });

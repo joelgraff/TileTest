@@ -262,7 +262,10 @@ export function createTestModeApi(getScene) {
 
             inventoryAction.onClick();
 
-            const firstItemButton = scene.uiManager.dialogManager.currentDialogParams?.buttons?.[0] ?? null;
+            const itemButtonList = scene.uiManager.dialogManager.currentDialogParams?.itemButtons
+                ?? scene.uiManager.dialogManager.currentDialogParams?.buttons
+                ?? [];
+            const firstItemButton = itemButtonList[0] ?? null;
             const itemName = firstItemButton?.label ?? null;
 
             if (!itemName) {
@@ -273,6 +276,30 @@ export function createTestModeApi(getScene) {
             firstItemButton.onClick();
 
             return itemName;
+        },
+
+        openFirstVendorItemsDialog(index = 0) {
+            const scene = requireScene(getScene);
+            const npc = positionPlayerNearVendor(scene, index);
+            const vendorData = npc.vendorData;
+
+            if (!vendorData) {
+                throw new Error(`Vendor NPC ${index} is missing vendor data.`);
+            }
+
+            scene.vendorManager.interactWithVendor(vendorData, npc);
+
+            const inventoryAction = scene.uiManager.dialogManager.currentDialogParams?.buttons?.find(
+                (button) => button.label === 'Show me your inventory'
+            );
+
+            if (!inventoryAction) {
+                throw new Error('Vendor inventory action is not available.');
+            }
+
+            inventoryAction.onClick();
+
+            return getDialogSnapshot(scene);
         },
 
         seedPanelFixtures() {

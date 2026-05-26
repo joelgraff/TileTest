@@ -62,7 +62,8 @@ export function createVendorItemsDialogData(vendorData, imageKey, {
         imageKey,
         title: vendorData.name,
         text: `Available items from ${domainName} (Page ${page + 1}/${totalPages}):`,
-        buttons: itemButtons,
+        buttons: [],
+        itemButtons,
         bottomButtons,
         exitButton
     };

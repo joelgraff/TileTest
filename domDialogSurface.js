@@ -42,6 +42,7 @@ export function renderDomDialogSurface(
         title = '',
         text = '',
         buttons = [],
+        itemButtons = [],
         exitButton = null,
         pagination = null,
         bottomButtons = null,
@@ -54,6 +55,8 @@ export function renderDomDialogSurface(
     if (!overlayRoot || !documentRef?.createElement) {
         return null;
     }
+
+    const displayItemButtons = Array.isArray(itemButtons) ? itemButtons : [];
 
     const dialogRoot = documentRef.createElement('div');
     dialogRoot.className = 'dom-dialog-backdrop';
@@ -96,10 +99,39 @@ export function renderDomDialogSurface(
         imageElement.alt = title ? `${title} portrait` : 'Dialog portrait';
 
         mediaElement.append(imageElement);
-        contentRow.append(mediaElement, textElement);
+        if (displayItemButtons.length > 0) {
+            const bodyElement = documentRef.createElement('div');
+            bodyElement.className = 'dom-dialog-body dom-dialog-body-centered';
+            bodyElement.append(textElement);
+
+            const itemList = documentRef.createElement('div');
+            itemList.className = 'dom-dialog-item-list';
+
+            displayItemButtons.forEach(buttonData => {
+                itemList.append(createDialogButton(documentRef, buttonData, 'dom-dialog-button dom-dialog-item-button'));
+            });
+
+            bodyElement.append(itemList);
+            contentRow.className = 'dom-dialog-content dom-dialog-content-with-items';
+            contentRow.append(mediaElement, bodyElement);
+        } else {
+            contentRow.append(mediaElement, textElement);
+        }
+
         dialogPanel.append(contentRow);
     } else {
         dialogPanel.append(textElement);
+
+        if (displayItemButtons.length > 0) {
+            const itemList = documentRef.createElement('div');
+            itemList.className = 'dom-dialog-item-list';
+
+            displayItemButtons.forEach(buttonData => {
+                itemList.append(createDialogButton(documentRef, buttonData, 'dom-dialog-button dom-dialog-item-button'));
+            });
+
+            dialogPanel.append(itemList);
+        }
     }
 
     const displayButtons = manager.handleButtonPagination?.(buttons, pagination, textPagination) ?? buttons;

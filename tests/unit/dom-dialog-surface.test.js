@@ -193,6 +193,45 @@ describe('dom dialog surface', () => {
         expect(contentRow.children[1].textContent).toBe('Vintage systems and demos.');
     });
 
+    it('renders vendor item buttons in a dedicated grid above the action bar', () => {
+        const { documentRef, overlayRoot } = createFakeDocument();
+        const manager = {
+            getOverlayRoot: () => overlayRoot,
+            handleTextPagination: vi.fn(text => text),
+            handleButtonPagination: vi.fn(buttons => buttons),
+            handleBottomButtonPagination: vi.fn(buttons => buttons)
+        };
+
+        const dialogRoot = renderDomDialogSurface(manager, {
+            imageKey: 'npc1',
+            title: 'Vendor Items',
+            text: 'Available items from Retro Computing (Page 1/2):',
+            itemButtons: [
+                { label: 'Item One', onClick: vi.fn() },
+                { label: 'Item Two', onClick: vi.fn() },
+                { label: 'Item Three', onClick: vi.fn() }
+            ],
+            bottomButtons: [{ label: '>', disabled: false, onClick: vi.fn() }],
+            exitButton: { label: 'Back', onClick: vi.fn() }
+        }, { documentRef });
+
+        const dialogPanel = dialogRoot.children[0];
+        const contentRow = dialogPanel.children[1];
+        const bodyElement = contentRow.children[1];
+        const itemList = bodyElement.children[1];
+        const actionBar = dialogPanel.children[2];
+
+        expect(contentRow.className).toContain('dom-dialog-content');
+        expect(contentRow.className).toContain('dom-dialog-content-with-items');
+        expect(bodyElement.className).toContain('dom-dialog-body');
+        expect(bodyElement.className).toContain('dom-dialog-body-centered');
+        expect(itemList.className).toBe('dom-dialog-item-list');
+        expect(itemList.children).toHaveLength(3);
+        expect(itemList.children[0].className).toContain('dom-dialog-item-button');
+        expect(actionBar.className).toBe('dom-dialog-actions');
+        expect(actionBar.children).toHaveLength(2);
+    });
+
     it('keeps the dialog open when clicks stay inside the panel', () => {
         const { documentRef, overlayRoot } = createFakeDocument();
         const hideDialog = vi.fn();

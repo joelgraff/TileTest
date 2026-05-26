@@ -151,6 +151,7 @@ body {
 }
 
 .dom-dialog-panel {
+    --dialog-portrait-scale: 3;
     width: min(600px, calc(100% - 8px));
     max-height: min(340px, calc(100% - 8px));
     display: flex;
@@ -185,23 +186,48 @@ body {
     align-items: flex-start;
 }
 
+.dom-dialog-content-with-items {
+    align-items: stretch;
+}
+
 .dom-dialog-media {
-    flex: 0 0 96px;
+    flex: 0 0 auto;
+    width: calc(32px * var(--dialog-portrait-scale));
+    height: calc(48px * var(--dialog-portrait-scale));
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 0 2px #000000;
 }
 
 .dom-dialog-image {
     display: block;
-    width: 96px;
-    max-width: 100%;
-    height: auto;
-    background: rgba(255, 255, 255, 0.08);
-    border: 2px solid #00ffff;
-    box-shadow: 0 0 0 2px #000000;
+    width: 32px;
+    height: 48px;
+    max-width: none;
+    max-height: none;
+    object-fit: none;
+    object-position: top left;
+    transform: scale(var(--dialog-portrait-scale));
+    transform-origin: top left;
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
+}
+
+.dom-dialog-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.dom-dialog-body-centered {
+    justify-content: center;
 }
 
 .dom-dialog-content .dom-dialog-text {
@@ -214,6 +240,18 @@ body {
     flex-wrap: wrap;
     justify-content: flex-end;
     gap: 10px;
+}
+
+.dom-dialog-item-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.dom-dialog-item-button {
+    width: 100%;
+    min-width: 0;
+    justify-self: stretch;
 }
 
 .dom-dialog-button {
@@ -242,21 +280,38 @@ body {
 }
 
 @media (max-width: 480px) {
+    .dom-dialog-panel {
+        --dialog-portrait-scale: 2;
+    }
+
     .dom-dialog-content {
         flex-direction: column;
         align-items: center;
     }
 
-    .dom-dialog-media {
-        flex-basis: auto;
+    .dom-dialog-content-with-items {
+        align-items: center;
     }
 
-    .dom-dialog-image {
-        width: 80px;
+    .dom-dialog-media {
+        width: calc(32px * var(--dialog-portrait-scale));
+        height: calc(48px * var(--dialog-portrait-scale));
+    }
+
+    .dom-dialog-body {
+        width: 100%;
+    }
+
+    .dom-dialog-body-centered {
+        justify-content: flex-start;
     }
 
     .dom-dialog-content .dom-dialog-text {
         width: 100%;
+    }
+
+    .dom-dialog-item-list {
+        grid-template-columns: 1fr;
     }
 }
 

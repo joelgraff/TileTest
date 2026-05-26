@@ -94,6 +94,10 @@ describe('vendor dialog model helpers', () => {
         expect(factsDialog.renderMode).toBe('dom');
         expect(itemsDialog.text).toBe('Available items from Retro Computing (Page 2/3):');
         expect(itemsDialog.renderMode).toBe('dom');
+        expect(itemsDialog.buttons).toEqual([]);
+        expect(itemsDialog.itemButtons).toHaveLength(1);
+        expect(itemsDialog.itemButtons[0].label).toBe('Item One');
+        expect(typeof itemsDialog.itemButtons[0].onClick).toBe('function');
         expect(rootDialog).toMatchObject({
             renderMode: 'dom',
             imageKey: 'npc1',
