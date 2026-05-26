@@ -78,6 +78,17 @@ Responsive Playwright checks now cover a narrow mobile viewport for the overlay 
 - Browser smoke coverage for boot and runtime errors during initial load
 - Browser smoke coverage for vendor interaction, item collection, quest completion, and panel open/close behavior
 - Browser visual coverage for the main overlay HUD, help, inventory, and quest states
+- Browser stabilization-gate coverage for the roadmap regression checklist on desktop and mobile emulation
+
+## Recovered Baseline
+
+As of 2026-05-25, the recovered baseline is frozen at:
+
+- `npm run check` passing with clean ESLint, 10 content tests, and 106 unit tests across 37 files
+- `npx vitest run tests/unit/map-fixture-contracts.test.js` passing as the explicit collision fixture gate
+- `npx playwright test` passing with 13 browser tests, including smoke, visual regression, and desktop/mobile stabilization-gate coverage
+
+Re-establish this baseline before starting any new feature work.
 
 ## Collision Authoring Convention
 

@@ -97,11 +97,11 @@
 
 ## Phase 6: Stabilization Gate
 
-- [ ] Run the full static check suite.
-- [ ] Run all unit and content validation tests.
-- [ ] Run browser gameplay smoke tests.
-- [ ] Run mobile and desktop UI checks.
-- [ ] Run collision fixture tests.
-- [ ] Complete the manual regression checklist on desktop.
-- [ ] Complete the manual regression checklist on mobile emulation.
-- [ ] Freeze the recovered baseline before any new feature work.
+- [x] Run the full static check suite.
+- [x] Run all unit and content validation tests.
+- [x] Run browser gameplay smoke tests.
+- [x] Run mobile and desktop UI checks.
+- [x] Run collision fixture tests.
+- [x] Complete the manual regression checklist on desktop.
+- [x] Complete the manual regression checklist on mobile emulation.
+- [x] Freeze the recovered baseline before any new feature work.

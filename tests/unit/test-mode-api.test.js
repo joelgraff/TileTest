@@ -14,9 +14,21 @@ function createScene() {
         player: {
             x: 0,
             y: 0,
+            body: {
+                x: -8,
+                y: -12,
+                width: 16,
+                height: 24,
+                velocity: {
+                    x: 0,
+                    y: 0
+                }
+            },
             setPosition(x, y) {
                 this.x = x;
                 this.y = y;
+                this.body.x = x - 8;
+                this.body.y = y - 12;
             }
         },
         cameras: {
@@ -91,7 +103,20 @@ function createScene() {
         },
         npcGroup: {
             getChildren: () => [npc]
-        }
+        },
+        customCollisionBodies: [{
+            body: {
+                x: 220,
+                y: 180,
+                width: 32,
+                height: 32
+            },
+            tileInfo: {
+                id: 7,
+                x: 10,
+                y: 8
+            }
+        }]
     };
 
     return scene;
@@ -118,8 +143,57 @@ describe('test mode api', () => {
             gameWidth: 960,
             gameHeight: 640
         });
+        expect(api.getPlayerSnapshot()).toEqual({
+            x: 120,
+            y: 150,
+            bodyX: 112,
+            bodyY: 138,
+            width: 16,
+            height: 24,
+            velocityX: 0,
+            velocityY: 0
+        });
+        expect(api.getPlayerScreenPosition()).toEqual({
+            x: 110,
+            y: 130,
+            gameWidth: 960,
+            gameHeight: 640
+        });
         expect(scene.player.x).toBe(120);
         expect(scene.player.y).toBe(150);
+        expect(scene.inputManager.clearMovementState).toHaveBeenCalledTimes(1);
+        expect(scene.vendorManager.update).toHaveBeenCalledTimes(1);
+    });
+
+    it('supports deterministic collision probe setup snapshots', () => {
+        const scene = createScene();
+        const api = createTestModeApi(() => scene);
+
+        const probe = api.positionPlayerForCollisionProbe(0, 20);
+
+        expect(probe.collision).toEqual({
+            x: 220,
+            y: 180,
+            width: 32,
+            height: 32,
+            tileInfo: {
+                id: 7,
+                x: 10,
+                y: 8
+            }
+        });
+        expect(probe.player).toEqual({
+            x: 192,
+            y: 196,
+            bodyX: 184,
+            bodyY: 184,
+            width: 16,
+            height: 24,
+            velocityX: 0,
+            velocityY: 0
+        });
+        expect(api.getCollisionBodySnapshot()).toEqual(probe.collision);
+        expect(scene.cameras.main.centerOn).toHaveBeenCalledWith(192, 196);
         expect(scene.inputManager.clearMovementState).toHaveBeenCalledTimes(1);
         expect(scene.vendorManager.update).toHaveBeenCalledTimes(1);
     });

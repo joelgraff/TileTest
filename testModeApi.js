@@ -60,6 +60,74 @@ function getMovementSnapshot(scene) {
     };
 }
 
+function getPlayerSnapshot(scene) {
+    const body = scene.player?.body ?? null;
+
+    return {
+        x: scene.player?.x ?? null,
+        y: scene.player?.y ?? null,
+        bodyX: body?.x ?? null,
+        bodyY: body?.y ?? null,
+        width: body?.width ?? null,
+        height: body?.height ?? null,
+        velocityX: body?.velocity?.x ?? 0,
+        velocityY: body?.velocity?.y ?? 0
+    };
+}
+
+function getPlayerScreenPosition(scene) {
+    return {
+        x: scene.player.x - scene.cameras.main.scrollX,
+        y: scene.player.y - scene.cameras.main.scrollY,
+        gameWidth: scene.scale.width,
+        gameHeight: scene.scale.height
+    };
+}
+
+function getCollisionBody(scene, index = 0) {
+    const collisionBody = scene.customCollisionBodies?.[index] ?? null;
+
+    if (!collisionBody?.body) {
+        throw new Error(`Collision body ${index} is not available.`);
+    }
+
+    return collisionBody;
+}
+
+function getCollisionBodySnapshot(collisionBody) {
+    return {
+        x: collisionBody.body.x,
+        y: collisionBody.body.y,
+        width: collisionBody.body.width,
+        height: collisionBody.body.height,
+        tileInfo: collisionBody.tileInfo ?? null
+    };
+}
+
+function positionPlayerForCollisionProbe(scene, index = 0, gap = 64) {
+    const collisionBody = getCollisionBody(scene, index);
+    const playerBody = scene.player?.body ?? null;
+
+    if (!playerBody) {
+        throw new Error('Player body is not available.');
+    }
+
+    const bodyOffsetX = scene.player.x - playerBody.x;
+    const bodyOffsetY = scene.player.y - playerBody.y;
+    const targetBodyX = collisionBody.body.x - playerBody.width - gap;
+    const targetBodyY = collisionBody.body.y + (collisionBody.body.height - playerBody.height) / 2;
+
+    scene.player.setPosition(targetBodyX + bodyOffsetX, targetBodyY + bodyOffsetY);
+    scene.cameras.main.centerOn(scene.player.x, scene.player.y);
+    scene.inputManager.clearMovementState();
+    scene.vendorManager.update();
+
+    return {
+        player: getPlayerSnapshot(scene),
+        collision: getCollisionBodySnapshot(collisionBody)
+    };
+}
+
 function getProgressSnapshot(scene) {
     return {
         inventoryCount: scene.uiManager.inventory.length,
@@ -124,6 +192,26 @@ export function createTestModeApi(getScene) {
 
         getMovementSnapshot() {
             return getMovementSnapshot(requireScene(getScene));
+        },
+
+        getPlayerSnapshot() {
+            return getPlayerSnapshot(requireScene(getScene));
+        },
+
+        getPlayerScreenPosition() {
+            return getPlayerScreenPosition(requireScene(getScene));
+        },
+
+        getCollisionBodySnapshot(index = 0) {
+            const scene = requireScene(getScene);
+
+            return getCollisionBodySnapshot(getCollisionBody(scene, index));
+        },
+
+        positionPlayerForCollisionProbe(index = 0, gap = 64) {
+            const scene = requireScene(getScene);
+
+            return positionPlayerForCollisionProbe(scene, index, gap);
         },
 
         getProgressSnapshot() {
