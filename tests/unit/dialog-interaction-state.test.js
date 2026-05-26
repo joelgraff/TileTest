@@ -2,53 +2,93 @@ import { describe, expect, it, vi } from 'vitest';
 
 import DialogManager from '../../dialogManager.js';
 
+function createFakeDocument() {
+    class FakeElement {
+        constructor(tagName, ownerDocument) {
+            this.tagName = tagName;
+            this.ownerDocument = ownerDocument;
+            this.children = [];
+            this.dataset = {};
+            this.attributes = {};
+            this.listeners = new Map();
+            this.parentNode = null;
+            this.className = '';
+            this.textContent = '';
+        }
+
+        append(...children) {
+            children.filter(Boolean).forEach(child => {
+                child.parentNode = this;
+                this.children.push(child);
+            });
+
+            return this;
+        }
+
+        setAttribute(name, value) {
+            this.attributes[name] = value;
+        }
+
+        addEventListener(type, listener) {
+            const listeners = this.listeners.get(type) ?? [];
+            listeners.push(listener);
+            this.listeners.set(type, listeners);
+        }
+
+        remove() {
+            if (!this.parentNode) {
+                return;
+            }
+
+            this.parentNode.children = this.parentNode.children.filter(child => child !== this);
+            this.parentNode = null;
+        }
+    }
+
+    const elementsById = new Map();
+    const documentRef = {
+        createElement: (tagName) => new FakeElement(tagName, documentRef),
+        getElementById: (id) => elementsById.get(id) ?? null
+    };
+    const overlayRoot = new FakeElement('div', documentRef);
+
+    elementsById.set('ui-overlay-root', overlayRoot);
+
+    return {
+        documentRef,
+        overlayRoot
+    };
+}
+
 describe('DialogManager interaction state', () => {
     it('clears movement through the injected InputManager when a dialog opens', () => {
+        const { documentRef, overlayRoot } = createFakeDocument();
+        const originalDocument = globalThis.document;
         const prepareUiInteraction = vi.fn();
         const context = {
             isDialogOpen: false,
             scene: {
                 isDialogOpen: false,
-                cameras: {
-                    main: {
-                        width: 800,
-                        height: 600
-                    }
-                }
             },
             prepareUiInteraction,
-            inputManager: {
-                prepareUiInteraction
-            },
-            createOverlay: vi.fn(() => ({ destroy: vi.fn() })),
-            createContainer: vi.fn(() => ({ add: vi.fn(), setDepth: vi.fn() })),
-            renderBackground: vi.fn(),
-            renderTitleBar: vi.fn(),
-            renderNpcImage: vi.fn(),
-            renderDialogText: vi.fn(),
-            renderButtons: vi.fn(),
-            renderBottomButtons: vi.fn(),
-            renderExitButton: vi.fn(),
-            addElementsToContainer: vi.fn(),
-            handleTextPagination: vi.fn(text => text),
-            handleButtonPagination: vi.fn(buttons => buttons),
-            handleBottomButtonPagination: vi.fn(buttons => buttons),
-            isMobile: false
+            getOverlayRoot: () => overlayRoot
         };
 
-        DialogManager.prototype.showDialog.call(context, { text: 'Test dialog' });
+        globalThis.document = documentRef;
+
+        const dialogRoot = DialogManager.prototype.showDialog.call(context, { text: 'Test dialog' });
+
+        globalThis.document = originalDocument;
 
         expect(prepareUiInteraction).toHaveBeenCalledTimes(1);
         expect(context.isDialogOpen).toBe(true);
         expect(context.scene.isDialogOpen).toBe(true);
-        expect(context.dialogLayout.buttonFactory.prepareUiInteraction).toBe(prepareUiInteraction);
+        expect(dialogRoot).toBe(overlayRoot.children[0]);
+        expect(context.domDialogRoot).toBe(dialogRoot);
     });
 
     it('suppresses pointer movement through InputManager when a dialog closes mid-click', () => {
         const prepareUiInteraction = vi.fn();
-        const dialogLayout = { clear: vi.fn() };
-        const dialogContainer = { destroy: vi.fn() };
-        const overlay = { destroy: vi.fn() };
         const domDialogRoot = { remove: vi.fn() };
         const context = {
             isDialogOpen: true,
@@ -60,9 +100,6 @@ describe('DialogManager interaction state', () => {
             inputManager: {
                 prepareUiInteraction
             },
-            dialogLayout,
-            dialogContainer,
-            overlay,
             domDialogRoot
         };
 
@@ -71,22 +108,13 @@ describe('DialogManager interaction state', () => {
         expect(context.isDialogOpen).toBe(false);
         expect(context.scene.isDialogOpen).toBe(false);
         expect(prepareUiInteraction).toHaveBeenCalledWith({ suppressPointer: true });
-        expect(dialogLayout.clear).toHaveBeenCalledTimes(1);
-        expect(dialogContainer.destroy).toHaveBeenCalledTimes(1);
-        expect(overlay.destroy).toHaveBeenCalledTimes(1);
         expect(domDialogRoot.remove).toHaveBeenCalledTimes(1);
-        expect(context.dialogLayout).toBe(null);
-        expect(context.dialogContainer).toBe(null);
-        expect(context.overlay).toBe(null);
         expect(context.domDialogRoot).toBe(null);
     });
 
     it('releases pointer suppression when a dialog closes after the pointer is already up', () => {
         const prepareUiInteraction = vi.fn();
         const releasePointerSuppression = vi.fn();
-        const dialogLayout = { clear: vi.fn() };
-        const dialogContainer = { destroy: vi.fn() };
-        const overlay = { destroy: vi.fn() };
         const context = {
             isDialogOpen: true,
             scene: {
@@ -98,10 +126,7 @@ describe('DialogManager interaction state', () => {
             inputManager: {
                 prepareUiInteraction,
                 releasePointerSuppression
-            },
-            dialogLayout,
-            dialogContainer,
-            overlay
+            }
         };
 
         DialogManager.prototype.hideDialog.call(context);

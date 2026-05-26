@@ -93,6 +93,7 @@ describe('ui dialog models', () => {
             }
         });
         expect(completionDialog).toEqual({
+            renderMode: 'dom',
             title: 'Quest Completed!',
             text: 'Quest Completed\n\nReward: 50 points\n\nReward text',
             buttons: [{

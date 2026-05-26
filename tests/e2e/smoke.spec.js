@@ -45,11 +45,17 @@ test('space opens a nearby vendor dialog without starting movement', async ({ pa
     await page.keyboard.press('Space');
     await page.waitForFunction(() => window.__tileTest.testApi.getFlags().isDialogOpen);
 
+    const domDialogSurface = page.locator('#ui-overlay-root [data-dialog-surface="dom"]');
+
     const state = await page.evaluate(() => ({
         flags: window.__tileTest.testApi.getFlags(),
+        dialog: window.__tileTest.testApi.getDialogSnapshot(),
         movement: window.__tileTest.testApi.getMovementSnapshot()
     }));
 
+    await expect(domDialogSurface).toBeVisible();
+    await expect(domDialogSurface).toContainText(state.dialog.text);
+    await expect(domDialogSurface.locator('.dom-dialog-image')).toHaveCount(1);
     expect(state.flags.isDialogOpen).toBe(true);
     expect(state.movement.target).toBeNull();
 });
@@ -81,6 +87,8 @@ test('clicking a nearby vendor opens dialog and suppresses click-to-move', async
 test('collecting a vendor item updates inventory and completes a matching quest', async ({ page }) => {
     await gotoGame(page);
 
+    const domDialogSurface = page.locator('#ui-overlay-root [data-dialog-surface="dom"]');
+
     const collectedItem = await page.evaluate(() => window.__tileTest.testApi.collectFirstVendorItemWithMatchingQuest());
 
     const state = await page.evaluate(() => {
@@ -96,6 +104,8 @@ test('collecting a vendor item updates inventory and completes a matching quest'
     expect(state.progress.activeQuestCount).toBe(0);
     expect(state.progress.completedQuestCount).toBe(1);
     expect(state.dialog.text).toContain('Quest progress updated');
+    await expect(domDialogSurface).toBeVisible();
+    await expect(domDialogSurface).toContainText(state.dialog.text);
     await expect(page.locator('[data-hud-score]')).toContainText(`SCORE: ${state.progress.score}`);
 });
 

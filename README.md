@@ -67,8 +67,8 @@ The API is defined in `testModeApi.js` and is intended to remain stable across r
 ## DOM Overlay Status
 
 The Phaser canvas now sits under `#ui-overlay-root`.
-The score display, HUD controls, and the help, inventory, plus quest panel flows now render into that DOM overlay.
-Vendor dialogs and quest-completion dialogs still render through the legacy Phaser dialog surface for now.
+The score display, HUD controls, vendor dialogs, quest-completion dialogs, and the help, inventory, plus quest panel flows now render into that DOM overlay.
+The runtime no longer falls back to the legacy Phaser canvas UI for HUD or dialog rendering.
 Responsive Playwright checks now cover a narrow mobile viewport for the overlay shell, and visual snapshot coverage now tracks overlay-only HUD, help, inventory, and quest states without depending on the animated canvas underneath.
 
 ## Current Test Scope
@@ -76,7 +76,8 @@ Responsive Playwright checks now cover a narrow mobile viewport for the overlay 
 - Content validation for domains, vendors, and map structure
 - Unit regression coverage for quest generation, quest progress, session persistence, dialog pagination, input handling, inventory behavior, and readiness guards
 - Browser smoke coverage for boot and runtime errors during initial load
-- Browser smoke coverage for vendor interaction, item collection, and panel open/close behavior
+- Browser smoke coverage for vendor interaction, item collection, quest completion, and panel open/close behavior
+- Browser visual coverage for the main overlay HUD, help, inventory, and quest states
 
 ## Collision Authoring Convention
 

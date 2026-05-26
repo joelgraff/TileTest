@@ -45,6 +45,7 @@ describe('VendorManager dialog models', () => {
         const dialogData = VendorManager.prototype.buildVendorRootDialogData.call(context, vendorData, 'npc1');
 
         expect(dialogData).toMatchObject({
+            renderMode: 'dom',
             imageKey: 'npc1',
             title: 'Vendor One',
             text: 'Vintage systems and demos.'
@@ -84,6 +85,7 @@ describe('VendorManager dialog models', () => {
 
         const dialogData = VendorManager.prototype.buildVendorItemsDialogData.call(context, vendorData, 'npc1', originalDialogData, 0);
 
+        expect(dialogData.renderMode).toBe('dom');
         expect(dialogData.text).toBe('No items available at this time.');
         expect(dialogData.buttons).toHaveLength(1);
 

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
     createHelpHudButton,
@@ -9,138 +9,136 @@ import {
     createVersionHud
 } from '../../uiHudFactory.js';
 
-function createRectangle() {
-    const handlers = new Map();
+function createFakeDocument() {
+    class FakeElement {
+        constructor(tagName, ownerDocument) {
+            this.tagName = tagName;
+            this.ownerDocument = ownerDocument;
+            this.children = [];
+            this.dataset = {};
+            this.attributes = {};
+            this.listeners = new Map();
+            this.parentNode = null;
+            this.className = '';
+            this.textContent = '';
+            this.type = undefined;
+        }
 
-    return {
-        handlers,
-        setScrollFactor: vi.fn(function () { return this; }),
-        setDepth: vi.fn(function () { return this; }),
-        setStrokeStyle: vi.fn(function () { return this; }),
-        setInteractive: vi.fn(function () { return this; }),
-        setFillStyle: vi.fn(function () { return this; }),
-        on: vi.fn(function (eventName, handler) {
-            handlers.set(eventName, handler);
+        append(...children) {
+            children.filter(Boolean).forEach(child => {
+                child.parentNode = this;
+                this.children.push(child);
+            });
+
             return this;
-        })
-    };
-}
+        }
 
-function createText() {
+        addEventListener(type, listener) {
+            const listeners = this.listeners.get(type) ?? [];
+            listeners.push(listener);
+            this.listeners.set(type, listeners);
+        }
+
+        emit(type, event = {}) {
+            const listeners = this.listeners.get(type) ?? [];
+
+            listeners.forEach(listener => {
+                listener({
+                    preventDefault: vi.fn(),
+                    stopPropagation: vi.fn(),
+                    ...event
+                });
+            });
+        }
+    }
+
+    const elementsById = new Map();
+    const documentRef = {
+        createElement: (tagName) => new FakeElement(tagName, documentRef),
+        getElementById: (id) => elementsById.get(id) ?? null
+    };
+    const overlayRoot = new FakeElement('div', documentRef);
+
+    elementsById.set('ui-overlay-root', overlayRoot);
+
     return {
-        setOrigin: vi.fn(function () { return this; }),
-        setScrollFactor: vi.fn(function () { return this; }),
-        setDepth: vi.fn(function () { return this; })
+        documentRef,
+        overlayRoot
     };
 }
 
 function createUiManager() {
-    const rectangles = [];
-    const texts = [];
-
     const uiManager = {
         score: 42,
-        colors: {
-            button: 0x808080,
-            buttonHover: 0xC0C0C0
-        },
         inputManager: {
             prepareUiInteraction: vi.fn()
         },
         toggleInventory: vi.fn(),
         toggleQuests: vi.fn(),
-        toggleHelp: vi.fn(),
-        scene: {
-            add: {
-                rectangle: vi.fn(() => {
-                    const rectangle = createRectangle();
-                    rectangles.push(rectangle);
-                    return rectangle;
-                }),
-                text: vi.fn(() => {
-                    const text = createText();
-                    texts.push(text);
-                    return text;
-                })
-            }
-        }
+        toggleHelp: vi.fn()
     };
 
-    return {
-        uiManager,
-        rectangles,
-        texts
-    };
+    return { uiManager };
 }
 
 describe('UI HUD factory', () => {
+    const originalDocument = globalThis.document;
+
+    afterEach(() => {
+        globalThis.document = originalDocument;
+    });
+
     it('creates the score and version HUD surfaces with the current score text', () => {
-        const { uiManager, texts } = createUiManager();
+        const { documentRef, overlayRoot } = createFakeDocument();
+        const { uiManager } = createUiManager();
+
+        globalThis.document = documentRef;
 
         createScoreHud(uiManager);
         createVersionHud(uiManager);
 
-        expect(uiManager.scene.add.rectangle).toHaveBeenCalledWith(100, 25, 180, 40, uiManager.colors.button);
-        expect(uiManager.scene.add.text).toHaveBeenNthCalledWith(1, 100, 25, 'SCORE: 42', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '14px',
-            fill: '#FFFFFF',
-            align: 'center'
-        });
-        expect(uiManager.scene.add.text).toHaveBeenNthCalledWith(2, 10, 620, 'Version 1.6', {
-            fontFamily: 'Courier New, monospace',
-            fontSize: '12px',
-            fill: '#FFFFFF',
-            align: 'left'
-        });
-        expect(texts[0].setOrigin).toHaveBeenCalledWith(0.5);
-        expect(texts[1].setOrigin).toHaveBeenCalledWith(0);
+        expect(overlayRoot.children).toHaveLength(1);
+        expect(uiManager.scoreBackground.dataset.hudScore).toBe('true');
+        expect(uiManager.scoreTextElement.textContent).toBe('SCORE: 42');
+        expect(uiManager.versionText.textContent).toBe('Version 1.6');
     });
 
-    it('preserves inventory and quest button hover and pointerdown contracts', () => {
+    it('preserves inventory and quest button click contracts', () => {
+        const { documentRef } = createFakeDocument();
         const { uiManager } = createUiManager();
+
+        globalThis.document = documentRef;
 
         createInventoryHudButton(uiManager);
         createQuestHudButton(uiManager);
 
-        const inventoryEvent = { stopPropagation: vi.fn() };
-        const questEvent = { stopPropagation: vi.fn() };
+        uiManager.invButton.emit('click');
+        uiManager.questButton.emit('click');
 
-        uiManager.invButton.handlers.get('pointerover')();
-        uiManager.invButton.handlers.get('pointerout')();
-        uiManager.invButton.handlers.get('pointerdown')(null, null, null, inventoryEvent);
-
-        uiManager.questButton.handlers.get('pointerover')();
-        uiManager.questButton.handlers.get('pointerout')();
-        uiManager.questButton.handlers.get('pointerdown')(null, null, null, questEvent);
-
-        expect(uiManager.invButton.setFillStyle).toHaveBeenNthCalledWith(1, uiManager.colors.buttonHover);
-        expect(uiManager.invButton.setFillStyle).toHaveBeenNthCalledWith(2, uiManager.colors.button);
-        expect(inventoryEvent.stopPropagation).toHaveBeenCalledTimes(1);
         expect(uiManager.inputManager.prepareUiInteraction).toHaveBeenCalledTimes(2);
         expect(uiManager.toggleInventory).toHaveBeenCalledTimes(1);
-
-        expect(uiManager.questButton.setFillStyle).toHaveBeenNthCalledWith(1, uiManager.colors.buttonHover);
-        expect(uiManager.questButton.setFillStyle).toHaveBeenNthCalledWith(2, uiManager.colors.button);
-        expect(questEvent.stopPropagation).toHaveBeenCalledTimes(1);
         expect(uiManager.toggleQuests).toHaveBeenCalledTimes(1);
     });
 
-    it('keeps the help button pointerdown contract separate from UI input preparation', () => {
+    it('keeps the help button click contract separate from UI input preparation', () => {
+        const { documentRef } = createFakeDocument();
         const { uiManager } = createUiManager();
+
+        globalThis.document = documentRef;
 
         createHelpHudButton(uiManager);
 
-        const helpEvent = { stopPropagation: vi.fn() };
-        uiManager.helpButton.handlers.get('pointerdown')(null, null, null, helpEvent);
+        uiManager.helpButton.emit('click');
 
-        expect(helpEvent.stopPropagation).toHaveBeenCalledTimes(1);
         expect(uiManager.toggleHelp).toHaveBeenCalledTimes(1);
         expect(uiManager.inputManager.prepareUiInteraction).not.toHaveBeenCalled();
     });
 
     it('builds the full HUD in one pass', () => {
+        const { documentRef } = createFakeDocument();
         const { uiManager } = createUiManager();
+
+        globalThis.document = documentRef;
 
         const returned = createUiHud(uiManager);
 

@@ -93,7 +93,7 @@
 - [x] Add responsive layout checks.
 - [x] Add modal behavior checks.
 - [x] Add visual regression coverage for the main UI states.
-- [ ] Remove the old canvas UI after parity is confirmed.
+- [x] Remove the old canvas UI after parity is confirmed.
 
 ## Phase 6: Stabilization Gate
 

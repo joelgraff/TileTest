@@ -1,4 +1,3 @@
-import { renderDialogSurface } from './dialogRenderSurface.js';
 import { renderDomDialogSurface } from './domDialogSurface.js';
 import {
     createDialogPaginationButtons,
@@ -6,7 +5,6 @@ import {
     resolveDialogBottomButtons,
     resolveDialogButtons
 } from './dialogButtonPagination.js';
-import { renderDialogImageContent, renderDialogTextContent } from './dialogContentRenderer.js';
 import { calculateDialogTextPages, resolveDialogTextPage } from './dialogTextPagination.js';
 import { bindSceneBooleanFlag } from './stateBindings.js';
 
@@ -22,8 +20,6 @@ class DialogManager {
         this.prepareUiInteraction = prepareUiInteraction ?? inputManager?.prepareUiInteraction?.bind(inputManager) ?? null;
         this.releasePointerSuppression = releasePointerSuppression ?? inputManager?.releasePointerSuppression?.bind(inputManager) ?? null;
         this.isPointerDown = isPointerDown ?? (() => Boolean(this.scene.input?.activePointer?.isDown));
-        this.dialogContainer = null;
-        this.overlay = null;
         this.domDialogRoot = null;
         this.setState(state);
         // Cache mobile detection for performance
@@ -64,7 +60,7 @@ class DialogManager {
 
     showDialog(dialogParams = {}) {
         const {
-            renderMode = 'canvas'
+            renderMode = 'dom'
         } = dialogParams;
 
         if (this.isDialogOpen) {
@@ -78,67 +74,17 @@ class DialogManager {
         // Clear any existing input state to prevent player movement
         this.prepareUiInteraction?.();
 
-        if (renderMode === 'dom' && renderDomDialogSurface(this, dialogParams)) {
-            return;
+        if (renderMode !== 'dom') {
+            throw new Error(`Unsupported dialog render mode: ${renderMode}`);
         }
 
-        renderDialogSurface(this, dialogParams);
-    }
+        const dialogRoot = renderDomDialogSurface(this, dialogParams);
 
-    createOverlay(cam) {
-        return this.dialogLayout.createOverlay(cam, () => this.hideDialog());
-    }
-
-    createContainer(cam, dialogWidth, dialogHeight) {
-        return this.dialogLayout.createContainer(cam);
-    }
-
-    renderBackground(dialogWidth, dialogHeight) {
-        const bg = this.dialogLayout.createBackground();
-        this.dialogContainer.add(bg);
-    }
-
-    renderTitleBar(title, dialogWidth, dialogHeight) {
-        this.dialogLayout.createTitleBar(title);
-    }
-
-    renderNpcImage(imageKey, dialogWidth, dialogHeight) {
-        return renderDialogImageContent(this, { imageKey, dialogWidth });
-    }
-
-    renderDialogText(displayText, dialogWidth, dialogHeight) {
-        return renderDialogTextContent(this, { displayText, dialogWidth });
-    }
-
-    renderButtons(displayButtons) {
-        this.dialogLayout.createButtons(displayButtons);
-    }
-
-    renderExitButton(exitButton) {
-        this.dialogLayout.createExitButton(exitButton);
-    }
-
-    renderBottomButtons(bottomButtons) {
-        if (!bottomButtons || bottomButtons.length === 0) return;
-        this.dialogLayout.createBottomButtons(bottomButtons);
-    }
-
-    addElementsToContainer() {
-        const containerItems = [];
-
-        // Add layout elements to container
-        if (this.dialogLayout) {
-            Object.values(this.dialogLayout.elements).forEach(element => {
-                if (Array.isArray(element)) {
-                    containerItems.push(...element);
-                } else if (element) {
-                    containerItems.push(element);
-                }
-            });
+        if (!dialogRoot) {
+            throw new Error('DOM overlay root is not available.');
         }
 
-        this.dialogContainer.add(containerItems);
-        this.dialogContainer.setDepth(2000);
+        return dialogRoot;
     }
 
     handleTextPagination(text, textPagination) {
@@ -202,22 +148,6 @@ class DialogManager {
             this.prepareUiInteraction({ suppressPointer: true });
         } else {
             this.releasePointerSuppression?.();
-        }
-
-        // Clear the layout system (elements will be destroyed with container)
-        if (this.dialogLayout) {
-            this.dialogLayout.clear();
-            this.dialogLayout = null;
-        }
-
-        if (this.dialogContainer) {
-            this.dialogContainer.destroy();
-            this.dialogContainer = null;
-        }
-
-        if (this.overlay) {
-            this.overlay.destroy();
-            this.overlay = null;
         }
 
         if (this.domDialogRoot) {

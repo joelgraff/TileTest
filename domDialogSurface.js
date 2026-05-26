@@ -6,6 +6,14 @@ function normalizeDialogText(displayText) {
     return displayText ?? '';
 }
 
+function resolveDialogImageSource(imageKey) {
+    if (!imageKey) {
+        return null;
+    }
+
+    return imageKey.includes('/') ? imageKey : `assets/${imageKey}.png`;
+}
+
 function createDialogButton(documentRef, buttonData, className = 'dom-dialog-button') {
     const button = documentRef.createElement('button');
     button.type = 'button';
@@ -30,6 +38,7 @@ function createDialogButton(documentRef, buttonData, className = 'dom-dialog-but
 export function renderDomDialogSurface(
     manager,
     {
+        imageKey = null,
         title = '',
         text = '',
         buttons = [],
@@ -71,7 +80,27 @@ export function renderDomDialogSurface(
     textElement.textContent = normalizeDialogText(
         manager.handleTextPagination?.(text, textPagination) ?? text
     );
-    dialogPanel.append(textElement);
+
+    const imageSource = resolveDialogImageSource(imageKey);
+
+    if (imageSource) {
+        const contentRow = documentRef.createElement('div');
+        contentRow.className = 'dom-dialog-content';
+
+        const mediaElement = documentRef.createElement('div');
+        mediaElement.className = 'dom-dialog-media';
+
+        const imageElement = documentRef.createElement('img');
+        imageElement.className = 'dom-dialog-image';
+        imageElement.src = imageSource;
+        imageElement.alt = title ? `${title} portrait` : 'Dialog portrait';
+
+        mediaElement.append(imageElement);
+        contentRow.append(mediaElement, textElement);
+        dialogPanel.append(contentRow);
+    } else {
+        dialogPanel.append(textElement);
+    }
 
     const displayButtons = manager.handleButtonPagination?.(buttons, pagination, textPagination) ?? buttons;
     const displayBottomButtons = manager.handleBottomButtonPagination?.(bottomButtons, textPagination) ?? bottomButtons;

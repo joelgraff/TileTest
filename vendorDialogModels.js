@@ -7,6 +7,7 @@ export function createVendorReturnButton(dialogData, { showDialog, label = 'Back
 
 export function createVendorMessageDialogData(text, { returnButton }) {
     return {
+        renderMode: 'dom',
         text,
         buttons: [returnButton]
     };
@@ -14,6 +15,7 @@ export function createVendorMessageDialogData(text, { returnButton }) {
 
 export function createVendorContinueDialogData(message, { onContinue }) {
     return {
+        renderMode: 'dom',
         text: message,
         buttons: [{
             label: 'Continue',
@@ -24,6 +26,7 @@ export function createVendorContinueDialogData(message, { onContinue }) {
 
 export function createVendorBoothInfoDialogData(vendorData, imageKey, { domainName, returnButton }) {
     return {
+        renderMode: 'dom',
         imageKey,
         title: vendorData.name,
         text: `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${domainName}`,
@@ -33,6 +36,7 @@ export function createVendorBoothInfoDialogData(vendorData, imageKey, { domainNa
 
 export function createVendorFactsDialogData(vendorData, imageKey, { formattedFacts, exitButton }) {
     return {
+        renderMode: 'dom',
         imageKey,
         title: vendorData.name,
         text: formattedFacts,
@@ -54,6 +58,7 @@ export function createVendorItemsDialogData(vendorData, imageKey, {
     exitButton
 }) {
     return {
+        renderMode: 'dom',
         imageKey,
         title: vendorData.name,
         text: `Available items from ${domainName} (Page ${page + 1}/${totalPages}):`,
@@ -83,6 +88,7 @@ export function createVendorExitButton(vendorData, { closeDialog }) {
 
 export function createVendorRootDialogData(vendorData, { imageKey, buttons, exitButton }) {
     return {
+        renderMode: 'dom',
         imageKey,
         title: vendorData.name,
         text: vendorData.description,

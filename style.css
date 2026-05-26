@@ -179,6 +179,36 @@ body {
     line-height: 1.45;
 }
 
+.dom-dialog-content {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.dom-dialog-media {
+    flex: 0 0 96px;
+    display: flex;
+    justify-content: center;
+}
+
+.dom-dialog-image {
+    display: block;
+    width: 96px;
+    max-width: 100%;
+    height: auto;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 0 2px #000000;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+.dom-dialog-content .dom-dialog-text {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
 .dom-dialog-actions {
     display: flex;
     flex-wrap: wrap;
@@ -209,6 +239,25 @@ body {
     border-color: #a0a0a0;
     box-shadow: none;
     cursor: default;
+}
+
+@media (max-width: 480px) {
+    .dom-dialog-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .dom-dialog-media {
+        flex-basis: auto;
+    }
+
+    .dom-dialog-image {
+        width: 80px;
+    }
+
+    .dom-dialog-content .dom-dialog-text {
+        width: 100%;
+    }
 }
 
 canvas {

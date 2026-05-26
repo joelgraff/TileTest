@@ -87,6 +87,7 @@ export function createQuestDialogData({ activeQuests = [], completedQuests = [],
 
 export function createQuestCompletionDialogData({ quest, onClose }) {
     return {
+        renderMode: 'dom',
         title: 'Quest Completed!',
         text: `${quest.title}\n\nReward: ${quest.reward.points} points\n\n${quest.reward.description}`,
         buttons: [{

@@ -22,10 +22,12 @@ describe('vendor dialog model helpers', () => {
         const continueDialog = createVendorContinueDialogData('Next', { onContinue });
 
         expect(messageDialog).toEqual({
+            renderMode: 'dom',
             text: 'Hello',
             buttons: [returnButton]
         });
         expect(continueDialog).toEqual({
+            renderMode: 'dom',
             text: 'Next',
             buttons: [{
                 label: 'Continue',
@@ -84,12 +86,16 @@ describe('vendor dialog model helpers', () => {
         });
 
         expect(boothDialog.text).toContain('Domain: Retro Computing');
+        expect(boothDialog.renderMode).toBe('dom');
         expect(factsDialog.textPagination).toEqual({
             currentPage: 0,
             text: ['• Fact one']
         });
+        expect(factsDialog.renderMode).toBe('dom');
         expect(itemsDialog.text).toBe('Available items from Retro Computing (Page 2/3):');
+        expect(itemsDialog.renderMode).toBe('dom');
         expect(rootDialog).toMatchObject({
+            renderMode: 'dom',
             imageKey: 'npc1',
             title: 'Vendor One',
             text: 'Vintage systems and demos.',

@@ -166,6 +166,33 @@ describe('dom dialog surface', () => {
         expect(onClose).toHaveBeenCalledTimes(1);
     });
 
+    it('renders a dialog portrait when imageKey is provided', () => {
+        const { documentRef, overlayRoot } = createFakeDocument();
+        const manager = {
+            getOverlayRoot: () => overlayRoot,
+            handleTextPagination: vi.fn(text => text),
+            handleButtonPagination: vi.fn(buttons => buttons),
+            handleBottomButtonPagination: vi.fn(buttons => buttons)
+        };
+
+        const dialogRoot = renderDomDialogSurface(manager, {
+            imageKey: 'npc1',
+            title: 'Vendor One',
+            text: 'Vintage systems and demos.'
+        }, { documentRef });
+
+        const dialogPanel = dialogRoot.children[0];
+        const contentRow = dialogPanel.children[1];
+        const imageElement = contentRow.children[0].children[0];
+
+        expect(contentRow.className).toBe('dom-dialog-content');
+        expect(imageElement.tagName).toBe('img');
+        expect(imageElement.className).toBe('dom-dialog-image');
+        expect(imageElement.src).toBe('assets/npc1.png');
+        expect(imageElement.alt).toBe('Vendor One portrait');
+        expect(contentRow.children[1].textContent).toBe('Vintage systems and demos.');
+    });
+
     it('keeps the dialog open when clicks stay inside the panel', () => {
         const { documentRef, overlayRoot } = createFakeDocument();
         const hideDialog = vi.fn();
