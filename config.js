@@ -2,7 +2,7 @@ const CONFIG = {
     ASSETS: {
         TILES: 'tiles',
         PLAYER: 'player',
-        MAP: 'map'
+        MAP: 'vcf_map'
     },
     PLAYER: {
         FRAME_WIDTH: 32,
