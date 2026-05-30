@@ -47,6 +47,7 @@ describe('vendor dialog model helpers', () => {
             name: 'Vendor One',
             description: 'Vintage systems and demos.',
             booth: 'A-12',
+            announcements: ['Demo at 2 PM'],
             dialog: {
                 responses: [
                     { text: 'Show me your inventory', action: 'show_items' },
@@ -86,6 +87,7 @@ describe('vendor dialog model helpers', () => {
         });
 
         expect(boothDialog.text).toContain('Domain: Retro Computing');
+        expect(boothDialog.text).toContain('Announcements:\n• Demo at 2 PM');
         expect(boothDialog.renderMode).toBe('dom');
         expect(factsDialog.textPagination).toEqual({
             currentPage: 0,

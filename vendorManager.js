@@ -1,5 +1,9 @@
 import DomainManager from './domainManager.js';
 import {
+    createVendorContentProfile,
+    createVendorFactLines
+} from './vendorContentProfile.js';
+import {
     createVendorBoothInfoDialogData,
     createVendorContinueDialogData,
     createVendorExitButton,
@@ -114,6 +118,20 @@ class VendorManager {
         return npcSprite ? npcSprite.texture.key : (vendorData.imageKey || 'npc1');
     }
 
+    getVendorContentProfile(vendorData, { includeFacts = false } = {}) {
+        const allDomainFacts = includeFacts ? DomainManager.getDomainFacts(vendorData.domain_id) : [];
+        const maxFactsPerVendor = 6;
+        const selectedFacts = allDomainFacts.length <= maxFactsPerVendor
+            ? allDomainFacts
+            : this.getRandomFacts(allDomainFacts, maxFactsPerVendor);
+
+        return createVendorContentProfile(vendorData, {
+            domainName: DomainManager.getDomainName(vendorData.domain_id),
+            items: DomainManager.getDomainItems(vendorData.domain_id),
+            facts: selectedFacts
+        });
+    }
+
     createReturnButton(dialogData, label = 'Back') {
         return createVendorReturnButton(dialogData, {
             showDialog: this.showDialog,
@@ -132,24 +150,24 @@ class VendorManager {
     }
 
     buildVendorBoothInfoDialogData(vendorData, imageKey, originalDialogData) {
-        return createVendorBoothInfoDialogData(vendorData, imageKey, {
-            domainName: DomainManager.getDomainName(vendorData.domain_id),
+        const vendorContent = this.getVendorContentProfile?.(vendorData) ?? createVendorContentProfile(vendorData, {
+            domainName: DomainManager.getDomainName(vendorData.domain_id)
+        });
+
+        return createVendorBoothInfoDialogData(vendorContent, imageKey, {
             returnButton: this.createReturnButton(originalDialogData)
         });
     }
 
     getVendorFactDisplayItems(vendorData) {
-        const allDomainFacts = DomainManager.getDomainFacts(vendorData.domain_id);
-        if (allDomainFacts.length === 0) {
+        const vendorContent = this.getVendorContentProfile?.(vendorData, { includeFacts: true }) ?? createVendorContentProfile(vendorData, {
+            facts: DomainManager.getDomainFacts(vendorData.domain_id)
+        });
+        if (vendorContent.facts.length === 0) {
             return [];
         }
 
-        const maxFactsPerVendor = 6;
-        const selectedFacts = allDomainFacts.length <= maxFactsPerVendor
-            ? allDomainFacts
-            : this.getRandomFacts(allDomainFacts, maxFactsPerVendor);
-
-        return selectedFacts.map(fact => `• ${fact}`);
+        return createVendorFactLines(vendorContent);
     }
 
     buildVendorFactsDialogData(vendorData, imageKey, originalDialogData) {
@@ -165,16 +183,19 @@ class VendorManager {
     }
 
     buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page = 0) {
-        const domainItems = DomainManager.getDomainItems(vendorData.domain_id);
-        if (domainItems.length === 0) {
+        const vendorContent = this.getVendorContentProfile?.(vendorData) ?? createVendorContentProfile(vendorData, {
+            domainName: DomainManager.getDomainName(vendorData.domain_id),
+            items: DomainManager.getDomainItems(vendorData.domain_id)
+        });
+        if (vendorContent.items.length === 0) {
             return this.buildVendorMessageDialogData('No items available at this time.', originalDialogData);
         }
 
         const itemsPerPage = 4;
-        const totalPages = Math.ceil(domainItems.length / itemsPerPage);
+        const totalPages = Math.ceil(vendorContent.items.length / itemsPerPage);
         const startIndex = page * itemsPerPage;
-        const endIndex = Math.min(startIndex + itemsPerPage, domainItems.length);
-        const pageItems = domainItems.slice(startIndex, endIndex);
+        const endIndex = Math.min(startIndex + itemsPerPage, vendorContent.items.length);
+        const pageItems = vendorContent.items.slice(startIndex, endIndex);
 
         const itemButtons = pageItems.map(item => ({
             label: item.name,
@@ -212,7 +233,7 @@ class VendorManager {
         return createVendorItemsDialogData(vendorData, imageKey, {
             page,
             totalPages,
-            domainName: DomainManager.getDomainName(vendorData.domain_id),
+            domainName: vendorContent.domainName,
             itemButtons,
             bottomButtons,
             exitButton: this.createReturnButton(originalDialogData)
@@ -238,12 +259,12 @@ class VendorManager {
         this.showDialog?.(this.buildVendorMessageDialogData('', originalDialogData));
     }
 
-    createVendorResponseButtons(vendorData, imageKey, originalDialogData) {
-        return createVendorResponseButtons(vendorData, {
+    createVendorResponseButtons(vendorData, imageKey, originalDialogData, vendorContent = vendorData) {
+        return createVendorResponseButtons(vendorContent, {
             imageKey,
             originalDialogData,
-            handleVendorResponse: (response, dialogVendorData, dialogImageKey, dialogData) => {
-                this.handleVendorResponse(response, dialogVendorData, dialogImageKey, dialogData);
+            handleVendorResponse: (response, _dialogVendorData, dialogImageKey, dialogData) => {
+                this.handleVendorResponse(response, vendorData, dialogImageKey, dialogData);
             }
         });
     }
@@ -255,13 +276,16 @@ class VendorManager {
     }
 
     buildVendorRootDialogData(vendorData, imageKey) {
-        const dialogData = createVendorRootDialogData(vendorData, {
+        const vendorContent = this.getVendorContentProfile?.(vendorData) ?? createVendorContentProfile(vendorData, {
+            domainName: DomainManager.getDomainName(vendorData.domain_id)
+        });
+        const dialogData = createVendorRootDialogData(vendorContent, {
             imageKey,
             buttons: [],
-            exitButton: this.createVendorExitButton(vendorData)
+            exitButton: this.createVendorExitButton(vendorContent)
         });
 
-        dialogData.buttons = this.createVendorResponseButtons(vendorData, imageKey, dialogData);
+        dialogData.buttons = this.createVendorResponseButtons(vendorData, imageKey, dialogData, vendorContent);
         return dialogData;
     }
 

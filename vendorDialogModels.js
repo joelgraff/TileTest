@@ -1,3 +1,11 @@
+import { createVendorAnnouncementLines } from './vendorContentProfile.js';
+
+function getVendorResponses(vendorData) {
+    return Array.isArray(vendorData.responses)
+        ? vendorData.responses
+        : vendorData.dialog?.responses ?? [];
+}
+
 export function createVendorReturnButton(dialogData, { showDialog, label = 'Back' }) {
     return {
         label,
@@ -25,11 +33,23 @@ export function createVendorContinueDialogData(message, { onContinue }) {
 }
 
 export function createVendorBoothInfoDialogData(vendorData, imageKey, { domainName, returnButton }) {
+    const resolvedDomainName = domainName ?? vendorData.domainName;
+    const textLines = [
+        `Booth: ${vendorData.booth}`,
+        `Description: ${vendorData.description}`,
+        `Domain: ${resolvedDomainName}`
+    ];
+    const announcements = createVendorAnnouncementLines(vendorData);
+
+    if (announcements.length > 0) {
+        textLines.push('', 'Announcements:', ...announcements);
+    }
+
     return {
         renderMode: 'dom',
         imageKey,
         title: vendorData.name,
-        text: `Booth: ${vendorData.booth}\nDescription: ${vendorData.description}\nDomain: ${domainName}`,
+        text: textLines.join('\n'),
         buttons: [returnButton]
     };
 }
@@ -70,7 +90,7 @@ export function createVendorItemsDialogData(vendorData, imageKey, {
 }
 
 export function createVendorResponseButtons(vendorData, { imageKey, originalDialogData, handleVendorResponse }) {
-    return vendorData.dialog.responses
+    return getVendorResponses(vendorData)
         .filter(response => response.action !== 'end' && response.text !== 'Tell me about your booth')
         .map(response => ({
             label: response.text,
@@ -79,7 +99,7 @@ export function createVendorResponseButtons(vendorData, { imageKey, originalDial
 }
 
 export function createVendorExitButton(vendorData, { closeDialog }) {
-    const exitResponse = vendorData.dialog.responses.find(response => response.action === 'end');
+    const exitResponse = vendorData.exitResponse ?? getVendorResponses(vendorData).find(response => response.action === 'end');
 
     return exitResponse ? {
         label: exitResponse.text,
