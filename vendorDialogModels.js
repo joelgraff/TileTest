@@ -108,11 +108,18 @@ export function createVendorExitButton(vendorData, { closeDialog }) {
 }
 
 export function createVendorRootDialogData(vendorData, { imageKey, buttons, exitButton }) {
+    const textLines = [vendorData.description];
+    const announcements = createVendorAnnouncementLines(vendorData);
+
+    if (announcements.length > 0) {
+        textLines.push('', 'Announcements:', ...announcements);
+    }
+
     return {
         renderMode: 'dom',
         imageKey,
         title: vendorData.name,
-        text: vendorData.description,
+        text: textLines.join('\n'),
         buttons,
         exitButton
     };

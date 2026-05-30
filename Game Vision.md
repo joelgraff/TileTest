@@ -371,11 +371,26 @@ Recommended prototype ingredients:
 
 - the full or near-full floorplan populated with many vendor NPCs
 - a vendor content model that supports descriptions, featured items, and announcements
+- a lightweight server/client path that can serve the game, expose a vendor dashboard, and push live content changes into the running game
 - one lightweight scavenger or discovery circuit across a curated set of exhibitors
 - at least one on-site-only mechanic such as a code, clue, or exhibitor-provided phrase
 - a simple session payoff such as a completed circuit, reveal screen, or reward unlock summary
 
 This is enough to test whether the project feels useful, charming, and conference-specific before committing to a much larger systems build.
+
+## Server/Client Prototype Goal
+
+The near-term hosted prototype should demonstrate the application scope even before the final full map is finished.
+
+The first slice should be intentionally small:
+
+- serve the existing browser game through a local Node server
+- expose a simple dashboard page for vendor content updates
+- let a dashboard change update a vendor announcement in the running game in real time or on the next vendor-dialog open
+- keep the Python/static serving path usable for development that does not need live services
+- keep all live-service behavior graceful when the game is opened without the Node server
+
+This gives the project a concrete hosted-app vertical slice without waiting for authentication, durable storage, a polished exhibitor dashboard, or the final full-floor content pass.
 
 ## Recommended First Encounter Types
 

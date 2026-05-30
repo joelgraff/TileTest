@@ -51,6 +51,15 @@ Serve the game locally:
 npm run serve
 ```
 
+Run the hosted prototype server with the vendor dashboard and live announcement API:
+
+```bash
+npm run serve:live
+```
+
+The game remains available at `http://localhost:5000/`, and the dashboard is available at `http://localhost:5000/dashboard`.
+Dashboard announcement edits are stored in memory and appear in vendor dialogs after the browser-side live content service fetches the update.
+
 Run static checks and content validation:
 
 ```bash

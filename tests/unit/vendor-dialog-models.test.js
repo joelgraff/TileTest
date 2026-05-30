@@ -66,6 +66,34 @@ describe('VendorManager dialog models', () => {
         expect(closeDialog).toHaveBeenCalledTimes(1);
     });
 
+    it('merges live announcements through vendor content profiles', () => {
+        const liveContentService = {
+            getAnnouncementsForVendor: vi.fn(() => ['Repair clinic starts at 3 PM'])
+        };
+        const context = {
+            liveContentService,
+            getLiveAnnouncementsForVendor: VendorManager.prototype.getLiveAnnouncementsForVendor,
+            getVendorContentProfile: VendorManager.prototype.getVendorContentProfile,
+            getRandomFacts: VendorManager.prototype.getRandomFacts
+        };
+        const vendorData = {
+            id: 'vendor-1',
+            name: 'Vendor One',
+            booth: 'A-12',
+            description: 'Vintage systems and demos.',
+            domain_id: 'retro',
+            announcements: ['Static demo at noon']
+        };
+
+        const profile = VendorManager.prototype.getVendorContentProfile.call(context, vendorData);
+
+        expect(liveContentService.getAnnouncementsForVendor).toHaveBeenCalledWith('vendor-1');
+        expect(profile.announcements).toEqual([
+            'Static demo at noon',
+            'Repair clinic starts at 3 PM'
+        ]);
+    });
+
     it('builds an item fallback dialog when a vendor has no domain items', () => {
         const showDialog = vi.fn();
         const collectVendorItem = vi.fn();

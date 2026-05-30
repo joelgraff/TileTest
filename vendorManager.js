@@ -27,6 +27,7 @@ class VendorManager {
         player = null,
         camera = null,
         gameObjectFactory = null,
+        liveContentService = null,
         testMode = null
     } = {}) {
         this.scene = scene;
@@ -42,6 +43,7 @@ class VendorManager {
         this.player = player ?? scene.player ?? null;
         this.camera = camera ?? scene.cameras?.main ?? null;
         this.gameObjectFactory = gameObjectFactory ?? scene.add ?? null;
+        this.liveContentService = liveContentService ?? scene.liveVendorContentService ?? null;
         this.testMode = testMode ?? scene.testMode ?? false;
         this.interactionRange = 60;
         this.nearbyVendor = null;
@@ -118,6 +120,10 @@ class VendorManager {
         return npcSprite ? npcSprite.texture.key : (vendorData.imageKey || 'npc1');
     }
 
+    getLiveAnnouncementsForVendor(vendorId) {
+        return this.liveContentService?.getAnnouncementsForVendor?.(vendorId) ?? [];
+    }
+
     getVendorContentProfile(vendorData, { includeFacts = false } = {}) {
         const allDomainFacts = includeFacts ? DomainManager.getDomainFacts(vendorData.domain_id) : [];
         const maxFactsPerVendor = 6;
@@ -128,7 +134,8 @@ class VendorManager {
         return createVendorContentProfile(vendorData, {
             domainName: DomainManager.getDomainName(vendorData.domain_id),
             items: DomainManager.getDomainItems(vendorData.domain_id),
-            facts: selectedFacts
+            facts: selectedFacts,
+            announcements: this.getLiveAnnouncementsForVendor(vendorData.id)
         });
     }
 

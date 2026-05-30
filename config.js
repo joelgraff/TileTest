@@ -7,7 +7,7 @@ const CONFIG = {
     ASSETS: {
         TILES: 'tiles',
         PLAYER: 'player',
-        MAP: 'vcf_map'
+        MAP: 'map'
     },
     CONTENT: {
         DOMAINS: 'technology_domains',

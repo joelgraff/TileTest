@@ -4,6 +4,7 @@ import { initializeSceneManagers } from '../../sceneComposition.js';
 
 describe('scene composition', () => {
     it('constructs and wires scene managers through explicit collaborators', () => {
+        const liveVendorContentService = { id: 'live-content' };
         const scene = {
             gameState: { id: 'state-1' },
             npcGroup: { id: 'npc-group' },
@@ -12,6 +13,7 @@ describe('scene composition', () => {
                 main: { id: 'camera-1' }
             },
             add: { id: 'add-1' },
+            liveVendorContentService,
             testMode: true
         };
 
@@ -69,6 +71,7 @@ describe('scene composition', () => {
             player: scene.player,
             camera: scene.cameras.main,
             gameObjectFactory: scene.add,
+            liveContentService: liveVendorContentService,
             testMode: true
         });
         expect(InteractionCoordinatorClass).toHaveBeenCalledWith(scene, {

@@ -128,4 +128,36 @@ describe('scene bootstrap', () => {
             readinessPromise: null
         });
     });
+
+    it('starts live vendor content service and passes it into manager composition when available', () => {
+        const vendors = [{ id: 'vendor-1' }];
+        const liveVendorContentService = { start: vi.fn() };
+        const scene = {
+            cache: {
+                json: {
+                    get: vi.fn(() => vendors)
+                }
+            }
+        };
+        const initializeSceneManagersFn = vi.fn((sceneArg) => {
+            sceneArg.questManager = { id: 'quest-1' };
+            sceneArg.interactionCoordinator = { id: 'coord-1' };
+        });
+
+        initializeSceneBootstrap(scene, {
+            DomainManagerModule: { loadDomains: vi.fn() },
+            initializeSceneWorldFn: vi.fn(() => true),
+            initializeSceneManagersFn,
+            initializeInteractionReadinessFn: vi.fn(),
+            initializeSceneRuntimeFn: vi.fn(),
+            createLiveVendorContentServiceFn: vi.fn(() => liveVendorContentService)
+        });
+
+        expect(scene.liveVendorContentService).toBe(liveVendorContentService);
+        expect(liveVendorContentService.start).toHaveBeenCalledTimes(1);
+        expect(initializeSceneManagersFn).toHaveBeenCalledWith(scene, {
+            state: scene.gameState,
+            liveVendorContentService
+        });
+    });
 });

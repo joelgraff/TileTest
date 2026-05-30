@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "serve": "python -m http.server 5000",
+    "serve:live": "node server.js",
     "lint": "eslint . --ext .js",
     "test:content": "vitest run tests/content",
     "test:unit": "vitest run tests/unit",

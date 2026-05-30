@@ -12,7 +12,8 @@ export function initializeSceneManagers(
         InputManagerClass = InputManager,
         QuestManagerClass = QuestManager,
         VendorManagerClass = VendorManager,
-        InteractionCoordinatorClass = InteractionCoordinator
+        InteractionCoordinatorClass = InteractionCoordinator,
+        liveVendorContentService = scene.liveVendorContentService ?? null
     } = {}
 ) {
     const uiManager = new UIManagerClass(scene, { state });
@@ -21,7 +22,7 @@ export function initializeSceneManagers(
         state
     });
     const questManager = new QuestManagerClass({ state, testMode: scene.testMode });
-    const vendorManager = new VendorManagerClass(scene, {
+    const vendorManagerOptions = {
         state,
         showDialog: (dialogData) => uiManager.showDialog(dialogData),
         closeDialog: () => uiManager.closeDialog(),
@@ -32,7 +33,13 @@ export function initializeSceneManagers(
         camera: scene.cameras.main,
         gameObjectFactory: scene.add,
         testMode: scene.testMode
-    });
+    };
+
+    if (liveVendorContentService) {
+        vendorManagerOptions.liveContentService = liveVendorContentService;
+    }
+
+    const vendorManager = new VendorManagerClass(scene, vendorManagerOptions);
     const interactionCoordinator = new InteractionCoordinatorClass(scene, {
         vendorManager,
         handleUiInput: (key) => uiManager.handleInput(key),

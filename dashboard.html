@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TileTest Vendor Dashboard</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f3f5f7;
+            color: #1a1f26;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #f3f5f7;
+        }
+
+        .dashboard-shell {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 28px 0;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1,
+        h2 {
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 760;
+        }
+
+        h2 {
+            font-size: 1rem;
+            font-weight: 720;
+        }
+
+        .dashboard-link,
+        button {
+            min-height: 40px;
+            padding: 0 14px;
+            border: 1px solid #8a95a3;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #1a1f26;
+            font: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .dashboard-link {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        button[type="submit"] {
+            border-color: #1d5f8f;
+            background: #1d5f8f;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+            gap: 18px;
+        }
+
+        .panel {
+            padding: 18px;
+            border: 1px solid #d5dbe3;
+            border-radius: 8px;
+            background: #ffffff;
+            box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06);
+        }
+
+        .form-stack,
+        .announcement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #344054;
+        }
+
+        select,
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #b9c1cc;
+            border-radius: 6px;
+            padding: 10px 11px;
+            color: #1a1f26;
+            background: #ffffff;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 140px;
+            resize: vertical;
+            line-height: 1.4;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .status {
+            min-height: 22px;
+            font-size: 0.92rem;
+            color: #1d5f8f;
+        }
+
+        .announcement-empty {
+            color: #667085;
+        }
+
+        .announcement-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #e4e8ee;
+        }
+
+        .announcement-item:last-child {
+            border-bottom: 0;
+        }
+
+        .announcement-vendor {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 760;
+        }
+
+        @media (max-width: 760px) {
+            .dashboard-header,
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-header {
+                align-items: stretch;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="dashboard-shell">
+        <header class="dashboard-header">
+            <h1>Vendor Announcements</h1>
+            <a class="dashboard-link" href="/" target="_blank" rel="noreferrer">Open Game</a>
+        </header>
+        <div class="dashboard-grid">
+            <section class="panel" aria-labelledby="editor-title">
+                <form id="announcement-form" class="form-stack">
+                    <h2 id="editor-title">Announcement Editor</h2>
+                    <label>
+                        Vendor
+                        <select id="vendor-select" name="vendorId"></select>
+                    </label>
+                    <label>
+                        Announcement
+                        <textarea id="announcement-input" name="announcements" spellcheck="true"></textarea>
+                    </label>
+                    <div class="actions">
+                        <button id="clear-button" type="button">Clear</button>
+                        <button type="submit">Save Announcement</button>
+                    </div>
+                    <div id="status" class="status" role="status" aria-live="polite"></div>
+                </form>
+            </section>
+            <section class="panel" aria-labelledby="current-title">
+                <div class="announcement-list">
+                    <h2 id="current-title">Current Live Content</h2>
+                    <div id="announcement-list"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script type="module" src="dashboard.js"></script>
+</body>
+</html>

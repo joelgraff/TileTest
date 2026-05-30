@@ -2,6 +2,7 @@ import { initializeInteractionReadiness } from './bootReadiness.js';
 import CollisionManager from './collisionManager.js';
 import DomainManager from './domainManager.js';
 import GameState from './gameState.js';
+import { createLiveVendorContentService } from './liveVendorContentService.js';
 import { initializeSceneManagers } from './sceneComposition.js';
 import { initializeSceneRuntime } from './sceneRuntimeSetup.js';
 import { initializeSceneWorld } from './sceneWorldSetup.js';
@@ -19,6 +20,7 @@ export function initializeSceneBootstrap(
         initializeInteractionReadinessFn = initializeInteractionReadiness,
         initializeSceneRuntimeFn = initializeSceneRuntime,
         bindSceneBooleanFlagFn = bindSceneBooleanFlag,
+        createLiveVendorContentServiceFn = createLiveVendorContentService,
         recreateCollision = CollisionManager.create
     } = {}
 ) {
@@ -27,6 +29,12 @@ export function initializeSceneBootstrap(
     const gameState = new GameStateClass();
     scene.gameState = gameState;
     bindSceneBooleanFlagFn(scene, gameState, 'interactionsEnabled');
+
+    const liveVendorContentService = createLiveVendorContentServiceFn();
+    if (liveVendorContentService) {
+        scene.liveVendorContentService = liveVendorContentService;
+        liveVendorContentService.start?.();
+    }
 
     DomainManagerModule.loadDomains();
     scene.vendors = scene.cache.json.get('vendors');
@@ -39,7 +47,10 @@ export function initializeSceneBootstrap(
         };
     }
 
-    initializeSceneManagersFn(scene, { state: gameState });
+    initializeSceneManagersFn(scene, {
+        state: gameState,
+        ...(liveVendorContentService ? { liveVendorContentService } : {})
+    });
 
     const readinessPromise = initializeInteractionReadinessFn({
         questManager: scene.questManager,

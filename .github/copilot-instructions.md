@@ -27,6 +27,11 @@ TileTest is a browser-based 2D tilemap game built with Phaser.js featuring proce
 - **Local Development:**
   - Serve with Python HTTP server: `python -m http.server 5000` (binds to 0.0.0.0 for proxy compatibility)
   - Main development files: `.js` modules, `index.html`, asset files
+- **Manager/Developer Agent Workflow:**
+  - Manager agent maintains `/memories/repo/tiletest-manager-roadmap.md` with roadmap slices, focused tickets, and acceptance criteria.
+  - Developer agent works one ticket at a time and reports results to `/memories/repo/tiletest-developer-report.md`.
+  - Manager reviews the developer report, validates key claims, updates ticket status, and decides the next ticket.
+  - Keep tickets small enough to finish in one agent session; prefer focused vertical slices over broad rewrites.
 - **Debugging:**
   - Toggle debug mode with the backtick (`) key
   - Camera follows player and respects map bounds

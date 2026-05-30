@@ -104,9 +104,10 @@ describe('vendor dialog model helpers', () => {
             renderMode: 'dom',
             imageKey: 'npc1',
             title: 'Vendor One',
-            text: 'Vintage systems and demos.',
             exitButton
         });
+        expect(rootDialog.text).toContain('Vintage systems and demos.');
+        expect(rootDialog.text).toContain('Announcements:\n• Demo at 2 PM');
         expect(responseButtons.map((button) => button.label)).toEqual(['Show me your inventory']);
 
         responseButtons[0].onClick();
