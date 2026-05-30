@@ -21,7 +21,7 @@ describe('VendorManager dialog models', () => {
         vi.restoreAllMocks();
     });
 
-    it('builds a root dialog with filtered responses and an exit action', () => {
+    it('builds a root dialog with filtered responses and authored content sections', () => {
         const closeDialog = vi.fn();
         const context = {
             closeDialog,
@@ -33,6 +33,8 @@ describe('VendorManager dialog models', () => {
         const vendorData = {
             name: 'Vendor One',
             description: 'Vintage systems and demos.',
+            featuredItems: ['Portable demo'],
+            clueText: 'Ask about serial cables.',
             dialog: {
                 responses: [
                     { text: 'Show me your inventory', action: 'show_items' },
@@ -48,7 +50,7 @@ describe('VendorManager dialog models', () => {
             renderMode: 'dom',
             imageKey: 'npc1',
             title: 'Vendor One',
-            text: 'Vintage systems and demos.'
+            text: 'Vintage systems and demos.\n\nFeatured:\n• Portable demo\n\nClue: Ask about serial cables.'
         });
         expect(dialogData.buttons.map(button => button.label)).toEqual(['Show me your inventory']);
 
@@ -66,13 +68,19 @@ describe('VendorManager dialog models', () => {
         expect(closeDialog).toHaveBeenCalledTimes(1);
     });
 
-    it('merges live announcements through vendor content profiles', () => {
+    it('merges live vendor content through vendor content profiles', () => {
         const liveContentService = {
-            getAnnouncementsForVendor: vi.fn(() => ['Repair clinic starts at 3 PM'])
+            getContentForVendor: vi.fn(() => ({
+                descriptionOverride: 'Live restoration bench.',
+                featuredItems: ['Disk imaging demo'],
+                announcements: ['Repair clinic starts at 3 PM'],
+                clueText: 'Ask for the live passport clue.'
+            }))
         };
         const context = {
             liveContentService,
             getLiveAnnouncementsForVendor: VendorManager.prototype.getLiveAnnouncementsForVendor,
+            getLiveContentForVendor: VendorManager.prototype.getLiveContentForVendor,
             getVendorContentProfile: VendorManager.prototype.getVendorContentProfile,
             getRandomFacts: VendorManager.prototype.getRandomFacts
         };
@@ -87,11 +95,14 @@ describe('VendorManager dialog models', () => {
 
         const profile = VendorManager.prototype.getVendorContentProfile.call(context, vendorData);
 
-        expect(liveContentService.getAnnouncementsForVendor).toHaveBeenCalledWith('vendor-1');
+        expect(liveContentService.getContentForVendor).toHaveBeenCalledWith('vendor-1');
+        expect(profile.description).toBe('Live restoration bench.');
+        expect(profile.featuredItems).toEqual(['Disk imaging demo']);
         expect(profile.announcements).toEqual([
             'Static demo at noon',
             'Repair clinic starts at 3 PM'
         ]);
+        expect(profile.clueText).toBe('Ask for the live passport clue.');
     });
 
     it('builds an item fallback dialog when a vendor has no domain items', () => {

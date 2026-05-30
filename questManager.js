@@ -14,6 +14,7 @@ class QuestManager {
         this.onQuestCompletion = null;
         this.testMode = Boolean(testMode);
         this.testQuestCounter = 0;
+        this.discoveryVendorPool = null;
         this.setState(state);
     }
 
@@ -81,6 +82,11 @@ class QuestManager {
         return this;
     }
 
+    setDiscoveryVendorPool(vendors = []) {
+        this.discoveryVendorPool = this.getUniqueVendors(vendors);
+        return this;
+    }
+
     /**
      * Wait for DomainManager to load domains, then start quest session
      */
@@ -127,6 +133,11 @@ class QuestManager {
         const collectionQuest = this.generateCollectionQuest();
         if (collectionQuest) {
             this.activeQuests.push(collectionQuest);
+        }
+
+        const discoveryQuest = this.generateDiscoveryQuest();
+        if (discoveryQuest) {
+            this.activeQuests.push(discoveryQuest);
         }
     }
 
@@ -184,6 +195,62 @@ class QuestManager {
         return quest;
     }
 
+    generateDiscoveryQuest() {
+        const selectedVendors = this.selectDiscoveryVendors(this.getDiscoveryCandidateVendors());
+
+        if (selectedVendors.length < 2) {
+            return null;
+        }
+
+        const objectives = selectedVendors.map(vendor => this.createDiscoveryObjective(vendor));
+
+        return {
+            id: this.createQuestId(),
+            type: 'discovery',
+            title: 'Discovery Passport',
+            description: 'Visit these exhibitors and collect a clue from each booth.',
+            objectives,
+            reward: {
+                points: objectives.length * 15,
+                description: `${objectives.length * 15} points for completing the discovery passport`
+            },
+            created: Date.now(),
+            completed: false
+        };
+    }
+
+    getDiscoveryCandidateVendors() {
+        const hasAssignedVendorPool = Array.isArray(this.discoveryVendorPool);
+        const vendorSource = hasAssignedVendorPool ? this.discoveryVendorPool : this.vendors;
+
+        return this.getUniqueVendors(vendorSource).filter(vendor => this.normalizeText(vendor.id));
+    }
+
+    selectDiscoveryVendors(vendors) {
+        const maxVendors = Math.min(2, vendors.length);
+
+        if (maxVendors < 2) {
+            return [];
+        }
+
+        if (this.testMode) {
+            return vendors.slice(0, maxVendors);
+        }
+
+        return this.shuffleArray(vendors).slice(0, maxVendors);
+    }
+
+    createDiscoveryObjective(vendorData = {}) {
+        return {
+            vendorId: this.normalizeText(vendorData.id),
+            vendorName: this.normalizeText(vendorData.name, 'Unknown Vendor'),
+            booth: this.normalizeText(vendorData.booth, 'Unknown Booth'),
+            clue: this.resolveDiscoveryClue(vendorData),
+            visited: false,
+            visitedAt: null
+        };
+    }
+
     getQuestCandidateDomains() {
         const domains = DomainManager.getAllDomains();
         if (!domains || domains.length === 0) {
@@ -225,6 +292,44 @@ class QuestManager {
         return 'quest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
+    normalizeText(value, fallback = '') {
+        return typeof value === 'string' && value.trim().length > 0 ? value : fallback;
+    }
+
+    getUniqueVendors(vendors = []) {
+        if (!Array.isArray(vendors)) {
+            return [];
+        }
+
+        const seenVendorIds = new Set();
+        const uniqueVendors = [];
+
+        vendors.forEach(vendor => {
+            const vendorId = this.normalizeText(vendor?.id);
+
+            if (!vendorId || seenVendorIds.has(vendorId)) {
+                return;
+            }
+
+            seenVendorIds.add(vendorId);
+            uniqueVendors.push(vendor);
+        });
+
+        return uniqueVendors;
+    }
+
+    resolveDiscoveryClue(vendorData = {}) {
+        const clueText = this.normalizeText(vendorData.clueText, this.normalizeText(vendorData.clue));
+        if (clueText) {
+            return clueText;
+        }
+
+        const vendorName = this.normalizeText(vendorData.name, 'this vendor');
+        const booth = this.normalizeText(vendorData.booth, 'their booth');
+
+        return `Visit ${vendorName} at ${booth} and ask what makes their exhibit stand out.`;
+    }
+
     /**
      * Check if a collected item completes any quest objectives
      */
@@ -247,6 +352,50 @@ class QuestManager {
                     }
                 });
             }
+        });
+
+        if (questUpdated) {
+            this.saveSessionState();
+        }
+
+        return questUpdated;
+    }
+
+    checkVendorDiscovery(vendorId, vendorData = {}) {
+        const resolvedVendorId = this.normalizeText(vendorId ?? vendorData?.id);
+        if (!resolvedVendorId) {
+            return false;
+        }
+
+        let questUpdated = false;
+
+        this.activeQuests.forEach(quest => {
+            if (quest.type !== 'discovery') {
+                return;
+            }
+
+            quest.objectives.forEach(objective => {
+                if (objective.visited || objective.vendorId !== resolvedVendorId) {
+                    return;
+                }
+
+                objective.visited = true;
+                objective.visitedAt = Date.now();
+                objective.vendorName = this.normalizeText(vendorData.name, objective.vendorName);
+                objective.booth = this.normalizeText(vendorData.booth, objective.booth);
+                objective.clue = this.resolveDiscoveryClue({
+                    ...objective,
+                    ...vendorData,
+                    name: this.normalizeText(vendorData.name, objective.vendorName),
+                    booth: this.normalizeText(vendorData.booth, objective.booth)
+                });
+                questUpdated = true;
+
+                const allObjectivesComplete = quest.objectives.every(obj => obj.visited);
+                if (allObjectivesComplete) {
+                    this.completeQuest(quest.id);
+                }
+            });
         });
 
         if (questUpdated) {
@@ -384,11 +533,6 @@ class QuestManager {
             totalPoints: this.completedQuests.reduce((sum, quest) => sum + (quest.reward?.points || 0), 0)
         };
     }
-}
-
-// Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = QuestManager;
 }
 
 export default QuestManager;

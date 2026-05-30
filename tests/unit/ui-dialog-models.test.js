@@ -65,6 +65,37 @@ describe('ui dialog models', () => {
         });
     });
 
+    it('distinguishes discovery passport progress from item collection progress', () => {
+        const dialog = createQuestDialogData({
+            activeQuests: [{
+                type: 'discovery',
+                title: 'Discovery Passport',
+                description: 'Visit fixture vendors.',
+                objectives: [
+                    {
+                        vendorName: 'Vendor One',
+                        booth: 'A1',
+                        clue: 'Find the repair bench.',
+                        visited: true
+                    },
+                    {
+                        vendorName: 'Vendor Two',
+                        booth: 'B2',
+                        clue: 'Ask about the portable demo.',
+                        visited: false
+                    }
+                ]
+            }],
+            completedQuests: [],
+            onClose: vi.fn()
+        });
+
+        expect(dialog.text).toContain('   Progress: 1/2 vendors visited');
+        expect(dialog.text).toContain('   ✓ Vendor One (A1): Find the repair bench.');
+        expect(dialog.text).toContain('   - Vendor Two (B2): Ask about the portable demo.');
+        expect(dialog.text).not.toContain('   Progress: 1/2 items collected');
+    });
+
     it('builds help and quest fallback dialogs from pure content helpers', () => {
         const onClose = vi.fn();
         const helpDialog = createHelpDialogData({ onClose });

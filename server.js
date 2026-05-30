@@ -3,12 +3,12 @@ import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { VendorAnnouncementStore } from './liveVendorAnnouncementStore.js';
+import { VendorContentStore } from './liveVendorAnnouncementStore.js';
 
 const repoRoot = path.dirname(fileURLToPath(import.meta.url));
 const host = process.env.HOST ?? '0.0.0.0';
 const port = Number.parseInt(process.env.PORT ?? '5000', 10);
-const announcementStore = new VendorAnnouncementStore();
+const vendorContentStore = new VendorContentStore();
 
 const contentTypes = new Map([
     ['.css', 'text/css; charset=utf-8'],
@@ -20,6 +20,21 @@ const contentTypes = new Map([
     ['.tmx', 'application/xml; charset=utf-8'],
     ['.tsx', 'application/xml; charset=utf-8']
 ]);
+
+function injectLiveBackendFlag(filePath, body) {
+    if (path.basename(filePath) !== 'index.html') {
+        return body;
+    }
+
+    const html = body.toString('utf8');
+    const liveBackendScript = '<script>window.__tileTestLiveBackend = true;</script>';
+
+    if (html.includes(liveBackendScript)) {
+        return html;
+    }
+
+    return html.replace('</head>', `    ${liveBackendScript}\n</head>`);
+}
 
 function sendJson(response, statusCode, payload) {
     const body = JSON.stringify(payload);
@@ -55,22 +70,53 @@ async function readVendors() {
 }
 
 async function handleApiRequest(request, response, requestUrl) {
-    if (requestUrl.pathname === '/api/vendor-announcements') {
+    if (requestUrl.pathname === '/api/vendor-content') {
         if (request.method === 'GET') {
-            sendJson(response, 200, announcementStore.toJSON());
+            sendJson(response, 200, vendorContentStore.toJSON());
             return true;
         }
 
         if (request.method === 'POST') {
             try {
-                const update = announcementStore.applyUpdate(await readJsonBody(request));
+                const update = vendorContentStore.applyUpdate(await readJsonBody(request));
+                if (!update) {
+                    sendJson(response, 400, { error: 'A vendorId is required.' });
+                    return true;
+                }
+
+                sendJson(response, 200, {
+                    ...vendorContentStore.toJSON(),
+                    updated: update
+                });
+            } catch (error) {
+                sendJson(response, 400, { error: error.message });
+            }
+
+            return true;
+        }
+
+        sendMethodNotAllowed(response);
+        return true;
+    }
+
+    if (requestUrl.pathname === '/api/vendor-announcements') {
+        if (request.method === 'GET') {
+            sendJson(response, 200, {
+                announcements: vendorContentStore.toJSON().announcements
+            });
+            return true;
+        }
+
+        if (request.method === 'POST') {
+            try {
+                const update = vendorContentStore.applyAnnouncementUpdate(await readJsonBody(request));
                 if (!update) {
                     sendJson(response, 400, { error: 'A vendorId and announcement text are required.' });
                     return true;
                 }
 
                 sendJson(response, 200, {
-                    ...announcementStore.toJSON(),
+                    announcements: vendorContentStore.toJSON().announcements,
                     updated: update
                 });
             } catch (error) {
@@ -141,7 +187,7 @@ async function serveStaticFile(request, response, requestUrl) {
     }
 
     try {
-        const body = await fs.readFile(filePath);
+        const body = injectLiveBackendFlag(filePath, await fs.readFile(filePath));
         response.writeHead(200, {
             'Content-Type': contentTypes.get(path.extname(filePath)) ?? 'application/octet-stream',
             'Cache-Control': 'no-store'

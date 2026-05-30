@@ -89,7 +89,7 @@
         }
 
         .form-stack,
-        .announcement-list {
+        .content-list {
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -134,20 +134,20 @@
             color: #1d5f8f;
         }
 
-        .announcement-empty {
+        .content-empty {
             color: #667085;
         }
 
-        .announcement-item {
+        .content-item {
             padding: 10px 0;
             border-bottom: 1px solid #e4e8ee;
         }
 
-        .announcement-item:last-child {
+        .content-item:last-child {
             border-bottom: 0;
         }
 
-        .announcement-vendor {
+        .content-vendor {
             display: block;
             margin-bottom: 4px;
             font-weight: 760;
@@ -169,32 +169,44 @@
 <body>
     <main class="dashboard-shell">
         <header class="dashboard-header">
-            <h1>Vendor Announcements</h1>
+            <h1>Vendor Content</h1>
             <a class="dashboard-link" href="/" target="_blank" rel="noreferrer">Open Game</a>
         </header>
         <div class="dashboard-grid">
             <section class="panel" aria-labelledby="editor-title">
-                <form id="announcement-form" class="form-stack">
-                    <h2 id="editor-title">Announcement Editor</h2>
+                <form id="content-form" class="form-stack">
+                    <h2 id="editor-title">Content Editor</h2>
                     <label>
                         Vendor
                         <select id="vendor-select" name="vendorId"></select>
                     </label>
                     <label>
-                        Announcement
+                        Booth Description Override
+                        <textarea id="description-input" name="descriptionOverride" spellcheck="true"></textarea>
+                    </label>
+                    <label>
+                        Featured Items / Demos
+                        <textarea id="featured-input" name="featuredItems" spellcheck="true"></textarea>
+                    </label>
+                    <label>
+                        Announcements
                         <textarea id="announcement-input" name="announcements" spellcheck="true"></textarea>
+                    </label>
+                    <label>
+                        Discovery Clue Text
+                        <textarea id="clue-input" name="clueText" spellcheck="true"></textarea>
                     </label>
                     <div class="actions">
                         <button id="clear-button" type="button">Clear</button>
-                        <button type="submit">Save Announcement</button>
+                        <button type="submit">Save Content</button>
                     </div>
                     <div id="status" class="status" role="status" aria-live="polite"></div>
                 </form>
             </section>
             <section class="panel" aria-labelledby="current-title">
-                <div class="announcement-list">
+                <div class="content-list">
                     <h2 id="current-title">Current Live Content</h2>
-                    <div id="announcement-list"></div>
+                    <div id="content-list"></div>
                 </div>
             </section>
         </div>

@@ -6,7 +6,12 @@ function createScene() {
     const npc = {
         x: 120,
         y: 140,
-        vendorData: { id: 'vendor-1' }
+        vendorData: { id: 'vendor-1', name: 'Vendor One', booth: 'A1', clueText: 'Find booth A1.' }
+    };
+    const secondNpc = {
+        x: 180,
+        y: 210,
+        vendorData: { id: 'vendor-2', name: 'Vendor Two', booth: 'B2' }
     };
     const scene = {
         testMode: true,
@@ -101,6 +106,15 @@ function createScene() {
             scoreText: {
                 setText: vi.fn()
             },
+            showQuestDialog: vi.fn(() => {
+                scene.uiManager.dialogManager.currentDialogParams = {
+                    title: 'Quests',
+                    text: ['Discovery Passport', 'Progress: 0/2 vendors visited'],
+                    textPagination: {
+                        text: ['Discovery Passport', 'Progress: 0/2 vendors visited']
+                    }
+                };
+            }),
             toggleHelp: vi.fn(() => {
                 scene.uiManager.isDialogOpen = true;
                 scene.uiManager.isHelpOpen = true;
@@ -114,7 +128,7 @@ function createScene() {
             }
         },
         npcGroup: {
-            getChildren: () => [npc]
+            getChildren: () => [npc, secondNpc]
         },
         customCollisionBodies: [{
             body: {
@@ -263,5 +277,28 @@ describe('test mode api', () => {
         expect(dialog.text).toBe(null);
         expect(scene.uiManager.dialogManager.currentDialogParams.itemButtons).toBeDefined();
         expect(scene.uiManager.dialogManager.currentDialogParams.itemButtons).toHaveLength(1);
+    });
+
+    it('seeds discovery passport fixtures and exposes quest dialog snapshots', () => {
+        const scene = createScene();
+        const api = createTestModeApi(() => scene);
+
+        const seeded = api.seedDiscoveryPassportFixture();
+
+        expect(seeded).toMatchObject({
+            active: true,
+            completed: false,
+            title: 'Discovery Passport',
+            visitedCount: 0,
+            totalCount: 2
+        });
+        expect(seeded.objectives.map(objective => objective.vendorId)).toEqual(['vendor-1', 'vendor-2']);
+        expect(seeded.objectives[0].clue).toBe('Find booth A1.');
+
+        const dialog = api.openQuestDialog();
+
+        expect(scene.uiManager.showQuestDialog).toHaveBeenCalledTimes(1);
+        expect(dialog.title).toBe('Quests');
+        expect(dialog.textItems).toContain('Progress: 0/2 vendors visited');
     });
 });

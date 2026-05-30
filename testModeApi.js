@@ -166,6 +166,50 @@ function createMatchingQuest(itemName) {
     };
 }
 
+function createDiscoveryQuest(vendors) {
+    return {
+        id: 'test-discovery-passport',
+        type: 'discovery',
+        title: 'Discovery Passport',
+        description: 'Visit the fixture vendors and collect their clues.',
+        objectives: vendors.map(vendor => ({
+            vendorId: vendor.id,
+            vendorName: vendor.name ?? vendor.id,
+            booth: vendor.booth ?? 'Fixture Booth',
+            clue: vendor.clueText ?? `Visit ${vendor.name ?? vendor.id} and ask about their exhibit.`,
+            visited: false,
+            visitedAt: null
+        })),
+        reward: {
+            points: vendors.length * 15,
+            description: `${vendors.length * 15} points for completing the discovery passport`
+        },
+        created: Date.now(),
+        completed: false
+    };
+}
+
+function getDiscoveryQuestSnapshot(scene) {
+    const activeQuest = scene.questManager.activeQuests.find(quest => quest.type === 'discovery') ?? null;
+    const completedQuest = scene.questManager.completedQuests.find(quest => quest.type === 'discovery') ?? null;
+    const quest = activeQuest ?? completedQuest;
+
+    return {
+        active: Boolean(activeQuest),
+        completed: Boolean(completedQuest),
+        title: quest?.title ?? null,
+        visitedCount: quest?.objectives?.filter(objective => objective.visited).length ?? 0,
+        totalCount: quest?.objectives?.length ?? 0,
+        objectives: quest?.objectives?.map(objective => ({
+            vendorId: objective.vendorId,
+            vendorName: objective.vendorName,
+            booth: objective.booth,
+            clue: objective.clue,
+            visited: objective.visited
+        })) ?? []
+    };
+}
+
 export function createTestModeApi(getScene) {
     return {
         isReady() {
@@ -298,6 +342,36 @@ export function createTestModeApi(getScene) {
             }
 
             inventoryAction.onClick();
+
+            return getDialogSnapshot(scene);
+        },
+
+        seedDiscoveryPassportFixture(count = 2) {
+            const scene = requireScene(getScene);
+            const vendors = scene.npcGroup.getChildren()
+                .slice(0, count)
+                .map((npc, index) => {
+                    if (!npc.vendorData) {
+                        throw new Error(`Vendor NPC ${index} is missing vendor data.`);
+                    }
+
+                    return npc.vendorData;
+                });
+
+            resetProgressionState(scene);
+            scene.questManager.activeQuests = [createDiscoveryQuest(vendors)];
+
+            return getDiscoveryQuestSnapshot(scene);
+        },
+
+        getDiscoveryQuestSnapshot() {
+            return getDiscoveryQuestSnapshot(requireScene(getScene));
+        },
+
+        openQuestDialog() {
+            const scene = requireScene(getScene);
+
+            scene.uiManager.showQuestDialog();
 
             return getDialogSnapshot(scene);
         },

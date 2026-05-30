@@ -1,13 +1,16 @@
 const vendorSelect = document.querySelector('#vendor-select');
+const descriptionInput = document.querySelector('#description-input');
+const featuredInput = document.querySelector('#featured-input');
 const announcementInput = document.querySelector('#announcement-input');
-const announcementForm = document.querySelector('#announcement-form');
+const clueInput = document.querySelector('#clue-input');
+const contentForm = document.querySelector('#content-form');
 const clearButton = document.querySelector('#clear-button');
 const statusElement = document.querySelector('#status');
-const announcementList = document.querySelector('#announcement-list');
+const contentList = document.querySelector('#content-list');
 
 const state = {
     vendors: [],
-    announcementsByVendorId: new Map()
+    contentByVendorId: new Map()
 };
 
 function setStatus(message, isError = false) {
@@ -23,17 +26,68 @@ function getSelectedVendorId() {
     return vendorSelect.value;
 }
 
-function splitAnnouncementInput() {
-    return announcementInput.value
+function splitTextInput(input) {
+    return input.value
         .split(/\r?\n/)
         .map(line => line.trim())
         .filter(line => line.length > 0);
 }
 
-function applyAnnouncementSnapshot(snapshot) {
-    state.announcementsByVendorId = new Map(
-        (snapshot.announcements ?? []).map(entry => [entry.vendorId, entry.announcements ?? []])
-    );
+function normalizeTextList(value) {
+    return Array.isArray(value)
+        ? value.filter(item => typeof item === 'string' && item.trim().length > 0)
+        : [];
+}
+
+function createDefaultContent() {
+    return {
+        descriptionOverride: '',
+        featuredItems: [],
+        announcements: [],
+        clueText: '',
+        moderationStatus: 'approved'
+    };
+}
+
+function normalizeContentEntry(entry) {
+    if (!entry || typeof entry !== 'object' || !entry.vendorId) {
+        return null;
+    }
+
+    return {
+        vendorId: String(entry.vendorId),
+        descriptionOverride: typeof entry.descriptionOverride === 'string' ? entry.descriptionOverride : '',
+        featuredItems: normalizeTextList(entry.featuredItems),
+        announcements: normalizeTextList(entry.announcements),
+        clueText: typeof entry.clueText === 'string' ? entry.clueText : '',
+        moderationStatus: typeof entry.moderationStatus === 'string' ? entry.moderationStatus : 'approved'
+    };
+}
+
+function applyContentSnapshot(snapshot) {
+    const contentByVendorId = new Map();
+
+    for (const entry of snapshot.vendors ?? []) {
+        const normalizedEntry = normalizeContentEntry(entry);
+        if (normalizedEntry) {
+            contentByVendorId.set(normalizedEntry.vendorId, normalizedEntry);
+        }
+    }
+
+    for (const entry of snapshot.announcements ?? []) {
+        const normalizedEntry = normalizeContentEntry(entry);
+        if (!normalizedEntry) {
+            continue;
+        }
+
+        contentByVendorId.set(normalizedEntry.vendorId, {
+            ...(contentByVendorId.get(normalizedEntry.vendorId) ?? createDefaultContent()),
+            vendorId: normalizedEntry.vendorId,
+            announcements: normalizedEntry.announcements
+        });
+    }
+
+    state.contentByVendorId = contentByVendorId;
 }
 
 function renderVendorOptions() {
@@ -45,45 +99,85 @@ function renderVendorOptions() {
     }));
 }
 
-function renderSelectedAnnouncement() {
-    const selectedAnnouncements = state.announcementsByVendorId.get(getSelectedVendorId()) ?? [];
-    announcementInput.value = selectedAnnouncements.join('\n');
+function getSelectedContent() {
+    return state.contentByVendorId.get(getSelectedVendorId()) ?? createDefaultContent();
 }
 
-function renderAnnouncementList() {
+function renderSelectedContent() {
+    const selectedContent = getSelectedContent();
+    descriptionInput.value = selectedContent.descriptionOverride;
+    featuredInput.value = selectedContent.featuredItems.join('\n');
+    announcementInput.value = selectedContent.announcements.join('\n');
+    clueInput.value = selectedContent.clueText;
+}
+
+function hasPreviewContent(content) {
+    return Boolean(
+        content.descriptionOverride ||
+        content.featuredItems.length > 0 ||
+        content.announcements.length > 0 ||
+        content.clueText
+    );
+}
+
+function getPreviewLines(content) {
+    const lines = [];
+
+    if (content.descriptionOverride) {
+        lines.push(`Description: ${content.descriptionOverride}`);
+    }
+
+    if (content.featuredItems.length > 0) {
+        lines.push(`Featured: ${content.featuredItems.join(' / ')}`);
+    }
+
+    if (content.announcements.length > 0) {
+        lines.push(`Announcements: ${content.announcements.join(' / ')}`);
+    }
+
+    if (content.clueText) {
+        lines.push(`Clue: ${content.clueText}`);
+    }
+
+    return lines;
+}
+
+function renderContentList() {
     const entries = state.vendors
         .map(vendor => ({
             vendor,
-            announcements: state.announcementsByVendorId.get(vendor.id) ?? []
+            content: state.contentByVendorId.get(vendor.id) ?? createDefaultContent()
         }))
-        .filter(entry => entry.announcements.length > 0);
+        .filter(entry => hasPreviewContent(entry.content));
 
     if (entries.length === 0) {
         const emptyState = document.createElement('div');
-        emptyState.className = 'announcement-empty';
-        emptyState.textContent = 'No live announcements saved.';
-        announcementList.replaceChildren(emptyState);
+        emptyState.className = 'content-empty';
+        emptyState.textContent = 'No live vendor content saved.';
+        contentList.replaceChildren(emptyState);
         return;
     }
 
-    announcementList.replaceChildren(...entries.map((entry) => {
+    contentList.replaceChildren(...entries.map((entry) => {
         const item = document.createElement('div');
         const vendorName = document.createElement('span');
-        const text = document.createElement('div');
 
-        item.className = 'announcement-item';
-        vendorName.className = 'announcement-vendor';
+        item.className = 'content-item';
+        vendorName.className = 'content-vendor';
         vendorName.textContent = getVendorLabel(entry.vendor);
-        text.textContent = entry.announcements.join(' / ');
 
-        item.append(vendorName, text);
+        item.append(vendorName, ...getPreviewLines(entry.content).map((line) => {
+            const lineElement = document.createElement('div');
+            lineElement.textContent = line;
+            return lineElement;
+        }));
         return item;
     }));
 }
 
 function renderDashboard() {
-    renderSelectedAnnouncement();
-    renderAnnouncementList();
+    renderSelectedContent();
+    renderContentList();
 }
 
 async function fetchJson(url, options) {
@@ -104,39 +198,45 @@ async function fetchJson(url, options) {
 async function loadDashboardData() {
     const [vendorPayload, announcementPayload] = await Promise.all([
         fetchJson('/api/vendors'),
-        fetchJson('/api/vendor-announcements')
+        fetchJson('/api/vendor-content')
     ]);
 
     state.vendors = vendorPayload.vendors ?? [];
-    applyAnnouncementSnapshot(announcementPayload);
+    applyContentSnapshot(announcementPayload);
     renderVendorOptions();
     renderDashboard();
 }
 
 vendorSelect.addEventListener('change', () => {
-    renderSelectedAnnouncement();
+    renderSelectedContent();
 });
 
 clearButton.addEventListener('click', () => {
+    descriptionInput.value = '';
+    featuredInput.value = '';
     announcementInput.value = '';
-    announcementInput.focus();
+    clueInput.value = '';
+    descriptionInput.focus();
 });
 
-announcementForm.addEventListener('submit', async (event) => {
+contentForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     setStatus('Saving...');
 
     try {
-        const payload = await fetchJson('/api/vendor-announcements', {
+        const payload = await fetchJson('/api/vendor-content', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 vendorId: getSelectedVendorId(),
-                announcements: splitAnnouncementInput()
+                descriptionOverride: descriptionInput.value.trim(),
+                featuredItems: splitTextInput(featuredInput),
+                announcements: splitTextInput(announcementInput),
+                clueText: clueInput.value.trim()
             })
         });
 
-        applyAnnouncementSnapshot(payload);
+        applyContentSnapshot(payload);
         renderDashboard();
         setStatus('Saved. Reopen that vendor dialog in the game to see the update.');
     } catch (error) {

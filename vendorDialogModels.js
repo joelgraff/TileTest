@@ -1,4 +1,8 @@
-import { createVendorAnnouncementLines } from './vendorContentProfile.js';
+import {
+    createVendorAnnouncementLines,
+    createVendorClueLine,
+    createVendorFeaturedItemLines
+} from './vendorContentProfile.js';
 
 function getVendorResponses(vendorData) {
     return Array.isArray(vendorData.responses)
@@ -21,6 +25,24 @@ export function createVendorMessageDialogData(text, { returnButton }) {
     };
 }
 
+function appendVendorAuthoredLines(textLines, vendorData) {
+    const featuredItems = createVendorFeaturedItemLines(vendorData);
+    const announcements = createVendorAnnouncementLines(vendorData);
+    const clueText = createVendorClueLine(vendorData);
+
+    if (featuredItems.length > 0) {
+        textLines.push('', 'Featured:', ...featuredItems);
+    }
+
+    if (announcements.length > 0) {
+        textLines.push('', 'Announcements:', ...announcements);
+    }
+
+    if (clueText) {
+        textLines.push('', `Clue: ${clueText}`);
+    }
+}
+
 export function createVendorContinueDialogData(message, { onContinue }) {
     return {
         renderMode: 'dom',
@@ -39,11 +61,7 @@ export function createVendorBoothInfoDialogData(vendorData, imageKey, { domainNa
         `Description: ${vendorData.description}`,
         `Domain: ${resolvedDomainName}`
     ];
-    const announcements = createVendorAnnouncementLines(vendorData);
-
-    if (announcements.length > 0) {
-        textLines.push('', 'Announcements:', ...announcements);
-    }
+    appendVendorAuthoredLines(textLines, vendorData);
 
     return {
         renderMode: 'dom',
@@ -109,11 +127,7 @@ export function createVendorExitButton(vendorData, { closeDialog }) {
 
 export function createVendorRootDialogData(vendorData, { imageKey, buttons, exitButton }) {
     const textLines = [vendorData.description];
-    const announcements = createVendorAnnouncementLines(vendorData);
-
-    if (announcements.length > 0) {
-        textLines.push('', 'Announcements:', ...announcements);
-    }
+    appendVendorAuthoredLines(textLines, vendorData);
 
     return {
         renderMode: 'dom',

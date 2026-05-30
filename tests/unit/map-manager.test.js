@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import CONFIG from '../../config.js';
 import MapManager from '../../mapManager.js';
 
 describe('MapManager', () => {
@@ -40,8 +41,8 @@ describe('MapManager', () => {
         const result = MapManager.create(scene);
 
         expect(result).toBe(scene.mapLayers);
-        expect(scene.make.tilemap).toHaveBeenCalledWith({ key: 'map' });
-        expect(map.addTilesetImage).toHaveBeenCalledWith('tiles');
+        expect(scene.make.tilemap).toHaveBeenCalledWith({ key: CONFIG.ASSETS.MAP });
+        expect(map.addTilesetImage).toHaveBeenCalledWith(CONFIG.ASSETS.TILES);
         expect(map.createLayer).toHaveBeenNthCalledWith(1, 'background', 'tileset', 0, 0);
         expect(map.createLayer).toHaveBeenNthCalledWith(2, 'tables', 'tileset', 0, 0);
         expect(scene.mapLayers).toEqual({

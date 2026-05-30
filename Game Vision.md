@@ -275,6 +275,8 @@ These can live entirely in the client at first. They do not require a backend to
 
 The project should stay playable as a static browser game, but the final vision can support optional online services if they unlock meaningful value.
 
+Static frontend deployability is a hard product constraint. The game client should remain deployable to GitHub Pages or any equivalent static host using only bundled assets and JSON data. Backend-powered services may enhance the experience, but they must not be required for the game to boot, explore the map, interact with bundled vendors, or demonstrate the core prototype.
+
 Reasonable optional services:
 
 - cloud save sync across devices
@@ -388,6 +390,7 @@ The first slice should be intentionally small:
 - expose a simple dashboard page for vendor content updates
 - let a dashboard change update a vendor announcement in the running game in real time or on the next vendor-dialog open
 - keep the Python/static serving path usable for development that does not need live services
+- keep GitHub Pages-style static hosting usable for public demos without the backend or dashboard
 - keep all live-service behavior graceful when the game is opened without the Node server
 
 This gives the project a concrete hosted-app vertical slice without waiting for authentication, durable storage, a polished exhibitor dashboard, or the final full-floor content pass.

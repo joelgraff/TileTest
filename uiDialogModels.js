@@ -39,6 +39,36 @@ export function createQuestUnavailableDialogData({ onClose }) {
     };
 }
 
+function appendCollectionQuestProgress(questItems, quest) {
+    const completedObjectives = quest.objectives.filter((objective) => objective.collected).length;
+    const totalObjectives = quest.objectives.length;
+
+    questItems.push(`   Progress: ${completedObjectives}/${totalObjectives} items collected`);
+}
+
+function appendDiscoveryQuestProgress(questItems, quest) {
+    const completedObjectives = quest.objectives.filter((objective) => objective.visited).length;
+    const totalObjectives = quest.objectives.length;
+
+    questItems.push(`   Progress: ${completedObjectives}/${totalObjectives} vendors visited`);
+    quest.objectives.forEach((objective) => {
+        const status = objective.visited ? '✓' : '-';
+        const booth = objective.booth ? ` (${objective.booth})` : '';
+        const clue = objective.clue ? `: ${objective.clue}` : '';
+
+        questItems.push(`   ${status} ${objective.vendorName}${booth}${clue}`);
+    });
+}
+
+function appendQuestProgress(questItems, quest) {
+    if (quest.type === 'discovery') {
+        appendDiscoveryQuestProgress(questItems, quest);
+        return;
+    }
+
+    appendCollectionQuestProgress(questItems, quest);
+}
+
 export function createQuestDialogData({ activeQuests = [], completedQuests = [], page = 0, onClose }) {
     const questItems = [];
 
@@ -47,11 +77,7 @@ export function createQuestDialogData({ activeQuests = [], completedQuests = [],
         activeQuests.forEach((quest, index) => {
             questItems.push(`${index + 1}. ${quest.title}`);
             questItems.push(`   ${quest.description}`);
-
-            const completedObjectives = quest.objectives.filter((objective) => objective.collected).length;
-            const totalObjectives = quest.objectives.length;
-
-            questItems.push(`   Progress: ${completedObjectives}/${totalObjectives} items collected`);
+            appendQuestProgress(questItems, quest);
             questItems.push('');
         });
     } else {

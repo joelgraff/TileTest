@@ -52,6 +52,8 @@ export function initializeSceneBootstrap(
         ...(liveVendorContentService ? { liveVendorContentService } : {})
     });
 
+    scene.questManager?.setDiscoveryVendorPool?.(scene.vendorManager?.getAssignedVendors?.() ?? []);
+
     const readinessPromise = initializeInteractionReadinessFn({
         questManager: scene.questManager,
         vendors: scene.vendors,

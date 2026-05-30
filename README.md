@@ -51,6 +51,8 @@ Serve the game locally:
 npm run serve
 ```
 
+This static frontend path is the GitHub Pages-compatible demo mode. It must keep working without the Node server, dashboard, account system, or live API. When opened from a static host, backend-powered features should degrade quietly and the game should continue using bundled JSON content.
+
 Run the hosted prototype server with the vendor dashboard and live announcement API:
 
 ```bash
@@ -59,6 +61,7 @@ npm run serve:live
 
 The game remains available at `http://localhost:5000/`, and the dashboard is available at `http://localhost:5000/dashboard`.
 Dashboard announcement edits are stored in memory and appear in vendor dialogs after the browser-side live content service fetches the update.
+The hosted server is optional for development and demonstration; use it only when testing dashboard/live-content behavior.
 
 Run static checks and content validation:
 

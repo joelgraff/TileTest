@@ -1,6 +1,7 @@
-import { VendorAnnouncementStore } from './liveVendorAnnouncementStore.js';
+import { VendorContentStore } from './liveVendorAnnouncementStore.js';
 
-export const DEFAULT_VENDOR_ANNOUNCEMENTS_ENDPOINT = '/api/vendor-announcements';
+export const DEFAULT_VENDOR_CONTENT_ENDPOINT = '/api/vendor-content';
+export const DEFAULT_VENDOR_ANNOUNCEMENTS_ENDPOINT = DEFAULT_VENDOR_CONTENT_ENDPOINT;
 
 function getDefaultFetch() {
     if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
@@ -22,9 +23,13 @@ function getDefaultClearInterval() {
         : null;
 }
 
+function hasLiveBackendFlag() {
+    return typeof window !== 'undefined' && window.__tileTestLiveBackend === true;
+}
+
 export class LiveVendorContentService {
     constructor({
-        endpoint = DEFAULT_VENDOR_ANNOUNCEMENTS_ENDPOINT,
+        endpoint = DEFAULT_VENDOR_CONTENT_ENDPOINT,
         fetchImpl = getDefaultFetch(),
         setIntervalImpl = getDefaultSetInterval(),
         clearIntervalImpl = getDefaultClearInterval(),
@@ -35,7 +40,7 @@ export class LiveVendorContentService {
         this.setIntervalImpl = setIntervalImpl;
         this.clearIntervalImpl = clearIntervalImpl;
         this.pollIntervalMs = pollIntervalMs;
-        this.store = new VendorAnnouncementStore();
+        this.store = new VendorContentStore();
         this.intervalId = null;
         this.started = false;
         this.isAvailable = false;
@@ -43,6 +48,10 @@ export class LiveVendorContentService {
 
     getAnnouncementsForVendor(vendorId) {
         return this.store.getAnnouncementsForVendor(vendorId);
+    }
+
+    getContentForVendor(vendorId) {
+        return this.store.getContentForVendor(vendorId);
     }
 
     applySnapshot(snapshot) {
@@ -110,7 +119,11 @@ export class LiveVendorContentService {
     }
 }
 
-export function createLiveVendorContentService(options = {}) {
+export function createLiveVendorContentService({ requireLiveBackend = true, ...options } = {}) {
+    if (requireLiveBackend && !hasLiveBackendFlag()) {
+        return null;
+    }
+
     const service = new LiveVendorContentService(options);
     return service.fetchImpl ? service : null;
 }

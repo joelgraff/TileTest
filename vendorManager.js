@@ -57,6 +57,12 @@ class VendorManager {
         return this.npcGroup?.getChildren?.() ?? [];
     }
 
+    getAssignedVendors() {
+        return this.getNPCSprites()
+            .map(npcSprite => npcSprite.vendorData)
+            .filter(Boolean);
+    }
+
     isInteractionAvailable() {
         const isDialogOpen = typeof this.isDialogOpen === 'function'
             ? this.isDialogOpen()
@@ -124,6 +130,17 @@ class VendorManager {
         return this.liveContentService?.getAnnouncementsForVendor?.(vendorId) ?? [];
     }
 
+    getLiveContentForVendor(vendorId) {
+        const liveContent = this.liveContentService?.getContentForVendor?.(vendorId);
+        if (liveContent) {
+            return liveContent;
+        }
+
+        return {
+            announcements: this.getLiveAnnouncementsForVendor(vendorId)
+        };
+    }
+
     getVendorContentProfile(vendorData, { includeFacts = false } = {}) {
         const allDomainFacts = includeFacts ? DomainManager.getDomainFacts(vendorData.domain_id) : [];
         const maxFactsPerVendor = 6;
@@ -135,7 +152,9 @@ class VendorManager {
             domainName: DomainManager.getDomainName(vendorData.domain_id),
             items: DomainManager.getDomainItems(vendorData.domain_id),
             facts: selectedFacts,
-            announcements: this.getLiveAnnouncementsForVendor(vendorData.id)
+            ...(this.getLiveContentForVendor?.(vendorData.id) ?? {
+                announcements: this.getLiveAnnouncementsForVendor?.(vendorData.id) ?? []
+            })
         });
     }
 
@@ -282,8 +301,8 @@ class VendorManager {
         });
     }
 
-    buildVendorRootDialogData(vendorData, imageKey) {
-        const vendorContent = this.getVendorContentProfile?.(vendorData) ?? createVendorContentProfile(vendorData, {
+    buildVendorRootDialogData(vendorData, imageKey, resolvedVendorContent = null) {
+        const vendorContent = resolvedVendorContent ?? this.getVendorContentProfile?.(vendorData) ?? createVendorContentProfile(vendorData, {
             domainName: DomainManager.getDomainName(vendorData.domain_id)
         });
         const dialogData = createVendorRootDialogData(vendorContent, {
@@ -296,6 +315,10 @@ class VendorManager {
         return dialogData;
     }
 
+    markVendorDiscovery(vendorData, vendorContent) {
+        return this.scene?.questManager?.checkVendorDiscovery?.(vendorData?.id, vendorContent ?? vendorData) ?? false;
+    }
+
     interactWithVendor(vendorData, npcSprite = null) {
         console.log('Attempting to interact with vendor:', vendorData);
         if (!vendorData || !DomainManager.isLoaded() || !this.showDialog) {
@@ -305,7 +328,12 @@ class VendorManager {
         this.interactionPrompt.setVisible(false);
 
         const imageKey = this.getVendorImageKey(vendorData, npcSprite);
-        this.showDialog(this.buildVendorRootDialogData(vendorData, imageKey));
+        const vendorContent = this.getVendorContentProfile?.(vendorData) ?? createVendorContentProfile(vendorData, {
+            domainName: DomainManager.getDomainName(vendorData.domain_id)
+        });
+
+        this.showDialog(this.buildVendorRootDialogData(vendorData, imageKey, vendorContent));
+        this.markVendorDiscovery(vendorData, vendorContent);
         return true;
     }
 
