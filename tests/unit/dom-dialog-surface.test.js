@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import CONFIG from '../../config.js';
 import { renderDomDialogSurface } from '../../domDialogSurface.js';
 
 function createFakeDocument() {
@@ -188,7 +189,9 @@ describe('dom dialog surface', () => {
         expect(contentRow.className).toBe('dom-dialog-content');
         expect(imageElement.tagName).toBe('img');
         expect(imageElement.className).toBe('dom-dialog-image');
-        expect(imageElement.src).toBe('assets/npc1.png');
+        expect(imageElement.src).toBe(
+            `${CONFIG.PATHS.ASSETS}/${CONFIG.NPC.SPRITES[0]}${CONFIG.PATHS.IMAGE_EXTENSION}`
+        );
         expect(imageElement.alt).toBe('Vendor One portrait');
         expect(contentRow.children[1].textContent).toBe('Vintage systems and demos.');
     });

@@ -1,3 +1,4 @@
+import CONFIG from './config.js';
 import { resolvePlayerAnimationKey } from './playerAnimationResolver.js';
 
 class PlayerManager {
@@ -5,7 +6,11 @@ class PlayerManager {
     static lastY = 0;
     static stuckCounter = 0;
     static preload(scene) {
-        scene.load.spritesheet('player', 'assets/player.png', { frameWidth: 32, frameHeight: 48 });
+        scene.load.spritesheet(
+            CONFIG.ASSETS.PLAYER,
+            `${CONFIG.PATHS.ASSETS}/${CONFIG.ASSETS.PLAYER}${CONFIG.PATHS.IMAGE_EXTENSION}`,
+            { frameWidth: 32, frameHeight: 48 }
+        );
     }
 
     static create(scene) {
@@ -41,13 +46,13 @@ class PlayerManager {
     }
 
     static createPlayerSprite(scene, x, y) {
-        const sprite = scene.physics.add.sprite(x, y, 'player', 0);
+        const sprite = scene.physics.add.sprite(x, y, CONFIG.ASSETS.PLAYER, 0);
         sprite.setCollideWorldBounds(true);
         return sprite;
     }
 
     static setPlayerCollisionBox(scene) {
-        const playerTileset = scene.map.tilesets.find(ts => ts.name === 'player');
+        const playerTileset = scene.map.tilesets.find(ts => ts.name === CONFIG.ASSETS.PLAYER);
         if (!playerTileset || !playerTileset.tileData) return;
 
         let frameIndex = scene.player.frame.name ?? scene.player.frame.index ?? 0;
@@ -72,25 +77,25 @@ class PlayerManager {
     static createPlayerAnimations(scene) {
         scene.anims.create({
             key: 'down',
-            frames: scene.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+            frames: scene.anims.generateFrameNumbers(CONFIG.ASSETS.PLAYER, { start: 0, end: 3 }),
             frameRate: 8,
             repeat: -1
         });
         scene.anims.create({
             key: 'left',
-            frames: scene.anims.generateFrameNumbers('player', { start: 4, end: 7 }),
+            frames: scene.anims.generateFrameNumbers(CONFIG.ASSETS.PLAYER, { start: 4, end: 7 }),
             frameRate: 8,
             repeat: -1
         });
         scene.anims.create({
             key: 'right',
-            frames: scene.anims.generateFrameNumbers('player', { start: 8, end: 11 }),
+            frames: scene.anims.generateFrameNumbers(CONFIG.ASSETS.PLAYER, { start: 8, end: 11 }),
             frameRate: 8,
             repeat: -1
         });
         scene.anims.create({
             key: 'up',
-            frames: scene.anims.generateFrameNumbers('player', { start: 12, end: 15 }),
+            frames: scene.anims.generateFrameNumbers(CONFIG.ASSETS.PLAYER, { start: 12, end: 15 }),
             frameRate: 8,
             repeat: -1
         });

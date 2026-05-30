@@ -1,16 +1,24 @@
+import CONFIG from './config.js';
+
 class MapManager {
     static preload(scene) {
-        scene.load.tilemapTiledJSON('map', 'assets/map.json');
-        scene.load.image('tiles', 'assets/tiles.png');
+        scene.load.tilemapTiledJSON(
+            CONFIG.ASSETS.MAP,
+            `${CONFIG.PATHS.ASSETS}/${CONFIG.ASSETS.MAP}${CONFIG.PATHS.JSON_EXTENSION}`
+        );
+        scene.load.image(
+            CONFIG.ASSETS.TILES,
+            `${CONFIG.PATHS.ASSETS}/${CONFIG.ASSETS.TILES}${CONFIG.PATHS.IMAGE_EXTENSION}`
+        );
     }
 
     static create(scene) {
-        scene.map = scene.make.tilemap({ key: 'map' });
+        scene.map = scene.make.tilemap({ key: CONFIG.ASSETS.MAP });
         scene.mapLayers = {};
-        const tileset = scene.map.addTilesetImage('tiles');
+        const tileset = scene.map.addTilesetImage(CONFIG.ASSETS.TILES);
         const mapHeight = scene.map.heightInPixels;
 
-        // Build a lookup for layer depth values from map.json
+        // Build a lookup for layer depth values from the loaded tilemap.
         const layerDepths = {};
         if (scene.map.layers) {
             scene.map.layers.forEach(layerData => {

@@ -1,3 +1,4 @@
+import CONFIG from './config.js';
 import MapManager from './mapManager.js';
 import PlayerManager from './playerManager.js';
 import NPCManager from './npcManager.js';
@@ -40,7 +41,10 @@ function preload() {
     MapManager.preload(this);
     PlayerManager.preload?.(this);
     NPCManager.preload?.(this);
-    this.load.json('vendors', 'vendors.json');
+    this.load.json(
+        CONFIG.CONTENT.VENDORS,
+        `${CONFIG.CONTENT.VENDORS}${CONFIG.PATHS.JSON_EXTENSION}`
+    );
 }
 
 function create() {

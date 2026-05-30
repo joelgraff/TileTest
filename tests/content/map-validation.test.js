@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
+import CONFIG from '../../config.js';
 import { getLayer, getPropertyValue, getTileset, loadJson } from './testUtils.js';
 
 const TILE_FLIP_FLAGS_MASK = 0x1fffffff;
 const collisionLayerNames = ['tables', 'tabletops'];
-const runtimeTilesetName = 'tiles';
+const runtimeTilesetName = CONFIG.ASSETS.TILES;
 
 function toLocalTileId(globalTileId) {
     const unflippedTileId = globalTileId & TILE_FLIP_FLAGS_MASK;
@@ -20,7 +21,9 @@ function getEmbeddedTilesetCollisionObjects(map, tileId) {
 }
 
 describe('map validation', () => {
-    const map = loadJson('assets/map.json');
+    const map = loadJson(
+        `${CONFIG.PATHS.ASSETS}/${CONFIG.ASSETS.MAP}${CONFIG.PATHS.JSON_EXTENSION}`
+    );
 
     it('includes the required layers used by the runtime', () => {
         const requiredLayers = ['floor', 'tables', 'player', 'npc_area'];

@@ -1,3 +1,5 @@
+import CONFIG from './config.js';
+
 function normalizeDialogText(displayText) {
     if (Array.isArray(displayText)) {
         return displayText.join('\n');
@@ -11,7 +13,9 @@ function resolveDialogImageSource(imageKey) {
         return null;
     }
 
-    return imageKey.includes('/') ? imageKey : `assets/${imageKey}.png`;
+    return imageKey.includes('/')
+        ? imageKey
+        : `${CONFIG.PATHS.ASSETS}/${imageKey}${CONFIG.PATHS.IMAGE_EXTENSION}`;
 }
 
 function createDialogButton(documentRef, buttonData, className = 'dom-dialog-button') {

@@ -1,3 +1,5 @@
+import CONFIG from './config.js';
+
 class DomainManager {
     static domains = null;
     static loadingPromise = null;
@@ -13,13 +15,17 @@ class DomainManager {
 
         DomainManager.loadingPromise = (async () => {
             try {
-            const response = await fetch('technology_domains.json');
-            if (!response.ok) {
-                throw new Error(`Failed to load domains: ${response.status}`);
-            }
-            DomainManager.domains = await response.json();
-            console.log(`Loaded ${DomainManager.domains.length} technology domains`);
-            return DomainManager.domains;
+                const response = await fetch(
+                    `${CONFIG.CONTENT.DOMAINS}${CONFIG.PATHS.JSON_EXTENSION}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`Failed to load domains: ${response.status}`);
+                }
+
+                DomainManager.domains = await response.json();
+                console.log(`Loaded ${DomainManager.domains.length} technology domains`);
+                return DomainManager.domains;
             } catch (error) {
                 console.error('Error loading technology domains:', error);
                 // Return empty array as fallback

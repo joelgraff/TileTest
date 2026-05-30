@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
+import CONFIG from '../../config.js';
 import { loadJson } from './testUtils.js';
 
 describe('content validation', () => {
-    const domains = loadJson('technology_domains.json');
-    const vendors = loadJson('vendors.json');
+    const domains = loadJson(`${CONFIG.CONTENT.DOMAINS}${CONFIG.PATHS.JSON_EXTENSION}`);
+    const vendors = loadJson(`${CONFIG.CONTENT.VENDORS}${CONFIG.PATHS.JSON_EXTENSION}`);
 
     it('defines technology domains with required fields', () => {
         expect(Array.isArray(domains)).toBe(true);

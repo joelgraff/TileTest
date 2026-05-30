@@ -5,7 +5,11 @@ import { createNPCGroup, resolveNPCTablesLayerDepth } from './npcSpawnFactory.js
 class NPCManager {
     static preload(scene) {
         CONFIG.NPC.SPRITES.forEach(spriteKey => {
-            scene.load.spritesheet(spriteKey, `assets/${spriteKey}.png`, { frameWidth: 32, frameHeight: 48 });
+            scene.load.spritesheet(
+                spriteKey,
+                `${CONFIG.PATHS.ASSETS}/${spriteKey}${CONFIG.PATHS.IMAGE_EXTENSION}`,
+                { frameWidth: 32, frameHeight: 48 }
+            );
         });
     }
 

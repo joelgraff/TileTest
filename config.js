@@ -1,8 +1,17 @@
 const CONFIG = {
+    PATHS: {
+        ASSETS: 'assets',
+        IMAGE_EXTENSION: '.png',
+        JSON_EXTENSION: '.json'
+    },
     ASSETS: {
         TILES: 'tiles',
         PLAYER: 'player',
         MAP: 'vcf_map'
+    },
+    CONTENT: {
+        DOMAINS: 'technology_domains',
+        VENDORS: 'vendors'
     },
     PLAYER: {
         FRAME_WIDTH: 32,
