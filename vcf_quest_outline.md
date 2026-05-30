@@ -1,3 +1,5 @@
+Reference note: This document is retained as early concept and requirements brainstorming. Use `Game Vision.md` as the canonical source of truth for current product direction, gameplay goals, and final-form architecture.
+
 To develop a JavaScript-based game like "VCF Quest" that adapts to yearly changes in vendors and floor plans, we'd need a structured set of details across design, technical, and data aspects. This ensures the game is modular, maintainable, and easy to update without rewriting core code. Below, I'll outline the key categories of necessary details, focusing on what's essential for implementation.
 
 ### 1. **Game Design and Mechanics**

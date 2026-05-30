@@ -1,4 +1,7 @@
 Revised Implementation Plan
+
+Reference note: This document is retained as an early implementation sketch. Use `Game Vision.md` as the canonical source of truth for current product direction, gameplay goals, and final-form architecture.
+
 Phase 1A: Foundation (2-3 weeks)
 Goal: Working prototype with 1 quest type, minimal assets
 

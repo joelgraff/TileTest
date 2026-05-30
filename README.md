@@ -1,5 +1,18 @@
 # TileTest
 
+## Product Direction
+
+The canonical scope, gameplay, and final-form architecture document is [Game Vision.md](Game%20Vision.md).
+
+Use that document as the source of truth for what the game is trying to become.
+
+Older planning and brainstorming files remain in the repo as reference material, but they should no longer be treated as the authoritative product brief:
+
+- `vcf_quest_outline.md`
+- `Revised Implementation Plan.md`
+- `quest_template_discussion.txt`
+- `help.json`
+
 ## Stability Work
 
 This repo is currently under a stability-first recovery plan. No new feature work should begin until the baseline checks and defect cleanup phases are complete.
