@@ -87,7 +87,7 @@ describe('vendor dialog model helpers', () => {
         });
 
         expect(boothDialog.text).toContain('Domain: Retro Computing');
-        expect(boothDialog.text).toContain('Announcements:\n• Demo at 2 PM');
+        expect(boothDialog.text).toContain('Booth Notes:\n• Demo at 2 PM');
         expect(boothDialog.renderMode).toBe('dom');
         expect(factsDialog.textPagination).toEqual({
             currentPage: 0,
@@ -107,7 +107,7 @@ describe('vendor dialog model helpers', () => {
             exitButton
         });
         expect(rootDialog.text).toContain('Vintage systems and demos.');
-        expect(rootDialog.text).toContain('Announcements:\n• Demo at 2 PM');
+        expect(rootDialog.text).toContain('Booth Notes:\n• Demo at 2 PM');
         expect(responseButtons.map((button) => button.label)).toEqual(['Show me your inventory']);
 
         responseButtons[0].onClick();

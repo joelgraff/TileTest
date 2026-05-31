@@ -35,7 +35,7 @@ function appendVendorAuthoredLines(textLines, vendorData) {
     }
 
     if (announcements.length > 0) {
-        textLines.push('', 'Announcements:', ...announcements);
+        textLines.push('', 'Booth Notes:', ...announcements);
     }
 
     if (clueText) {

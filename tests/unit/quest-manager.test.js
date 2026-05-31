@@ -78,6 +78,32 @@ describe('QuestManager completion flow', () => {
         expect(saveSessionState).toHaveBeenCalledTimes(1);
     });
 
+    it('keeps booth-specific collection objectives tied to the assigned vendor', () => {
+        const manager = new QuestManager();
+        const saveSessionState = vi.spyOn(manager, 'saveSessionState').mockImplementation(() => {});
+
+        manager.activeQuests = [{
+            id: 'quest-1',
+            type: 'collection',
+            objectives: [{
+                item: { name: 'Panel Item' },
+                collected: false,
+                vendor: null,
+                vendorId: 'vendor-2'
+            }]
+        }];
+
+        expect(manager.checkItemCollection('Panel Item', 'vendor-1')).toBe(false);
+        expect(manager.activeQuests[0].objectives[0].collected).toBe(false);
+        expect(saveSessionState).not.toHaveBeenCalled();
+
+        expect(manager.checkItemCollection('Panel Item', 'vendor-2')).toBe(true);
+        expect(manager.completedQuests[0].objectives[0]).toMatchObject({
+            collected: true,
+            vendor: 'vendor-2'
+        });
+    });
+
     it('persists and restores session state through the quest cookie', () => {
         const manager = new QuestManager();
         manager.sessionId = 'session-123';

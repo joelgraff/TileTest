@@ -103,6 +103,8 @@ test('space opens a nearby vendor dialog without starting movement', async ({ pa
 
     await expect(domDialogSurface).toBeVisible();
     await expect(domDialogSurface).toContainText(state.dialog.text);
+    await expect(domDialogSurface).toContainText('Booth Notes:');
+    await expect(domDialogSurface).not.toContainText('Announcements:');
     await expect(domDialogSurface.locator('.dom-dialog-image')).toHaveCount(1);
     expect(state.flags.isDialogOpen).toBe(true);
     expect(state.movement.target).toBeNull();
@@ -155,6 +157,11 @@ test('collecting a vendor item updates inventory and completes a matching quest'
     await expect(domDialogSurface).toBeVisible();
     await expect(domDialogSurface).toContainText(state.dialog.text);
     await expect(page.locator('[data-hud-score]')).toContainText(`SCORE: ${state.progress.score}`);
+
+    await page.getByRole('button', { name: 'Continue' }).click();
+
+    await expect(domDialogSurface).toContainText('Available items from');
+    await expect(domDialogSurface).not.toContainText(collectedItem);
 });
 
 test('vendor item dialogs use a grid layout and crop the avatar portrait', async ({ page }) => {

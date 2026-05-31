@@ -40,6 +40,24 @@ describe('deterministic test mode', () => {
         expect(npcs[2].vendorData).toBe(vendors[0]);
     });
 
+    it('uses every vendor once before repeating random assignments outside test mode', () => {
+        const vendors = [
+            { id: 'vendor-1', name: 'Vendor 1' },
+            { id: 'vendor-2', name: 'Vendor 2' },
+            { id: 'vendor-3', name: 'Vendor 3' }
+        ];
+        const context = {
+            testMode: false,
+            vendors,
+            randomVendorOrder: null,
+            getRandomVendorOrder: VendorManager.prototype.getRandomVendorOrder
+        };
+        const assignedVendors = [0, 1, 2].map(index => VendorManager.prototype.getAssignedVendor.call(context, index));
+
+        expect(new Set(assignedVendors)).toEqual(new Set(vendors));
+        expect(VendorManager.prototype.getAssignedVendor.call(context, 3)).toBe(assignedVendors[0]);
+    });
+
     it('generates a stable first quest in test mode', () => {
         DomainManager.domains = [
             {
@@ -69,11 +87,15 @@ describe('deterministic test mode', () => {
         const quest = manager.generateCollectionQuest();
 
         expect(quest.id).toBe('test_quest_1');
-        expect(quest.domain).toBe('alpha');
+        expect(quest.domain).toBe('show_floor');
+        expect(quest.title).toBe('Collect Show Floor Treasures');
         expect(quest.objectives.map(objective => objective.item.name)).toEqual([
-            'Alpha Item 1',
-            'Alpha Item 2',
-            'Alpha Item 3'
+            'Alpha Item 3',
+            'Beta Item 1'
+        ]);
+        expect(quest.objectives.map(objective => objective.vendorId)).toEqual([
+            'v1',
+            'v2'
         ]);
 
         DomainManager.domains = null;

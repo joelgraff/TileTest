@@ -134,6 +134,55 @@ describe('VendorManager dialog models', () => {
         expect(collectVendorItem).not.toHaveBeenCalled();
     });
 
+    it('removes successfully collected items from the vendor inventory menu', () => {
+        DomainManager.domains = [{
+            id: 'retro',
+            name: 'Retro Computing',
+            items: [
+                { id: 'item-1', name: 'Item One', value: 5 },
+                { id: 'item-2', name: 'Item Two', value: 7 }
+            ],
+            facts: []
+        }];
+        const showDialog = vi.fn();
+        const collectVendorItem = vi.fn(() => ({
+            status: 'collected',
+            message: 'Collected Item One!'
+        }));
+        const originalDialogData = { title: 'Vendor Root' };
+        const context = {
+            showDialog,
+            collectVendorItem,
+            collectedVendorItemKeysByVendorId: new Map(),
+            createReturnButton: VendorManager.prototype.createReturnButton,
+            buildVendorContinueDialogData: VendorManager.prototype.buildVendorContinueDialogData,
+            buildVendorMessageDialogData: VendorManager.prototype.buildVendorMessageDialogData,
+            getCollectedVendorItemKeys: VendorManager.prototype.getCollectedVendorItemKeys,
+            getAvailableVendorItems: VendorManager.prototype.getAvailableVendorItems,
+            markVendorItemCollected: VendorManager.prototype.markVendorItemCollected,
+            shouldDepleteVendorItem: VendorManager.prototype.shouldDepleteVendorItem,
+            getVendorContentProfile: VendorManager.prototype.getVendorContentProfile,
+            buildVendorItemsDialogData: VendorManager.prototype.buildVendorItemsDialogData
+        };
+        const vendorData = {
+            id: 'vendor-1',
+            name: 'Vendor One',
+            domain_id: 'retro'
+        };
+
+        const itemDialog = VendorManager.prototype.buildVendorItemsDialogData.call(context, vendorData, 'npc1', originalDialogData, 0);
+
+        expect(itemDialog.itemButtons.map(button => button.label)).toEqual(['Item One', 'Item Two']);
+
+        itemDialog.itemButtons[0].onClick();
+        showDialog.mock.calls[0][0].buttons[0].onClick();
+
+        const refreshedDialog = showDialog.mock.calls[1][0];
+
+        expect(collectVendorItem).toHaveBeenCalledWith({ id: 'item-1', name: 'Item One', value: 5 }, 'vendor-1');
+        expect(refreshedDialog.itemButtons.map(button => button.label)).toEqual(['Item Two']);
+    });
+
     it('adds passport feedback to the vendor root dialog only for newly earned stamps', () => {
         const showDialog = vi.fn();
         const vendorData = {

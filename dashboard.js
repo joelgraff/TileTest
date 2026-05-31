@@ -243,7 +243,7 @@ function getPreviewLines(content) {
     }
 
     if (content.announcements.length > 0) {
-        lines.push(`Announcements: ${content.announcements.join(' / ')}`);
+        lines.push(`Booth Notes: ${content.announcements.join(' / ')}`);
     }
 
     if (content.clueText) {

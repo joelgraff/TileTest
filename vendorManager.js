@@ -1,4 +1,5 @@
 import DomainManager from './domainManager.js';
+import { getInventoryItemKey, getVendorInventoryItems } from './vendorInventory.js';
 import {
     createVendorContentProfile,
     createVendorFactLines
@@ -48,6 +49,8 @@ class VendorManager {
         this.interactionRange = 60;
         this.nearbyVendor = null;
         this.vendorAssignmentDone = false;
+        this.collectedVendorItemKeysByVendorId = new Map();
+        this.randomVendorOrder = null;
 
         this.assignVendorsToNPCs();
         this.createInteractionPrompt();
@@ -96,7 +99,22 @@ class VendorManager {
             return this.vendors[index % this.vendors.length];
         }
 
-        return this.vendors[Math.floor(Math.random() * this.vendors.length)];
+        if (!this.randomVendorOrder || this.randomVendorOrder.length !== this.vendors.length) {
+            this.randomVendorOrder = this.getRandomVendorOrder();
+        }
+
+        return this.randomVendorOrder[index % this.randomVendorOrder.length];
+    }
+
+    getRandomVendorOrder() {
+        const vendors = [...this.vendors];
+
+        for (let index = vendors.length - 1; index > 0; index -= 1) {
+            const swapIndex = Math.floor(Math.random() * (index + 1));
+            [vendors[index], vendors[swapIndex]] = [vendors[swapIndex], vendors[index]];
+        }
+
+        return vendors;
     }
 
     createInteractionPrompt() {
@@ -143,6 +161,10 @@ class VendorManager {
 
     getVendorContentProfile(vendorData, { includeFacts = false } = {}) {
         const allDomainFacts = includeFacts ? DomainManager.getDomainFacts(vendorData.domain_id) : [];
+        const vendorInventoryItems = getVendorInventoryItems(vendorData, DomainManager.getDomainItems(vendorData.domain_id));
+        const availableItems = typeof this.getAvailableVendorItems === 'function'
+            ? this.getAvailableVendorItems(vendorData.id, vendorInventoryItems)
+            : vendorInventoryItems;
         const maxFactsPerVendor = 6;
         const selectedFacts = allDomainFacts.length <= maxFactsPerVendor
             ? allDomainFacts
@@ -150,12 +172,41 @@ class VendorManager {
 
         return createVendorContentProfile(vendorData, {
             domainName: DomainManager.getDomainName(vendorData.domain_id),
-            items: DomainManager.getDomainItems(vendorData.domain_id),
+            items: availableItems,
             facts: selectedFacts,
             ...(this.getLiveContentForVendor?.(vendorData.id) ?? {
                 announcements: this.getLiveAnnouncementsForVendor?.(vendorData.id) ?? []
             })
         });
+    }
+
+    getCollectedVendorItemKeys(vendorId) {
+        const resolvedVendorId = String(vendorId ?? '');
+        if (!this.collectedVendorItemKeysByVendorId.has(resolvedVendorId)) {
+            this.collectedVendorItemKeysByVendorId.set(resolvedVendorId, new Set());
+        }
+
+        return this.collectedVendorItemKeysByVendorId.get(resolvedVendorId);
+    }
+
+    getAvailableVendorItems(vendorId, items = []) {
+        const collectedItemKeys = this.getCollectedVendorItemKeys(vendorId);
+
+        return items.filter(item => !collectedItemKeys.has(getInventoryItemKey(item)));
+    }
+
+    markVendorItemCollected(vendorId, item) {
+        const itemKey = getInventoryItemKey(item);
+        if (!itemKey) {
+            return false;
+        }
+
+        this.getCollectedVendorItemKeys(vendorId).add(itemKey);
+        return true;
+    }
+
+    shouldDepleteVendorItem(collectionResult) {
+        return ['collected', 'quest-updated'].includes(collectionResult?.status);
     }
 
     createReturnButton(dialogData, label = 'Back') {
@@ -211,7 +262,10 @@ class VendorManager {
     buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page = 0) {
         const vendorContent = this.getVendorContentProfile?.(vendorData) ?? createVendorContentProfile(vendorData, {
             domainName: DomainManager.getDomainName(vendorData.domain_id),
-            items: DomainManager.getDomainItems(vendorData.domain_id)
+            items: this.getAvailableVendorItems?.(
+                vendorData.id,
+                getVendorInventoryItems(vendorData, DomainManager.getDomainItems(vendorData.domain_id))
+            ) ?? getVendorInventoryItems(vendorData, DomainManager.getDomainItems(vendorData.domain_id))
         });
         if (vendorContent.items.length === 0) {
             return this.buildVendorMessageDialogData('No items available at this time.', originalDialogData);
@@ -219,7 +273,8 @@ class VendorManager {
 
         const itemsPerPage = 4;
         const totalPages = Math.ceil(vendorContent.items.length / itemsPerPage);
-        const startIndex = page * itemsPerPage;
+        const currentPage = Math.min(Math.max(page, 0), totalPages - 1);
+        const startIndex = currentPage * itemsPerPage;
         const endIndex = Math.min(startIndex + itemsPerPage, vendorContent.items.length);
         const pageItems = vendorContent.items.slice(startIndex, endIndex);
 
@@ -227,10 +282,13 @@ class VendorManager {
             label: item.name,
             onClick: () => {
                 const collectionResult = this.collectVendorItem?.(item, vendorData.id);
+                if (this.shouldDepleteVendorItem(collectionResult)) {
+                    this.markVendorItemCollected(vendorData.id, item);
+                }
 
                 this.showDialog?.(this.buildVendorContinueDialogData(
                     collectionResult.message,
-                    () => this.showDialog?.(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page))
+                    () => this.showDialog?.(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, currentPage))
                 ));
             }
         }));
@@ -239,16 +297,16 @@ class VendorManager {
         if (totalPages > 1) {
             bottomButtons.push({
                 label: '<',
-                disabled: page <= 0,
-                onClick: page > 0
-                    ? () => this.showDialog?.(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page - 1))
+                disabled: currentPage <= 0,
+                onClick: currentPage > 0
+                    ? () => this.showDialog?.(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, currentPage - 1))
                     : () => {}
             });
             bottomButtons.push({
                 label: '>',
-                disabled: page >= totalPages - 1,
-                onClick: page < totalPages - 1
-                    ? () => this.showDialog?.(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, page + 1))
+                disabled: currentPage >= totalPages - 1,
+                onClick: currentPage < totalPages - 1
+                    ? () => this.showDialog?.(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData, currentPage + 1))
                     : () => {}
             });
         } else {
@@ -257,7 +315,7 @@ class VendorManager {
         }
 
         return createVendorItemsDialogData(vendorData, imageKey, {
-            page,
+            page: currentPage,
             totalPages,
             domainName: vendorContent.domainName,
             itemButtons,

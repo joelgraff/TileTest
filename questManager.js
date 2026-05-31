@@ -6,6 +6,7 @@
 
 import DomainManager from './domainManager.js';
 import { createEncounterChain, getEncounterForVendor } from './encounterChain.js';
+import { getVendorInventoryItems } from './vendorInventory.js';
 
 class QuestManager {
     constructor({ state = null, testMode = false, discoveryTrails = [] } = {}) {
@@ -195,54 +196,91 @@ class QuestManager {
      * Generate a basic collection quest
      */
     generateCollectionQuest() {
-        const candidateDomains = this.getQuestCandidateDomains();
-        if (candidateDomains.length === 0) {
-            console.warn('No valid domains available for quest generation');
+        const objectives = this.createCollectionQuestObjectives();
+        if (objectives.length === 0) {
+            console.warn('No valid vendor inventory available for quest generation');
             return null;
         }
 
-        const selectedDomain = this.selectQuestDomain(candidateDomains);
-
-        // Get items from this domain
-        const domainItems = DomainManager.getDomainItems(selectedDomain.id);
-        if (!domainItems || domainItems.length === 0) {
-            console.warn('No items available in domain:', selectedDomain.id);
-            return null;
-        }
-
-        const selectedItems = this.selectQuestItems(domainItems);
-
-        // Get vendors in this domain (for now, use all vendors - will be limited to active set later)
-        const domainVendors = this.vendors.filter(vendor =>
-            vendor.domain_id === selectedDomain.id
-        );
-
-        if (domainVendors.length === 0) {
-            console.warn('No vendors in domain:', selectedDomain.id);
-            return null;
-        }
+        const itemNames = objectives.map(objective => objective.item.name).join(', ');
 
         // Create quest object
         const quest = {
             id: this.createQuestId(),
             type: 'collection',
-            domain: selectedDomain.id,
-            title: `Collect ${selectedDomain.name} Treasures`,
-            description: `Find and collect these items from ${selectedDomain.name} vendors: ${selectedItems.map(item => item.name).join(', ')}`,
-            objectives: selectedItems.map(item => ({
-                item: item,
-                collected: false,
-                vendor: null // Will be set when collected
-            })),
+            domain: 'show_floor',
+            title: 'Collect Show Floor Treasures',
+            description: `Visit different exhibitors and collect these items: ${itemNames}`,
+            objectives,
             reward: {
-                points: selectedItems.length * 10,
-                description: `${selectedItems.length * 10} points for collecting ${selectedDomain.name} items`
+                points: objectives.length * 10,
+                description: `${objectives.length * 10} points for collecting show floor items`
             },
             created: Date.now(),
             completed: false
         };
 
         return quest;
+    }
+
+    getCollectionCandidateVendors() {
+        const hasAssignedVendorPool = Array.isArray(this.discoveryVendorPool);
+        const vendorSource = hasAssignedVendorPool ? this.discoveryVendorPool : this.vendors;
+
+        return this.getUniqueVendors(vendorSource).filter(vendor => (
+            this.normalizeText(vendor.id)
+            && getVendorInventoryItems(vendor, DomainManager.getDomainItems(vendor.domain_id)).length > 0
+        ));
+    }
+
+    selectCollectionVendors(vendors) {
+        const maxVendors = Math.min(3, vendors.length);
+
+        if (maxVendors === 0) {
+            return [];
+        }
+
+        if (this.testMode) {
+            return vendors.slice(0, maxVendors);
+        }
+
+        return this.shuffleArray(vendors).slice(0, maxVendors);
+    }
+
+    selectCollectionItemForVendor(items, vendorIndex) {
+        if (!Array.isArray(items) || items.length === 0) {
+            return null;
+        }
+
+        if (this.testMode) {
+            return items[vendorIndex % items.length];
+        }
+
+        return this.shuffleArray(items)[0];
+    }
+
+    createCollectionQuestObjectives() {
+        return this.selectCollectionVendors(this.getCollectionCandidateVendors())
+            .map((vendor, vendorIndex) => {
+                const item = this.selectCollectionItemForVendor(
+                    getVendorInventoryItems(vendor, DomainManager.getDomainItems(vendor.domain_id)),
+                    vendorIndex
+                );
+
+                if (!item) {
+                    return null;
+                }
+
+                return {
+                    item,
+                    collected: false,
+                    vendor: null,
+                    vendorId: this.normalizeText(vendor.id),
+                    vendorName: this.normalizeText(vendor.name, 'Unknown Vendor'),
+                    booth: this.normalizeText(vendor.booth)
+                };
+            })
+            .filter(Boolean);
     }
 
     generateDiscoveryQuest() {
@@ -487,7 +525,8 @@ class QuestManager {
         this.activeQuests.forEach(quest => {
             if (quest.type === 'collection') {
                 quest.objectives.forEach(objective => {
-                    if (!objective.collected && objective.item.name === itemName) {
+                    const vendorMatches = !objective.vendorId || this.normalizeText(objective.vendorId) === this.normalizeText(vendorId);
+                    if (!objective.collected && objective.item.name === itemName && vendorMatches) {
                         objective.collected = true;
                         objective.vendor = vendorId;
                         questUpdated = true;
