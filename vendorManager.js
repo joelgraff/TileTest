@@ -4,6 +4,7 @@ import {
     createVendorContentProfile,
     createVendorFactLines
 } from './vendorContentProfile.js';
+import { getVendorsForSessionVendorIds } from './sessionVendorRoster.js';
 import {
     createVendorBoothInfoDialogData,
     createVendorContinueDialogData,
@@ -29,6 +30,7 @@ class VendorManager {
         camera = null,
         gameObjectFactory = null,
         liveContentService = null,
+        activeVendorIds = [],
         testMode = null
     } = {}) {
         this.scene = scene;
@@ -51,9 +53,20 @@ class VendorManager {
         this.vendorAssignmentDone = false;
         this.collectedVendorItemKeysByVendorId = new Map();
         this.randomVendorOrder = null;
+        this.setSessionVendorIds(activeVendorIds);
 
         this.assignVendorsToNPCs();
         this.createInteractionPrompt();
+    }
+
+    setSessionVendorIds(activeVendorIds = []) {
+        this.sessionVendors = getVendorsForSessionVendorIds(this.vendors, activeVendorIds);
+        this.randomVendorOrder = null;
+        return this;
+    }
+
+    getAssignmentVendorPool() {
+        return this.sessionVendors?.length > 0 ? this.sessionVendors : this.vendors;
     }
 
     getNPCSprites() {
@@ -95,19 +108,29 @@ class VendorManager {
     }
 
     getAssignedVendor(index) {
-        if (this.testMode) {
-            return this.vendors[index % this.vendors.length];
+        const vendorPool = this.getAssignmentVendorPool?.() ?? this.vendors ?? [];
+
+        if (vendorPool.length === 0) {
+            return null;
         }
 
-        if (!this.randomVendorOrder || this.randomVendorOrder.length !== this.vendors.length) {
-            this.randomVendorOrder = this.getRandomVendorOrder();
+        if (this.testMode) {
+            return vendorPool[index % vendorPool.length];
+        }
+
+        if (this.sessionVendors?.length > 0) {
+            return vendorPool[index % vendorPool.length];
+        }
+
+        if (!this.randomVendorOrder || this.randomVendorOrder.length !== vendorPool.length) {
+            this.randomVendorOrder = this.getRandomVendorOrder(vendorPool);
         }
 
         return this.randomVendorOrder[index % this.randomVendorOrder.length];
     }
 
-    getRandomVendorOrder() {
-        const vendors = [...this.vendors];
+    getRandomVendorOrder(vendorPool = this.vendors) {
+        const vendors = [...vendorPool];
 
         for (let index = vendors.length - 1; index > 0; index -= 1) {
             const swapIndex = Math.floor(Math.random() * (index + 1));

@@ -13,6 +13,7 @@ const liveContent = {
     clueText: 'Live smoke clue: ask about the hidden diagnostic disk.'
 };
 const liveTrail = {
+    id: 'live-dashboard-starter-trail',
     title: 'Live Dashboard Starter Trail',
     description: 'Live dashboard-authored route for smoke testing.',
     rewardPoints: '45',
@@ -160,7 +161,8 @@ async function gotoLiveGame(page, baseUrl) {
 }
 
 async function saveLiveContentThroughDashboard(page, baseUrl, targetVendor) {
-    await page.goto(`${baseUrl}/dashboard`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${baseUrl}/vendor/`, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.dashboard-workspace')).toHaveCSS('display', 'grid');
     await page.waitForFunction(vendorId => (
         Array.from(document.querySelector('#vendor-select')?.options ?? [])
             .some(option => option.value === vendorId)
@@ -189,11 +191,12 @@ async function saveLiveContentThroughDashboard(page, baseUrl, targetVendor) {
 }
 
 async function saveLiveTrailThroughDashboard(page, baseUrl, targetVendors) {
-    await page.goto(`${baseUrl}/dashboard`, { waitUntil: 'domcontentloaded' });
-    await page.click('[data-dashboard-tab="trails"]');
-    await page.waitForFunction(() => document.querySelector('#trail-select')?.options?.length > 0);
+    await page.goto(`${baseUrl}/amdin`, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('body')).toHaveAttribute('data-dashboard-mode', 'admin');
+    await page.waitForFunction(() => document.querySelector('#trail-select')?.options?.length > 1);
 
-    await page.selectOption('#trail-select', 'sample-floor-starter');
+    await page.click('#trail-new-button');
+    await page.fill('#trail-id-input', liveTrail.id);
     await page.fill('#trail-title-input', liveTrail.title);
     await page.fill('#trail-description-input', liveTrail.description);
     await page.check('#trail-ordered-input');
@@ -209,10 +212,10 @@ async function saveLiveTrailThroughDashboard(page, baseUrl, targetVendors) {
     await expect(page.locator('#trail-list')).toContainText(liveTrail.title);
 
     const savedTrails = await fetchJson(`${baseUrl}/api/discovery-trails`);
-    const savedTrail = savedTrails.trails.find(entry => entry.id === 'sample-floor-starter');
+    const savedTrail = savedTrails.trails.find(entry => entry.id === liveTrail.id);
 
     expect(savedTrail).toMatchObject({
-        id: 'sample-floor-starter',
+        id: liveTrail.id,
         title: liveTrail.title,
         description: liveTrail.description,
         ordered: true,

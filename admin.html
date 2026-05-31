@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TileTest Admin Dashboard</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body data-dashboard-mode="admin">
+    <main class="dashboard-shell">
+        <header class="dashboard-header">
+            <div class="dashboard-title-stack">
+                <p class="eyebrow">Admin Dashboard</p>
+                <h1>Discovery Operations</h1>
+            </div>
+            <nav class="dashboard-nav-links" aria-label="Dashboard links">
+                <a class="dashboard-link" href="/" target="_blank" rel="noreferrer">Open Game</a>
+                <a class="dashboard-link" href="/vendor">Vendor Dashboard</a>
+            </nav>
+        </header>
+        <div class="dashboard-workspace">
+            <section class="panel" aria-labelledby="trail-editor-title">
+                <form id="trail-form" class="form-stack">
+                    <h2 id="trail-editor-title">Discovery Trail Editor</h2>
+                    <div class="select-action-row">
+                        <label>
+                            Trail
+                            <select id="trail-select" name="trailId"></select>
+                        </label>
+                        <button id="trail-new-button" type="button">New Trail</button>
+                    </div>
+                    <label>
+                        Trail ID
+                        <input id="trail-id-input" name="trailIdValue" type="text" autocomplete="off">
+                    </label>
+                    <label>
+                        Trail Title
+                        <input id="trail-title-input" name="title" type="text" autocomplete="off">
+                    </label>
+                    <label>
+                        Description
+                        <textarea id="trail-description-input" name="description" spellcheck="true"></textarea>
+                    </label>
+                    <label class="checkbox-label">
+                        <input id="trail-ordered-input" name="ordered" type="checkbox">
+                        Ordered encounter chain
+                    </label>
+                    <label>
+                        Stops
+                        <span class="field-hint">One per line: vendor id | clue text | goal text</span>
+                        <textarea id="trail-stops-input" name="stops" spellcheck="true"></textarea>
+                    </label>
+                    <label>
+                        Reward Points
+                        <input id="trail-reward-points-input" name="rewardPoints" type="number" min="1" step="1">
+                    </label>
+                    <label>
+                        Reward Description
+                        <textarea id="trail-reward-description-input" name="rewardDescription" spellcheck="true"></textarea>
+                    </label>
+                    <label>
+                        Completion Text
+                        <textarea id="trail-completion-input" name="completionText" spellcheck="true"></textarea>
+                    </label>
+                    <div class="actions">
+                        <button id="trail-reset-button" type="button">Reset</button>
+                        <button type="submit">Save Trail</button>
+                    </div>
+                    <div id="trail-status" class="status" role="status" aria-live="polite"></div>
+                </form>
+            </section>
+            <section class="panel" aria-labelledby="preview-title">
+                <div class="preview-stack">
+                    <h2 id="preview-title">Live Preview</h2>
+                    <h2>Discovery Trails</h2>
+                    <div id="trail-list"></div>
+                    <h2>Vendor Content</h2>
+                    <div id="content-list"></div>
+                    <h2>Vendor IDs</h2>
+                    <div id="vendor-reference-list" class="reference-list"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script type="module" src="/dashboard.js"></script>
+</body>
+</html>

@@ -14,6 +14,7 @@ export function initializeSceneManagers(
         VendorManagerClass = VendorManager,
         InteractionCoordinatorClass = InteractionCoordinator,
         discoveryTrails = scene.discoveryTrails ?? [],
+        activeVendorIds = scene.activeVendorIds ?? [],
         liveVendorContentService = scene.liveVendorContentService ?? null
     } = {}
 ) {
@@ -25,7 +26,8 @@ export function initializeSceneManagers(
     const questManager = new QuestManagerClass({
         state,
         testMode: scene.testMode,
-        discoveryTrails
+        discoveryTrails,
+        activeVendorIds
     });
     const vendorManagerOptions = {
         state,
@@ -37,6 +39,7 @@ export function initializeSceneManagers(
         player: scene.player,
         camera: scene.cameras.main,
         gameObjectFactory: scene.add,
+        activeVendorIds,
         testMode: scene.testMode
     };
 

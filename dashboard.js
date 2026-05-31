@@ -1,3 +1,6 @@
+const NEW_TRAIL_VALUE = '';
+
+const pageMode = document.body?.dataset.dashboardMode ?? 'admin';
 const vendorSelect = document.querySelector('#vendor-select');
 const descriptionInput = document.querySelector('#description-input');
 const featuredInput = document.querySelector('#featured-input');
@@ -8,6 +11,8 @@ const clearButton = document.querySelector('#clear-button');
 const statusElement = document.querySelector('#status');
 const contentList = document.querySelector('#content-list');
 const trailSelect = document.querySelector('#trail-select');
+const trailNewButton = document.querySelector('#trail-new-button');
+const trailIdInput = document.querySelector('#trail-id-input');
 const trailTitleInput = document.querySelector('#trail-title-input');
 const trailDescriptionInput = document.querySelector('#trail-description-input');
 const trailOrderedInput = document.querySelector('#trail-ordered-input');
@@ -19,40 +24,48 @@ const trailForm = document.querySelector('#trail-form');
 const trailResetButton = document.querySelector('#trail-reset-button');
 const trailStatusElement = document.querySelector('#trail-status');
 const trailList = document.querySelector('#trail-list');
-const dashboardTabs = Array.from(document.querySelectorAll('[data-dashboard-tab]'));
-const dashboardPages = Array.from(document.querySelectorAll('[data-dashboard-page]'));
+const vendorReferenceList = document.querySelector('#vendor-reference-list');
 
 const state = {
     vendors: [],
     contentByVendorId: new Map(),
-    trailsById: new Map()
+    trailsById: new Map(),
+    isEditingNewTrail: false,
+    fallbackSources: []
 };
 
 function setStatus(message, isError = false, element = statusElement) {
+    if (!element) {
+        return;
+    }
+
     element.textContent = message;
     element.style.color = isError ? '#b42318' : '#1d5f8f';
 }
 
-function showDashboardPage(pageName) {
-    dashboardTabs.forEach((tab) => {
-        tab.setAttribute('aria-selected', String(tab.dataset.dashboardTab === pageName));
-    });
+function setPageStatus(message, isError = false) {
+    setStatus(message, isError, pageMode === 'admin' ? trailStatusElement : statusElement);
+}
 
-    dashboardPages.forEach((page) => {
-        page.hidden = page.dataset.dashboardPage !== pageName;
-    });
+function createOption(value, textContent, { disabled = false } = {}) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = textContent;
+    option.disabled = disabled;
+    return option;
 }
 
 function getVendorLabel(vendor) {
-    return `${vendor.name} (${vendor.booth})`;
+    const booth = vendor.booth ? ` (${vendor.booth})` : '';
+    return `${vendor.name}${booth}`;
 }
 
 function getSelectedVendorId() {
-    return vendorSelect.value;
+    return vendorSelect?.value ?? '';
 }
 
 function getSelectedTrailId() {
-    return trailSelect.value;
+    return state.isEditingNewTrail ? NEW_TRAIL_VALUE : (trailSelect?.value ?? NEW_TRAIL_VALUE);
 }
 
 function splitTextInput(input) {
@@ -76,6 +89,28 @@ function createDefaultContent() {
         clueText: '',
         moderationStatus: 'approved'
     };
+}
+
+function normalizeVendorEntry(entry) {
+    if (!entry || typeof entry !== 'object' || entry.id === undefined) {
+        return null;
+    }
+
+    return {
+        id: String(entry.id),
+        name: typeof entry.name === 'string' && entry.name.trim().length > 0 ? entry.name.trim() : `Vendor ${entry.id}`,
+        booth: typeof entry.booth === 'string' ? entry.booth.trim() : ''
+    };
+}
+
+function normalizeVendorPayload(payload) {
+    const entries = Array.isArray(payload)
+        ? payload
+        : payload?.mapVendors ?? payload?.vendors ?? [];
+
+    return entries
+        .map(normalizeVendorEntry)
+        .filter(Boolean);
 }
 
 function normalizeContentEntry(entry) {
@@ -136,14 +171,14 @@ function normalizeTrailEntry(entry) {
 function applyContentSnapshot(snapshot) {
     const contentByVendorId = new Map();
 
-    for (const entry of snapshot.vendors ?? []) {
+    for (const entry of snapshot?.vendors ?? []) {
         const normalizedEntry = normalizeContentEntry(entry);
         if (normalizedEntry) {
             contentByVendorId.set(normalizedEntry.vendorId, normalizedEntry);
         }
     }
 
-    for (const entry of snapshot.announcements ?? []) {
+    for (const entry of snapshot?.announcements ?? []) {
         const normalizedEntry = normalizeContentEntry(entry);
         if (!normalizedEntry) {
             continue;
@@ -160,9 +195,10 @@ function applyContentSnapshot(snapshot) {
 }
 
 function applyTrailSnapshot(snapshot) {
+    const trailEntries = Array.isArray(snapshot) ? snapshot : snapshot?.trails ?? [];
     const trailsById = new Map();
 
-    for (const entry of snapshot.trails ?? []) {
+    for (const entry of trailEntries) {
         const normalizedEntry = normalizeTrailEntry(entry);
         if (normalizedEntry) {
             trailsById.set(normalizedEntry.id, normalizedEntry);
@@ -172,22 +208,56 @@ function applyTrailSnapshot(snapshot) {
     state.trailsById = trailsById;
 }
 
+function setVendorFormDisabled(isDisabled) {
+    for (const element of [descriptionInput, featuredInput, announcementInput, clueInput, clearButton, contentForm?.querySelector('button[type="submit"]')]) {
+        if (element) {
+            element.disabled = isDisabled;
+        }
+    }
+}
+
 function renderVendorOptions() {
-    vendorSelect.replaceChildren(...state.vendors.map((vendor) => {
-        const option = document.createElement('option');
-        option.value = vendor.id;
-        option.textContent = getVendorLabel(vendor);
-        return option;
-    }));
+    if (!vendorSelect) {
+        return;
+    }
+
+    const selectedVendorId = getSelectedVendorId();
+    const options = state.vendors.map((vendor) => createOption(vendor.id, getVendorLabel(vendor)));
+
+    if (options.length === 0) {
+        vendorSelect.replaceChildren(createOption('', 'No vendors available', { disabled: true }));
+        vendorSelect.value = '';
+        setVendorFormDisabled(true);
+        return;
+    }
+
+    vendorSelect.replaceChildren(...options);
+    vendorSelect.value = state.vendors.some(vendor => vendor.id === selectedVendorId)
+        ? selectedVendorId
+        : state.vendors[0].id;
+    setVendorFormDisabled(false);
 }
 
 function renderTrailOptions() {
-    trailSelect.replaceChildren(...Array.from(state.trailsById.values()).map((trail) => {
-        const option = document.createElement('option');
-        option.value = trail.id;
-        option.textContent = trail.title;
-        return option;
-    }));
+    if (!trailSelect) {
+        return;
+    }
+
+    const selectedTrailId = getSelectedTrailId();
+    const trails = Array.from(state.trailsById.values());
+    const options = [createOption(NEW_TRAIL_VALUE, 'Create a new trail')];
+
+    options.push(...trails.map((trail) => createOption(trail.id, trail.title)));
+    trailSelect.replaceChildren(...options);
+
+    if (!state.isEditingNewTrail && state.trailsById.has(selectedTrailId)) {
+        trailSelect.value = selectedTrailId;
+    } else if (trails.length > 0 && !state.isEditingNewTrail) {
+        trailSelect.value = trails[0].id;
+    } else {
+        trailSelect.value = NEW_TRAIL_VALUE;
+        state.isEditingNewTrail = true;
+    }
 }
 
 function getSelectedContent() {
@@ -199,6 +269,10 @@ function getSelectedTrail() {
 }
 
 function renderSelectedContent() {
+    if (!descriptionInput || !featuredInput || !announcementInput || !clueInput) {
+        return;
+    }
+
     const selectedContent = getSelectedContent();
     descriptionInput.value = selectedContent.descriptionOverride;
     featuredInput.value = selectedContent.featuredItems.join('\n');
@@ -211,8 +285,12 @@ function createStopLine(stop) {
 }
 
 function renderSelectedTrail() {
-    const selectedTrail = getSelectedTrail();
+    if (!trailIdInput || !trailTitleInput || !trailDescriptionInput || !trailOrderedInput || !trailStopsInput || !trailRewardPointsInput || !trailRewardDescriptionInput || !trailCompletionInput) {
+        return;
+    }
 
+    const selectedTrail = getSelectedTrail();
+    trailIdInput.value = selectedTrail?.id ?? '';
     trailTitleInput.value = selectedTrail?.title ?? '';
     trailDescriptionInput.value = selectedTrail?.description ?? '';
     trailOrderedInput.checked = selectedTrail?.ordered === true;
@@ -220,6 +298,20 @@ function renderSelectedTrail() {
     trailRewardPointsInput.value = selectedTrail?.reward?.points ?? '';
     trailRewardDescriptionInput.value = selectedTrail?.reward?.description ?? '';
     trailCompletionInput.value = selectedTrail?.completionText ?? '';
+}
+
+function startNewTrail({ focus = true } = {}) {
+    state.isEditingNewTrail = true;
+
+    if (trailSelect) {
+        trailSelect.value = NEW_TRAIL_VALUE;
+    }
+
+    renderSelectedTrail();
+
+    if (focus) {
+        trailTitleInput?.focus();
+    }
 }
 
 function hasPreviewContent(content) {
@@ -254,6 +346,10 @@ function getPreviewLines(content) {
 }
 
 function renderContentList() {
+    if (!contentList) {
+        return;
+    }
+
     const entries = state.vendors
         .map(vendor => ({
             vendor,
@@ -292,6 +388,10 @@ function getVendorName(vendorId) {
 }
 
 function renderTrailList() {
+    if (!trailList) {
+        return;
+    }
+
     const trails = Array.from(state.trailsById.values());
 
     if (trails.length === 0) {
@@ -320,11 +420,41 @@ function renderTrailList() {
     }));
 }
 
+function renderVendorReferenceList() {
+    if (!vendorReferenceList) {
+        return;
+    }
+
+    if (state.vendors.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'content-empty';
+        emptyState.textContent = 'No vendors loaded.';
+        vendorReferenceList.replaceChildren(emptyState);
+        return;
+    }
+
+    vendorReferenceList.replaceChildren(...state.vendors.map((vendor) => {
+        const item = document.createElement('div');
+        const vendorId = document.createElement('span');
+        const vendorName = document.createElement('span');
+
+        item.className = 'reference-entry';
+        vendorId.className = 'reference-id';
+        vendorId.textContent = vendor.id;
+        vendorName.textContent = getVendorLabel(vendor);
+        item.append(vendorId, vendorName);
+        return item;
+    }));
+}
+
 function renderDashboard() {
+    renderVendorOptions();
+    renderTrailOptions();
     renderSelectedContent();
     renderSelectedTrail();
     renderContentList();
     renderTrailList();
+    renderVendorReferenceList();
 }
 
 async function fetchJson(url, options) {
@@ -342,47 +472,45 @@ async function fetchJson(url, options) {
     return response.json();
 }
 
-async function loadDashboardData() {
-    const [vendorPayload, announcementPayload, trailPayload] = await Promise.all([
-        fetchJson('/api/vendors'),
-        fetchJson('/api/vendor-content'),
-        fetchJson('/api/discovery-trails')
-    ]);
+async function loadJsonWithFallback(apiUrl, fallbackUrl, fallbackPayload, sourceLabel) {
+    try {
+        return await fetchJson(apiUrl);
+    } catch (apiError) {
+        if (fallbackUrl) {
+            try {
+                const payload = await fetchJson(fallbackUrl);
+                state.fallbackSources.push(sourceLabel);
+                return payload;
+            } catch (fallbackError) {
+                state.fallbackSources.push(`${sourceLabel}: ${fallbackError.message}`);
+            }
+        } else {
+            state.fallbackSources.push(sourceLabel);
+        }
 
-    state.vendors = vendorPayload.vendors ?? [];
-    applyContentSnapshot(announcementPayload);
-    applyTrailSnapshot(trailPayload);
-    renderVendorOptions();
-    renderTrailOptions();
-    renderDashboard();
+        return typeof fallbackPayload === 'function' ? fallbackPayload(apiError) : fallbackPayload;
+    }
 }
 
-vendorSelect.addEventListener('change', () => {
-    renderSelectedContent();
-});
+async function loadDashboardData() {
+    state.fallbackSources = [];
 
-trailSelect.addEventListener('change', () => {
-    renderSelectedTrail();
-});
+    const [vendorPayload, contentPayload, trailPayload] = await Promise.all([
+        loadJsonWithFallback('/api/vendors', '/vendors.json', { vendors: [] }, 'vendors'),
+        loadJsonWithFallback('/api/vendor-content', null, { vendors: [], announcements: [] }, 'live content'),
+        loadJsonWithFallback('/api/discovery-trails', '/discovery_trails.json', { trails: [] }, 'discovery trails')
+    ]);
 
-dashboardTabs.forEach((tab) => {
-    tab.addEventListener('click', () => {
-        showDashboardPage(tab.dataset.dashboardTab);
-    });
-});
+    state.vendors = normalizeVendorPayload(vendorPayload);
+    applyContentSnapshot(contentPayload);
+    applyTrailSnapshot(trailPayload);
+    state.isEditingNewTrail = state.trailsById.size === 0;
+    renderDashboard();
 
-clearButton.addEventListener('click', () => {
-    descriptionInput.value = '';
-    featuredInput.value = '';
-    announcementInput.value = '';
-    clueInput.value = '';
-    descriptionInput.focus();
-});
-
-trailResetButton.addEventListener('click', () => {
-    renderSelectedTrail();
-    trailTitleInput.focus();
-});
+    if (state.fallbackSources.length > 0) {
+        setPageStatus('Loaded bundled data. Saving changes requires the live server.', false);
+    }
+}
 
 function createStopId(vendorId, index) {
     return `stop-${index + 1}-${vendorId.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
@@ -406,8 +534,67 @@ function parseTrailStops() {
         .filter(stop => stop.vendorId);
 }
 
-contentForm.addEventListener('submit', async (event) => {
+function slugifyTrailId(value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
+function getTrailIdForSave() {
+    return slugifyTrailId(trailIdInput?.value ?? '') || slugifyTrailId(trailTitleInput?.value ?? '');
+}
+
+function getSaveErrorMessage(error) {
+    const message = error instanceof Error ? error.message : String(error);
+
+    if (/404|not found|failed to fetch/i.test(message)) {
+        return `${message}. Start the live server with npm run serve:live and open this page from that server.`;
+    }
+
+    return message;
+}
+
+vendorSelect?.addEventListener('change', () => {
+    renderSelectedContent();
+});
+
+trailSelect?.addEventListener('change', () => {
+    state.isEditingNewTrail = trailSelect.value === NEW_TRAIL_VALUE;
+    renderSelectedTrail();
+});
+
+clearButton?.addEventListener('click', () => {
+    descriptionInput.value = '';
+    featuredInput.value = '';
+    announcementInput.value = '';
+    clueInput.value = '';
+    descriptionInput.focus();
+});
+
+trailNewButton?.addEventListener('click', () => {
+    startNewTrail();
+});
+
+trailResetButton?.addEventListener('click', () => {
+    if (state.isEditingNewTrail) {
+        startNewTrail();
+    } else {
+        renderSelectedTrail();
+    }
+
+    trailTitleInput?.focus();
+});
+
+contentForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
+
+    if (!getSelectedVendorId()) {
+        setStatus('Choose a vendor before saving.', true);
+        return;
+    }
+
     setStatus('Saving...');
 
     try {
@@ -427,24 +614,37 @@ contentForm.addEventListener('submit', async (event) => {
         renderDashboard();
         setStatus('Saved. Reopen that vendor dialog in the game to see the update.');
     } catch (error) {
-        setStatus(error.message, true);
+        setStatus(getSaveErrorMessage(error), true);
     }
 });
 
-trailForm.addEventListener('submit', async (event) => {
+trailForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     setStatus('Saving trail...', false, trailStatusElement);
+
+    const trailId = getTrailIdForSave();
+    const stops = parseTrailStops();
+
+    if (!trailId) {
+        setStatus('A trail ID or title is required.', true, trailStatusElement);
+        return;
+    }
+
+    if (stops.length < 2) {
+        setStatus('Add at least two valid stops before saving.', true, trailStatusElement);
+        return;
+    }
 
     try {
         const payload = await fetchJson('/api/discovery-trails', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                id: getSelectedTrailId(),
+                id: trailId,
                 title: trailTitleInput.value.trim(),
                 description: trailDescriptionInput.value.trim(),
                 ordered: trailOrderedInput.checked,
-                stops: parseTrailStops(),
+                stops,
                 reward: {
                     points: Number.parseInt(trailRewardPointsInput.value, 10),
                     description: trailRewardDescriptionInput.value.trim()
@@ -454,15 +654,16 @@ trailForm.addEventListener('submit', async (event) => {
         });
 
         applyTrailSnapshot(payload);
+        state.isEditingNewTrail = false;
         renderTrailOptions();
         trailSelect.value = payload.updated.id;
         renderDashboard();
         setStatus('Trail saved. Open a new live game session to use the updated trail.', false, trailStatusElement);
     } catch (error) {
-        setStatus(error.message, true, trailStatusElement);
+        setStatus(getSaveErrorMessage(error), true, trailStatusElement);
     }
 });
 
 loadDashboardData().catch((error) => {
-    setStatus(error.message, true);
+    setPageStatus(getSaveErrorMessage(error), true);
 });

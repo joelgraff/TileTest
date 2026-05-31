@@ -7,6 +7,7 @@ import { createLiveVendorContentService } from './liveVendorContentService.js';
 import { initializeSceneManagers } from './sceneComposition.js';
 import { initializeSceneRuntime } from './sceneRuntimeSetup.js';
 import { initializeSceneWorld } from './sceneWorldSetup.js';
+import { getSavedActiveVendorIds, resolveSessionVendorIds } from './sessionVendorRoster.js';
 import { bindSceneBooleanFlag } from './stateBindings.js';
 
 export function initializeSceneBootstrap(
@@ -50,13 +51,24 @@ export function initializeSceneBootstrap(
         };
     }
 
+    const activeVendorIds = resolveSessionVendorIds({
+        vendors: scene.vendors,
+        npcCount: scene.npcGroup?.getChildren?.().length ?? 0,
+        savedVendorIds: isTestMode ? [] : getSavedActiveVendorIds(),
+        testMode: isTestMode
+    });
+    scene.activeVendorIds = activeVendorIds;
+
     initializeSceneManagersFn(scene, {
         state: gameState,
         discoveryTrails: scene.discoveryTrails,
+        activeVendorIds,
         ...(liveVendorContentService ? { liveVendorContentService } : {})
     });
 
-    scene.questManager?.setDiscoveryVendorPool?.(scene.vendorManager?.getAssignedVendors?.() ?? []);
+    const assignedVendors = scene.vendorManager?.getAssignedVendors?.() ?? [];
+    scene.questManager?.setSessionVendorIds?.(assignedVendors.map(vendor => vendor.id));
+    scene.questManager?.setDiscoveryVendorPool?.(assignedVendors);
 
     const readinessPromise = initializeInteractionReadinessFn({
         questManager: scene.questManager,

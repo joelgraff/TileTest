@@ -70,7 +70,8 @@ describe('scene bootstrap', () => {
         expect(initializeSceneWorldFn).toHaveBeenCalledWith(scene);
         expect(initializeSceneManagersFn).toHaveBeenCalledWith(scene, {
             state: scene.gameState,
-            discoveryTrails
+            discoveryTrails,
+            activeVendorIds: []
         });
         expect(initializeInteractionReadinessFn).toHaveBeenCalledWith({
             questManager,
@@ -178,6 +179,7 @@ describe('scene bootstrap', () => {
         expect(initializeSceneManagersFn).toHaveBeenCalledWith(scene, {
             state: scene.gameState,
             discoveryTrails,
+            activeVendorIds: [],
             liveVendorContentService
         });
 

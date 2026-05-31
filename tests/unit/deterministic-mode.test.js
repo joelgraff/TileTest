@@ -58,6 +58,28 @@ describe('deterministic test mode', () => {
         expect(VendorManager.prototype.getAssignedVendor.call(context, 3)).toBe(assignedVendors[0]);
     });
 
+    it('assigns vendors from the persisted session roster before using the full list', () => {
+        const vendors = [
+            { id: 'vendor-1', name: 'Vendor 1' },
+            { id: 'vendor-2', name: 'Vendor 2' },
+            { id: 'vendor-3', name: 'Vendor 3' }
+        ];
+        const context = {
+            testMode: false,
+            vendors,
+            randomVendorOrder: null,
+            setSessionVendorIds: VendorManager.prototype.setSessionVendorIds,
+            getAssignmentVendorPool: VendorManager.prototype.getAssignmentVendorPool,
+            getRandomVendorOrder: VendorManager.prototype.getRandomVendorOrder
+        };
+
+        VendorManager.prototype.setSessionVendorIds.call(context, ['vendor-3', 'vendor-1']);
+
+        expect(VendorManager.prototype.getAssignedVendor.call(context, 0)).toBe(vendors[2]);
+        expect(VendorManager.prototype.getAssignedVendor.call(context, 1)).toBe(vendors[0]);
+        expect(VendorManager.prototype.getAssignedVendor.call(context, 2)).toBe(vendors[2]);
+    });
+
     it('generates a stable first quest in test mode', () => {
         DomainManager.domains = [
             {

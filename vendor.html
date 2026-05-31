@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TileTest Vendor Dashboard</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body data-dashboard-mode="vendor">
+    <main class="dashboard-shell">
+        <header class="dashboard-header">
+            <div class="dashboard-title-stack">
+                <p class="eyebrow">Vendor Dashboard</p>
+                <h1>Booth Content</h1>
+            </div>
+            <nav class="dashboard-nav-links" aria-label="Dashboard links">
+                <a class="dashboard-link" href="/" target="_blank" rel="noreferrer">Open Game</a>
+                <a class="dashboard-link" href="/admin">Admin Dashboard</a>
+            </nav>
+        </header>
+        <div class="dashboard-workspace">
+            <section class="panel" aria-labelledby="editor-title">
+                <form id="content-form" class="form-stack">
+                    <h2 id="editor-title">Vendor Content</h2>
+                    <label>
+                        Vendor
+                        <select id="vendor-select" name="vendorId"></select>
+                    </label>
+                    <label>
+                        Booth Description Override
+                        <textarea id="description-input" name="descriptionOverride" spellcheck="true"></textarea>
+                    </label>
+                    <label>
+                        Featured Items / Demos
+                        <textarea id="featured-input" name="featuredItems" spellcheck="true"></textarea>
+                    </label>
+                    <label>
+                        Booth Notes
+                        <textarea id="announcement-input" name="announcements" spellcheck="true"></textarea>
+                    </label>
+                    <label>
+                        Discovery Clue Text
+                        <textarea id="clue-input" name="clueText" spellcheck="true"></textarea>
+                    </label>
+                    <div class="actions">
+                        <button id="clear-button" type="button">Clear</button>
+                        <button type="submit">Save Content</button>
+                    </div>
+                    <div id="status" class="status" role="status" aria-live="polite"></div>
+                </form>
+            </section>
+            <section class="panel" aria-labelledby="current-title">
+                <div class="content-list">
+                    <h2 id="current-title">Saved Live Content</h2>
+                    <div id="content-list"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script type="module" src="/dashboard.js"></script>
+</body>
+</html>

@@ -85,6 +85,51 @@ test('regular browser sessions backfill discovery guidance for legacy quest cook
     await expect(passportHint).toContainText(/stamps/);
 });
 
+test('regular browser sessions keep the active vendor roster stable across reloads', async ({ page }) => {
+    const activeVendorIds = ['102', '100', '101', '103', '105'];
+
+    await page.addInitScript((vendorIds) => {
+        document.cookie = `vcf_quest_session=${JSON.stringify({
+            sessionId: 'persisted-roster-session',
+            activeVendorIds: vendorIds,
+            activeQuests: [],
+            completedQuests: [],
+            timestamp: Date.now()
+        })}; path=/`;
+    }, activeVendorIds);
+
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveTitle(/Tilemap Game/);
+    await expect(page.locator('canvas')).toBeVisible({ timeout: 15000 });
+    await page.waitForFunction(() => window.__tileTest?.scene?.interactionsEnabled === true);
+
+    const firstRoster = await page.evaluate(() => (
+        window.__tileTest.scene.vendorManager.getAssignedVendors().map(vendor => vendor.id)
+    ));
+
+    expect(firstRoster).toEqual(activeVendorIds);
+
+    const savedRoster = await page.evaluate(() => {
+        const cookie = decodeURIComponent(document.cookie)
+            .split(';')
+            .map(entry => entry.trim())
+            .find(entry => entry.startsWith('vcf_quest_session='));
+
+        return JSON.parse(cookie.replace('vcf_quest_session=', '')).activeVendorIds;
+    });
+
+    expect(savedRoster).toEqual(activeVendorIds);
+
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => window.__tileTest?.scene?.interactionsEnabled === true);
+
+    const secondRoster = await page.evaluate(() => (
+        window.__tileTest.scene.vendorManager.getAssignedVendors().map(vendor => vendor.id)
+    ));
+
+    expect(secondRoster).toEqual(activeVendorIds);
+});
+
 test('space opens a nearby vendor dialog without starting movement', async ({ page }) => {
     await gotoGame(page);
 

@@ -53,15 +53,24 @@ npm run serve
 
 This static frontend path is the GitHub Pages-compatible demo mode. It must keep working without the Node server, dashboard, account system, or live API. When opened from a static host, backend-powered features should degrade quietly and the game should continue using bundled JSON content.
 
-Run the hosted prototype server with the vendor dashboard and live announcement API:
+Run the hosted prototype server with the vendor/admin dashboards and live content API:
 
 ```bash
 npm run serve:live
 ```
 
-The game remains available at `http://localhost:5000/`, and the dashboard is available at `http://localhost:5000/dashboard`.
-Dashboard announcement edits are stored in memory and appear in vendor dialogs after the browser-side live content service fetches the update.
+The game remains available at `http://localhost:5000/`, the vendor dashboard is available at `http://localhost:5000/vendor`, and the admin dashboard is available at `http://localhost:5000/admin`.
+The requested `/amdin` path is also routed to the admin dashboard for compatibility while testing.
+Dashboard edits are stored in memory and appear in vendor dialogs after the browser-side live content service fetches the update.
 The hosted server is optional for development and demonstration; use it only when testing dashboard/live-content behavior.
+
+Manual live dashboard check:
+
+1. Start `npm run serve:live` and open `http://localhost:5000/vendor`.
+2. Pick a vendor, edit the booth description, featured items, Booth Notes, or clue text, then save.
+3. Open `http://localhost:5000/?test=1`, walk to that vendor, reopen the dialog, and confirm the saved content is shown.
+4. Open `http://localhost:5000/admin`, click `New Trail`, add a title and at least two stop lines using `vendor id | clue text | goal text`, then save.
+5. Open a fresh `http://localhost:5000/?test=1` game session and confirm the quest/passport uses the saved trail.
 
 Run static checks and content validation:
 

@@ -15,6 +15,7 @@ describe('scene composition', () => {
             add: { id: 'add-1' },
             liveVendorContentService,
             discoveryTrails: [{ id: 'trail-1' }],
+            activeVendorIds: ['vendor-2', 'vendor-1'],
             testMode: true
         };
 
@@ -64,7 +65,8 @@ describe('scene composition', () => {
         expect(QuestManagerClass).toHaveBeenCalledWith({
             state: scene.gameState,
             testMode: true,
-            discoveryTrails: scene.discoveryTrails
+            discoveryTrails: scene.discoveryTrails,
+            activeVendorIds: scene.activeVendorIds
         });
         expect(VendorManagerClass).toHaveBeenCalledWith(scene, {
             state: scene.gameState,
@@ -76,6 +78,7 @@ describe('scene composition', () => {
             player: scene.player,
             camera: scene.cameras.main,
             gameObjectFactory: scene.add,
+            activeVendorIds: scene.activeVendorIds,
             liveContentService: liveVendorContentService,
             testMode: true
         });

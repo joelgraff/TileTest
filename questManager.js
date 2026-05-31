@@ -6,10 +6,16 @@
 
 import DomainManager from './domainManager.js';
 import { createEncounterChain, getEncounterForVendor } from './encounterChain.js';
+import {
+    clearQuestSessionState,
+    normalizeSessionVendorIds,
+    readQuestSessionState,
+    writeQuestSessionState
+} from './questSessionStore.js';
 import { getVendorInventoryItems } from './vendorInventory.js';
 
 class QuestManager {
-    constructor({ state = null, testMode = false, discoveryTrails = [] } = {}) {
+    constructor({ state = null, testMode = false, discoveryTrails = [], activeVendorIds = [] } = {}) {
         this.sessionId = null;
         this.domainManager = null;
         this.npcManager = null;
@@ -18,7 +24,9 @@ class QuestManager {
         this.testMode = Boolean(testMode);
         this.testQuestCounter = 0;
         this.discoveryVendorPool = null;
+        this.activeVendorIds = [];
         this.discoveryTrails = [];
+        this.setSessionVendorIds(activeVendorIds);
         this.setDiscoveryTrails(discoveryTrails);
         this.setState(state);
     }
@@ -104,6 +112,11 @@ class QuestManager {
 
     setDiscoveryVendorPool(vendors = []) {
         this.discoveryVendorPool = this.getUniqueVendors(vendors);
+        return this;
+    }
+
+    setSessionVendorIds(vendorIds = []) {
+        this.activeVendorIds = normalizeSessionVendorIds(vendorIds);
         return this;
     }
 
@@ -764,16 +777,13 @@ class QuestManager {
 
         const sessionData = {
             sessionId: this.sessionId,
+            activeVendorIds: this.activeVendorIds,
             activeQuests: this.activeQuests,
             completedQuests: this.completedQuests,
             timestamp: Date.now()
         };
 
-        // Save to cookie (expires in 24 hours)
-        const expires = new Date();
-        expires.setHours(expires.getHours() + 24);
-
-        document.cookie = `vcf_quest_session=${JSON.stringify(sessionData)}; expires=${expires.toUTCString()}; path=/`;
+        writeQuestSessionState(sessionData);
     }
 
     /**
@@ -784,24 +794,19 @@ class QuestManager {
             return;
         }
 
-        const cookieName = 'vcf_quest_session=';
-        const decodedCookie = decodeURIComponent(document.cookie);
-        const cookies = decodedCookie.split(';');
+        const sessionData = readQuestSessionState({
+            onParseError: (error) => console.warn('Failed to parse quest session cookie:', error)
+        });
 
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(cookieName)) {
-                try {
-                    const sessionData = JSON.parse(cookie.substring(cookieName.length));
-                    this.sessionId = sessionData.sessionId;
-                    this.activeQuests = sessionData.activeQuests || [];
-                    this.completedQuests = sessionData.completedQuests || [];
-                    console.log('Loaded quest session:', this.sessionId);
-                    return;
-                } catch (e) {
-                    console.warn('Failed to parse quest session cookie:', e);
-                }
+        if (sessionData) {
+            this.sessionId = sessionData.sessionId;
+            this.activeQuests = sessionData.activeQuests || [];
+            this.completedQuests = sessionData.completedQuests || [];
+            if (Array.isArray(sessionData.activeVendorIds)) {
+                this.setSessionVendorIds(sessionData.activeVendorIds);
             }
+            console.log('Loaded quest session:', this.sessionId);
+            return;
         }
 
         // No valid session found, will create new one when needed
@@ -815,9 +820,9 @@ class QuestManager {
         this.sessionId = null;
         this.activeQuests = [];
         this.completedQuests = [];
+        this.activeVendorIds = [];
 
-        // Clear cookie
-        document.cookie = 'vcf_quest_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        clearQuestSessionState();
 
         console.log('Quest session cleared');
         this.notifyQuestStateChanged();

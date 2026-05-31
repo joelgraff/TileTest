@@ -180,15 +180,25 @@ async function handleApiRequest(request, response, requestUrl) {
     return false;
 }
 
+const routeAliases = new Map([
+    ['/vendor', '/vendor.html'],
+    ['/admin', '/admin.html'],
+    ['/amdin', '/admin.html'],
+    ['/dashboard', '/admin.html']
+]);
+
 function getStaticFilePath(pathname) {
     let resolvedPathname = pathname;
+    const normalizedPathname = resolvedPathname.endsWith('/') && resolvedPathname.length > 1
+        ? resolvedPathname.slice(0, -1)
+        : resolvedPathname;
 
     if (resolvedPathname === '/') {
         resolvedPathname = '/index.html';
     }
 
-    if (resolvedPathname === '/dashboard') {
-        resolvedPathname = '/dashboard.html';
+    if (routeAliases.has(normalizedPathname)) {
+        resolvedPathname = routeAliases.get(normalizedPathname);
     }
 
     const filePath = path.resolve(repoRoot, `.${decodeURIComponent(resolvedPathname)}`);
@@ -248,5 +258,6 @@ const server = http.createServer((request, response) => {
 
 server.listen(port, host, () => {
     console.log(`TileTest live server listening at http://${host}:${port}`);
-    console.log(`Dashboard available at http://${host}:${port}/dashboard`);
+    console.log(`Vendor dashboard available at http://${host}:${port}/vendor`);
+    console.log(`Admin dashboard available at http://${host}:${port}/admin`);
 });

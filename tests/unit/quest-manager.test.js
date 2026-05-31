@@ -107,6 +107,7 @@ describe('QuestManager completion flow', () => {
     it('persists and restores session state through the quest cookie', () => {
         const manager = new QuestManager();
         manager.sessionId = 'session-123';
+        manager.setSessionVendorIds(['vendor-2', 'vendor-1']);
         manager.activeQuests = [{ id: 'active-1', title: 'Active Quest' }];
         manager.completedQuests = [{ id: 'done-1', title: 'Done Quest', completed: true }];
 
@@ -118,6 +119,7 @@ describe('QuestManager completion flow', () => {
         restoredManager.loadSessionState();
 
         expect(restoredManager.sessionId).toBe('session-123');
+        expect(restoredManager.activeVendorIds).toEqual(['vendor-2', 'vendor-1']);
         expect(restoredManager.activeQuests).toEqual([{ id: 'active-1', title: 'Active Quest' }]);
         expect(restoredManager.completedQuests).toEqual([
             { id: 'done-1', title: 'Done Quest', completed: true }
