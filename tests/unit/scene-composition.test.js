@@ -14,6 +14,7 @@ describe('scene composition', () => {
             },
             add: { id: 'add-1' },
             liveVendorContentService,
+            discoveryTrails: [{ id: 'trail-1' }],
             testMode: true
         };
 
@@ -60,7 +61,11 @@ describe('scene composition', () => {
             handlePointerMove: expect.any(Function),
             state: scene.gameState
         });
-        expect(QuestManagerClass).toHaveBeenCalledWith({ state: scene.gameState, testMode: true });
+        expect(QuestManagerClass).toHaveBeenCalledWith({
+            state: scene.gameState,
+            testMode: true,
+            discoveryTrails: scene.discoveryTrails
+        });
         expect(VendorManagerClass).toHaveBeenCalledWith(scene, {
             state: scene.gameState,
             showDialog: expect.any(Function),

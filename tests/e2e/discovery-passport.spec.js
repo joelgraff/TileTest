@@ -43,6 +43,8 @@ test('discovery passport advances and completes by talking to required vendors',
     expect(seeded.totalCount).toBe(2);
     expect(seeded.visitedCount).toBe(0);
 
+    const dialogSurface = page.locator('#ui-overlay-root [data-dialog-surface="dom"]');
+
     await talkToVendor(page, 0);
 
     const firstVisit = await page.evaluate(() => window.__tileTest.testApi.getDiscoveryQuestSnapshot());
@@ -53,11 +55,31 @@ test('discovery passport advances and completes by talking to required vendors',
     expect(firstVisit.objectives[0].visited).toBe(true);
     expect(firstVisit.objectives[0].clue).toBeTruthy();
 
+    const firstVisitDialog = await page.evaluate(() => window.__tileTest.testApi.getDialogSnapshot());
+
+    expect(firstVisitDialog.text).toContain('Passport stamp earned:');
+    expect(firstVisitDialog.text).toContain('Discovery Passport progress: 1/2 vendors visited.');
+    await expect(dialogSurface).toContainText('Passport stamp earned:');
+    await expect(dialogSurface).toContainText('Discovery Passport progress: 1/2 vendors visited.');
+
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !window.__tileTest.testApi.getFlags().isDialogOpen);
+
+    await talkToVendor(page, 0);
+
+    const revisit = await page.evaluate(() => ({
+        dialog: window.__tileTest.testApi.getDialogSnapshot(),
+        discovery: window.__tileTest.testApi.getDiscoveryQuestSnapshot()
+    }));
+
+    expect(revisit.discovery.visitedCount).toBe(1);
+    expect(revisit.dialog.text).not.toContain('Passport stamp earned:');
+    await expect(dialogSurface).not.toContainText('Passport stamp earned:');
+
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !window.__tileTest.testApi.getFlags().isDialogOpen);
 
     const questDialog = await page.evaluate(() => window.__tileTest.testApi.openQuestDialog());
-    const dialogSurface = page.locator('#ui-overlay-root [data-dialog-surface="dom"]');
 
     expect(questDialog.textItems).toContain('   Progress: 1/2 vendors visited');
     expect(questDialog.textItems.some(item => item.includes('items collected'))).toBe(false);
@@ -75,6 +97,26 @@ test('discovery passport advances and completes by talking to required vendors',
     expect(completed.visitedCount).toBe(2);
     expect(completed.objectives.every(objective => objective.visited)).toBe(true);
     await expect(dialogSurface).toContainText('Quest Completed!');
+
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !window.__tileTest.testApi.getFlags().isDialogOpen);
+
+    const festivalLog = await page.evaluate(() => window.__tileTest.testApi.getFestivalLogSnapshot());
+
+    expect(festivalLog.completedTrailCount).toBe(1);
+    expect(festivalLog.stampCount).toBe(2);
+    expect(festivalLog.stamps.map(stamp => stamp.vendorId)).toEqual(
+        completed.objectives.map(objective => objective.vendorId)
+    );
+
+    const completedQuestDialog = await page.evaluate(() => window.__tileTest.testApi.openQuestDialog());
+
+    expect(completedQuestDialog.textItems).toContain('=== FESTIVAL LOG ===');
+    expect(completedQuestDialog.textItems).toContain('Completed trails:');
+    expect(completedQuestDialog.textItems).toContain('1. Discovery Passport ✓');
+    await expect(dialogSurface).toContainText('FESTIVAL LOG');
+    await expect(dialogSurface).toContainText('Completed trails:');
+
     expect(pageErrors, `Page errors: ${pageErrors.join('\n')}`).toEqual([]);
     expect(unexpectedConsoleErrors, `Console errors: ${unexpectedConsoleErrors.join('\n')}`).toEqual([]);
 });

@@ -76,6 +76,7 @@ describe('ui dialog models', () => {
                         vendorName: 'Vendor One',
                         booth: 'A1',
                         clue: 'Find the repair bench.',
+                        goal: 'Ask what needs fixing.',
                         visited: true
                     },
                     {
@@ -91,9 +92,51 @@ describe('ui dialog models', () => {
         });
 
         expect(dialog.text).toContain('   Progress: 1/2 vendors visited');
-        expect(dialog.text).toContain('   ✓ Vendor One (A1): Find the repair bench.');
+        expect(dialog.text).toContain('   ✓ Vendor One (A1): Find the repair bench. Goal: Ask what needs fixing.');
         expect(dialog.text).toContain('   - Vendor Two (B2): Ask about the portable demo.');
+        expect(dialog.text).toContain('=== FESTIVAL LOG ===');
+        expect(dialog.text).toContain('Stamps in progress:');
+        expect(dialog.text).toContain('- Discovery Passport');
         expect(dialog.text).not.toContain('   Progress: 1/2 items collected');
+    });
+
+    it('renders festival log payoff for completed discovery trails', () => {
+        const dialog = createQuestDialogData({
+            activeQuests: [],
+            completedQuests: [{
+                id: 'quest-1',
+                type: 'discovery',
+                title: 'Starter Trail',
+                completionText: 'Starter trail complete.',
+                completed: true,
+                objectives: [
+                    {
+                        vendorName: 'Vendor One',
+                        booth: 'A1',
+                        clue: 'Find the repair bench.',
+                        goal: 'Ask what needs fixing.',
+                        visited: true
+                    }
+                ],
+                reward: {
+                    points: 30,
+                    description: '30 points'
+                }
+            }],
+            inventory: [{ name: 'Fixture Item', value: 5 }],
+            score: 35,
+            onClose: vi.fn()
+        });
+
+        expect(dialog.text).toContain('=== FESTIVAL LOG ===');
+        expect(dialog.text).toContain('Score: 35 points');
+        expect(dialog.text).toContain('Passport stamps: 1');
+        expect(dialog.text).toContain('Quest rewards earned: 30 points');
+        expect(dialog.text).toContain('Items collected: 1');
+        expect(dialog.text).toContain('Completed trails:');
+        expect(dialog.text).toContain('1. Starter Trail ✓');
+        expect(dialog.text).toContain('   Starter trail complete.');
+        expect(dialog.text).toContain('   ✓ Vendor One (A1): Find the repair bench. Goal: Ask what needs fixing.');
     });
 
     it('builds help and quest fallback dialogs from pure content helpers', () => {

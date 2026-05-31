@@ -1,3 +1,5 @@
+import { createFestivalLog, hasFestivalLogActivity } from './festivalLog.js';
+
 export function createInventoryDialogData({ inventory = [], onClose }) {
     let inventoryText = 'INVENTORY\n\n';
 
@@ -55,8 +57,9 @@ function appendDiscoveryQuestProgress(questItems, quest) {
         const status = objective.visited ? '✓' : '-';
         const booth = objective.booth ? ` (${objective.booth})` : '';
         const clue = objective.clue ? `: ${objective.clue}` : '';
+        const goal = objective.goal ? ` Goal: ${objective.goal}` : '';
 
-        questItems.push(`   ${status} ${objective.vendorName}${booth}${clue}`);
+        questItems.push(`   ${status} ${objective.vendorName}${booth}${clue}${goal}`);
     });
 }
 
@@ -69,8 +72,90 @@ function appendQuestProgress(questItems, quest) {
     appendCollectionQuestProgress(questItems, quest);
 }
 
-export function createQuestDialogData({ activeQuests = [], completedQuests = [], page = 0, onClose }) {
+function appendStampLine(questItems, stamp) {
+    const booth = stamp.booth ? ` (${stamp.booth})` : '';
+    const clue = stamp.clue ? `: ${stamp.clue}` : '';
+    const goal = stamp.goal ? ` Goal: ${stamp.goal}` : '';
+
+    questItems.push(`   ✓ ${stamp.vendorName}${booth}${clue}${goal}`);
+}
+
+function appendCompletedFestivalTrails(questItems, completedDiscoveryTrails) {
+    if (completedDiscoveryTrails.length === 0) {
+        return;
+    }
+
+    questItems.push('Completed trails:');
+    completedDiscoveryTrails.forEach((trail, index) => {
+        questItems.push(`${index + 1}. ${trail.title} ✓`);
+        if (trail.rewardPoints > 0) {
+            questItems.push(`   Reward: ${trail.rewardPoints} points`);
+        }
+        if (trail.completionText) {
+            questItems.push(`   ${trail.completionText}`);
+        }
+        trail.stamps.forEach(stamp => appendStampLine(questItems, stamp));
+    });
+}
+
+function appendActiveFestivalStamps(questItems, activeDiscoveryTrails) {
+    const activeStamps = activeDiscoveryTrails.flatMap(trail => trail.stamps.map(stamp => ({
+        ...stamp,
+        trailTitle: trail.title
+    })));
+
+    if (activeStamps.length === 0) {
+        return;
+    }
+
+    questItems.push('Stamps in progress:');
+    activeStamps.forEach(stamp => {
+        questItems.push(`- ${stamp.trailTitle}`);
+        appendStampLine(questItems, stamp);
+    });
+}
+
+function appendFestivalLog(questItems, festivalLog) {
+    questItems.push('=== FESTIVAL LOG ===');
+
+    if (!hasFestivalLogActivity(festivalLog)) {
+        questItems.push('No passport stamps logged yet.');
+        questItems.push('');
+        return;
+    }
+
+    questItems.push(`Score: ${festivalLog.score} points`);
+    questItems.push(`Passport stamps: ${festivalLog.stampCount}`);
+
+    if (festivalLog.rewardPoints > 0) {
+        questItems.push(`Quest rewards earned: ${festivalLog.rewardPoints} points`);
+    }
+
+    if (festivalLog.collectedItemCount > 0) {
+        questItems.push(`Items collected: ${festivalLog.collectedItemCount}`);
+    }
+
+    appendCompletedFestivalTrails(questItems, festivalLog.completedDiscoveryTrails);
+    appendActiveFestivalStamps(questItems, festivalLog.activeDiscoveryTrails);
+    questItems.push('');
+}
+
+export function createQuestDialogData({
+    activeQuests = [],
+    completedQuests = [],
+    inventory = [],
+    score = 0,
+    festivalLog = null,
+    page = 0,
+    onClose
+}) {
     const questItems = [];
+    const resolvedFestivalLog = festivalLog ?? createFestivalLog({
+        activeQuests,
+        completedQuests,
+        inventory,
+        score
+    });
 
     if (activeQuests.length > 0) {
         questItems.push('=== ACTIVE QUESTS ===');
@@ -94,6 +179,8 @@ export function createQuestDialogData({ activeQuests = [], completedQuests = [],
             questItems.push('');
         });
     }
+
+    appendFestivalLog(questItems, resolvedFestivalLog);
 
     return {
         renderMode: 'dom',

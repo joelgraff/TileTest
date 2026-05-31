@@ -45,6 +45,10 @@ function preload() {
         CONFIG.CONTENT.VENDORS,
         `${CONFIG.CONTENT.VENDORS}${CONFIG.PATHS.JSON_EXTENSION}`
     );
+    this.load.json(
+        CONFIG.CONTENT.DISCOVERY_TRAILS,
+        `${CONFIG.CONTENT.DISCOVERY_TRAILS}${CONFIG.PATHS.JSON_EXTENSION}`
+    );
 }
 
 function create() {

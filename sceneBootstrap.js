@@ -1,5 +1,6 @@
 import { initializeInteractionReadiness } from './bootReadiness.js';
 import CollisionManager from './collisionManager.js';
+import CONFIG from './config.js';
 import DomainManager from './domainManager.js';
 import GameState from './gameState.js';
 import { createLiveVendorContentService } from './liveVendorContentService.js';
@@ -37,7 +38,8 @@ export function initializeSceneBootstrap(
     }
 
     DomainManagerModule.loadDomains();
-    scene.vendors = scene.cache.json.get('vendors');
+    scene.vendors = scene.cache.json.get(CONFIG.CONTENT.VENDORS);
+    scene.discoveryTrails = scene.cache.json.get(CONFIG.CONTENT.DISCOVERY_TRAILS) ?? [];
 
     if (!initializeSceneWorldFn(scene)) {
         return {
@@ -49,6 +51,7 @@ export function initializeSceneBootstrap(
 
     initializeSceneManagersFn(scene, {
         state: gameState,
+        discoveryTrails: scene.discoveryTrails,
         ...(liveVendorContentService ? { liveVendorContentService } : {})
     });
 

@@ -11,6 +11,7 @@ const CONFIG = {
     },
     CONTENT: {
         DOMAINS: 'technology_domains',
+        DISCOVERY_TRAILS: 'discovery_trails',
         VENDORS: 'vendors'
     },
     PLAYER: {

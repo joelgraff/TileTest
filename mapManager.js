@@ -1,4 +1,5 @@
 import CONFIG from './config.js';
+import { recordMapBootFailure, validateLoadedMapBootContract } from './mapBootGuard.js';
 
 class MapManager {
     static preload(scene) {
@@ -12,10 +13,27 @@ class MapManager {
         );
     }
 
-    static create(scene) {
-        scene.map = scene.make.tilemap({ key: CONFIG.ASSETS.MAP });
+    static create(scene, {
+        validateLoadedMapBootContractFn = validateLoadedMapBootContract,
+        recordMapBootFailureFn = recordMapBootFailure
+    } = {}) {
         scene.mapLayers = {};
+
+        const mapValidation = validateLoadedMapBootContractFn(scene);
+        if (!mapValidation.success) {
+            return null;
+        }
+
+        scene.map = scene.make.tilemap({ key: CONFIG.ASSETS.MAP });
         const tileset = scene.map.addTilesetImage(CONFIG.ASSETS.TILES);
+        if (!tileset) {
+            recordMapBootFailureFn(
+                scene,
+                `Map boot failed: tileset image "${CONFIG.ASSETS.TILES}" could not be attached to map "${CONFIG.ASSETS.MAP}".`
+            );
+            return null;
+        }
+
         const mapHeight = scene.map.heightInPixels;
 
         // Build a lookup for layer depth values from the loaded tilemap.

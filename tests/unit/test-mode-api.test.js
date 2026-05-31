@@ -301,4 +301,45 @@ describe('test mode api', () => {
         expect(dialog.title).toBe('Quests');
         expect(dialog.textItems).toContain('Progress: 0/2 vendors visited');
     });
+
+    it('exposes festival log snapshots from session state', () => {
+        const scene = createScene();
+        const api = createTestModeApi(() => scene);
+
+        scene.uiManager.score = 30;
+        scene.uiManager.inventory = [{ id: 'item-1', name: 'Fixture Item', value: 5 }];
+        scene.questManager.completedQuests = [{
+            id: 'discovery-1',
+            type: 'discovery',
+            title: 'Discovery Passport',
+            completed: true,
+            objectives: [{
+                vendorId: 'vendor-1',
+                vendorName: 'Vendor One',
+                booth: 'A1',
+                clue: 'Find booth A1.',
+                visited: true
+            }],
+            reward: {
+                points: 30,
+                description: '30 points'
+            }
+        }];
+
+        const log = api.getFestivalLogSnapshot();
+
+        expect(log).toMatchObject({
+            score: 30,
+            completedTrailCount: 1,
+            stampCount: 1,
+            collectedItemCount: 1,
+            rewardPoints: 30
+        });
+        expect(log.stamps[0]).toMatchObject({
+            vendorId: 'vendor-1',
+            vendorName: 'Vendor One',
+            clue: 'Find booth A1.',
+            trailTitle: 'Discovery Passport'
+        });
+    });
 });

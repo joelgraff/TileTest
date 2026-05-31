@@ -12,6 +12,10 @@ export function initializeSceneWorld(
 ) {
     MapManagerModule.create(scene);
 
+    if (scene.mapBootFailure) {
+        return false;
+    }
+
     if (!scene.map) {
         console.error('Map failed to load. Check asset paths and mapManager.js preload.');
         return false;

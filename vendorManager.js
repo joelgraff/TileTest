@@ -315,8 +315,51 @@ class VendorManager {
         return dialogData;
     }
 
+    buildVendorDiscoveryFeedbackText(discoveryResult) {
+        if (!discoveryResult?.updated || discoveryResult.questCompleted) {
+            return '';
+        }
+
+        return discoveryResult.message ?? '';
+    }
+
+    withVendorDiscoveryFeedback(dialogData, feedbackText) {
+        if (!feedbackText) {
+            return dialogData;
+        }
+
+        return {
+            ...dialogData,
+            text: `${feedbackText}\n\n${dialogData.text ?? ''}`
+        };
+    }
+
+    showVendorDiscoveryFeedback(discoveryResult, { vendorData, imageKey, vendorContent }) {
+        const feedbackText = this.buildVendorDiscoveryFeedbackText(discoveryResult);
+        if (!feedbackText) {
+            return;
+        }
+
+        this.showDialog?.(this.withVendorDiscoveryFeedback(
+            this.buildVendorRootDialogData(vendorData, imageKey, vendorContent),
+            feedbackText
+        ));
+    }
+
     markVendorDiscovery(vendorData, vendorContent) {
-        return this.scene?.questManager?.checkVendorDiscovery?.(vendorData?.id, vendorContent ?? vendorData) ?? false;
+        const questManager = this.scene?.questManager;
+
+        if (typeof questManager?.checkVendorDiscoveryResult === 'function') {
+            return questManager.checkVendorDiscoveryResult(vendorData?.id, vendorContent ?? vendorData);
+        }
+
+        const updated = questManager?.checkVendorDiscovery?.(vendorData?.id, vendorContent ?? vendorData) ?? false;
+
+        return {
+            updated: Boolean(updated),
+            questCompleted: false,
+            message: ''
+        };
     }
 
     interactWithVendor(vendorData, npcSprite = null) {
@@ -333,7 +376,8 @@ class VendorManager {
         });
 
         this.showDialog(this.buildVendorRootDialogData(vendorData, imageKey, vendorContent));
-        this.markVendorDiscovery(vendorData, vendorContent);
+        const discoveryResult = this.markVendorDiscovery(vendorData, vendorContent);
+        this.showVendorDiscoveryFeedback(discoveryResult, { vendorData, imageKey, vendorContent });
         return true;
     }
 

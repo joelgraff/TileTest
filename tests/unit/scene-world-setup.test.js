@@ -56,4 +56,32 @@ describe('scene world setup', () => {
 
         errorSpy.mockRestore();
     });
+
+    it('stops scene setup when map boot validation records a failure', () => {
+        const scene = {};
+        const MapManagerModule = {
+            create: vi.fn(sceneArg => {
+                sceneArg.mapBootFailure = {
+                    message: 'Map boot failed: "vcf_map" does not satisfy the runtime map contract.',
+                    blockingIssues: []
+                };
+            })
+        };
+        const PlayerManagerModule = {
+            create: vi.fn()
+        };
+        const NPCManagerModule = {
+            create: vi.fn()
+        };
+
+        const isReady = initializeSceneWorld(scene, {
+            MapManagerModule,
+            PlayerManagerModule,
+            NPCManagerModule
+        });
+
+        expect(isReady).toBe(false);
+        expect(PlayerManagerModule.create).not.toHaveBeenCalled();
+        expect(NPCManagerModule.create).not.toHaveBeenCalled();
+    });
 });

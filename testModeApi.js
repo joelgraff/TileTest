@@ -1,3 +1,5 @@
+import { createFestivalLog } from './festivalLog.js';
+
 function requireScene(getScene) {
     const scene = getScene?.();
 
@@ -210,6 +212,15 @@ function getDiscoveryQuestSnapshot(scene) {
     };
 }
 
+function getFestivalLogSnapshot(scene) {
+    return createFestivalLog({
+        activeQuests: scene.questManager.activeQuests,
+        completedQuests: scene.questManager.completedQuests,
+        inventory: scene.uiManager.inventory,
+        score: scene.uiManager.score
+    });
+}
+
 export function createTestModeApi(getScene) {
     return {
         isReady() {
@@ -366,6 +377,10 @@ export function createTestModeApi(getScene) {
 
         getDiscoveryQuestSnapshot() {
             return getDiscoveryQuestSnapshot(requireScene(getScene));
+        },
+
+        getFestivalLogSnapshot() {
+            return getFestivalLogSnapshot(requireScene(getScene));
         },
 
         openQuestDialog() {

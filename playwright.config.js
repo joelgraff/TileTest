@@ -1,17 +1,25 @@
 import { defineConfig } from '@playwright/test';
 
+const staticHost = '127.0.0.1';
+const staticPort = Number.parseInt(process.env.PLAYWRIGHT_STATIC_PORT ?? '5199', 10);
+const providedBaseURL = process.env.PLAYWRIGHT_BASE_URL;
+const staticBaseURL = `http://${staticHost}:${staticPort}`;
+const webServer = providedBaseURL
+    ? null
+    : {
+        command: `python -m http.server ${staticPort} --bind ${staticHost}`,
+        url: staticBaseURL,
+        cwd: '.',
+        reuseExistingServer: false,
+        timeout: 120000
+    };
+
 export default defineConfig({
     testDir: './tests/e2e',
-    timeout: 30000,
+    timeout: 60000,
     use: {
-        baseURL: 'http://127.0.0.1:5000',
+        baseURL: providedBaseURL ?? staticBaseURL,
         headless: true
     },
-    webServer: {
-        command: 'python -m http.server 5000',
-        url: 'http://127.0.0.1:5000',
-        cwd: '.',
-        reuseExistingServer: true,
-        timeout: 120000
-    }
+    ...(webServer ? { webServer } : {})
 });

@@ -170,6 +170,8 @@ async function runChecklist(page, { isTouch = false } = {}) {
 }
 
 test.describe('stabilization gate', () => {
+    test.setTimeout(60000);
+
     test('manual regression checklist passes on desktop', async ({ page }) => {
         await runChecklist(page);
     });

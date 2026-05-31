@@ -71,11 +71,31 @@ npm run check
 
 This now runs ESLint, content validation, and unit regression tests.
 
+For the draft full VCF map readiness report, run:
+
+```bash
+node tests/content/reportFullMapReadiness.js
+```
+
+The report is non-destructive: it shows the draft map inventory, layer mapping hints, blocking runtime-contract issues, informational notes, and grouped next actions for converting the export toward the current Phaser runtime contract.
+
+To preview the layer-only runtime conversion in memory without writing any map files, run:
+
+```bash
+node tests/content/reportMapConversionPreview.js
+```
+
+The preview copies likely draft layers into the five required runtime layer names, creates empty placeholders for missing runtime layers, and then reports the remaining blockers that still require real map authoring.
+
+The focused readiness test is `npx vitest run tests/content/full-map-readiness.test.js`.
+
 Run browser smoke tests:
 
 ```bash
 npm run test:e2e
 ```
+
+The Playwright static suite starts its own Python static server on `127.0.0.1:5199` by default so manual live-server sessions on port 5000 cannot pollute static verification. Use `PLAYWRIGHT_STATIC_PORT=<port>` to choose another static test port, or `PLAYWRIGHT_BASE_URL=<url>` when intentionally pointing the browser tests at an already-running server.
 
 Run the full baseline suite:
 
@@ -127,6 +147,7 @@ Those layers should also keep an explicit `depth` property so rendering order re
 ## Map Runtime Contracts
 
 The runtime expects a tileset named `tiles` in `assets/map.json`.
+Runtime maps must define the default layer set: `floor`, `tables`, `player`, `npc_area`, and `tabletops`.
 The `player` object layer must contain exactly one `start` point marker.
 The `npc_area` object layer must contain exactly one `rect` object plus one or more `point` spawn markers.
 

@@ -5,6 +5,14 @@
     "booth": "K05/K06",
     "url": "",
     "description": "Sales assorted computers, phones, and other related electronics",
+    "featuredItems": [
+      "IBM PC compatibles and parts",
+      "Retro phones and small electronics"
+    ],
+    "announcements": [
+      "Ask what unusual portable is on the table today."
+    ],
+    "clueText": "Look for the booth with assorted PCs, phones, and repairable electronics.",
     "x": 0,
     "y": 0,
     "dialog": {
@@ -38,6 +46,13 @@
     "booth": "M08/M09/M10",
     "url": "",
     "description": "2TailedFox Games",
+    "featuredItems": [
+      "Homebrew games and playable demos"
+    ],
+    "announcements": [
+      "Try a game demo before you move to the next booth."
+    ],
+    "clueText": "Find the game booth and ask which demo is newest.",
     "x": 64,
     "y": 0,
     "dialog": {
@@ -71,6 +86,14 @@
     "booth": "A11/A12",
     "url": "https://www.blackbag.us/vc/",
     "description": "Black Bag Hardware Items for Sale/Trade",
+    "featuredItems": [
+      "Vintage hardware for sale or trade",
+      "Cables, cards, and repair parts"
+    ],
+    "announcements": [
+      "Trade stories are welcome at the hardware table."
+    ],
+    "clueText": "Look for hardware bins and ask what rare part turned up this year.",
     "x": 128,
     "y": 0,
     "dialog": {

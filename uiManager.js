@@ -273,6 +273,8 @@ class UIManager {
         this.showDialog(createQuestDialogData({
             activeQuests,
             completedQuests,
+            inventory: this.inventory,
+            score: this.score,
             page,
             onClose: () => {
                 this.isQuestsOpen = false;

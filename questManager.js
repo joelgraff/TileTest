@@ -7,7 +7,7 @@
 import DomainManager from './domainManager.js';
 
 class QuestManager {
-    constructor({ state = null, testMode = false } = {}) {
+    constructor({ state = null, testMode = false, discoveryTrails = [] } = {}) {
         this.sessionId = null;
         this.domainManager = null;
         this.npcManager = null;
@@ -15,6 +15,8 @@ class QuestManager {
         this.testMode = Boolean(testMode);
         this.testQuestCounter = 0;
         this.discoveryVendorPool = null;
+        this.discoveryTrails = [];
+        this.setDiscoveryTrails(discoveryTrails);
         this.setState(state);
     }
 
@@ -57,8 +59,11 @@ class QuestManager {
     /**
      * Initialize the quest manager with required dependencies
      */
-    init(vendors) {
+    init(vendors, { discoveryTrails = null } = {}) {
         this.vendors = vendors;
+        if (Array.isArray(discoveryTrails)) {
+            this.setDiscoveryTrails(discoveryTrails);
+        }
 
         if (this.testMode) {
             this.sessionId = null;
@@ -84,6 +89,11 @@ class QuestManager {
 
     setDiscoveryVendorPool(vendors = []) {
         this.discoveryVendorPool = this.getUniqueVendors(vendors);
+        return this;
+    }
+
+    setDiscoveryTrails(discoveryTrails = []) {
+        this.discoveryTrails = Array.isArray(discoveryTrails) ? discoveryTrails : [];
         return this;
     }
 
@@ -196,6 +206,11 @@ class QuestManager {
     }
 
     generateDiscoveryQuest() {
+        const authoredQuest = this.generateAuthoredDiscoveryQuest();
+        if (authoredQuest) {
+            return authoredQuest;
+        }
+
         const selectedVendors = this.selectDiscoveryVendors(this.getDiscoveryCandidateVendors());
 
         if (selectedVendors.length < 2) {
@@ -216,6 +231,91 @@ class QuestManager {
             },
             created: Date.now(),
             completed: false
+        };
+    }
+
+    generateAuthoredDiscoveryQuest() {
+        const selectedTrail = this.selectDiscoveryTrail(this.getDiscoveryTrailCandidates());
+
+        if (!selectedTrail) {
+            return null;
+        }
+
+        return this.createDiscoveryQuestFromTrail(selectedTrail);
+    }
+
+    getDiscoveryTrailCandidates() {
+        const reachableVendorsById = this.getDiscoveryCandidateVendorById();
+
+        return this.discoveryTrails.filter(trail => this.isDiscoveryTrailReachable(trail, reachableVendorsById));
+    }
+
+    getDiscoveryCandidateVendorById() {
+        return new Map(
+            this.getDiscoveryCandidateVendors().map(vendor => [this.normalizeText(vendor.id), vendor])
+        );
+    }
+
+    getDiscoveryTrailStops(trail = {}) {
+        if (!Array.isArray(trail.stops)) {
+            return [];
+        }
+
+        return trail.stops.filter(stop => this.normalizeText(stop?.vendorId));
+    }
+
+    isDiscoveryTrailReachable(trail, reachableVendorsById) {
+        const stops = this.getDiscoveryTrailStops(trail);
+
+        return stops.length >= 2 && stops.every(stop => reachableVendorsById.has(this.normalizeText(stop.vendorId)));
+    }
+
+    selectDiscoveryTrail(trails) {
+        if (!Array.isArray(trails) || trails.length === 0) {
+            return null;
+        }
+
+        if (this.testMode) {
+            return trails[0];
+        }
+
+        return this.shuffleArray(trails)[0];
+    }
+
+    createDiscoveryQuestFromTrail(trail) {
+        const reachableVendorsById = this.getDiscoveryCandidateVendorById();
+        const objectives = this.getDiscoveryTrailStops(trail).map(stop => (
+            this.createDiscoveryObjective(reachableVendorsById.get(this.normalizeText(stop.vendorId)), stop)
+        ));
+        const reward = this.resolveDiscoveryTrailReward(trail, objectives.length);
+
+        return {
+            id: this.createQuestId(),
+            type: 'discovery',
+            source: 'authored-trail',
+            trailId: this.normalizeText(trail.id),
+            title: this.normalizeText(trail.title, 'Discovery Passport'),
+            description: this.normalizeText(trail.description, 'Visit these exhibitors and collect a clue from each booth.'),
+            ordered: trail.ordered === true,
+            completionText: this.normalizeText(trail.completionText),
+            objectives,
+            reward,
+            created: Date.now(),
+            completed: false
+        };
+    }
+
+    resolveDiscoveryTrailReward(trail, objectiveCount) {
+        const rewardPoints = Number.isFinite(trail.reward?.points)
+            ? trail.reward.points
+            : objectiveCount * 15;
+
+        return {
+            points: rewardPoints,
+            description: this.normalizeText(
+                trail.reward?.description,
+                `${rewardPoints} points for completing ${this.normalizeText(trail.title, 'the discovery trail')}`
+            )
         };
     }
 
@@ -240,12 +340,19 @@ class QuestManager {
         return this.shuffleArray(vendors).slice(0, maxVendors);
     }
 
-    createDiscoveryObjective(vendorData = {}) {
+    createDiscoveryObjective(vendorData = {}, trailStop = {}) {
+        const clue = this.normalizeText(
+            trailStop.clueText,
+            this.normalizeText(trailStop.clue, this.resolveDiscoveryClue(vendorData))
+        );
+
         return {
+            trailStopId: this.normalizeText(trailStop.id),
             vendorId: this.normalizeText(vendorData.id),
             vendorName: this.normalizeText(vendorData.name, 'Unknown Vendor'),
             booth: this.normalizeText(vendorData.booth, 'Unknown Booth'),
-            clue: this.resolveDiscoveryClue(vendorData),
+            clue,
+            goal: this.normalizeText(trailStop.goalText, this.normalizeText(trailStop.goal)),
             visited: false,
             visitedAt: null
         };
@@ -362,12 +469,53 @@ class QuestManager {
     }
 
     checkVendorDiscovery(vendorId, vendorData = {}) {
+        return this.checkVendorDiscoveryResult(vendorId, vendorData).updated;
+    }
+
+    createEmptyVendorDiscoveryResult(vendorId = '') {
+        return {
+            updated: false,
+            questCompleted: false,
+            questId: null,
+            questTitle: null,
+            vendorId,
+            vendorName: '',
+            booth: '',
+            clue: '',
+            visitedCount: 0,
+            totalCount: 0,
+            message: ''
+        };
+    }
+
+    createVendorDiscoveryResult({ quest, objective, vendorId, visitedCount, totalCount, questCompleted }) {
+        const vendorName = this.normalizeText(objective?.vendorName, 'Unknown Vendor');
+        const booth = this.normalizeText(objective?.booth);
+        const boothLabel = booth ? ` (${booth})` : '';
+
+        return {
+            updated: true,
+            questCompleted,
+            questId: quest.id,
+            questTitle: quest.title,
+            vendorId,
+            vendorName,
+            booth,
+            clue: this.normalizeText(objective?.clue),
+            visitedCount,
+            totalCount,
+            message: `Passport stamp earned: ${vendorName}${boothLabel}\n${quest.title} progress: ${visitedCount}/${totalCount} vendors visited.`
+        };
+    }
+
+    checkVendorDiscoveryResult(vendorId, vendorData = {}) {
         const resolvedVendorId = this.normalizeText(vendorId ?? vendorData?.id);
         if (!resolvedVendorId) {
-            return false;
+            return this.createEmptyVendorDiscoveryResult();
         }
 
         let questUpdated = false;
+        let discoveryResult = this.createEmptyVendorDiscoveryResult(resolvedVendorId);
 
         this.activeQuests.forEach(quest => {
             if (quest.type !== 'discovery') {
@@ -392,6 +540,15 @@ class QuestManager {
                 questUpdated = true;
 
                 const allObjectivesComplete = quest.objectives.every(obj => obj.visited);
+                discoveryResult = this.createVendorDiscoveryResult({
+                    quest,
+                    objective,
+                    vendorId: resolvedVendorId,
+                    visitedCount: quest.objectives.filter(obj => obj.visited).length,
+                    totalCount: quest.objectives.length,
+                    questCompleted: allObjectivesComplete
+                });
+
                 if (allObjectivesComplete) {
                     this.completeQuest(quest.id);
                 }
@@ -402,7 +559,7 @@ class QuestManager {
             this.saveSessionState();
         }
 
-        return questUpdated;
+        return discoveryResult;
     }
 
     /**

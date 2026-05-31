@@ -13,6 +13,7 @@ export function initializeSceneManagers(
         QuestManagerClass = QuestManager,
         VendorManagerClass = VendorManager,
         InteractionCoordinatorClass = InteractionCoordinator,
+        discoveryTrails = scene.discoveryTrails ?? [],
         liveVendorContentService = scene.liveVendorContentService ?? null
     } = {}
 ) {
@@ -21,7 +22,11 @@ export function initializeSceneManagers(
         handlePointerMove: (screenX, screenY, isDown) => uiManager.handlePointerMove(screenX, screenY, isDown),
         state
     });
-    const questManager = new QuestManagerClass({ state, testMode: scene.testMode });
+    const questManager = new QuestManagerClass({
+        state,
+        testMode: scene.testMode,
+        discoveryTrails
+    });
     const vendorManagerOptions = {
         state,
         showDialog: (dialogData) => uiManager.showDialog(dialogData),

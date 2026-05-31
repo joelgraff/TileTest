@@ -5,6 +5,7 @@ import { initializeSceneBootstrap } from '../../sceneBootstrap.js';
 describe('scene bootstrap', () => {
     it('creates state, starts readiness work, and initializes world, managers, and runtime in order', () => {
         const vendors = [{ id: 'vendor-1' }];
+        const discoveryTrails = [{ id: 'trail-1' }];
         const readinessPromise = Promise.resolve(true);
         const callOrder = [];
         const recreateCollision = vi.fn();
@@ -14,8 +15,8 @@ describe('scene bootstrap', () => {
             cache: {
                 json: {
                     get: vi.fn((key) => {
-                        callOrder.push(`vendors:${key}`);
-                        return vendors;
+                        callOrder.push(`json:${key}`);
+                        return key === 'discovery_trails' ? discoveryTrails : vendors;
                     })
                 }
             }
@@ -63,9 +64,14 @@ describe('scene bootstrap', () => {
         expect(scene.interactionsEnabled).toBe(false);
         expect(DomainManagerModule.loadDomains).toHaveBeenCalledTimes(1);
         expect(scene.cache.json.get).toHaveBeenCalledWith('vendors');
+        expect(scene.cache.json.get).toHaveBeenCalledWith('discovery_trails');
         expect(scene.vendors).toBe(vendors);
+        expect(scene.discoveryTrails).toBe(discoveryTrails);
         expect(initializeSceneWorldFn).toHaveBeenCalledWith(scene);
-        expect(initializeSceneManagersFn).toHaveBeenCalledWith(scene, { state: scene.gameState });
+        expect(initializeSceneManagersFn).toHaveBeenCalledWith(scene, {
+            state: scene.gameState,
+            discoveryTrails
+        });
         expect(initializeInteractionReadinessFn).toHaveBeenCalledWith({
             questManager,
             vendors,
@@ -76,7 +82,15 @@ describe('scene bootstrap', () => {
             recreateCollision,
             interactionCoordinator
         });
-        expect(callOrder).toEqual(['loadDomains', 'vendors:vendors', 'world', 'managers', 'readiness', 'runtime']);
+        expect(callOrder).toEqual([
+            'loadDomains',
+            'json:vendors',
+            'json:discovery_trails',
+            'world',
+            'managers',
+            'readiness',
+            'runtime'
+        ]);
 
         const readinessArgs = initializeInteractionReadinessFn.mock.calls[0][0];
         readinessArgs.setInteractionsEnabled(true);
@@ -131,11 +145,12 @@ describe('scene bootstrap', () => {
 
     it('starts live vendor content service and passes it into manager composition when available', () => {
         const vendors = [{ id: 'vendor-1' }];
+        const discoveryTrails = [{ id: 'trail-1' }];
         const liveVendorContentService = { start: vi.fn() };
         const scene = {
             cache: {
                 json: {
-                    get: vi.fn(() => vendors)
+                    get: vi.fn(key => (key === 'discovery_trails' ? discoveryTrails : vendors))
                 }
             }
         };
@@ -157,6 +172,7 @@ describe('scene bootstrap', () => {
         expect(liveVendorContentService.start).toHaveBeenCalledTimes(1);
         expect(initializeSceneManagersFn).toHaveBeenCalledWith(scene, {
             state: scene.gameState,
+            discoveryTrails,
             liveVendorContentService
         });
     });

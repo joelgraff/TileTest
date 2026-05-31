@@ -1,0 +1,27 @@
+[
+  {
+    "id": "sample-floor-starter",
+    "title": "Starter Show Floor Circuit",
+    "description": "Collect two quick passport stamps from sample-map exhibitors and learn what each booth is showing.",
+    "ordered": false,
+    "stops": [
+      {
+        "id": "repairable-electronics",
+        "vendorId": "100",
+        "clueText": "Start with assorted PCs, phones, and repairable electronics.",
+        "goalText": "Ask what unusual portable or repairable find is on the table today."
+      },
+      {
+        "id": "playable-demo",
+        "vendorId": "101",
+        "clueText": "Find the homebrew game booth and look for a playable demo.",
+        "goalText": "Ask which demo is newest and what system it targets."
+      }
+    ],
+    "reward": {
+      "points": 30,
+      "description": "30 points for completing the starter show floor circuit"
+    },
+    "completionText": "Starter circuit complete. You found two different ways exhibitors bring the show floor to life."
+  }
+]

@@ -133,4 +133,67 @@ describe('VendorManager dialog models', () => {
         expect(showDialog).toHaveBeenCalledWith(originalDialogData);
         expect(collectVendorItem).not.toHaveBeenCalled();
     });
+
+    it('adds passport feedback to the vendor root dialog only for newly earned stamps', () => {
+        const showDialog = vi.fn();
+        const vendorData = {
+            id: 'vendor-1',
+            name: 'Vendor One',
+            description: 'Vintage systems and demos.',
+            domain_id: 'retro',
+            dialog: {
+                responses: [
+                    { text: 'Show me your inventory', action: 'show_items' },
+                    { text: 'Goodbye', action: 'end' }
+                ]
+            }
+        };
+        const vendorContent = {
+            ...vendorData,
+            booth: 'A1',
+            domainName: 'Retro Computing',
+            featuredItems: [],
+            announcements: [],
+            clueText: '',
+            responses: vendorData.dialog.responses,
+            exitResponse: vendorData.dialog.responses[1]
+        };
+        const context = {
+            showDialog,
+            closeDialog: vi.fn(),
+            interactionPrompt: { setVisible: vi.fn() },
+            getVendorImageKey: VendorManager.prototype.getVendorImageKey,
+            getVendorContentProfile: vi.fn(() => vendorContent),
+            buildVendorRootDialogData: VendorManager.prototype.buildVendorRootDialogData,
+            createVendorExitButton: VendorManager.prototype.createVendorExitButton,
+            createVendorResponseButtons: VendorManager.prototype.createVendorResponseButtons,
+            handleVendorResponse: vi.fn(),
+            markVendorDiscovery: vi.fn(() => ({
+                updated: true,
+                questCompleted: false,
+                message: 'Passport stamp earned: Vendor One (A1)\nDiscovery Passport progress: 1/2 vendors visited.'
+            })),
+            showVendorDiscoveryFeedback: VendorManager.prototype.showVendorDiscoveryFeedback,
+            buildVendorDiscoveryFeedbackText: VendorManager.prototype.buildVendorDiscoveryFeedbackText,
+            withVendorDiscoveryFeedback: VendorManager.prototype.withVendorDiscoveryFeedback
+        };
+
+        expect(VendorManager.prototype.interactWithVendor.call(context, vendorData)).toBe(true);
+
+        expect(showDialog).toHaveBeenCalledTimes(2);
+        expect(showDialog.mock.calls[1][0].text).toContain('Passport stamp earned: Vendor One (A1)');
+        expect(showDialog.mock.calls[1][0].text).toContain('Vintage systems and demos.');
+
+        showDialog.mockClear();
+        context.markVendorDiscovery.mockReturnValue({
+            updated: false,
+            questCompleted: false,
+            message: ''
+        });
+
+        expect(VendorManager.prototype.interactWithVendor.call(context, vendorData)).toBe(true);
+
+        expect(showDialog).toHaveBeenCalledTimes(1);
+        expect(showDialog.mock.calls[0][0].text).not.toContain('Passport stamp earned');
+    });
 });

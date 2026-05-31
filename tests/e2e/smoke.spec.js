@@ -1,8 +1,15 @@
 import { expect, test } from '@playwright/test';
 
 async function gotoGame(page) {
+    const apiRequests = [];
     const consoleErrors = [];
     const pageErrors = [];
+
+    page.on('request', request => {
+        if (new URL(request.url()).pathname.startsWith('/api/')) {
+            apiRequests.push(request.url());
+        }
+    });
 
     page.on('console', message => {
         if (message.type() === 'error') {
@@ -19,7 +26,9 @@ async function gotoGame(page) {
     await expect(page.locator('canvas')).toBeVisible({ timeout: 15000 });
     await page.waitForFunction(() => window.__tileTest?.testApi?.isReady?.());
 
-    return { consoleErrors, pageErrors };
+    const liveBackendFlag = await page.evaluate(() => window.__tileTestLiveBackend === true);
+
+    return { apiRequests, consoleErrors, liveBackendFlag, pageErrors };
 }
 
 function expectBoxWithinViewport(box, viewport) {
@@ -31,8 +40,10 @@ function expectBoxWithinViewport(box, viewport) {
 }
 
 test('game boots and renders without startup runtime errors', async ({ page }) => {
-    const { consoleErrors, pageErrors } = await gotoGame(page);
+    const { apiRequests, consoleErrors, liveBackendFlag, pageErrors } = await gotoGame(page);
 
+    expect(liveBackendFlag).toBe(false);
+    expect(apiRequests, `Unexpected static-mode API requests: ${apiRequests.join('\n')}`).toEqual([]);
     expect(pageErrors, `Page errors: ${pageErrors.join('\n')}`).toEqual([]);
     expect(consoleErrors, `Console errors: ${consoleErrors.join('\n')}`).toEqual([]);
 });

@@ -166,6 +166,120 @@ describe('QuestManager completion flow', () => {
         ]);
     });
 
+    it('prefers reachable authored discovery trails over generated vendor selection', () => {
+        DomainManager.domains = [{
+            id: 'retro',
+            name: 'Retro Computing',
+            items: [{ id: 'item-1', name: 'Disk Imager' }],
+            facts: []
+        }];
+        const vendors = [
+            { id: 'vendor-1', name: 'Vendor One', booth: 'A1', domain_id: 'retro', clueText: 'Vendor clue one' },
+            { id: 'vendor-2', name: 'Vendor Two', booth: 'A2', domain_id: 'retro', clueText: 'Vendor clue two' },
+            { id: 'vendor-3', name: 'Vendor Three', booth: 'A3', domain_id: 'retro' }
+        ];
+        const manager = new QuestManager({
+            testMode: true,
+            discoveryTrails: [{
+                id: 'trail-1',
+                title: 'Starter Trail',
+                description: 'Visit the authored trail vendors.',
+                ordered: true,
+                stops: [
+                    {
+                        id: 'stop-2',
+                        vendorId: 'vendor-2',
+                        clueText: 'Authored clue two',
+                        goalText: 'Ask about the second stop.'
+                    },
+                    {
+                        id: 'stop-1',
+                        vendorId: 'vendor-1',
+                        clueText: 'Authored clue one',
+                        goalText: 'Ask about the first stop.'
+                    }
+                ],
+                reward: {
+                    points: 45,
+                    description: '45 points for the authored trail'
+                },
+                completionText: 'Trail complete.'
+            }]
+        });
+
+        manager.vendors = vendors;
+        manager.setDiscoveryVendorPool([vendors[0], vendors[1], vendors[2]]);
+        manager.generateInitialQuests();
+
+        const discoveryQuest = manager.activeQuests.find(quest => quest.type === 'discovery');
+
+        expect(discoveryQuest).toMatchObject({
+            source: 'authored-trail',
+            trailId: 'trail-1',
+            title: 'Starter Trail',
+            description: 'Visit the authored trail vendors.',
+            ordered: true,
+            completionText: 'Trail complete.',
+            reward: {
+                points: 45,
+                description: '45 points for the authored trail'
+            }
+        });
+        expect(discoveryQuest.objectives).toEqual([
+            expect.objectContaining({
+                trailStopId: 'stop-2',
+                vendorId: 'vendor-2',
+                vendorName: 'Vendor Two',
+                clue: 'Authored clue two',
+                goal: 'Ask about the second stop.'
+            }),
+            expect.objectContaining({
+                trailStopId: 'stop-1',
+                vendorId: 'vendor-1',
+                vendorName: 'Vendor One',
+                clue: 'Authored clue one',
+                goal: 'Ask about the first stop.'
+            })
+        ]);
+    });
+
+    it('falls back to generated discovery when authored trails are not reachable', () => {
+        DomainManager.domains = [{
+            id: 'retro',
+            name: 'Retro Computing',
+            items: [{ id: 'item-1', name: 'Disk Imager' }],
+            facts: []
+        }];
+        const vendors = [
+            { id: 'vendor-1', name: 'Vendor One', booth: 'A1', domain_id: 'retro' },
+            { id: 'vendor-2', name: 'Vendor Two', booth: 'A2', domain_id: 'retro' }
+        ];
+        const manager = new QuestManager({
+            testMode: true,
+            discoveryTrails: [{
+                id: 'unreachable-trail',
+                title: 'Unreachable Trail',
+                description: 'This should be skipped.',
+                stops: [
+                    { id: 'known', vendorId: 'vendor-1', clueText: 'Known clue', goalText: 'Known goal' },
+                    { id: 'missing', vendorId: 'vendor-404', clueText: 'Missing clue', goalText: 'Missing goal' }
+                ],
+                reward: { points: 30, description: '30 points' }
+            }]
+        });
+
+        manager.vendors = vendors;
+        manager.setDiscoveryVendorPool(vendors);
+        manager.generateInitialQuests();
+
+        const discoveryQuest = manager.activeQuests.find(quest => quest.type === 'discovery');
+
+        expect(discoveryQuest.source).toBeUndefined();
+        expect(discoveryQuest.trailId).toBeUndefined();
+        expect(discoveryQuest.title).toBe('Discovery Passport');
+        expect(discoveryQuest.objectives.map(objective => objective.vendorId)).toEqual(['vendor-1', 'vendor-2']);
+    });
+
     it('skips discovery passports when the assigned vendor pool is too small', () => {
         DomainManager.domains = [{
             id: 'retro',
@@ -220,12 +334,27 @@ describe('QuestManager completion flow', () => {
             }
         }];
 
-        expect(manager.checkVendorDiscovery('vendor-1', {
+        const firstVisitResult = manager.checkVendorDiscoveryResult('vendor-1', {
             id: 'vendor-1',
             name: 'Vendor One Live',
             booth: 'B1',
             clueText: 'Live clue text'
-        })).toBe(true);
+        });
+
+        expect(firstVisitResult).toMatchObject({
+            updated: true,
+            questCompleted: false,
+            questId: 'discovery-1',
+            questTitle: 'Discovery Passport',
+            vendorId: 'vendor-1',
+            vendorName: 'Vendor One Live',
+            booth: 'B1',
+            clue: 'Live clue text',
+            visitedCount: 1,
+            totalCount: 2
+        });
+        expect(firstVisitResult.message).toContain('Passport stamp earned: Vendor One Live (B1)');
+        expect(firstVisitResult.message).toContain('Discovery Passport progress: 1/2 vendors visited.');
         expect(manager.activeQuests[0].objectives[0]).toMatchObject({
             vendorName: 'Vendor One Live',
             booth: 'B1',
@@ -235,6 +364,11 @@ describe('QuestManager completion flow', () => {
         expect(manager.completedQuests).toHaveLength(0);
 
         expect(manager.checkVendorDiscovery('vendor-1')).toBe(false);
+        expect(manager.checkVendorDiscoveryResult('vendor-1')).toMatchObject({
+            updated: false,
+            questCompleted: false,
+            message: ''
+        });
         expect(manager.checkVendorDiscovery('vendor-2', { id: 'vendor-2' })).toBe(true);
 
         expect(manager.activeQuests).toHaveLength(0);

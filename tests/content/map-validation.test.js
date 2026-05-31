@@ -26,7 +26,7 @@ describe('map validation', () => {
     );
 
     it('includes the required layers used by the runtime', () => {
-        const requiredLayers = ['floor', 'tables', 'player', 'npc_area'];
+        const requiredLayers = ['floor', 'tables', 'player', 'npc_area', 'tabletops'];
 
         for (const layerName of requiredLayers) {
             expect(getLayer(map, layerName), `Missing required layer: ${layerName}`).toBeTruthy();
