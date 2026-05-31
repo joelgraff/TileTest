@@ -14,7 +14,7 @@ Suggested tag name after commit:
 
 This baseline freezes the repo after the full stabilization program:
 
-- Phase 0 through Phase 6 complete in `Implementation Checklist.md`
+- Phase 0 through Phase 6 complete in [Implementation Checklist.md](../Implementation%20Checklist.md)
 - DOM overlay HUD and dialog system fully replaces the legacy runtime canvas UI
 - Collision authoring and spawn contracts are explicitly validated
 - Desktop and mobile stabilization-gate checklist runs are automated

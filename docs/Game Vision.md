@@ -4,7 +4,7 @@
 
 This is the canonical product-direction document for TileTest.
 
-It consolidates the high-level intent that was previously spread across `vcf_quest_outline.md`, `Revised Implementation Plan.md`, `quest_template_discussion.txt`, and the player-facing descriptions in `help.json`.
+It consolidates the high-level intent that was previously spread across [vcf_quest_outline.md](vcf_quest_outline.md), [Revised Implementation Plan.md](Revised%20Implementation%20Plan.md), [quest_template_discussion.txt](quest_template_discussion.txt), and the player-facing descriptions in [help.json](../help.json).
 
 Those older files are still useful as reference material, but this document is the source of truth for:
 
@@ -414,17 +414,17 @@ These three types are achievable, fit the conference theme, and create a better 
 
 Canonical product-direction document:
 
-- `Game Vision.md`
+- [Game Vision.md](Game%20Vision.md)
 
 Operational engineering documents:
 
-- `README.md`
-- `Stability Roadmap.md`
-- `Implementation Checklist.md`
+- [README.md](../README.md)
+- [Stability Roadmap.md](Stability%20Roadmap.md)
+- [Implementation Checklist.md](Implementation%20Checklist.md)
 
 Reference-only historical planning material:
 
-- `vcf_quest_outline.md`
-- `Revised Implementation Plan.md`
-- `quest_template_discussion.txt`
-- `help.json`
+- [vcf_quest_outline.md](vcf_quest_outline.md)
+- [Revised Implementation Plan.md](Revised%20Implementation%20Plan.md)
+- [quest_template_discussion.txt](quest_template_discussion.txt)
+- [help.json](../help.json)

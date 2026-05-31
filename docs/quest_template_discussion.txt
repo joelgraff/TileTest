@@ -1,4 +1,4 @@
-Reference note: This document is retained as gameplay brainstorming and puzzle-design analysis. Use `Game Vision.md` as the canonical source of truth for current product direction and gameplay goals.
+Reference note: This document is retained as gameplay brainstorming and puzzle-design analysis. Use [Game Vision.md](Game%20Vision.md) as the canonical source of truth for current product direction and gameplay goals.
 
 Evaluating and Refining Your Puzzle Categories
 Your categories provide a solid foundation for puzzle design in VCF Quest, especially since the game revolves around vendor interactions, item trading, knowledge exchange, and exploration in a retro computing-themed environment. They align well with adventure game tropes, drawing from your specified actions (Buy, Sell, Trade, Look, Ask, Tell, Take, Give) and vendor data (items, facts, additional puzzle-related assets). The emphasis on procedural variety—making puzzles differ each run—is key, and these categories can support that through randomization of elements like involved NPCs, required items/facts, dependencies, and rewards.
