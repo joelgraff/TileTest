@@ -190,6 +190,7 @@ async function saveLiveContentThroughDashboard(page, baseUrl, targetVendor) {
 
 async function saveLiveTrailThroughDashboard(page, baseUrl, targetVendors) {
     await page.goto(`${baseUrl}/dashboard`, { waitUntil: 'domcontentloaded' });
+    await page.click('[data-dashboard-tab="trails"]');
     await page.waitForFunction(() => document.querySelector('#trail-select')?.options?.length > 0);
 
     await page.selectOption('#trail-select', 'sample-floor-starter');

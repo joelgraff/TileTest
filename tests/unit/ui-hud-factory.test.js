@@ -3,10 +3,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
     createHelpHudButton,
     createInventoryHudButton,
+    createPassportHintHud,
     createQuestHudButton,
     createScoreHud,
     createUiHud,
-    createVersionHud
+    createVersionHud,
+    updatePassportHintHud
 } from '../../uiHudFactory.js';
 
 function createFakeDocument() {
@@ -22,6 +24,7 @@ function createFakeDocument() {
             this.className = '';
             this.textContent = '';
             this.type = undefined;
+            this.hidden = false;
         }
 
         append(...children) {
@@ -96,11 +99,14 @@ describe('UI HUD factory', () => {
 
         createScoreHud(uiManager);
         createVersionHud(uiManager);
+        createPassportHintHud(uiManager);
 
         expect(overlayRoot.children).toHaveLength(1);
         expect(uiManager.scoreBackground.dataset.hudScore).toBe('true');
         expect(uiManager.scoreTextElement.textContent).toBe('SCORE: 42');
         expect(uiManager.versionText.textContent).toBe('Version 1.6');
+        expect(uiManager.passportHint.dataset.hudPassport).toBe('true');
+        expect(uiManager.passportHint.hidden).toBe(true);
     });
 
     it('preserves inventory and quest button click contracts', () => {
@@ -149,5 +155,30 @@ describe('UI HUD factory', () => {
         expect(uiManager.questButton).toBeTruthy();
         expect(uiManager.helpButton).toBeTruthy();
         expect(uiManager.versionText).toBeTruthy();
+        expect(uiManager.passportHint).toBeTruthy();
+    });
+
+    it('exposes a passport hint update through the HUD factory', () => {
+        const { documentRef } = createFakeDocument();
+        const { uiManager } = createUiManager();
+
+        globalThis.document = documentRef;
+
+        createPassportHintHud(uiManager);
+        updatePassportHintHud(uiManager, {
+            activeQuests: [{
+                type: 'discovery',
+                title: 'Starter Trail',
+                objectives: [{
+                    vendorName: 'Vendor One',
+                    booth: 'A1',
+                    clue: 'Find the repair bench.',
+                    visited: false
+                }]
+            }]
+        });
+
+        expect(uiManager.passportHint.hidden).toBe(false);
+        expect(uiManager.passportHintTitle.textContent).toBe('Find a Passport Clue');
     });
 });

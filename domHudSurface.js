@@ -1,3 +1,5 @@
+import { createDiscoveryHudModel } from './discoveryHudModel.js';
+
 const VERSION_LABEL = 'Version 1.6';
 
 export function supportsDomHud(documentRef = globalThis.document) {
@@ -77,6 +79,54 @@ function createHudButtonElement(documentRef, label, { controlName, onClick, prep
     });
 
     return button;
+}
+
+function createHudTextElement(documentRef, className) {
+    const element = documentRef.createElement('div');
+    element.className = className;
+
+    return element;
+}
+
+function getQuestHudState(uiManager) {
+    const questManager = uiManager.questManager;
+
+    return {
+        activeQuests: questManager?.getActiveQuests?.() ?? uiManager.state?.activeQuests ?? [],
+        completedQuests: questManager?.getCompletedQuests?.() ?? uiManager.state?.completedQuests ?? [],
+        inventory: uiManager.inventory ?? uiManager.state?.inventory ?? [],
+        score: uiManager.score ?? uiManager.state?.score ?? 0
+    };
+}
+
+function ensureDomPassportHintHud(uiManager, documentRef) {
+    ensureHudRoot(uiManager, documentRef);
+    if (!uiManager.domHudBottomBar) {
+        return null;
+    }
+
+    if (uiManager.passportHint) {
+        return uiManager.passportHint;
+    }
+
+    const passportHint = documentRef.createElement('div');
+    passportHint.className = 'dom-hud-passport';
+    passportHint.dataset.hudPassport = 'true';
+    passportHint.hidden = true;
+
+    const label = createHudTextElement(documentRef, 'dom-hud-passport-label');
+    const title = createHudTextElement(documentRef, 'dom-hud-passport-title');
+    const detail = createHudTextElement(documentRef, 'dom-hud-passport-detail');
+
+    passportHint.append(label, title, detail);
+    uiManager.domHudBottomBar.append(passportHint);
+
+    uiManager.passportHint = passportHint;
+    uiManager.passportHintLabel = label;
+    uiManager.passportHintTitle = title;
+    uiManager.passportHintDetail = detail;
+
+    return passportHint;
 }
 
 export function createDomScoreHud(uiManager, { documentRef = globalThis.document } = {}) {
@@ -175,6 +225,45 @@ export function createDomVersionHud(uiManager, { documentRef = globalThis.docume
     return versionText;
 }
 
+export function updateDomPassportHintHud(uiManager, {
+    documentRef = globalThis.document,
+    activeQuests = null,
+    completedQuests = null,
+    inventory = null,
+    score = null
+} = {}) {
+    const passportHint = ensureDomPassportHintHud(uiManager, documentRef);
+    if (!passportHint) {
+        return null;
+    }
+
+    const currentQuestState = getQuestHudState(uiManager);
+    const model = createDiscoveryHudModel({
+        activeQuests: activeQuests ?? currentQuestState.activeQuests,
+        completedQuests: completedQuests ?? currentQuestState.completedQuests,
+        inventory: inventory ?? currentQuestState.inventory,
+        score: score ?? currentQuestState.score
+    });
+
+    passportHint.hidden = !model.visible;
+    passportHint.dataset.passportStatus = model.status;
+    uiManager.passportHintLabel.textContent = model.label;
+    uiManager.passportHintTitle.textContent = model.title;
+    uiManager.passportHintDetail.textContent = model.detail;
+
+    return passportHint;
+}
+
+export function createDomPassportHintHud(uiManager, { documentRef = globalThis.document } = {}) {
+    removeExistingElement(uiManager.passportHint);
+    uiManager.passportHint = null;
+    uiManager.passportHintLabel = null;
+    uiManager.passportHintTitle = null;
+    uiManager.passportHintDetail = null;
+
+    return updateDomPassportHintHud(uiManager, { documentRef });
+}
+
 export function createDomUiHud(uiManager, { documentRef = globalThis.document } = {}) {
     ensureHudRoot(uiManager, documentRef);
     createDomScoreHud(uiManager, { documentRef });
@@ -182,6 +271,7 @@ export function createDomUiHud(uiManager, { documentRef = globalThis.document } 
     createDomQuestHudButton(uiManager, { documentRef });
     createDomHelpHudButton(uiManager, { documentRef });
     createDomVersionHud(uiManager, { documentRef });
+    createDomPassportHintHud(uiManager, { documentRef });
 
     return uiManager;
 }

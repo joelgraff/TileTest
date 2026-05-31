@@ -1,10 +1,12 @@
 import {
     createDomHelpHudButton,
     createDomInventoryHudButton,
+    createDomPassportHintHud,
     createDomQuestHudButton,
     createDomScoreHud,
     createDomUiHud,
-    createDomVersionHud
+    createDomVersionHud,
+    updateDomPassportHintHud
 } from './domHudSurface.js';
 
 export function createScoreHud(uiManager) {
@@ -25,6 +27,14 @@ export function createHelpHudButton(uiManager) {
 
 export function createVersionHud(uiManager) {
     return createDomVersionHud(uiManager);
+}
+
+export function createPassportHintHud(uiManager) {
+    return createDomPassportHintHud(uiManager);
+}
+
+export function updatePassportHintHud(uiManager, options = {}) {
+    return updateDomPassportHintHud(uiManager, options);
 }
 
 export function createUiHud(uiManager) {

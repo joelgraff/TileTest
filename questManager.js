@@ -13,6 +13,7 @@ class QuestManager {
         this.domainManager = null;
         this.npcManager = null;
         this.onQuestCompletion = null;
+        this.onQuestStateChange = null;
         this.testMode = Boolean(testMode);
         this.testQuestCounter = 0;
         this.discoveryVendorPool = null;
@@ -88,6 +89,18 @@ class QuestManager {
         return this;
     }
 
+    setQuestStateChangeHandler(onQuestStateChange) {
+        this.onQuestStateChange = typeof onQuestStateChange === 'function' ? onQuestStateChange : null;
+        return this;
+    }
+
+    notifyQuestStateChanged() {
+        this.onQuestStateChange?.({
+            activeQuests: this.activeQuests,
+            completedQuests: this.completedQuests
+        });
+    }
+
     setDiscoveryVendorPool(vendors = []) {
         this.discoveryVendorPool = this.getUniqueVendors(vendors);
         return this;
@@ -109,6 +122,8 @@ class QuestManager {
             // Start new session if none exists
             if (!this.sessionId) {
                 this.startNewSession();
+            } else {
+                this.ensureDiscoveryQuestForSession();
             }
 
             return true;
@@ -132,8 +147,32 @@ class QuestManager {
 
         // Save session state
         this.saveSessionState();
+        this.notifyQuestStateChanged();
 
         console.log('New quest session started:', this.sessionId);
+    }
+
+    hasDiscoveryQuest() {
+        return [...this.activeQuests, ...this.completedQuests]
+            .some(quest => quest?.type === 'discovery');
+    }
+
+    ensureDiscoveryQuestForSession() {
+        if (this.hasDiscoveryQuest()) {
+            this.notifyQuestStateChanged();
+            return false;
+        }
+
+        const discoveryQuest = this.generateDiscoveryQuest();
+        if (!discoveryQuest) {
+            this.notifyQuestStateChanged();
+            return false;
+        }
+
+        this.activeQuests.push(discoveryQuest);
+        this.saveSessionState();
+        this.notifyQuestStateChanged();
+        return true;
     }
 
     /**
@@ -443,6 +482,7 @@ class QuestManager {
      */
     checkItemCollection(itemName, vendorId) {
         let questUpdated = false;
+        let questCompleted = false;
 
         this.activeQuests.forEach(quest => {
             if (quest.type === 'collection') {
@@ -455,6 +495,7 @@ class QuestManager {
                         // Check if quest is complete
                         const allObjectivesComplete = quest.objectives.every(obj => obj.collected);
                         if (allObjectivesComplete) {
+                            questCompleted = true;
                             this.completeQuest(quest.id);
                         }
                     }
@@ -464,6 +505,9 @@ class QuestManager {
 
         if (questUpdated) {
             this.saveSessionState();
+            if (!questCompleted) {
+                this.notifyQuestStateChanged();
+            }
         }
 
         return questUpdated;
@@ -558,6 +602,7 @@ class QuestManager {
         }
 
         let questUpdated = false;
+        let questCompleted = false;
         let discoveryResult = this.createEmptyVendorDiscoveryResult(resolvedVendorId);
 
         this.activeQuests.forEach(quest => {
@@ -616,6 +661,7 @@ class QuestManager {
                 });
 
                 if (allObjectivesComplete) {
+                    questCompleted = true;
                     this.completeQuest(quest.id);
                 }
             });
@@ -623,6 +669,9 @@ class QuestManager {
 
         if (questUpdated) {
             this.saveSessionState();
+            if (!questCompleted) {
+                this.notifyQuestStateChanged();
+            }
         }
 
         return discoveryResult;
@@ -649,6 +698,7 @@ class QuestManager {
 
         console.log('Quest completed:', quest.title);
         this.saveSessionState();
+        this.notifyQuestStateChanged();
     }
 
     /**
@@ -731,6 +781,7 @@ class QuestManager {
         document.cookie = 'vcf_quest_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
         console.log('Quest session cleared');
+        this.notifyQuestStateChanged();
     }
 
     /**

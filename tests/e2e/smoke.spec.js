@@ -48,6 +48,43 @@ test('game boots and renders without startup runtime errors', async ({ page }) =
     expect(consoleErrors, `Console errors: ${consoleErrors.join('\n')}`).toEqual([]);
 });
 
+test('regular browser sessions backfill discovery guidance for legacy quest cookies', async ({ page }) => {
+    await page.addInitScript(() => {
+        const randomValues = [0, 0.02, 0.04, 0.06, 0.08, 0.1];
+        let randomIndex = 0;
+
+        Math.random = () => {
+            const value = randomValues[randomIndex % randomValues.length];
+
+            randomIndex += 1;
+            return value;
+        };
+
+        document.cookie = `vcf_quest_session=${JSON.stringify({
+            sessionId: 'legacy-session',
+            activeQuests: [{
+                id: 'legacy-collection',
+                type: 'collection',
+                title: 'Legacy Collection Quest',
+                objectives: []
+            }],
+            completedQuests: [],
+            timestamp: Date.now()
+        })}; path=/`;
+    });
+
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveTitle(/Tilemap Game/);
+    await expect(page.locator('canvas')).toBeVisible({ timeout: 15000 });
+    await page.waitForFunction(() => window.__tileTest?.scene?.interactionsEnabled === true);
+
+    const passportHint = page.locator('[data-hud-passport]');
+
+    await expect(passportHint).toBeVisible();
+    await expect(passportHint).toContainText('Passport Lead');
+    await expect(passportHint).toContainText(/stamps/);
+});
+
 test('space opens a nearby vendor dialog without starting movement', async ({ page }) => {
     await gotoGame(page);
 

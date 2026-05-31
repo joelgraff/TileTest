@@ -3,11 +3,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
     createDomHelpHudButton,
     createDomInventoryHudButton,
+    createDomPassportHintHud,
     createDomQuestHudButton,
     createDomScoreHud,
     createDomUiHud,
     createDomVersionHud,
-    supportsDomHud
+    supportsDomHud,
+    updateDomPassportHintHud
 } from '../../domHudSurface.js';
 
 function createFakeDocument() {
@@ -114,6 +116,8 @@ describe('dom hud surface', () => {
         expect(uiManager.questButton.dataset.hudControl).toBe('quests');
         expect(uiManager.versionText.textContent).toBe('Version 1.6');
         expect(uiManager.scoreBackground.dataset.hudScore).toBe('true');
+        expect(uiManager.passportHint.dataset.hudPassport).toBe('true');
+        expect(uiManager.passportHint.hidden).toBe(true);
     });
 
     it('updates the score label through the stable scoreText adapter', () => {
@@ -148,5 +152,33 @@ describe('dom hud surface', () => {
         expect(uiManager.toggleQuests).toHaveBeenCalledTimes(1);
         expect(uiManager.toggleHelp).toHaveBeenCalledTimes(1);
         expect(uiManager.versionText.dataset.hudVersion).toBe('true');
+    });
+
+    it('updates the passport hint from active discovery quest state', () => {
+        const { documentRef } = createFakeDocument();
+        const uiManager = createUiManager();
+
+        globalThis.document = documentRef;
+
+        createDomPassportHintHud(uiManager);
+        const hint = updateDomPassportHintHud(uiManager, {
+            activeQuests: [{
+                type: 'discovery',
+                title: 'Starter Trail',
+                objectives: [{
+                    vendorName: 'Vendor One',
+                    booth: 'A1',
+                    clue: 'Find the repair bench.',
+                    goal: 'Ask what needs fixing.',
+                    visited: false
+                }]
+            }]
+        });
+
+        expect(hint.hidden).toBe(false);
+        expect(hint.dataset.passportStatus).toBe('active');
+        expect(uiManager.passportHintLabel.textContent).toBe('Passport Lead');
+        expect(uiManager.passportHintTitle.textContent).toBe('Find a Passport Clue');
+        expect(uiManager.passportHintDetail.textContent).toBe('0/1 stamps - Ask what needs fixing.');
     });
 });

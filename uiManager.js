@@ -2,10 +2,12 @@ import DialogManager from './dialogManager.js';
 import {
     createHelpHudButton,
     createInventoryHudButton,
+    createPassportHintHud,
     createQuestHudButton,
     createScoreHud,
     createUiHud,
-    createVersionHud
+    createVersionHud,
+    updatePassportHintHud
 } from './uiHudFactory.js';
 import {
     hideMovementIndicatorReticle,
@@ -97,6 +99,14 @@ class UIManager {
         return createVersionHud(this);
     }
 
+    createPassportHint() {
+        return createPassportHintHud(this);
+    }
+
+    updatePassportHint() {
+        return updatePassportHintHud(this);
+    }
+
     setState(state) {
         const nextState = state ?? this.state ?? {
             score: 0,
@@ -171,6 +181,8 @@ class UIManager {
 
     setQuestManager(questManager) {
         this.questManager = questManager;
+        this.questManager?.setQuestStateChangeHandler?.(() => this.updatePassportHint());
+        this.updatePassportHint?.();
         return this;
     }
 
@@ -269,6 +281,8 @@ class UIManager {
 
         const activeQuests = this.questManager.getActiveQuests();
         const completedQuests = this.questManager.getCompletedQuests();
+
+        this.updatePassportHint?.();
 
         this.showDialog(createQuestDialogData({
             activeQuests,

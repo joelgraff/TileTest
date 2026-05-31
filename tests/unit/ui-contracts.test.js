@@ -128,4 +128,24 @@ describe('UIManager contracts', () => {
         expect(context.inputManager).toBe(inputManager);
         expect(dialogManager.setInputManager).toHaveBeenCalledWith(inputManager);
     });
+
+    it('refreshes passport guidance when injected quest state changes', () => {
+        const questManager = {
+            setQuestStateChangeHandler: vi.fn()
+        };
+        const context = {
+            updatePassportHint: vi.fn()
+        };
+
+        const returned = UIManager.prototype.setQuestManager.call(context, questManager);
+
+        expect(returned).toBe(context);
+        expect(context.questManager).toBe(questManager);
+        expect(context.updatePassportHint).toHaveBeenCalledTimes(1);
+        expect(questManager.setQuestStateChangeHandler).toHaveBeenCalledTimes(1);
+
+        questManager.setQuestStateChangeHandler.mock.calls[0][0]();
+
+        expect(context.updatePassportHint).toHaveBeenCalledTimes(2);
+    });
 });

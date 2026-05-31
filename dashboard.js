@@ -19,6 +19,8 @@ const trailForm = document.querySelector('#trail-form');
 const trailResetButton = document.querySelector('#trail-reset-button');
 const trailStatusElement = document.querySelector('#trail-status');
 const trailList = document.querySelector('#trail-list');
+const dashboardTabs = Array.from(document.querySelectorAll('[data-dashboard-tab]'));
+const dashboardPages = Array.from(document.querySelectorAll('[data-dashboard-page]'));
 
 const state = {
     vendors: [],
@@ -29,6 +31,16 @@ const state = {
 function setStatus(message, isError = false, element = statusElement) {
     element.textContent = message;
     element.style.color = isError ? '#b42318' : '#1d5f8f';
+}
+
+function showDashboardPage(pageName) {
+    dashboardTabs.forEach((tab) => {
+        tab.setAttribute('aria-selected', String(tab.dataset.dashboardTab === pageName));
+    });
+
+    dashboardPages.forEach((page) => {
+        page.hidden = page.dataset.dashboardPage !== pageName;
+    });
 }
 
 function getVendorLabel(vendor) {
@@ -351,6 +363,12 @@ vendorSelect.addEventListener('change', () => {
 
 trailSelect.addEventListener('change', () => {
     renderSelectedTrail();
+});
+
+dashboardTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+        showDashboardPage(tab.dataset.dashboardTab);
+    });
 });
 
 clearButton.addEventListener('click', () => {

@@ -300,6 +300,53 @@ describe('QuestManager completion flow', () => {
         expect(manager.activeQuests.map(quest => quest.type)).toEqual(['collection']);
     });
 
+    it('adds a discovery passport to restored legacy sessions that do not have one', () => {
+        DomainManager.domains = [{
+            id: 'retro',
+            name: 'Retro Computing',
+            items: [{ id: 'item-1', name: 'Disk Imager' }],
+            facts: []
+        }];
+        const manager = new QuestManager();
+        const saveSessionState = vi.spyOn(manager, 'saveSessionState').mockImplementation(() => {});
+        const handleQuestStateChange = vi.fn();
+        const vendors = [
+            { id: 'vendor-1', name: 'Vendor One', booth: 'A1', domain_id: 'retro' },
+            { id: 'vendor-2', name: 'Vendor Two', booth: 'A2', domain_id: 'retro' }
+        ];
+
+        manager.sessionId = 'legacy-session';
+        manager.vendors = vendors;
+        manager.activeQuests = [{ id: 'legacy-quest', type: 'collection', objectives: [] }];
+        manager.completedQuests = [];
+        manager.setDiscoveryVendorPool(vendors);
+        manager.setQuestStateChangeHandler(handleQuestStateChange);
+
+        expect(manager.ensureDiscoveryQuestForSession()).toBe(true);
+        expect(manager.activeQuests.map(quest => quest.type)).toEqual(['collection', 'discovery']);
+        expect(saveSessionState).toHaveBeenCalledTimes(1);
+        expect(handleQuestStateChange).toHaveBeenCalledWith({
+            activeQuests: manager.activeQuests,
+            completedQuests: manager.completedQuests
+        });
+    });
+
+    it('does not duplicate discovery passports in restored sessions', () => {
+        const manager = new QuestManager();
+        const saveSessionState = vi.spyOn(manager, 'saveSessionState').mockImplementation(() => {});
+        const handleQuestStateChange = vi.fn();
+
+        manager.sessionId = 'session-with-discovery';
+        manager.activeQuests = [{ id: 'discovery-1', type: 'discovery', objectives: [] }];
+        manager.completedQuests = [];
+        manager.setQuestStateChangeHandler(handleQuestStateChange);
+
+        expect(manager.ensureDiscoveryQuestForSession()).toBe(false);
+        expect(manager.activeQuests).toHaveLength(1);
+        expect(saveSessionState).not.toHaveBeenCalled();
+        expect(handleQuestStateChange).toHaveBeenCalledTimes(1);
+    });
+
     it('marks discovery objectives from vendor visits and completes the passport', () => {
         const manager = new QuestManager();
         const handleQuestCompletion = vi.fn();
@@ -378,6 +425,48 @@ describe('QuestManager completion flow', () => {
             completed: true
         }));
         expect(saveSessionState).toHaveBeenCalled();
+    });
+
+    it('notifies quest state listeners when discovery progress changes', () => {
+        const manager = new QuestManager();
+        const handleQuestStateChange = vi.fn();
+
+        vi.spyOn(manager, 'saveSessionState').mockImplementation(() => {});
+        manager.setQuestStateChangeHandler(handleQuestStateChange);
+        manager.activeQuests = [{
+            id: 'discovery-1',
+            type: 'discovery',
+            title: 'Discovery Passport',
+            objectives: [
+                {
+                    vendorId: 'vendor-1',
+                    vendorName: 'Vendor One',
+                    booth: 'A1',
+                    clue: 'Fallback clue',
+                    visited: false,
+                    visitedAt: null
+                },
+                {
+                    vendorId: 'vendor-2',
+                    vendorName: 'Vendor Two',
+                    booth: 'A2',
+                    clue: 'Second clue',
+                    visited: false,
+                    visitedAt: null
+                }
+            ],
+            reward: {
+                points: 30,
+                description: '30 points'
+            }
+        }];
+
+        manager.checkVendorDiscoveryResult('vendor-1', { id: 'vendor-1' });
+
+        expect(handleQuestStateChange).toHaveBeenCalledWith({
+            activeQuests: manager.activeQuests,
+            completedQuests: manager.completedQuests
+        });
     });
 
     it('blocks later ordered discovery encounters until the next stop is complete', () => {

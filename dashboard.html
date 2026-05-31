@@ -74,10 +74,11 @@
             font-weight: 700;
         }
 
-        .dashboard-grid {
+        .dashboard-workspace {
             display: grid;
-            grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+            grid-template-columns: 220px minmax(0, 1fr);
             gap: 18px;
+            align-items: start;
         }
 
         .panel {
@@ -86,6 +87,32 @@
             border-radius: 8px;
             background: #ffffff;
             box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06);
+        }
+
+        .dashboard-tabs {
+            position: sticky;
+            top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dashboard-tab {
+            width: 100%;
+            text-align: left;
+            border-color: #d5dbe3;
+            background: #ffffff;
+        }
+
+        .dashboard-tab[aria-selected="true"] {
+            border-color: #1d5f8f;
+            background: #e7f2fb;
+            color: #164f78;
+            font-weight: 760;
+        }
+
+        .dashboard-page[hidden] {
+            display: none;
         }
 
         .form-stack,
@@ -135,12 +162,6 @@
             gap: 10px;
         }
 
-        .editor-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
         .actions {
             display: flex;
             justify-content: flex-end;
@@ -179,14 +200,24 @@
         }
 
         @media (max-width: 760px) {
-            .dashboard-header,
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
             .dashboard-header {
                 align-items: stretch;
                 flex-direction: column;
+            }
+
+            .dashboard-workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-tabs {
+                position: static;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+
+            .dashboard-tab {
+                width: auto;
+                min-width: max-content;
             }
         }
     </style>
@@ -197,11 +228,15 @@
             <h1>Content Dashboard</h1>
             <a class="dashboard-link" href="/" target="_blank" rel="noreferrer">Open Game</a>
         </header>
-        <div class="dashboard-grid">
-            <div class="editor-stack">
-            <section class="panel" aria-labelledby="editor-title">
+        <div class="dashboard-workspace">
+            <nav class="dashboard-tabs" aria-label="Dashboard sections">
+                <button class="dashboard-tab" type="button" data-dashboard-tab="vendors" aria-selected="true">Vendor Content</button>
+                <button class="dashboard-tab" type="button" data-dashboard-tab="trails" aria-selected="false">Discovery Trails</button>
+                <button class="dashboard-tab" type="button" data-dashboard-tab="preview" aria-selected="false">Live Preview</button>
+            </nav>
+            <section class="panel dashboard-page" data-dashboard-page="vendors" aria-labelledby="editor-title">
                 <form id="content-form" class="form-stack">
-                    <h2 id="editor-title">Content Editor</h2>
+                    <h2 id="editor-title">Vendor Content</h2>
                     <label>
                         Vendor
                         <select id="vendor-select" name="vendorId"></select>
@@ -229,7 +264,7 @@
                     <div id="status" class="status" role="status" aria-live="polite"></div>
                 </form>
             </section>
-            <section class="panel" aria-labelledby="trail-editor-title">
+            <section class="panel dashboard-page" data-dashboard-page="trails" aria-labelledby="trail-editor-title" hidden>
                 <form id="trail-form" class="form-stack">
                     <h2 id="trail-editor-title">Discovery Trail Editor</h2>
                     <label>
@@ -272,10 +307,10 @@
                     <div id="trail-status" class="status" role="status" aria-live="polite"></div>
                 </form>
             </section>
-            </div>
-            <section class="panel" aria-labelledby="current-title">
+            <section class="panel dashboard-page" data-dashboard-page="preview" aria-labelledby="current-title" hidden>
                 <div class="content-list">
-                    <h2 id="current-title">Current Live Content</h2>
+                    <h2 id="current-title">Live Preview</h2>
+                    <h2>Vendor Content</h2>
                     <div id="content-list"></div>
                     <h2>Discovery Trails</h2>
                     <div id="trail-list"></div>
