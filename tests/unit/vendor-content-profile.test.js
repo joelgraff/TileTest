@@ -7,6 +7,7 @@ import {
     createVendorFeaturedItemLines,
     createVendorFactLines
 } from '../../vendorContentProfile.js';
+import { normalizeVendorConversationTopics } from '../../vendorConversationTopics.js';
 
 describe('vendor content profile', () => {
     it('normalizes vendor display content from vendor and domain data', () => {
@@ -36,6 +37,12 @@ describe('vendor content profile', () => {
             announcements: [{ text: 'Ask about restoration notes.' }],
             descriptionOverride: 'Hands-on restoration bench.',
             featuredItems: [{ name: 'Kaypro II' }],
+            topics: [
+                { id: 'portable_demo', label: 'the portable demo', response: 'Ask about the portable demo.' },
+                { id: 'portable_demo', label: 'Duplicate portable demo', response: 'Duplicate entry.' },
+                { id: 'broken', label: '', response: 'Missing label.' },
+                null
+            ],
             clueText: 'Ask about CP/M disks.',
             moderationStatus: 'needs_review'
         });
@@ -54,6 +61,13 @@ describe('vendor content profile', () => {
         expect(profile.items.map(item => item.name)).toEqual(['Apple II']);
         expect(profile.facts).toEqual(['The Apple II launched in 1977.']);
         expect(profile.featuredItems).toEqual(['Static terminal demo', 'Kaypro II']);
+        expect(profile.topics).toEqual([
+            {
+                id: 'portable_demo',
+                label: 'the portable demo',
+                response: 'Ask about the portable demo.'
+            }
+        ]);
         expect(profile.announcements).toEqual(['Demo at 2 PM', 'Ask about restoration notes.']);
         expect(profile.responses.map(response => response.action)).toEqual(['show_items', 'end']);
         expect(profile.exitResponse).toEqual({ text: 'Goodbye', action: 'end' });
@@ -61,6 +75,24 @@ describe('vendor content profile', () => {
         expect(createVendorFeaturedItemLines(profile)).toEqual(['• Static terminal demo', '• Kaypro II']);
         expect(createVendorAnnouncementLines(profile)).toEqual(['• Demo at 2 PM', '• Ask about restoration notes.']);
         expect(createVendorClueLine(profile)).toBe('Ask about CP/M disks.');
+    });
+
+    it('normalizes vendor conversation topics and filters malformed entries', () => {
+        const topics = normalizeVendorConversationTopics([
+            { id: '  portable_demo  ', label: '  the portable demo  ', response: '  Ask about the portable demo.  ', completionMarker: '  done  ' },
+            { id: 'portable_demo', label: 'Duplicate portable demo', response: 'Duplicate entry.' },
+            { id: 'broken', label: '', response: 'Missing label.' },
+            null
+        ]);
+
+        expect(topics).toEqual([
+            {
+                id: 'portable_demo',
+                label: 'the portable demo',
+                response: 'Ask about the portable demo.',
+                completionMarker: 'done'
+            }
+        ]);
     });
 
     it('provides safe display fallbacks for incomplete vendor content', () => {
@@ -83,6 +115,7 @@ describe('vendor content profile', () => {
         expect(profile.announcements).toEqual([]);
         expect(profile.clueText).toBe('');
         expect(profile.moderationStatus).toBe('approved');
+        expect(profile.topics).toEqual([]);
         expect(profile.responses).toEqual([]);
         expect(profile.exitResponse).toBeNull();
     });

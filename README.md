@@ -2,16 +2,16 @@
 
 ## Product Direction
 
-The canonical scope, gameplay, and final-form architecture document is [Game Vision.md](Game%20Vision.md).
+The canonical scope, gameplay, and final-form architecture document is [Game Vision.md](docs/Game%20Vision.md).
 
 Use that document as the source of truth for what the game is trying to become.
 
 Older planning and brainstorming files remain in the repo as reference material, but they should no longer be treated as the authoritative product brief:
 
-- `vcf_quest_outline.md`
-- `Revised Implementation Plan.md`
-- `quest_template_discussion.txt`
-- `help.json`
+- [vcf_quest_outline.md](docs/vcf_quest_outline.md)
+- [Revised Implementation Plan.md](docs/Revised%20Implementation%20Plan.md)
+- [quest_template_discussion.txt](docs/quest_template_discussion.txt)
+- [help.json](help.json)
 
 ## Stability Work
 
@@ -19,8 +19,8 @@ This repo is currently under a stability-first recovery plan. No new feature wor
 
 See:
 
-- [Stability Roadmap.md](Stability%20Roadmap.md)
-- [Implementation Checklist.md](Implementation%20Checklist.md)
+- [Stability Roadmap.md](docs/Stability%20Roadmap.md)
+- [Implementation Checklist.md](docs/Implementation%20Checklist.md)
 
 ## Prerequisites
 

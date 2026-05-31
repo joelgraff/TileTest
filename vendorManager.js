@@ -14,7 +14,9 @@ import {
     createVendorMessageDialogData,
     createVendorResponseButtons,
     createVendorReturnButton,
-    createVendorRootDialogData
+    createVendorRootDialogData,
+    createVendorTopicButtons,
+    createVendorTopicResponseDialogData
 } from './vendorDialogModels.js';
 
 class VendorManager {
@@ -245,6 +247,16 @@ class VendorManager {
         });
     }
 
+    buildVendorTopicResponseDialogData(topic, originalDialogData) {
+        if (!topic) {
+            return this.buildVendorMessageDialogData('No topic response available at this time.', originalDialogData);
+        }
+
+        return createVendorTopicResponseDialogData(topic, {
+            returnButton: this.createReturnButton(originalDialogData)
+        });
+    }
+
     buildVendorContinueDialogData(message, onContinue) {
         return createVendorContinueDialogData(message, { onContinue });
     }
@@ -363,7 +375,22 @@ class VendorManager {
             return;
         }
 
+        if (response.action === 'ask_topic') {
+            this.showDialog?.(this.buildVendorTopicResponseDialogData(response.topic, originalDialogData));
+            return;
+        }
+
         this.showDialog?.(this.buildVendorMessageDialogData('', originalDialogData));
+    }
+
+    createVendorTopicButtons(vendorData, imageKey, originalDialogData, vendorContent = vendorData) {
+        return createVendorTopicButtons(vendorContent, {
+            imageKey,
+            originalDialogData,
+            handleVendorResponse: (response, _dialogVendorData, dialogImageKey, dialogData) => {
+                this.handleVendorResponse(response, vendorData, dialogImageKey, dialogData);
+            }
+        });
     }
 
     createVendorResponseButtons(vendorData, imageKey, originalDialogData, vendorContent = vendorData) {
@@ -392,7 +419,14 @@ class VendorManager {
             exitButton: this.createVendorExitButton(vendorContent)
         });
 
-        dialogData.buttons = this.createVendorResponseButtons(vendorData, imageKey, dialogData, vendorContent);
+        const topicButtons = typeof this.createVendorTopicButtons === 'function'
+            ? this.createVendorTopicButtons(vendorData, imageKey, dialogData, vendorContent)
+            : [];
+
+        dialogData.buttons = [
+            ...this.createVendorResponseButtons(vendorData, imageKey, dialogData, vendorContent),
+            ...topicButtons
+        ];
         return dialogData;
     }
 

@@ -17,6 +17,25 @@ describe('content validation', () => {
         }
     }
 
+    function expectTopicList(value, fieldName) {
+        expect(Array.isArray(value), `${fieldName} should be an array`).toBe(true);
+
+        for (const topic of value) {
+            expect(topic && typeof topic === 'object', `${fieldName} entries should be topic objects`).toBe(true);
+            expect(typeof topic.id, `${fieldName}.id should be a string`).toBe('string');
+            expect(topic.id.trim().length, `${fieldName}.id should not be blank`).toBeGreaterThan(0);
+            expect(typeof topic.label, `${fieldName}.label should be a string`).toBe('string');
+            expect(topic.label.trim().length, `${fieldName}.label should not be blank`).toBeGreaterThan(0);
+            expect(typeof topic.response, `${fieldName}.response should be a string`).toBe('string');
+            expect(topic.response.trim().length, `${fieldName}.response should not be blank`).toBeGreaterThan(0);
+
+            if (topic.completionMarker !== undefined) {
+                expect(typeof topic.completionMarker).toBe('string');
+                expect(topic.completionMarker.trim().length, `${fieldName}.completionMarker should not be blank`).toBeGreaterThan(0);
+            }
+        }
+    }
+
     it('defines technology domains with required fields', () => {
         expect(Array.isArray(domains)).toBe(true);
         expect(domains.length).toBeGreaterThan(0);
@@ -69,6 +88,10 @@ describe('content validation', () => {
                 expectTextList(vendor.announcements, `${vendor.id}.announcements`);
             }
 
+            if (vendor.topics !== undefined) {
+                expectTopicList(vendor.topics, `${vendor.id}.topics`);
+            }
+
             vendorIds.add(vendor.id);
         }
     });
@@ -85,6 +108,13 @@ describe('content validation', () => {
             expectTextList(vendor.featuredItems, `${vendor.id}.featuredItems`);
             expectTextList(vendor.announcements, `${vendor.id}.announcements`);
         }
+
+        expectTopicList(sampleVendors[0].topics, `${sampleVendors[0].id}.topics`);
+        expect(sampleVendors[0].topics).toContainEqual({
+            id: 'portable_demo',
+            label: 'the portable computer on the table',
+            response: 'That is our portable IBM PC demo. It is a favorite example of a compact system you can still carry around the show floor.'
+        });
     });
 
     it('defines authored discovery trails with valid vendor references', () => {

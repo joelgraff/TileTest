@@ -1,3 +1,5 @@
+import { normalizeVendorConversationTopics } from './vendorConversationTopics.js';
+
 function normalizeArray(value) {
     return Array.isArray(value) ? value : [];
 }
@@ -75,6 +77,7 @@ export function createVendorContentProfile(vendorData = {}, {
     announcements = [],
     descriptionOverride = '',
     featuredItems = [],
+    topics = null,
     clueText = '',
     moderationStatus = ''
 } = {}) {
@@ -96,6 +99,7 @@ export function createVendorContentProfile(vendorData = {}, {
             ...normalizeTextList(vendorData.featuredDemos),
             ...normalizeTextList(featuredItems)
         ],
+        topics: normalizeVendorConversationTopics(topics ?? vendorData.topics),
         announcements: [
             ...normalizeTextList(vendorData.announcements),
             ...normalizeTextList(announcements)

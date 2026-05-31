@@ -2,6 +2,10 @@ import {
     createVendorAnnouncementLines,
     createVendorFeaturedItemLines
 } from './vendorContentProfile.js';
+import {
+    createVendorTopicResponseDialogData,
+    normalizeVendorConversationTopics
+} from './vendorConversationTopics.js';
 
 function getVendorResponses(vendorData) {
     return Array.isArray(vendorData.responses)
@@ -110,6 +114,19 @@ export function createVendorResponseButtons(vendorData, { imageKey, originalDial
         }));
 }
 
+export function createVendorTopicButtons(vendorData, { imageKey, originalDialogData, handleVendorResponse }) {
+    return normalizeVendorConversationTopics(vendorData.topics)
+        .map(topic => ({
+            label: `Ask about ${topic.label}`,
+            onClick: () => handleVendorResponse({
+                action: 'ask_topic',
+                text: `Ask about ${topic.label}`,
+                topicId: topic.id,
+                topic
+            }, vendorData, imageKey, originalDialogData)
+        }));
+}
+
 export function createVendorExitButton(vendorData, { closeDialog }) {
     const exitResponse = vendorData.exitResponse ?? getVendorResponses(vendorData).find(response => response.action === 'end');
 
@@ -132,3 +149,5 @@ export function createVendorRootDialogData(vendorData, { imageKey, buttons, exit
         exitButton
     };
 }
+
+export { createVendorTopicResponseDialogData };

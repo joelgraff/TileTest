@@ -12,6 +12,13 @@
     "announcements": [
       "Ask what unusual portable is on the table today."
     ],
+    "topics": [
+      {
+        "id": "portable_demo",
+        "label": "the portable computer on the table",
+        "response": "That is our portable IBM PC demo. It is a favorite example of a compact system you can still carry around the show floor."
+      }
+    ],
     "clueText": "Look for the booth with assorted PCs, phones, and repairable electronics.",
     "x": 0,
     "y": 0,

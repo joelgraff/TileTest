@@ -27,6 +27,7 @@ describe('VendorManager dialog models', () => {
             closeDialog,
             createVendorExitButton: VendorManager.prototype.createVendorExitButton,
             createVendorResponseButtons: VendorManager.prototype.createVendorResponseButtons,
+            createVendorTopicButtons: VendorManager.prototype.createVendorTopicButtons,
             handleVendorResponse: vi.fn(),
             buildVendorRootDialogData: VendorManager.prototype.buildVendorRootDialogData
         };
@@ -34,6 +35,13 @@ describe('VendorManager dialog models', () => {
             name: 'Vendor One',
             description: 'Vintage systems and demos.',
             featuredItems: ['Portable demo'],
+            topics: [
+                {
+                    id: 'portable_demo',
+                    label: 'the portable demo',
+                    response: 'That is our portable IBM PC demo.'
+                }
+            ],
             dialog: {
                 responses: [
                     { text: 'Show me your inventory', action: 'show_items' },
@@ -51,12 +59,31 @@ describe('VendorManager dialog models', () => {
             title: 'Vendor One',
             text: 'Vintage systems and demos.\n\nFeatured:\n• Portable demo'
         });
-        expect(dialogData.buttons.map(button => button.label)).toEqual(['Show me your inventory']);
+        expect(dialogData.buttons.map(button => button.label)).toEqual([
+            'Show me your inventory',
+            'Ask about the portable demo'
+        ]);
 
         dialogData.buttons[0].onClick();
+        dialogData.buttons[1].onClick();
 
         expect(context.handleVendorResponse).toHaveBeenCalledWith(
             vendorData.dialog.responses[0],
+            vendorData,
+            'npc1',
+            dialogData
+        );
+        expect(context.handleVendorResponse).toHaveBeenCalledWith(
+            expect.objectContaining({
+                action: 'ask_topic',
+                text: 'Ask about the portable demo',
+                topicId: 'portable_demo',
+                topic: {
+                    id: 'portable_demo',
+                    label: 'the portable demo',
+                    response: 'That is our portable IBM PC demo.'
+                }
+            }),
             vendorData,
             'npc1',
             dialogData
@@ -252,5 +279,41 @@ describe('VendorManager dialog models', () => {
         });
 
         expect(feedback).toBe('Vendor Two is locked. Complete Vendor One first.');
+    });
+
+    it('routes ask_topic responses to a topic response dialog', () => {
+        const showDialog = vi.fn();
+        const originalDialogData = { title: 'Vendor Root' };
+        const context = {
+            showDialog,
+            createReturnButton: VendorManager.prototype.createReturnButton,
+            buildVendorMessageDialogData: VendorManager.prototype.buildVendorMessageDialogData,
+            buildVendorTopicResponseDialogData: VendorManager.prototype.buildVendorTopicResponseDialogData
+        };
+        const vendorData = {
+            name: 'Vendor One'
+        };
+
+        VendorManager.prototype.handleVendorResponse.call(context, {
+            action: 'ask_topic',
+            topic: {
+                id: 'portable_demo',
+                label: 'the portable demo',
+                response: 'That is our portable IBM PC demo.'
+            }
+        }, vendorData, 'npc1', originalDialogData);
+
+        expect(showDialog).toHaveBeenCalledWith({
+            renderMode: 'dom',
+            text: 'That is our portable IBM PC demo.',
+            buttons: [{
+                label: 'Back',
+                onClick: expect.any(Function)
+            }]
+        });
+
+        showDialog.mock.calls[0][0].buttons[0].onClick();
+
+        expect(showDialog).toHaveBeenLastCalledWith(originalDialogData);
     });
 });

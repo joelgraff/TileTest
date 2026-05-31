@@ -9,6 +9,8 @@ import {
     createVendorMessageDialogData,
     createVendorResponseButtons,
     createVendorReturnButton,
+    createVendorTopicButtons,
+    createVendorTopicResponseDialogData,
     createVendorRootDialogData
 } from '../../vendorDialogModels.js';
 
@@ -120,5 +122,55 @@ describe('vendor dialog model helpers', () => {
             originalDialogData
         );
         expect(closeDialog).toHaveBeenCalledTimes(1);
+    });
+
+    it('builds ask-about topic buttons and topic response dialogs from normalized topic input', () => {
+        const showDialog = vi.fn();
+        const handleVendorResponse = vi.fn();
+        const originalDialogData = { title: 'Root' };
+        const returnButton = createVendorReturnButton(originalDialogData, { showDialog });
+        const vendorData = {
+            topics: [
+                { id: ' portable_demo ', label: ' the portable demo ', response: ' Ask about the portable demo. ' },
+                { id: '', label: 'Broken', response: 'Missing id.' }
+            ]
+        };
+
+        const topicButtons = createVendorTopicButtons(vendorData, {
+            imageKey: 'npc1',
+            originalDialogData,
+            handleVendorResponse
+        });
+        const topicDialog = createVendorTopicResponseDialogData({
+            response: 'That is our portable IBM PC demo.'
+        }, {
+            returnButton
+        });
+
+        expect(topicButtons).toHaveLength(1);
+        expect(topicButtons.map(button => button.label)).toEqual(['Ask about the portable demo']);
+        expect(topicDialog).toEqual({
+            renderMode: 'dom',
+            text: 'That is our portable IBM PC demo.',
+            buttons: [returnButton]
+        });
+
+        topicButtons[0].onClick();
+
+        expect(handleVendorResponse).toHaveBeenCalledWith(
+            {
+                action: 'ask_topic',
+                text: 'Ask about the portable demo',
+                topicId: 'portable_demo',
+                topic: {
+                    id: 'portable_demo',
+                    label: 'the portable demo',
+                    response: 'Ask about the portable demo.'
+                }
+            },
+            vendorData,
+            'npc1',
+            originalDialogData
+        );
     });
 });
