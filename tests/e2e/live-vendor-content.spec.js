@@ -9,8 +9,7 @@ const repoRoot = path.resolve(currentDir, '../..');
 const liveContent = {
     descriptionOverride: 'Live smoke description override from the dashboard.',
     featuredItem: 'Live smoke featured disk imaging kit',
-    announcement: 'Live smoke announcement: dashboard content reached the game.',
-    clueText: 'Live smoke clue: ask about the hidden diagnostic disk.'
+    announcement: 'Live smoke announcement: dashboard content reached the game.'
 };
 const liveTrail = {
     id: 'live-dashboard-starter-trail',
@@ -169,14 +168,18 @@ async function saveLiveContentThroughDashboard(page, baseUrl, targetVendor) {
     ), targetVendor.id);
 
     await page.selectOption('#vendor-select', targetVendor.id);
+    await expect(page.locator('#description-input')).toHaveValue(targetVendor.description ?? '');
+    await expect(page.locator('#featured-input')).toHaveValue((targetVendor.featuredItems ?? []).join('\n'));
+    await expect(page.locator('#announcement-input')).toHaveValue((targetVendor.announcements ?? []).join('\n'));
+    await expect(page.locator('#clue-input')).toHaveCount(0);
+
     await page.fill('#description-input', liveContent.descriptionOverride);
     await page.fill('#featured-input', liveContent.featuredItem);
     await page.fill('#announcement-input', liveContent.announcement);
-    await page.fill('#clue-input', liveContent.clueText);
     await page.click('button[type="submit"]');
 
     await expect(page.locator('#status')).toContainText('Saved.');
-    await expect(page.locator('#content-list')).toContainText(`Clue: ${liveContent.clueText}`);
+    await expect(page.locator('#content-list')).toContainText(`Today at the Booth: ${liveContent.announcement}`);
 
     const savedContent = await fetchJson(`${baseUrl}/api/vendor-content`);
     const savedVendorContent = savedContent.vendors.find(entry => entry.vendorId === targetVendor.id);
@@ -186,7 +189,7 @@ async function saveLiveContentThroughDashboard(page, baseUrl, targetVendor) {
         descriptionOverride: liveContent.descriptionOverride,
         featuredItems: [liveContent.featuredItem],
         announcements: [liveContent.announcement],
-        clueText: liveContent.clueText
+        clueText: ''
     });
 }
 
@@ -228,7 +231,7 @@ async function saveLiveTrailThroughDashboard(page, baseUrl, targetVendors) {
     expect(savedTrail.stops.map(stop => stop.vendorId)).toEqual(targetVendors.map(vendor => vendor.id));
 }
 
-test('dashboard-authored live vendor content appears in the game vendor dialog and discovery clue', async ({ page }) => {
+test('dashboard-authored live vendor content appears in the game vendor dialog', async ({ page }) => {
     const liveServer = await startLiveServer();
 
     try {
@@ -241,7 +244,7 @@ test('dashboard-authored live vendor content appears in the game vendor dialog a
         const { consoleErrors, pageErrors } = await gotoLiveGame(page, liveServer.baseUrl);
 
         await page.waitForFunction(
-            ({ vendorId, descriptionOverride, featuredItem, announcement, clueText }) => {
+            ({ vendorId, descriptionOverride, featuredItem, announcement }) => {
                 const service = window.__tileTest?.scene?.liveVendorContentService;
                 const content = service?.getContentForVendor?.(vendorId);
 
@@ -251,7 +254,7 @@ test('dashboard-authored live vendor content appears in the game vendor dialog a
                     && content?.descriptionOverride === descriptionOverride
                     && content?.featuredItems?.includes(featuredItem)
                     && content?.announcements?.includes(announcement)
-                    && content?.clueText === clueText
+                    && content?.clueText === ''
                 );
             },
             {
@@ -291,20 +294,18 @@ test('dashboard-authored live vendor content appears in the game vendor dialog a
         });
         expect(state.profile.featuredItems).toContain(liveContent.featuredItem);
         expect(state.profile.announcements).toContain(liveContent.announcement);
-        expect(state.profile.clueText).toBe(liveContent.clueText);
         expect(state.discovery.objectives[0]).toMatchObject({
             vendorId: targetVendor.id,
-            clue: liveContent.clueText,
             visited: true
         });
         expect(state.dialog.text).toContain(liveContent.descriptionOverride);
         expect(state.dialog.text).toContain(liveContent.featuredItem);
         expect(state.dialog.text).toContain(liveContent.announcement);
-        expect(state.dialog.text).toContain(liveContent.clueText);
+        expect(state.dialog.text).not.toContain('Clue:');
         await expect(dialogSurface).toContainText(liveContent.descriptionOverride);
         await expect(dialogSurface).toContainText(liveContent.featuredItem);
         await expect(dialogSurface).toContainText(liveContent.announcement);
-        await expect(dialogSurface).toContainText(liveContent.clueText);
+        await expect(dialogSurface).not.toContainText('Clue:');
         expect(pageErrors, `Page errors: ${pageErrors.join('\n')}`).toEqual([]);
         expect(consoleErrors, `Console errors: ${consoleErrors.join('\n')}`).toEqual([]);
     } finally {

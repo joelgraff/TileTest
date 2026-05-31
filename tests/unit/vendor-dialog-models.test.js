@@ -34,7 +34,6 @@ describe('VendorManager dialog models', () => {
             name: 'Vendor One',
             description: 'Vintage systems and demos.',
             featuredItems: ['Portable demo'],
-            clueText: 'Ask about serial cables.',
             dialog: {
                 responses: [
                     { text: 'Show me your inventory', action: 'show_items' },
@@ -50,7 +49,7 @@ describe('VendorManager dialog models', () => {
             renderMode: 'dom',
             imageKey: 'npc1',
             title: 'Vendor One',
-            text: 'Vintage systems and demos.\n\nFeatured:\n• Portable demo\n\nClue: Ask about serial cables.'
+            text: 'Vintage systems and demos.\n\nFeatured:\n• Portable demo'
         });
         expect(dialogData.buttons.map(button => button.label)).toEqual(['Show me your inventory']);
 
@@ -73,8 +72,7 @@ describe('VendorManager dialog models', () => {
             getContentForVendor: vi.fn(() => ({
                 descriptionOverride: 'Live restoration bench.',
                 featuredItems: ['Disk imaging demo'],
-                announcements: ['Repair clinic starts at 3 PM'],
-                clueText: 'Ask for the live passport clue.'
+                announcements: ['Repair clinic starts at 3 PM']
             }))
         };
         const context = {
@@ -102,7 +100,7 @@ describe('VendorManager dialog models', () => {
             'Static demo at noon',
             'Repair clinic starts at 3 PM'
         ]);
-        expect(profile.clueText).toBe('Ask for the live passport clue.');
+        expect(profile.clueText).toBe('');
     });
 
     it('builds an item fallback dialog when a vendor has no domain items', () => {

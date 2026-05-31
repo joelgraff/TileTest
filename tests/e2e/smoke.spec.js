@@ -148,7 +148,8 @@ test('space opens a nearby vendor dialog without starting movement', async ({ pa
 
     await expect(domDialogSurface).toBeVisible();
     await expect(domDialogSurface).toContainText(state.dialog.text);
-    await expect(domDialogSurface).toContainText('Booth Notes:');
+    await expect(domDialogSurface).toContainText('Today at the Booth:');
+    await expect(domDialogSurface).not.toContainText('Booth Notes:');
     await expect(domDialogSurface).not.toContainText('Announcements:');
     await expect(domDialogSurface.locator('.dom-dialog-image')).toHaveCount(1);
     expect(state.flags.isDialogOpen).toBe(true);

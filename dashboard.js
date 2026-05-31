@@ -5,7 +5,6 @@ const vendorSelect = document.querySelector('#vendor-select');
 const descriptionInput = document.querySelector('#description-input');
 const featuredInput = document.querySelector('#featured-input');
 const announcementInput = document.querySelector('#announcement-input');
-const clueInput = document.querySelector('#clue-input');
 const contentForm = document.querySelector('#content-form');
 const clearButton = document.querySelector('#clear-button');
 const statusElement = document.querySelector('#status');
@@ -81,11 +80,11 @@ function normalizeTextList(value) {
         : [];
 }
 
-function createDefaultContent() {
+function createDefaultContent(vendor = {}) {
     return {
-        descriptionOverride: '',
-        featuredItems: [],
-        announcements: [],
+        descriptionOverride: typeof vendor.description === 'string' ? vendor.description : '',
+        featuredItems: normalizeTextList(vendor.featuredItems),
+        announcements: normalizeTextList(vendor.announcements),
         clueText: '',
         moderationStatus: 'approved'
     };
@@ -99,7 +98,10 @@ function normalizeVendorEntry(entry) {
     return {
         id: String(entry.id),
         name: typeof entry.name === 'string' && entry.name.trim().length > 0 ? entry.name.trim() : `Vendor ${entry.id}`,
-        booth: typeof entry.booth === 'string' ? entry.booth.trim() : ''
+        booth: typeof entry.booth === 'string' ? entry.booth.trim() : '',
+        description: typeof entry.description === 'string' ? entry.description : '',
+        featuredItems: normalizeTextList(entry.featuredItems),
+        announcements: normalizeTextList(entry.announcements)
     };
 }
 
@@ -209,7 +211,7 @@ function applyTrailSnapshot(snapshot) {
 }
 
 function setVendorFormDisabled(isDisabled) {
-    for (const element of [descriptionInput, featuredInput, announcementInput, clueInput, clearButton, contentForm?.querySelector('button[type="submit"]')]) {
+    for (const element of [descriptionInput, featuredInput, announcementInput, clearButton, contentForm?.querySelector('button[type="submit"]')]) {
         if (element) {
             element.disabled = isDisabled;
         }
@@ -261,7 +263,10 @@ function renderTrailOptions() {
 }
 
 function getSelectedContent() {
-    return state.contentByVendorId.get(getSelectedVendorId()) ?? createDefaultContent();
+    const vendorId = getSelectedVendorId();
+    const selectedVendor = state.vendors.find(vendor => vendor.id === vendorId) ?? {};
+
+    return state.contentByVendorId.get(vendorId) ?? createDefaultContent(selectedVendor);
 }
 
 function getSelectedTrail() {
@@ -269,7 +274,7 @@ function getSelectedTrail() {
 }
 
 function renderSelectedContent() {
-    if (!descriptionInput || !featuredInput || !announcementInput || !clueInput) {
+    if (!descriptionInput || !featuredInput || !announcementInput) {
         return;
     }
 
@@ -277,7 +282,6 @@ function renderSelectedContent() {
     descriptionInput.value = selectedContent.descriptionOverride;
     featuredInput.value = selectedContent.featuredItems.join('\n');
     announcementInput.value = selectedContent.announcements.join('\n');
-    clueInput.value = selectedContent.clueText;
 }
 
 function createStopLine(stop) {
@@ -318,8 +322,7 @@ function hasPreviewContent(content) {
     return Boolean(
         content.descriptionOverride ||
         content.featuredItems.length > 0 ||
-        content.announcements.length > 0 ||
-        content.clueText
+        content.announcements.length > 0
     );
 }
 
@@ -335,11 +338,7 @@ function getPreviewLines(content) {
     }
 
     if (content.announcements.length > 0) {
-        lines.push(`Booth Notes: ${content.announcements.join(' / ')}`);
-    }
-
-    if (content.clueText) {
-        lines.push(`Clue: ${content.clueText}`);
+        lines.push(`Today at the Booth: ${content.announcements.join(' / ')}`);
     }
 
     return lines;
@@ -569,7 +568,6 @@ clearButton?.addEventListener('click', () => {
     descriptionInput.value = '';
     featuredInput.value = '';
     announcementInput.value = '';
-    clueInput.value = '';
     descriptionInput.focus();
 });
 
@@ -605,8 +603,7 @@ contentForm?.addEventListener('submit', async (event) => {
                 vendorId: getSelectedVendorId(),
                 descriptionOverride: descriptionInput.value.trim(),
                 featuredItems: splitTextInput(featuredInput),
-                announcements: splitTextInput(announcementInput),
-                clueText: clueInput.value.trim()
+                announcements: splitTextInput(announcementInput)
             })
         });
 

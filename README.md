@@ -67,7 +67,7 @@ The hosted server is optional for development and demonstration; use it only whe
 Manual live dashboard check:
 
 1. Start `npm run serve:live` and open `http://localhost:5000/vendor`.
-2. Pick a vendor, edit the booth description, featured items, Booth Notes, or clue text, then save.
+2. Pick a vendor, edit the booth description, featured items, or Today at the Booth notes, then save.
 3. Open `http://localhost:5000/?test=1`, walk to that vendor, reopen the dialog, and confirm the saved content is shown.
 4. Open `http://localhost:5000/admin`, click `New Trail`, add a title and at least two stop lines using `vendor id | clue text | goal text`, then save.
 5. Open a fresh `http://localhost:5000/?test=1` game session and confirm the quest/passport uses the saved trail.

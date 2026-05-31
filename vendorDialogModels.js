@@ -1,6 +1,5 @@
 import {
     createVendorAnnouncementLines,
-    createVendorClueLine,
     createVendorFeaturedItemLines
 } from './vendorContentProfile.js';
 
@@ -28,18 +27,13 @@ export function createVendorMessageDialogData(text, { returnButton }) {
 function appendVendorAuthoredLines(textLines, vendorData) {
     const featuredItems = createVendorFeaturedItemLines(vendorData);
     const announcements = createVendorAnnouncementLines(vendorData);
-    const clueText = createVendorClueLine(vendorData);
 
     if (featuredItems.length > 0) {
         textLines.push('', 'Featured:', ...featuredItems);
     }
 
     if (announcements.length > 0) {
-        textLines.push('', 'Booth Notes:', ...announcements);
-    }
-
-    if (clueText) {
-        textLines.push('', `Clue: ${clueText}`);
+        textLines.push('', 'Today at the Booth:', ...announcements);
     }
 }
 
