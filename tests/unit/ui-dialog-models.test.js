@@ -95,9 +95,45 @@ describe('ui dialog models', () => {
         expect(dialog.text).toContain('   ✓ Vendor One (A1): Find the repair bench. Goal: Ask what needs fixing.');
         expect(dialog.text).toContain('   - Vendor Two (B2): Ask about the portable demo.');
         expect(dialog.text).toContain('=== FESTIVAL LOG ===');
+        expect(dialog.text).toContain('Next encounters:');
+        expect(dialog.text).toContain('- Discovery Passport: Vendor Two (B2): Ask about the portable demo.');
         expect(dialog.text).toContain('Stamps in progress:');
         expect(dialog.text).toContain('- Discovery Passport');
         expect(dialog.text).not.toContain('   Progress: 1/2 items collected');
+    });
+
+    it('renders the next encounter before an ordered trail has stamps', () => {
+        const dialog = createQuestDialogData({
+            activeQuests: [{
+                type: 'discovery',
+                title: 'Ordered Trail',
+                description: 'Visit each booth in sequence.',
+                ordered: true,
+                objectives: [
+                    {
+                        vendorName: 'Vendor One',
+                        booth: 'A1',
+                        clue: 'Find the first booth.',
+                        goal: 'Ask about stop one.',
+                        visited: false
+                    },
+                    {
+                        vendorName: 'Vendor Two',
+                        booth: 'A2',
+                        clue: 'Find the second booth.',
+                        goal: 'Ask about stop two.',
+                        visited: false
+                    }
+                ]
+            }],
+            completedQuests: [],
+            onClose: vi.fn()
+        });
+
+        expect(dialog.text).toContain('=== FESTIVAL LOG ===');
+        expect(dialog.text).toContain('Passport stamps: 0');
+        expect(dialog.text).toContain('Next encounters:');
+        expect(dialog.text).toContain('- Ordered Trail: Vendor One (A1): Find the first booth. Goal: Ask about stop one.');
     });
 
     it('renders festival log payoff for completed discovery trails', () => {

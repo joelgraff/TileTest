@@ -196,4 +196,14 @@ describe('VendorManager dialog models', () => {
         expect(showDialog).toHaveBeenCalledTimes(1);
         expect(showDialog.mock.calls[0][0].text).not.toContain('Passport stamp earned');
     });
+
+    it('surfaces ordered encounter lock feedback through the vendor dialog path', () => {
+        const feedback = VendorManager.prototype.buildVendorDiscoveryFeedbackText({
+            updated: false,
+            blocked: true,
+            message: 'Vendor Two is locked. Complete Vendor One first.'
+        });
+
+        expect(feedback).toBe('Vendor Two is locked. Complete Vendor One first.');
+    });
 });

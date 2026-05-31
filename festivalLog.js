@@ -1,3 +1,5 @@
+import { createEncounterChain } from './encounterChain.js';
+
 function normalizeText(value, fallback = '') {
     return typeof value === 'string' && value.trim().length > 0 ? value : fallback;
 }
@@ -31,6 +33,7 @@ function createStampFromObjective(quest, objective, index) {
 
 function createDiscoveryTrailEntry(quest) {
     const objectives = getQuestObjectives(quest);
+    const encounterChain = createEncounterChain(quest);
     const stamps = objectives
         .map((objective, index) => createStampFromObjective(quest, objective, index))
         .filter(stamp => stamp.visited || quest.completed === true);
@@ -51,6 +54,10 @@ function createDiscoveryTrailEntry(quest) {
         completedAt: quest.completedAt ?? null,
         visitedCount: objectives.filter(objective => objective.visited).length,
         totalCount: objectives.length,
+        encounters: encounterChain.encounters,
+        availableEncounters: encounterChain.availableEncounters,
+        lockedEncounters: encounterChain.lockedEncounters,
+        nextEncounter: encounterChain.nextEncounter,
         stamps
     };
 }
@@ -83,6 +90,10 @@ export function createFestivalLog({
         trailTitle: trail.title,
         trailStatus: trail.status
     })));
+    const availableEncounterCount = discoveryTrails.reduce(
+        (sum, trail) => sum + trail.availableEncounters.length,
+        0
+    );
     const collectedItems = safeInventory.map(createCollectedItemEntry);
     const rewardPoints = safeCompletedQuests.reduce(
         (sum, quest) => sum + normalizeNumber(quest?.reward?.points),
@@ -96,6 +107,7 @@ export function createFestivalLog({
         completedTrailCount: completedDiscoveryTrails.length,
         activeTrailCount: activeDiscoveryTrails.length,
         stampCount: stamps.length,
+        availableEncounterCount,
         collectedItemCount: collectedItems.length,
         rewardPoints,
         discoveryTrails,
@@ -109,6 +121,7 @@ export function createFestivalLog({
 export function hasFestivalLogActivity(festivalLog) {
     return Boolean(
         festivalLog?.stampCount
+        || festivalLog?.availableEncounterCount
         || festivalLog?.completedTrailCount
         || festivalLog?.completedQuestCount
         || festivalLog?.collectedItemCount

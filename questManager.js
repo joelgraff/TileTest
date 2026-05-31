@@ -5,6 +5,7 @@
  */
 
 import DomainManager from './domainManager.js';
+import { createEncounterChain, getEncounterForVendor } from './encounterChain.js';
 
 class QuestManager {
     constructor({ state = null, testMode = false, discoveryTrails = [] } = {}) {
@@ -475,6 +476,8 @@ class QuestManager {
     createEmptyVendorDiscoveryResult(vendorId = '') {
         return {
             updated: false,
+            blocked: false,
+            reason: '',
             questCompleted: false,
             questId: null,
             questTitle: null,
@@ -484,17 +487,54 @@ class QuestManager {
             clue: '',
             visitedCount: 0,
             totalCount: 0,
+            nextVendorId: '',
+            nextVendorName: '',
+            nextBooth: '',
             message: ''
         };
     }
 
-    createVendorDiscoveryResult({ quest, objective, vendorId, visitedCount, totalCount, questCompleted }) {
+    createEncounterVendorLabel(encounter, fallbackName = 'this booth') {
+        const vendorName = this.normalizeText(encounter?.vendorName, fallbackName);
+        const booth = this.normalizeText(encounter?.booth);
+
+        return booth ? `${vendorName} (${booth})` : vendorName;
+    }
+
+    createBlockedVendorDiscoveryResult({ quest, encounter, nextEncounter, vendorId }) {
+        const result = this.createEmptyVendorDiscoveryResult(vendorId);
+        const chain = createEncounterChain(quest);
+
+        return {
+            ...result,
+            blocked: true,
+            reason: 'encounter-locked',
+            questId: quest.id,
+            questTitle: quest.title,
+            vendorName: this.normalizeText(encounter?.vendorName),
+            booth: this.normalizeText(encounter?.booth),
+            clue: this.normalizeText(encounter?.clue),
+            visitedCount: chain.visitedCount,
+            totalCount: chain.totalCount,
+            nextVendorId: this.normalizeText(nextEncounter?.vendorId),
+            nextVendorName: this.normalizeText(nextEncounter?.vendorName),
+            nextBooth: this.normalizeText(nextEncounter?.booth),
+            message: `${this.createEncounterVendorLabel(encounter)} is locked for ${quest.title}. Complete ${this.createEncounterVendorLabel(nextEncounter, 'the next encounter')} first.`
+        };
+    }
+
+    createVendorDiscoveryResult({ quest, objective, vendorId, visitedCount, totalCount, questCompleted, nextEncounter = null }) {
         const vendorName = this.normalizeText(objective?.vendorName, 'Unknown Vendor');
         const booth = this.normalizeText(objective?.booth);
         const boothLabel = booth ? ` (${booth})` : '';
+        const nextEncounterText = !questCompleted && nextEncounter
+            ? `\nNext encounter: ${this.createEncounterVendorLabel(nextEncounter)}.`
+            : '';
 
         return {
             updated: true,
+            blocked: false,
+            reason: '',
             questCompleted,
             questId: quest.id,
             questTitle: quest.title,
@@ -504,7 +544,10 @@ class QuestManager {
             clue: this.normalizeText(objective?.clue),
             visitedCount,
             totalCount,
-            message: `Passport stamp earned: ${vendorName}${boothLabel}\n${quest.title} progress: ${visitedCount}/${totalCount} vendors visited.`
+            nextVendorId: this.normalizeText(nextEncounter?.vendorId),
+            nextVendorName: this.normalizeText(nextEncounter?.vendorName),
+            nextBooth: this.normalizeText(nextEncounter?.booth),
+            message: `Passport stamp earned: ${vendorName}${boothLabel}\n${quest.title} progress: ${visitedCount}/${totalCount} vendors visited.${nextEncounterText}`
         };
     }
 
@@ -519,6 +562,27 @@ class QuestManager {
 
         this.activeQuests.forEach(quest => {
             if (quest.type !== 'discovery') {
+                return;
+            }
+
+            const encounter = getEncounterForVendor(quest, resolvedVendorId);
+            if (!encounter) {
+                return;
+            }
+
+            if (encounter.locked) {
+                if (!questUpdated) {
+                    discoveryResult = this.createBlockedVendorDiscoveryResult({
+                        quest,
+                        encounter,
+                        nextEncounter: createEncounterChain(quest).nextEncounter,
+                        vendorId: resolvedVendorId
+                    });
+                }
+                return;
+            }
+
+            if (!encounter.available) {
                 return;
             }
 
@@ -540,13 +604,15 @@ class QuestManager {
                 questUpdated = true;
 
                 const allObjectivesComplete = quest.objectives.every(obj => obj.visited);
+                const nextEncounter = allObjectivesComplete ? null : createEncounterChain(quest).nextEncounter;
                 discoveryResult = this.createVendorDiscoveryResult({
                     quest,
                     objective,
                     vendorId: resolvedVendorId,
                     visitedCount: quest.objectives.filter(obj => obj.visited).length,
                     totalCount: quest.objectives.length,
-                    questCompleted: allObjectivesComplete
+                    questCompleted: allObjectivesComplete,
+                    nextEncounter
                 });
 
                 if (allObjectivesComplete) {

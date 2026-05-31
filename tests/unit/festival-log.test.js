@@ -117,12 +117,55 @@ describe('festival log model', () => {
         expect(log.activeTrailCount).toBe(1);
         expect(log.completedTrailCount).toBe(0);
         expect(log.stampCount).toBe(1);
+        expect(log.availableEncounterCount).toBe(1);
+        expect(log.activeDiscoveryTrails[0].nextEncounter).toMatchObject({
+            vendorId: 'vendor-2',
+            status: 'available'
+        });
         expect(log.stamps).toEqual([
             expect.objectContaining({
                 vendorId: 'vendor-1',
                 visited: true,
                 trailStatus: 'active'
             })
+        ]);
+    });
+
+    it('logs the next ordered encounter before any stamps are earned', () => {
+        const log = createFestivalLog({
+            activeQuests: [{
+                id: 'ordered-quest',
+                type: 'discovery',
+                title: 'Ordered Trail',
+                ordered: true,
+                completed: false,
+                objectives: [
+                    {
+                        vendorId: 'vendor-1',
+                        vendorName: 'Vendor One',
+                        clue: 'First clue.',
+                        visited: false
+                    },
+                    {
+                        vendorId: 'vendor-2',
+                        vendorName: 'Vendor Two',
+                        clue: 'Second clue.',
+                        visited: false
+                    }
+                ],
+                reward: { points: 30 }
+            }]
+        });
+
+        expect(hasFestivalLogActivity(log)).toBe(true);
+        expect(log.stampCount).toBe(0);
+        expect(log.availableEncounterCount).toBe(1);
+        expect(log.activeDiscoveryTrails[0].nextEncounter).toMatchObject({
+            vendorId: 'vendor-1',
+            status: 'available'
+        });
+        expect(log.activeDiscoveryTrails[0].lockedEncounters).toEqual([
+            expect.objectContaining({ vendorId: 'vendor-2', status: 'locked' })
         ]);
     });
 

@@ -59,8 +59,10 @@ test('discovery passport advances and completes by talking to required vendors',
 
     expect(firstVisitDialog.text).toContain('Passport stamp earned:');
     expect(firstVisitDialog.text).toContain('Discovery Passport progress: 1/2 vendors visited.');
+    expect(firstVisitDialog.text).toContain(`Next encounter: ${firstVisit.objectives[1].vendorName}`);
     await expect(dialogSurface).toContainText('Passport stamp earned:');
     await expect(dialogSurface).toContainText('Discovery Passport progress: 1/2 vendors visited.');
+    await expect(dialogSurface).toContainText(`Next encounter: ${firstVisit.objectives[1].vendorName}`);
 
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !window.__tileTest.testApi.getFlags().isDialogOpen);
@@ -82,6 +84,7 @@ test('discovery passport advances and completes by talking to required vendors',
     const questDialog = await page.evaluate(() => window.__tileTest.testApi.openQuestDialog());
 
     expect(questDialog.textItems).toContain('   Progress: 1/2 vendors visited');
+    expect(questDialog.textItems).toContain(`- Discovery Passport: ${firstVisit.objectives[1].vendorName} (${firstVisit.objectives[1].booth}): ${firstVisit.objectives[1].clue}`);
     expect(questDialog.textItems.some(item => item.includes('items collected'))).toBe(false);
     await expect(dialogSurface).toContainText('Progress: 1/2 vendors visited');
 

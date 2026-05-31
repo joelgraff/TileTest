@@ -379,4 +379,117 @@ describe('QuestManager completion flow', () => {
         }));
         expect(saveSessionState).toHaveBeenCalled();
     });
+
+    it('blocks later ordered discovery encounters until the next stop is complete', () => {
+        const manager = new QuestManager();
+        const saveSessionState = vi.spyOn(manager, 'saveSessionState').mockImplementation(() => {});
+
+        manager.activeQuests = [{
+            id: 'ordered-discovery',
+            type: 'discovery',
+            title: 'Ordered Discovery Trail',
+            ordered: true,
+            objectives: [
+                {
+                    vendorId: 'vendor-1',
+                    vendorName: 'Vendor One',
+                    booth: 'A1',
+                    clue: 'First clue',
+                    visited: false,
+                    visitedAt: null
+                },
+                {
+                    vendorId: 'vendor-2',
+                    vendorName: 'Vendor Two',
+                    booth: 'A2',
+                    clue: 'Second clue',
+                    visited: false,
+                    visitedAt: null
+                }
+            ],
+            reward: {
+                points: 30,
+                description: '30 points'
+            }
+        }];
+
+        const blockedResult = manager.checkVendorDiscoveryResult('vendor-2', { id: 'vendor-2' });
+
+        expect(blockedResult).toMatchObject({
+            updated: false,
+            blocked: true,
+            reason: 'encounter-locked',
+            questId: 'ordered-discovery',
+            nextVendorId: 'vendor-1',
+            nextVendorName: 'Vendor One'
+        });
+        expect(blockedResult.message).toContain('Vendor Two (A2) is locked for Ordered Discovery Trail.');
+        expect(manager.activeQuests[0].objectives[1].visited).toBe(false);
+        expect(saveSessionState).not.toHaveBeenCalled();
+
+        const firstResult = manager.checkVendorDiscoveryResult('vendor-1', { id: 'vendor-1' });
+
+        expect(firstResult).toMatchObject({
+            updated: true,
+            blocked: false,
+            nextVendorId: 'vendor-2',
+            nextVendorName: 'Vendor Two'
+        });
+        expect(firstResult.message).toContain('Next encounter: Vendor Two (A2).');
+        expect(manager.activeQuests[0].objectives[0].visited).toBe(true);
+
+        const secondResult = manager.checkVendorDiscoveryResult('vendor-2', { id: 'vendor-2' });
+
+        expect(secondResult).toMatchObject({
+            updated: true,
+            questCompleted: true,
+            vendorId: 'vendor-2'
+        });
+        expect(manager.activeQuests).toHaveLength(0);
+        expect(manager.completedQuests).toHaveLength(1);
+    });
+
+    it('keeps unordered discovery encounters stampable in any order', () => {
+        const manager = new QuestManager();
+        vi.spyOn(manager, 'saveSessionState').mockImplementation(() => {});
+
+        manager.activeQuests = [{
+            id: 'unordered-discovery',
+            type: 'discovery',
+            title: 'Discovery Passport',
+            ordered: false,
+            objectives: [
+                {
+                    vendorId: 'vendor-1',
+                    vendorName: 'Vendor One',
+                    booth: 'A1',
+                    clue: 'First clue',
+                    visited: false,
+                    visitedAt: null
+                },
+                {
+                    vendorId: 'vendor-2',
+                    vendorName: 'Vendor Two',
+                    booth: 'A2',
+                    clue: 'Second clue',
+                    visited: false,
+                    visitedAt: null
+                }
+            ],
+            reward: {
+                points: 30,
+                description: '30 points'
+            }
+        }];
+
+        const result = manager.checkVendorDiscoveryResult('vendor-2', { id: 'vendor-2' });
+
+        expect(result).toMatchObject({
+            updated: true,
+            blocked: false,
+            vendorId: 'vendor-2'
+        });
+        expect(manager.activeQuests[0].objectives[0].visited).toBe(false);
+        expect(manager.activeQuests[0].objectives[1].visited).toBe(true);
+    });
 });

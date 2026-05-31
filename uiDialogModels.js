@@ -80,6 +80,14 @@ function appendStampLine(questItems, stamp) {
     questItems.push(`   ✓ ${stamp.vendorName}${booth}${clue}${goal}`);
 }
 
+function createEncounterLine(encounter) {
+    const booth = encounter.booth ? ` (${encounter.booth})` : '';
+    const clue = encounter.clue ? `: ${encounter.clue}` : '';
+    const goal = encounter.goal ? ` Goal: ${encounter.goal}` : '';
+
+    return `${encounter.vendorName}${booth}${clue}${goal}`;
+}
+
 function appendCompletedFestivalTrails(questItems, completedDiscoveryTrails) {
     if (completedDiscoveryTrails.length === 0) {
         return;
@@ -115,6 +123,24 @@ function appendActiveFestivalStamps(questItems, activeDiscoveryTrails) {
     });
 }
 
+function appendNextFestivalEncounters(questItems, activeDiscoveryTrails) {
+    const nextEncounters = activeDiscoveryTrails
+        .filter(trail => trail.nextEncounter)
+        .map(trail => ({
+            trailTitle: trail.title,
+            encounter: trail.nextEncounter
+        }));
+
+    if (nextEncounters.length === 0) {
+        return;
+    }
+
+    questItems.push('Next encounters:');
+    nextEncounters.forEach(({ trailTitle, encounter }) => {
+        questItems.push(`- ${trailTitle}: ${createEncounterLine(encounter)}`);
+    });
+}
+
 function appendFestivalLog(questItems, festivalLog) {
     questItems.push('=== FESTIVAL LOG ===');
 
@@ -135,6 +161,7 @@ function appendFestivalLog(questItems, festivalLog) {
         questItems.push(`Items collected: ${festivalLog.collectedItemCount}`);
     }
 
+    appendNextFestivalEncounters(questItems, festivalLog.activeDiscoveryTrails);
     appendCompletedFestivalTrails(questItems, festivalLog.completedDiscoveryTrails);
     appendActiveFestivalStamps(questItems, festivalLog.activeDiscoveryTrails);
     questItems.push('');

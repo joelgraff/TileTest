@@ -316,6 +316,10 @@ class VendorManager {
     }
 
     buildVendorDiscoveryFeedbackText(discoveryResult) {
+        if (discoveryResult?.blocked) {
+            return discoveryResult.message ?? '';
+        }
+
         if (!discoveryResult?.updated || discoveryResult.questCompleted) {
             return '';
         }
