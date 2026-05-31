@@ -21,9 +21,38 @@ describe('boot readiness', () => {
             }
         });
 
-        expect(scene.questManager.init).toHaveBeenCalledWith(scene.vendors);
+        expect(scene.questManager.init).toHaveBeenCalledWith(scene.vendors, { discoveryTrails: [] });
         expect(scene.interactionsEnabled).toBe(true);
         expect(isReady).toBe(true);
+    });
+
+    it('prefers live discovery trails before initializing quests', async () => {
+        const staticTrails = [{ id: 'static-trail' }];
+        const liveTrails = [{ id: 'live-trail' }];
+        const questManager = {
+            init: vi.fn(async () => true)
+        };
+        let resolveLiveReady;
+        const liveContentReadyPromise = new Promise(resolve => {
+            resolveLiveReady = resolve;
+        });
+        const readinessPromise = initializeInteractionReadiness({
+            questManager,
+            vendors: [{ id: 'vendor-1' }],
+            discoveryTrails: staticTrails,
+            liveVendorContentService: {
+                getDiscoveryTrails: vi.fn(() => liveTrails)
+            },
+            liveContentReadyPromise,
+            setInteractionsEnabled: vi.fn()
+        });
+
+        expect(questManager.init).not.toHaveBeenCalled();
+
+        resolveLiveReady(true);
+        await expect(readinessPromise).resolves.toBe(true);
+
+        expect(questManager.init).toHaveBeenCalledWith([{ id: 'vendor-1' }], { discoveryTrails: liveTrails });
     });
 
     it('keeps interactions disabled when quest readiness fails', async () => {

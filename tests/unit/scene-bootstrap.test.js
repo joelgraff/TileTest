@@ -75,6 +75,9 @@ describe('scene bootstrap', () => {
         expect(initializeInteractionReadinessFn).toHaveBeenCalledWith({
             questManager,
             vendors,
+            discoveryTrails,
+            liveVendorContentService: null,
+            liveContentReadyPromise: null,
             setInteractionsEnabled: expect.any(Function)
         });
         expect(initializeSceneRuntimeFn).toHaveBeenCalledWith(scene, {
@@ -146,7 +149,8 @@ describe('scene bootstrap', () => {
     it('starts live vendor content service and passes it into manager composition when available', () => {
         const vendors = [{ id: 'vendor-1' }];
         const discoveryTrails = [{ id: 'trail-1' }];
-        const liveVendorContentService = { start: vi.fn() };
+        const liveContentReadyPromise = Promise.resolve(true);
+        const liveVendorContentService = { start: vi.fn(() => liveContentReadyPromise) };
         const scene = {
             cache: {
                 json: {
@@ -158,12 +162,13 @@ describe('scene bootstrap', () => {
             sceneArg.questManager = { id: 'quest-1' };
             sceneArg.interactionCoordinator = { id: 'coord-1' };
         });
+        const initializeInteractionReadinessFn = vi.fn();
 
         initializeSceneBootstrap(scene, {
             DomainManagerModule: { loadDomains: vi.fn() },
             initializeSceneWorldFn: vi.fn(() => true),
             initializeSceneManagersFn,
-            initializeInteractionReadinessFn: vi.fn(),
+            initializeInteractionReadinessFn,
             initializeSceneRuntimeFn: vi.fn(),
             createLiveVendorContentServiceFn: vi.fn(() => liveVendorContentService)
         });
@@ -174,6 +179,13 @@ describe('scene bootstrap', () => {
             state: scene.gameState,
             discoveryTrails,
             liveVendorContentService
+        });
+
+        const readinessArgs = initializeInteractionReadinessFn.mock.calls[0][0];
+        expect(readinessArgs).toMatchObject({
+            discoveryTrails,
+            liveVendorContentService,
+            liveContentReadyPromise
         });
     });
 });

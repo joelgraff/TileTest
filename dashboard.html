@@ -105,6 +105,7 @@
         }
 
         select,
+        input,
         textarea {
             width: 100%;
             box-sizing: border-box;
@@ -120,6 +121,24 @@
             min-height: 140px;
             resize: vertical;
             line-height: 1.4;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            min-width: 18px;
+            min-height: 18px;
+        }
+
+        .checkbox-label {
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .editor-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
         }
 
         .actions {
@@ -153,6 +172,12 @@
             font-weight: 760;
         }
 
+        .field-hint {
+            color: #667085;
+            font-size: 0.8rem;
+            font-weight: 520;
+        }
+
         @media (max-width: 760px) {
             .dashboard-header,
             .dashboard-grid {
@@ -169,10 +194,11 @@
 <body>
     <main class="dashboard-shell">
         <header class="dashboard-header">
-            <h1>Vendor Content</h1>
+            <h1>Content Dashboard</h1>
             <a class="dashboard-link" href="/" target="_blank" rel="noreferrer">Open Game</a>
         </header>
         <div class="dashboard-grid">
+            <div class="editor-stack">
             <section class="panel" aria-labelledby="editor-title">
                 <form id="content-form" class="form-stack">
                     <h2 id="editor-title">Content Editor</h2>
@@ -203,10 +229,56 @@
                     <div id="status" class="status" role="status" aria-live="polite"></div>
                 </form>
             </section>
+            <section class="panel" aria-labelledby="trail-editor-title">
+                <form id="trail-form" class="form-stack">
+                    <h2 id="trail-editor-title">Discovery Trail Editor</h2>
+                    <label>
+                        Trail
+                        <select id="trail-select" name="trailId"></select>
+                    </label>
+                    <label>
+                        Trail Title
+                        <input id="trail-title-input" name="title" type="text" autocomplete="off">
+                    </label>
+                    <label>
+                        Description
+                        <textarea id="trail-description-input" name="description" spellcheck="true"></textarea>
+                    </label>
+                    <label class="checkbox-label">
+                        <input id="trail-ordered-input" name="ordered" type="checkbox">
+                        Ordered encounter chain
+                    </label>
+                    <label>
+                        Stops
+                        <span class="field-hint">One per line: vendor id | clue text | goal text</span>
+                        <textarea id="trail-stops-input" name="stops" spellcheck="true"></textarea>
+                    </label>
+                    <label>
+                        Reward Points
+                        <input id="trail-reward-points-input" name="rewardPoints" type="number" min="1" step="1">
+                    </label>
+                    <label>
+                        Reward Description
+                        <textarea id="trail-reward-description-input" name="rewardDescription" spellcheck="true"></textarea>
+                    </label>
+                    <label>
+                        Completion Text
+                        <textarea id="trail-completion-input" name="completionText" spellcheck="true"></textarea>
+                    </label>
+                    <div class="actions">
+                        <button id="trail-reset-button" type="button">Reset</button>
+                        <button type="submit">Save Trail</button>
+                    </div>
+                    <div id="trail-status" class="status" role="status" aria-live="polite"></div>
+                </form>
+            </section>
+            </div>
             <section class="panel" aria-labelledby="current-title">
                 <div class="content-list">
                     <h2 id="current-title">Current Live Content</h2>
                     <div id="content-list"></div>
+                    <h2>Discovery Trails</h2>
+                    <div id="trail-list"></div>
                 </div>
             </section>
         </div>

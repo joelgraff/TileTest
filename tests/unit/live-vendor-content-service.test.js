@@ -17,22 +17,41 @@ describe('live vendor content service', () => {
     });
 
     it('fetches live content snapshots and exposes them by vendor id', async () => {
-        const fetchImpl = vi.fn(async () => ({
-            ok: true,
-            json: async () => ({
-                vendors: [{
-                    vendorId: '100',
-                    descriptionOverride: 'Live booth note.',
-                    featuredItems: ['Portable demo'],
-                    announcements: ['Demo at 2 PM']
-                }]
-            })
-        }));
+        const fetchImpl = vi.fn(async (url) => {
+            if (url === '/api/discovery-trails') {
+                return {
+                    ok: true,
+                    json: async () => ({
+                        trails: [{
+                            id: 'trail-1',
+                            title: 'Live Trail',
+                            stops: [{ vendorId: '100' }, { vendorId: '101' }]
+                        }]
+                    })
+                };
+            }
+
+            return {
+                ok: true,
+                json: async () => ({
+                    vendors: [{
+                        vendorId: '100',
+                        descriptionOverride: 'Live booth note.',
+                        featuredItems: ['Portable demo'],
+                        announcements: ['Demo at 2 PM']
+                    }]
+                })
+            };
+        });
         const service = new LiveVendorContentService({ fetchImpl, pollIntervalMs: 0 });
 
         await expect(service.refresh()).resolves.toBe(true);
 
-        expect(fetchImpl).toHaveBeenCalledWith('/api/vendor-content', {
+        expect(fetchImpl).toHaveBeenNthCalledWith(1, '/api/vendor-content', {
+            headers: { Accept: 'application/json' },
+            cache: 'no-store'
+        });
+        expect(fetchImpl).toHaveBeenNthCalledWith(2, '/api/discovery-trails', {
             headers: { Accept: 'application/json' },
             cache: 'no-store'
         });
@@ -43,6 +62,12 @@ describe('live vendor content service', () => {
             announcements: ['Demo at 2 PM']
         });
         expect(service.getAnnouncementsForVendor('100')).toEqual(['Demo at 2 PM']);
+        expect(service.getDiscoveryTrails()).toEqual([
+            expect.objectContaining({
+                id: 'trail-1',
+                title: 'Live Trail'
+            })
+        ]);
     });
 
     it('fails quietly when the live endpoint is unavailable', async () => {
@@ -106,7 +131,7 @@ describe('live vendor content service', () => {
 
         await service.start();
 
-        expect(fetchImpl).toHaveBeenCalledTimes(1);
+        expect(fetchImpl).toHaveBeenCalledTimes(2);
         expect(setIntervalImpl).toHaveBeenCalledWith(expect.any(Function), 5000);
     });
 });

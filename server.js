@@ -3,12 +3,15 @@ import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { DiscoveryTrailStore } from './discoveryTrailStore.js';
 import { VendorContentStore } from './liveVendorAnnouncementStore.js';
 
 const repoRoot = path.dirname(fileURLToPath(import.meta.url));
 const host = process.env.HOST ?? '0.0.0.0';
 const port = Number.parseInt(process.env.PORT ?? '5000', 10);
 const vendorContentStore = new VendorContentStore();
+const bundledDiscoveryTrails = JSON.parse(await fs.readFile(path.join(repoRoot, 'discovery_trails.json'), 'utf8').catch(() => '[]'));
+const discoveryTrailStore = new DiscoveryTrailStore(bundledDiscoveryTrails);
 
 const contentTypes = new Map([
     ['.css', 'text/css; charset=utf-8'],
@@ -70,6 +73,35 @@ async function readVendors() {
 }
 
 async function handleApiRequest(request, response, requestUrl) {
+    if (requestUrl.pathname === '/api/discovery-trails') {
+        if (request.method === 'GET') {
+            sendJson(response, 200, discoveryTrailStore.toJSON());
+            return true;
+        }
+
+        if (request.method === 'POST') {
+            try {
+                const update = discoveryTrailStore.applyUpdate(await readJsonBody(request));
+                if (!update) {
+                    sendJson(response, 400, { error: 'A trail id and at least two valid stops are required.' });
+                    return true;
+                }
+
+                sendJson(response, 200, {
+                    ...discoveryTrailStore.toJSON(),
+                    updated: update
+                });
+            } catch (error) {
+                sendJson(response, 400, { error: error.message });
+            }
+
+            return true;
+        }
+
+        sendMethodNotAllowed(response);
+        return true;
+    }
+
     if (requestUrl.pathname === '/api/vendor-content') {
         if (request.method === 'GET') {
             sendJson(response, 200, vendorContentStore.toJSON());

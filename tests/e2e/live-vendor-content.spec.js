@@ -12,6 +12,13 @@ const liveContent = {
     announcement: 'Live smoke announcement: dashboard content reached the game.',
     clueText: 'Live smoke clue: ask about the hidden diagnostic disk.'
 };
+const liveTrail = {
+    title: 'Live Dashboard Starter Trail',
+    description: 'Live dashboard-authored route for smoke testing.',
+    rewardPoints: '45',
+    rewardDescription: '45 points from the live dashboard trail.',
+    completionText: 'Live dashboard trail complete.'
+};
 
 function delay(ms) {
     return new Promise(resolve => {
@@ -181,6 +188,42 @@ async function saveLiveContentThroughDashboard(page, baseUrl, targetVendor) {
     });
 }
 
+async function saveLiveTrailThroughDashboard(page, baseUrl, targetVendors) {
+    await page.goto(`${baseUrl}/dashboard`, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => document.querySelector('#trail-select')?.options?.length > 0);
+
+    await page.selectOption('#trail-select', 'sample-floor-starter');
+    await page.fill('#trail-title-input', liveTrail.title);
+    await page.fill('#trail-description-input', liveTrail.description);
+    await page.check('#trail-ordered-input');
+    await page.fill('#trail-stops-input', targetVendors.map((vendor, index) => (
+        `${vendor.id} | Live trail clue ${index + 1} for ${vendor.name}. | Live trail goal ${index + 1}.`
+    )).join('\n'));
+    await page.fill('#trail-reward-points-input', liveTrail.rewardPoints);
+    await page.fill('#trail-reward-description-input', liveTrail.rewardDescription);
+    await page.fill('#trail-completion-input', liveTrail.completionText);
+    await page.click('#trail-form button[type="submit"]');
+
+    await expect(page.locator('#trail-status')).toContainText('Trail saved.');
+    await expect(page.locator('#trail-list')).toContainText(liveTrail.title);
+
+    const savedTrails = await fetchJson(`${baseUrl}/api/discovery-trails`);
+    const savedTrail = savedTrails.trails.find(entry => entry.id === 'sample-floor-starter');
+
+    expect(savedTrail).toMatchObject({
+        id: 'sample-floor-starter',
+        title: liveTrail.title,
+        description: liveTrail.description,
+        ordered: true,
+        reward: {
+            points: Number.parseInt(liveTrail.rewardPoints, 10),
+            description: liveTrail.rewardDescription
+        },
+        completionText: liveTrail.completionText
+    });
+    expect(savedTrail.stops.map(stop => stop.vendorId)).toEqual(targetVendors.map(vendor => vendor.id));
+}
+
 test('dashboard-authored live vendor content appears in the game vendor dialog and discovery clue', async ({ page }) => {
     const liveServer = await startLiveServer();
 
@@ -258,6 +301,47 @@ test('dashboard-authored live vendor content appears in the game vendor dialog a
         await expect(dialogSurface).toContainText(liveContent.featuredItem);
         await expect(dialogSurface).toContainText(liveContent.announcement);
         await expect(dialogSurface).toContainText(liveContent.clueText);
+        expect(pageErrors, `Page errors: ${pageErrors.join('\n')}`).toEqual([]);
+        expect(consoleErrors, `Console errors: ${consoleErrors.join('\n')}`).toEqual([]);
+    } finally {
+        await stopLiveServer(liveServer);
+    }
+});
+
+test('dashboard-authored discovery trail seeds the live game discovery quest', async ({ page }) => {
+    const liveServer = await startLiveServer();
+
+    try {
+        const vendorPayload = await fetchJson(`${liveServer.baseUrl}/api/vendors`);
+        const targetVendors = vendorPayload.vendors.slice(0, 2);
+
+        expect(targetVendors).toHaveLength(2);
+        await saveLiveTrailThroughDashboard(page, liveServer.baseUrl, targetVendors);
+
+        const { consoleErrors, pageErrors } = await gotoLiveGame(page, liveServer.baseUrl);
+
+        await page.waitForFunction(({ title }) => {
+            const service = window.__tileTest?.scene?.liveVendorContentService;
+            const trails = service?.getDiscoveryTrails?.() ?? [];
+
+            return Boolean(
+                window.__tileTestLiveBackend === true
+                && service?.isAvailable
+                && trails.some(trail => trail.title === title)
+            );
+        }, liveTrail);
+
+        const discovery = await page.evaluate(() => window.__tileTest.testApi.getDiscoveryQuestSnapshot());
+
+        expect(discovery).toMatchObject({
+            active: true,
+            completed: false,
+            title: liveTrail.title,
+            totalCount: 2,
+            visitedCount: 0
+        });
+        expect(discovery.objectives.map(objective => objective.vendorId)).toEqual(targetVendors.map(vendor => vendor.id));
+        expect(discovery.objectives[0].clue).toContain('Live trail clue 1');
         expect(pageErrors, `Page errors: ${pageErrors.join('\n')}`).toEqual([]);
         expect(consoleErrors, `Console errors: ${consoleErrors.join('\n')}`).toEqual([]);
     } finally {

@@ -1,7 +1,9 @@
+import { DiscoveryTrailStore } from './discoveryTrailStore.js';
 import { VendorContentStore } from './liveVendorAnnouncementStore.js';
 
 export const DEFAULT_VENDOR_CONTENT_ENDPOINT = '/api/vendor-content';
 export const DEFAULT_VENDOR_ANNOUNCEMENTS_ENDPOINT = DEFAULT_VENDOR_CONTENT_ENDPOINT;
+export const DEFAULT_DISCOVERY_TRAILS_ENDPOINT = '/api/discovery-trails';
 
 function getDefaultFetch() {
     if (typeof window !== 'undefined' && typeof window.fetch === 'function') {
@@ -30,17 +32,20 @@ function hasLiveBackendFlag() {
 export class LiveVendorContentService {
     constructor({
         endpoint = DEFAULT_VENDOR_CONTENT_ENDPOINT,
+        discoveryTrailsEndpoint = DEFAULT_DISCOVERY_TRAILS_ENDPOINT,
         fetchImpl = getDefaultFetch(),
         setIntervalImpl = getDefaultSetInterval(),
         clearIntervalImpl = getDefaultClearInterval(),
         pollIntervalMs = 3000
     } = {}) {
         this.endpoint = endpoint;
+        this.discoveryTrailsEndpoint = discoveryTrailsEndpoint;
         this.fetchImpl = fetchImpl;
         this.setIntervalImpl = setIntervalImpl;
         this.clearIntervalImpl = clearIntervalImpl;
         this.pollIntervalMs = pollIntervalMs;
         this.store = new VendorContentStore();
+        this.discoveryTrailStore = new DiscoveryTrailStore();
         this.intervalId = null;
         this.started = false;
         this.isAvailable = false;
@@ -54,8 +59,38 @@ export class LiveVendorContentService {
         return this.store.getContentForVendor(vendorId);
     }
 
+    getDiscoveryTrails() {
+        return this.discoveryTrailStore.getTrails();
+    }
+
     applySnapshot(snapshot) {
         return this.store.replaceSnapshot(snapshot);
+    }
+
+    applyDiscoveryTrailSnapshot(snapshot) {
+        return this.discoveryTrailStore.replaceSnapshot(snapshot);
+    }
+
+    async refreshDiscoveryTrails() {
+        if (!this.fetchImpl) {
+            return false;
+        }
+
+        try {
+            const response = await this.fetchImpl(this.discoveryTrailsEndpoint, {
+                headers: { Accept: 'application/json' },
+                cache: 'no-store'
+            });
+
+            if (!response.ok) {
+                return false;
+            }
+
+            this.applyDiscoveryTrailSnapshot(await response.json());
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     async refresh() {
@@ -76,6 +111,7 @@ export class LiveVendorContentService {
             }
 
             this.applySnapshot(await response.json());
+            await this.refreshDiscoveryTrails();
             this.isAvailable = true;
             return true;
         } catch {

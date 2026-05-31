@@ -7,15 +7,28 @@ const contentForm = document.querySelector('#content-form');
 const clearButton = document.querySelector('#clear-button');
 const statusElement = document.querySelector('#status');
 const contentList = document.querySelector('#content-list');
+const trailSelect = document.querySelector('#trail-select');
+const trailTitleInput = document.querySelector('#trail-title-input');
+const trailDescriptionInput = document.querySelector('#trail-description-input');
+const trailOrderedInput = document.querySelector('#trail-ordered-input');
+const trailStopsInput = document.querySelector('#trail-stops-input');
+const trailRewardPointsInput = document.querySelector('#trail-reward-points-input');
+const trailRewardDescriptionInput = document.querySelector('#trail-reward-description-input');
+const trailCompletionInput = document.querySelector('#trail-completion-input');
+const trailForm = document.querySelector('#trail-form');
+const trailResetButton = document.querySelector('#trail-reset-button');
+const trailStatusElement = document.querySelector('#trail-status');
+const trailList = document.querySelector('#trail-list');
 
 const state = {
     vendors: [],
-    contentByVendorId: new Map()
+    contentByVendorId: new Map(),
+    trailsById: new Map()
 };
 
-function setStatus(message, isError = false) {
-    statusElement.textContent = message;
-    statusElement.style.color = isError ? '#b42318' : '#1d5f8f';
+function setStatus(message, isError = false, element = statusElement) {
+    element.textContent = message;
+    element.style.color = isError ? '#b42318' : '#1d5f8f';
 }
 
 function getVendorLabel(vendor) {
@@ -24,6 +37,10 @@ function getVendorLabel(vendor) {
 
 function getSelectedVendorId() {
     return vendorSelect.value;
+}
+
+function getSelectedTrailId() {
+    return trailSelect.value;
 }
 
 function splitTextInput(input) {
@@ -64,6 +81,46 @@ function normalizeContentEntry(entry) {
     };
 }
 
+function normalizeTrailStop(stop) {
+    if (!stop || typeof stop !== 'object' || !stop.vendorId) {
+        return null;
+    }
+
+    return {
+        id: String(stop.id ?? stop.vendorId),
+        vendorId: String(stop.vendorId),
+        clueText: typeof stop.clueText === 'string' ? stop.clueText : '',
+        goalText: typeof stop.goalText === 'string' ? stop.goalText : ''
+    };
+}
+
+function normalizeTrailEntry(entry) {
+    if (!entry || typeof entry !== 'object' || !entry.id) {
+        return null;
+    }
+
+    const stops = Array.isArray(entry.stops)
+        ? entry.stops.map(normalizeTrailStop).filter(Boolean)
+        : [];
+
+    if (stops.length < 2) {
+        return null;
+    }
+
+    return {
+        id: String(entry.id),
+        title: typeof entry.title === 'string' ? entry.title : 'Discovery Trail',
+        description: typeof entry.description === 'string' ? entry.description : '',
+        ordered: entry.ordered === true,
+        stops,
+        reward: {
+            points: Number.isFinite(entry.reward?.points) ? entry.reward.points : stops.length * 15,
+            description: typeof entry.reward?.description === 'string' ? entry.reward.description : ''
+        },
+        completionText: typeof entry.completionText === 'string' ? entry.completionText : ''
+    };
+}
+
 function applyContentSnapshot(snapshot) {
     const contentByVendorId = new Map();
 
@@ -90,6 +147,19 @@ function applyContentSnapshot(snapshot) {
     state.contentByVendorId = contentByVendorId;
 }
 
+function applyTrailSnapshot(snapshot) {
+    const trailsById = new Map();
+
+    for (const entry of snapshot.trails ?? []) {
+        const normalizedEntry = normalizeTrailEntry(entry);
+        if (normalizedEntry) {
+            trailsById.set(normalizedEntry.id, normalizedEntry);
+        }
+    }
+
+    state.trailsById = trailsById;
+}
+
 function renderVendorOptions() {
     vendorSelect.replaceChildren(...state.vendors.map((vendor) => {
         const option = document.createElement('option');
@@ -99,8 +169,21 @@ function renderVendorOptions() {
     }));
 }
 
+function renderTrailOptions() {
+    trailSelect.replaceChildren(...Array.from(state.trailsById.values()).map((trail) => {
+        const option = document.createElement('option');
+        option.value = trail.id;
+        option.textContent = trail.title;
+        return option;
+    }));
+}
+
 function getSelectedContent() {
     return state.contentByVendorId.get(getSelectedVendorId()) ?? createDefaultContent();
+}
+
+function getSelectedTrail() {
+    return state.trailsById.get(getSelectedTrailId()) ?? null;
 }
 
 function renderSelectedContent() {
@@ -109,6 +192,22 @@ function renderSelectedContent() {
     featuredInput.value = selectedContent.featuredItems.join('\n');
     announcementInput.value = selectedContent.announcements.join('\n');
     clueInput.value = selectedContent.clueText;
+}
+
+function createStopLine(stop) {
+    return `${stop.vendorId} | ${stop.clueText} | ${stop.goalText}`;
+}
+
+function renderSelectedTrail() {
+    const selectedTrail = getSelectedTrail();
+
+    trailTitleInput.value = selectedTrail?.title ?? '';
+    trailDescriptionInput.value = selectedTrail?.description ?? '';
+    trailOrderedInput.checked = selectedTrail?.ordered === true;
+    trailStopsInput.value = selectedTrail?.stops?.map(createStopLine).join('\n') ?? '';
+    trailRewardPointsInput.value = selectedTrail?.reward?.points ?? '';
+    trailRewardDescriptionInput.value = selectedTrail?.reward?.description ?? '';
+    trailCompletionInput.value = selectedTrail?.completionText ?? '';
 }
 
 function hasPreviewContent(content) {
@@ -175,9 +274,45 @@ function renderContentList() {
     }));
 }
 
+function getVendorName(vendorId) {
+    const vendor = state.vendors.find(entry => entry.id === vendorId);
+    return vendor ? getVendorLabel(vendor) : vendorId;
+}
+
+function renderTrailList() {
+    const trails = Array.from(state.trailsById.values());
+
+    if (trails.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'content-empty';
+        emptyState.textContent = 'No discovery trails saved.';
+        trailList.replaceChildren(emptyState);
+        return;
+    }
+
+    trailList.replaceChildren(...trails.map((trail) => {
+        const item = document.createElement('div');
+        const title = document.createElement('span');
+        const meta = document.createElement('div');
+
+        item.className = 'content-item';
+        title.className = 'content-vendor';
+        title.textContent = trail.title;
+        meta.textContent = `${trail.ordered ? 'Ordered' : 'Any order'} / ${trail.stops.length} stops / ${trail.reward.points} points`;
+        item.append(title, meta, ...trail.stops.map((stop, index) => {
+            const stopElement = document.createElement('div');
+            stopElement.textContent = `${index + 1}. ${getVendorName(stop.vendorId)}: ${stop.clueText}`;
+            return stopElement;
+        }));
+        return item;
+    }));
+}
+
 function renderDashboard() {
     renderSelectedContent();
+    renderSelectedTrail();
     renderContentList();
+    renderTrailList();
 }
 
 async function fetchJson(url, options) {
@@ -196,19 +331,26 @@ async function fetchJson(url, options) {
 }
 
 async function loadDashboardData() {
-    const [vendorPayload, announcementPayload] = await Promise.all([
+    const [vendorPayload, announcementPayload, trailPayload] = await Promise.all([
         fetchJson('/api/vendors'),
-        fetchJson('/api/vendor-content')
+        fetchJson('/api/vendor-content'),
+        fetchJson('/api/discovery-trails')
     ]);
 
     state.vendors = vendorPayload.vendors ?? [];
     applyContentSnapshot(announcementPayload);
+    applyTrailSnapshot(trailPayload);
     renderVendorOptions();
+    renderTrailOptions();
     renderDashboard();
 }
 
 vendorSelect.addEventListener('change', () => {
     renderSelectedContent();
+});
+
+trailSelect.addEventListener('change', () => {
+    renderSelectedTrail();
 });
 
 clearButton.addEventListener('click', () => {
@@ -218,6 +360,33 @@ clearButton.addEventListener('click', () => {
     clueInput.value = '';
     descriptionInput.focus();
 });
+
+trailResetButton.addEventListener('click', () => {
+    renderSelectedTrail();
+    trailTitleInput.focus();
+});
+
+function createStopId(vendorId, index) {
+    return `stop-${index + 1}-${vendorId.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+}
+
+function parseTrailStops() {
+    return trailStopsInput.value
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .map((line, index) => {
+            const [vendorId = '', clueText = '', goalText = ''] = line.split('|').map(part => part.trim());
+
+            return {
+                id: createStopId(vendorId, index),
+                vendorId,
+                clueText,
+                goalText
+            };
+        })
+        .filter(stop => stop.vendorId);
+}
 
 contentForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -241,6 +410,38 @@ contentForm.addEventListener('submit', async (event) => {
         setStatus('Saved. Reopen that vendor dialog in the game to see the update.');
     } catch (error) {
         setStatus(error.message, true);
+    }
+});
+
+trailForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    setStatus('Saving trail...', false, trailStatusElement);
+
+    try {
+        const payload = await fetchJson('/api/discovery-trails', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: getSelectedTrailId(),
+                title: trailTitleInput.value.trim(),
+                description: trailDescriptionInput.value.trim(),
+                ordered: trailOrderedInput.checked,
+                stops: parseTrailStops(),
+                reward: {
+                    points: Number.parseInt(trailRewardPointsInput.value, 10),
+                    description: trailRewardDescriptionInput.value.trim()
+                },
+                completionText: trailCompletionInput.value.trim()
+            })
+        });
+
+        applyTrailSnapshot(payload);
+        renderTrailOptions();
+        trailSelect.value = payload.updated.id;
+        renderDashboard();
+        setStatus('Trail saved. Open a new live game session to use the updated trail.', false, trailStatusElement);
+    } catch (error) {
+        setStatus(error.message, true, trailStatusElement);
     }
 });
 

@@ -32,9 +32,10 @@ export function initializeSceneBootstrap(
     bindSceneBooleanFlagFn(scene, gameState, 'interactionsEnabled');
 
     const liveVendorContentService = createLiveVendorContentServiceFn();
+    let liveContentReadyPromise = null;
     if (liveVendorContentService) {
         scene.liveVendorContentService = liveVendorContentService;
-        liveVendorContentService.start?.();
+        liveContentReadyPromise = liveVendorContentService.start?.() ?? null;
     }
 
     DomainManagerModule.loadDomains();
@@ -60,6 +61,9 @@ export function initializeSceneBootstrap(
     const readinessPromise = initializeInteractionReadinessFn({
         questManager: scene.questManager,
         vendors: scene.vendors,
+        discoveryTrails: scene.discoveryTrails,
+        liveVendorContentService,
+        liveContentReadyPromise,
         setInteractionsEnabled: (isReady) => {
             scene.interactionsEnabled = isReady;
         }
