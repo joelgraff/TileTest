@@ -38,7 +38,13 @@ describe('live vendor content service', () => {
                         vendorId: '100',
                         descriptionOverride: 'Live booth note.',
                         featuredItems: ['Portable demo'],
-                        announcements: ['Demo at 2 PM']
+                        announcements: ['Demo at 2 PM'],
+                        topics: [{
+                            id: 'portable_demo',
+                            label: 'the portable demo',
+                            response: 'Ask about the portable demo.',
+                            completionMarker: 'portable_demo'
+                        }]
                     }]
                 })
             };
@@ -59,7 +65,13 @@ describe('live vendor content service', () => {
         expect(service.getContentForVendor('100')).toMatchObject({
             descriptionOverride: 'Live booth note.',
             featuredItems: ['Portable demo'],
-            announcements: ['Demo at 2 PM']
+            announcements: ['Demo at 2 PM'],
+            topics: [{
+                id: 'portable_demo',
+                label: 'the portable demo',
+                response: 'Ask about the portable demo.',
+                completionMarker: 'portable_demo'
+            }]
         });
         expect(service.getAnnouncementsForVendor('100')).toEqual(['Demo at 2 PM']);
         expect(service.getDiscoveryTrails()).toEqual([

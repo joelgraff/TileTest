@@ -17,7 +17,18 @@ const liveTrail = {
     description: 'Live dashboard-authored route for smoke testing.',
     rewardPoints: '45',
     rewardDescription: '45 points from the live dashboard trail.',
-    completionText: 'Live dashboard trail complete.'
+    completionText: 'Live dashboard trail complete.',
+    completionMarker: 'portable_demo'
+};
+const liveTopic = {
+    id: 'portable_demo',
+    label: 'the handwritten placard',
+    response: 'That placard is our admin-authored verification prompt for the portable demo.',
+    completionMarker: 'portable_demo',
+    verificationPrompt: 'Which admin-authored phrase is printed on the placard?',
+    expectedPhrase: 'Portable Powerhouse',
+    wrongChoice: 'Pocket Spreadsheet',
+    choices: ['Portable Powerhouse', 'Pocket Spreadsheet', 'DOS in Motion']
 };
 
 function delay(ms) {
@@ -194,18 +205,29 @@ async function saveLiveContentThroughDashboard(page, baseUrl, targetVendor) {
 }
 
 async function saveLiveTrailThroughDashboard(page, baseUrl, targetVendors) {
-    await page.goto(`${baseUrl}/amdin`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${baseUrl}/admin`, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('body')).toHaveAttribute('data-dashboard-mode', 'admin');
-    await page.waitForFunction(() => document.querySelector('#trail-select')?.options?.length > 1);
+
+    const stopLines = targetVendors.map((vendor, index) => {
+        const parts = [
+            vendor.id,
+            `Live trail clue ${index + 1} for ${vendor.name}.`,
+            `Live trail goal ${index + 1}.`
+        ];
+
+        if (index === 0) {
+            parts.push(liveTrail.completionMarker);
+        }
+
+        return parts.join(' | ');
+    });
 
     await page.click('#trail-new-button');
     await page.fill('#trail-id-input', liveTrail.id);
     await page.fill('#trail-title-input', liveTrail.title);
     await page.fill('#trail-description-input', liveTrail.description);
     await page.check('#trail-ordered-input');
-    await page.fill('#trail-stops-input', targetVendors.map((vendor, index) => (
-        `${vendor.id} | Live trail clue ${index + 1} for ${vendor.name}. | Live trail goal ${index + 1}.`
-    )).join('\n'));
+    await page.fill('#trail-stops-input', stopLines.join('\n'));
     await page.fill('#trail-reward-points-input', liveTrail.rewardPoints);
     await page.fill('#trail-reward-description-input', liveTrail.rewardDescription);
     await page.fill('#trail-completion-input', liveTrail.completionText);
@@ -213,6 +235,7 @@ async function saveLiveTrailThroughDashboard(page, baseUrl, targetVendors) {
 
     await expect(page.locator('#trail-status')).toContainText('Trail saved.');
     await expect(page.locator('#trail-list')).toContainText(liveTrail.title);
+    await expect(page.locator('#trail-stops-input')).toHaveValue(stopLines.join('\n'));
 
     const savedTrails = await fetchJson(`${baseUrl}/api/discovery-trails`);
     const savedTrail = savedTrails.trails.find(entry => entry.id === liveTrail.id);
@@ -229,6 +252,88 @@ async function saveLiveTrailThroughDashboard(page, baseUrl, targetVendors) {
         completionText: liveTrail.completionText
     });
     expect(savedTrail.stops.map(stop => stop.vendorId)).toEqual(targetVendors.map(vendor => vendor.id));
+    expect(savedTrail.stops[0]).toMatchObject({ completionMarker: liveTrail.completionMarker });
+}
+
+async function saveLiveTopicsThroughAdmin(page, baseUrl, targetVendor) {
+    await page.goto(`${baseUrl}/admin`, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('body')).toHaveAttribute('data-dashboard-mode', 'admin');
+    await page.waitForFunction(vendorId => (
+        Array.from(document.querySelector('#topic-vendor-select')?.options ?? [])
+            .some(option => option.value === vendorId)
+    ), targetVendor.id);
+    await page.waitForFunction(trailId => (
+        Array.from(document.querySelector('#trail-select')?.options ?? [])
+            .some(option => option.value === trailId)
+    ), liveTrail.id);
+
+    const topicLine = [
+        liveTopic.id,
+        liveTopic.label,
+        liveTopic.response,
+        liveTopic.completionMarker,
+        liveTopic.verificationPrompt,
+        liveTopic.expectedPhrase,
+        liveTopic.choices.join('; ')
+    ].join(' | ');
+    const mismatchedMarkerLine = [
+        liveTopic.id,
+        liveTopic.label,
+        liveTopic.response,
+        'portable_demo_mismatch',
+        liveTopic.verificationPrompt,
+        liveTopic.expectedPhrase,
+        liveTopic.choices.join('; ')
+    ].join(' | ');
+
+    await page.selectOption('#trail-select', liveTrail.id);
+    await page.selectOption('#topic-vendor-select', targetVendor.id);
+    await expect(page.locator('#trail-id-input')).toHaveValue(liveTrail.id);
+    await page.fill('#topic-input', topicLine);
+
+    await expect(page.locator('#authoring-warning-list')).toContainText('No authoring warnings');
+    await expect(page.locator('#marker-preview-list')).toContainText('Live trail clue 1');
+    await expect(page.locator('#marker-preview-list')).toContainText(`Ask about ${liveTopic.label}`);
+    await expect(page.locator('#marker-preview-list')).toContainText(liveTopic.verificationPrompt);
+    await expect(page.locator('#marker-preview-list')).toContainText(`Stamp: ${liveTopic.completionMarker}`);
+
+    await page.fill('#topic-input', mismatchedMarkerLine);
+    await expect(page.locator('#authoring-warning-list')).toContainText(`Trail stop 1 uses marker "${liveTopic.completionMarker}"`);
+    await expect(page.locator('#marker-preview-list')).toContainText('No complete clue -> topic -> verification -> stamp flow yet');
+
+    await page.fill('#topic-input', topicLine);
+    await expect(page.locator('#authoring-warning-list')).toContainText('No authoring warnings');
+    await page.click('#topic-form button[type="submit"]');
+
+    await expect(page.locator('#topic-status')).toContainText('Topics saved.');
+    await expect(page.locator('#topic-list')).toContainText(liveTopic.label);
+    await expect(page.locator('#topic-list')).toContainText(liveTopic.verificationPrompt);
+
+    const savedContent = await fetchJson(`${baseUrl}/api/vendor-content`);
+    const savedVendorContent = savedContent.vendors.find(entry => entry.vendorId === targetVendor.id);
+
+    expect(savedVendorContent).toMatchObject({
+        vendorId: targetVendor.id,
+        topics: [{
+            id: liveTopic.id,
+            label: liveTopic.label,
+            response: liveTopic.response,
+            completionMarker: liveTopic.completionMarker,
+            verification: {
+                prompt: liveTopic.verificationPrompt,
+                expectedPhrase: liveTopic.expectedPhrase,
+                choices: liveTopic.choices.map(choice => ({ label: choice, phrase: choice }))
+            }
+        }]
+    });
+}
+
+async function talkToVendor(page, index) {
+    await page.evaluate(vendorIndex => {
+        window.__tileTest.testApi.positionPlayerNearVendor(vendorIndex);
+    }, index);
+    await page.keyboard.press('Space');
+    await page.waitForFunction(() => window.__tileTest.testApi.getFlags().isDialogOpen);
 }
 
 test('dashboard-authored live vendor content appears in the game vendor dialog', async ({ page }) => {
@@ -347,6 +452,95 @@ test('dashboard-authored discovery trail seeds the live game discovery quest', a
         });
         expect(discovery.objectives.map(objective => objective.vendorId)).toEqual(targetVendors.map(vendor => vendor.id));
         expect(discovery.objectives[0].clue).toContain('Live trail clue 1');
+        expect(pageErrors, `Page errors: ${pageErrors.join('\n')}`).toEqual([]);
+        expect(consoleErrors, `Console errors: ${consoleErrors.join('\n')}`).toEqual([]);
+    } finally {
+        await stopLiveServer(liveServer);
+    }
+});
+
+test('admin-authored live topic verification satisfies a marker-gated discovery stop', async ({ page }) => {
+    const liveServer = await startLiveServer();
+
+    try {
+        const vendorPayload = await fetchJson(`${liveServer.baseUrl}/api/vendors`);
+        const targetVendors = vendorPayload.vendors.slice(0, 2);
+        const targetVendor = targetVendors[0];
+
+        expect(targetVendors).toHaveLength(2);
+        await saveLiveTrailThroughDashboard(page, liveServer.baseUrl, targetVendors);
+        await saveLiveTopicsThroughAdmin(page, liveServer.baseUrl, targetVendor);
+
+        const { consoleErrors, pageErrors } = await gotoLiveGame(page, liveServer.baseUrl);
+        const dialogSurface = page.locator('#ui-overlay-root [data-dialog-surface="dom"]');
+
+        await page.waitForFunction(({ title, vendorId, topicId, prompt }) => {
+            const service = window.__tileTest?.scene?.liveVendorContentService;
+            const trails = service?.getDiscoveryTrails?.() ?? [];
+            const content = service?.getContentForVendor?.(vendorId);
+
+            return Boolean(
+                window.__tileTestLiveBackend === true
+                && service?.isAvailable
+                && trails.some(trail => trail.title === title)
+                && content?.topics?.some(topic => topic.id === topicId && topic.verification?.prompt === prompt)
+            );
+        }, {
+            title: liveTrail.title,
+            vendorId: targetVendor.id,
+            topicId: liveTopic.id,
+            prompt: liveTopic.verificationPrompt
+        });
+
+        const seededQuest = await page.evaluate(() => window.__tileTest.testApi.getDiscoveryQuestSnapshot());
+        expect(seededQuest).toMatchObject({
+            active: true,
+            title: liveTrail.title,
+            visitedCount: 0
+        });
+
+        await talkToVendor(page, 0);
+        await expect(dialogSurface).toContainText(`Ask about ${liveTopic.label}`);
+
+        await page.getByRole('button', { name: `Ask about ${liveTopic.label}` }).click();
+        await expect(dialogSurface).toContainText(liveTopic.response);
+        await expect(dialogSurface).toContainText(liveTopic.verificationPrompt);
+
+        await page.getByRole('button', { name: liveTopic.wrongChoice }).click();
+        await expect(dialogSurface).toContainText('That phrase does not match this stop.');
+
+        const failedAttempt = await page.evaluate(() => window.__tileTest.testApi.getDiscoveryQuestSnapshot());
+        expect(failedAttempt.visitedCount).toBe(0);
+
+        await page.getByRole('button', { name: 'Continue' }).click();
+        await page.getByRole('button', { name: liveTopic.expectedPhrase }).click();
+
+        await expect(dialogSurface).toContainText(`Verification accepted: ${liveTopic.expectedPhrase}.`);
+        await expect(dialogSurface).toContainText('Passport stamp earned:');
+
+        const verified = await page.evaluate(() => ({
+            discovery: window.__tileTest.testApi.getDiscoveryQuestSnapshot(),
+            festivalLog: window.__tileTest.testApi.getFestivalLogSnapshot(),
+            questDialog: window.__tileTest.testApi.openQuestDialog()
+        }));
+
+        expect(verified.discovery.visitedCount).toBe(1);
+        expect(verified.discovery.objectives[0]).toMatchObject({
+            vendorId: targetVendor.id,
+            visited: true
+        });
+        expect(verified.festivalLog.stamps[0].conversationMoments[0]).toMatchObject({
+            topicId: liveTopic.id,
+            topicLabel: liveTopic.label,
+            topicResponse: liveTopic.response,
+            completionMarker: liveTopic.completionMarker,
+            verification: {
+                prompt: liveTopic.verificationPrompt,
+                selectedPhrase: liveTopic.expectedPhrase,
+                verified: true
+            }
+        });
+        expect(verified.questDialog.textItems).toContain(`      Verified: ${liveTopic.verificationPrompt} -> ${liveTopic.expectedPhrase}`);
         expect(pageErrors, `Page errors: ${pageErrors.join('\n')}`).toEqual([]);
         expect(consoleErrors, `Console errors: ${consoleErrors.join('\n')}`).toEqual([]);
     } finally {

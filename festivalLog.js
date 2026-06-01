@@ -12,6 +12,48 @@ function getQuestObjectives(quest = {}) {
     return Array.isArray(quest.objectives) ? quest.objectives : [];
 }
 
+function createConversationMoment(topic, index) {
+    return {
+        topicId: normalizeText(topic?.topicId, normalizeText(topic?.id)),
+        topicLabel: normalizeText(topic?.topicLabel, normalizeText(topic?.label)),
+        topicResponse: normalizeText(topic?.topicResponse, normalizeText(topic?.response)),
+        completionMarker: normalizeText(topic?.completionMarker),
+        askedAt: topic?.askedAt ?? null,
+        verification: createVerificationMoment(topic?.verification),
+        order: index + 1
+    };
+}
+
+function createVerificationMoment(verification = {}) {
+    if (!verification || typeof verification !== 'object') {
+        return null;
+    }
+
+    const prompt = normalizeText(verification.prompt);
+    const selectedPhrase = normalizeText(verification.selectedPhrase);
+    const expectedPhrase = normalizeText(verification.expectedPhrase);
+
+    if (!prompt && !selectedPhrase && !expectedPhrase) {
+        return null;
+    }
+
+    return {
+        id: normalizeText(verification.id),
+        prompt,
+        expectedPhrase,
+        selectedPhrase,
+        selectedLabel: normalizeText(verification.selectedLabel),
+        verified: verification.verified === true,
+        message: normalizeText(verification.message)
+    };
+}
+
+function createConversationMoments(objective = {}) {
+    return (Array.isArray(objective.completedTopics) ? objective.completedTopics : [])
+        .map(createConversationMoment)
+        .filter(moment => moment.topicId || moment.topicLabel || moment.topicResponse || moment.completionMarker);
+}
+
 function createStampFromObjective(quest, objective, index) {
     return {
         questId: normalizeText(quest.id),
@@ -27,7 +69,8 @@ function createStampFromObjective(quest, objective, index) {
         goal: normalizeText(objective.goal),
         visited: objective.visited === true,
         visitedAt: objective.visitedAt ?? null,
-        completed: quest.completed === true
+        completed: quest.completed === true,
+        conversationMoments: createConversationMoments(objective)
     };
 }
 

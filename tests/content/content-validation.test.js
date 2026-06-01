@@ -33,6 +33,41 @@ describe('content validation', () => {
                 expect(typeof topic.completionMarker).toBe('string');
                 expect(topic.completionMarker.trim().length, `${fieldName}.completionMarker should not be blank`).toBeGreaterThan(0);
             }
+
+            if (topic.verification !== undefined) {
+                expect(topic.verification && typeof topic.verification, `${fieldName}.verification should be an object`).toBe('object');
+                expect(typeof topic.verification.prompt, `${fieldName}.verification.prompt should be a string`).toBe('string');
+                expect(topic.verification.prompt.trim().length, `${fieldName}.verification.prompt should not be blank`).toBeGreaterThan(0);
+                expect(typeof topic.verification.expectedPhrase, `${fieldName}.verification.expectedPhrase should be a string`).toBe('string');
+                expect(topic.verification.expectedPhrase.trim().length, `${fieldName}.verification.expectedPhrase should not be blank`).toBeGreaterThan(0);
+                expect(typeof topic.verification.successText, `${fieldName}.verification.successText should be a string`).toBe('string');
+                expect(topic.verification.successText.trim().length, `${fieldName}.verification.successText should not be blank`).toBeGreaterThan(0);
+                expect(typeof topic.verification.failureText, `${fieldName}.verification.failureText should be a string`).toBe('string');
+                expect(topic.verification.failureText.trim().length, `${fieldName}.verification.failureText should not be blank`).toBeGreaterThan(0);
+                expectTextList(topic.verification.choices, `${fieldName}.verification.choices`);
+                expect(topic.verification.choices).toContain(topic.verification.expectedPhrase);
+            }
+        }
+    }
+
+    function expectDiscoveryStopList(value, fieldName) {
+        expect(Array.isArray(value), `${fieldName} should be an array`).toBe(true);
+
+        for (const stop of value) {
+            expect(stop && typeof stop === 'object', `${fieldName} entries should be objects`).toBe(true);
+            expect(typeof stop.id, `${fieldName}.id should be a string`).toBe('string');
+            expect(stop.id.trim().length, `${fieldName}.id should not be blank`).toBeGreaterThan(0);
+            expect(typeof stop.vendorId, `${fieldName}.vendorId should be a string`).toBe('string');
+            expect(stop.vendorId.trim().length, `${fieldName}.vendorId should not be blank`).toBeGreaterThan(0);
+            expect(typeof stop.clueText, `${fieldName}.clueText should be a string`).toBe('string');
+            expect(stop.clueText.trim().length, `${fieldName}.clueText should not be blank`).toBeGreaterThan(0);
+            expect(typeof stop.goalText, `${fieldName}.goalText should be a string`).toBe('string');
+            expect(stop.goalText.trim().length, `${fieldName}.goalText should not be blank`).toBeGreaterThan(0);
+
+            if (stop.completionMarker !== undefined) {
+                expect(typeof stop.completionMarker).toBe('string');
+                expect(stop.completionMarker.trim().length, `${fieldName}.completionMarker should not be blank`).toBeGreaterThan(0);
+            }
         }
     }
 
@@ -110,10 +145,16 @@ describe('content validation', () => {
         }
 
         expectTopicList(sampleVendors[0].topics, `${sampleVendors[0].id}.topics`);
-        expect(sampleVendors[0].topics).toContainEqual({
+        expect(sampleVendors[0].topics[0]).toMatchObject({
             id: 'portable_demo',
             label: 'the portable computer on the table',
-            response: 'That is our portable IBM PC demo. It is a favorite example of a compact system you can still carry around the show floor.'
+            completionMarker: 'portable_demo',
+            response: 'That is our portable IBM PC demo. It is a favorite example of a compact system you can still carry around the show floor.',
+            verification: {
+                prompt: 'Which phrase is posted beside the portable demo?',
+                expectedPhrase: 'Luggable Legends',
+                choices: expect.arrayContaining(['Luggable Legends'])
+            }
         });
     });
 
@@ -153,11 +194,21 @@ describe('content validation', () => {
                 expect(typeof stop.goalText).toBe('string');
                 expect(stop.goalText.trim().length).toBeGreaterThan(0);
 
+                if (stop.completionMarker !== undefined) {
+                    expect(typeof stop.completionMarker).toBe('string');
+                    expect(stop.completionMarker.trim().length).toBeGreaterThan(0);
+                }
+
                 stopIds.add(stop.id);
                 stopVendorIds.add(stop.vendorId);
             }
 
             trailIds.add(trail.id);
         }
+
+        expectDiscoveryStopList(discoveryTrails[0].stops, `${discoveryTrails[0].id}.stops`);
+        expect(discoveryTrails[0].stops[0]).toMatchObject({
+            completionMarker: 'portable_demo'
+        });
     });
 });

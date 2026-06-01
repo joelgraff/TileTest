@@ -78,6 +78,21 @@ function appendStampLine(questItems, stamp) {
     const goal = stamp.goal ? ` Goal: ${stamp.goal}` : '';
 
     questItems.push(`   ✓ ${stamp.vendorName}${booth}${clue}${goal}`);
+
+    for (const moment of Array.isArray(stamp.conversationMoments) ? stamp.conversationMoments : []) {
+        if (moment.topicLabel) {
+            questItems.push(`      Asked about: ${moment.topicLabel}`);
+        }
+
+        if (moment.topicResponse) {
+            questItems.push(`      Learned: ${moment.topicResponse}`);
+        }
+
+        if (moment.verification?.verified && moment.verification.selectedPhrase) {
+            const prompt = moment.verification.prompt ? `${moment.verification.prompt} -> ` : '';
+            questItems.push(`      Verified: ${prompt}${moment.verification.selectedPhrase}`);
+        }
+    }
 }
 
 function createEncounterLine(encounter) {

@@ -37,6 +37,7 @@ function createEncounterFromObjective(quest, objective, index, nextOpenObjective
         booth: normalizeText(objective?.booth),
         clue: normalizeText(objective?.clue),
         goal: normalizeText(objective?.goal),
+        completionMarker: normalizeText(objective?.completionMarker),
         status,
         visited: objective?.visited === true,
         visitedAt: objective?.visitedAt ?? null,

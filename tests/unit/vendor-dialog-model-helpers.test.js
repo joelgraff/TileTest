@@ -13,6 +13,7 @@ import {
     createVendorTopicResponseDialogData,
     createVendorRootDialogData
 } from '../../vendorDialogModels.js';
+import { createTopicVerificationResult } from '../../vendorConversationTopics.js';
 
 describe('vendor dialog model helpers', () => {
     it('builds return, message, and continue dialog models from callbacks', () => {
@@ -131,7 +132,16 @@ describe('vendor dialog model helpers', () => {
         const returnButton = createVendorReturnButton(originalDialogData, { showDialog });
         const vendorData = {
             topics: [
-                { id: ' portable_demo ', label: ' the portable demo ', response: ' Ask about the portable demo. ' },
+                {
+                    id: ' portable_demo ',
+                    label: ' the portable demo ',
+                    response: ' Ask about the portable demo. ',
+                    verification: {
+                        prompt: ' Which phrase is posted beside it? ',
+                        expectedPhrase: ' Luggable Legends ',
+                        choices: [' Luggable Legends ', 'Pocket Spreadsheet']
+                    }
+                },
                 { id: '', label: 'Broken', response: 'Missing id.' }
             ]
         };
@@ -142,17 +152,33 @@ describe('vendor dialog model helpers', () => {
             handleVendorResponse
         });
         const topicDialog = createVendorTopicResponseDialogData({
-            response: 'That is our portable IBM PC demo.'
+            response: 'That is our portable IBM PC demo.',
+            verification: {
+                prompt: 'Which phrase is posted beside it?'
+            }
         }, {
-            returnButton
+            returnButton,
+            verificationButtons: [{ label: 'Luggable Legends', onClick: vi.fn() }]
         });
 
         expect(topicButtons).toHaveLength(1);
         expect(topicButtons.map(button => button.label)).toEqual(['Ask about the portable demo']);
         expect(topicDialog).toEqual({
             renderMode: 'dom',
-            text: 'That is our portable IBM PC demo.',
-            buttons: [returnButton]
+            text: 'That is our portable IBM PC demo.\n\nWhich phrase is posted beside it?',
+            buttons: [
+                { label: 'Luggable Legends', onClick: expect.any(Function) },
+                returnButton
+            ]
+        });
+        expect(createTopicVerificationResult(vendorData.topics[0], 'Luggable Legends')).toMatchObject({
+            prompt: 'Which phrase is posted beside it?',
+            selectedPhrase: 'Luggable Legends',
+            verified: true
+        });
+        expect(createTopicVerificationResult(vendorData.topics[0], 'Pocket Spreadsheet')).toMatchObject({
+            selectedPhrase: 'Pocket Spreadsheet',
+            verified: false
         });
 
         topicButtons[0].onClick();
@@ -165,7 +191,18 @@ describe('vendor dialog model helpers', () => {
                 topic: {
                     id: 'portable_demo',
                     label: 'the portable demo',
-                    response: 'Ask about the portable demo.'
+                    response: 'Ask about the portable demo.',
+                    verification: {
+                        id: 'Luggable Legends',
+                        prompt: 'Which phrase is posted beside it?',
+                        expectedPhrase: 'Luggable Legends',
+                        successText: 'Verification accepted: Luggable Legends.',
+                        failureText: 'That phrase does not match this stop.',
+                        choices: [
+                            { label: 'Luggable Legends', phrase: 'Luggable Legends' },
+                            { label: 'Pocket Spreadsheet', phrase: 'Pocket Spreadsheet' }
+                        ]
+                    }
                 }
             },
             vendorData,

@@ -68,7 +68,13 @@ describe('live vendor announcement store', () => {
                     featuredItems: [' Osborne 1 ', { name: 'Kaypro II demo' }, ''],
                     announcements: ' Demo at 2 PM\n ',
                     clueText: { text: 'Ask about CP/M.' },
-                    moderationStatus: 'needs_review'
+                    moderationStatus: 'needs_review',
+                    topics: [{
+                        id: ' portable_demo ',
+                        label: ' the portable demo ',
+                        response: ' Ask about the portable demo. ',
+                        completionMarker: ' portable_demo '
+                    }]
                 },
                 { vendorId: 'empty', featuredItems: [], announcements: [] },
                 { vendorId: '100', featuredDemos: ['Disk imaging station'] }
@@ -80,7 +86,13 @@ describe('live vendor announcement store', () => {
                 featuredItems: ['Osborne 1', 'Kaypro II demo', 'Disk imaging station'],
                 announcements: ['Demo at 2 PM'],
                 clueText: 'Ask about CP/M.',
-                moderationStatus: 'needs_review'
+                moderationStatus: 'needs_review',
+                topics: [{
+                    id: 'portable_demo',
+                    label: 'the portable demo',
+                    response: 'Ask about the portable demo.',
+                    completionMarker: 'portable_demo'
+                }]
             }
         ]);
     });
@@ -93,21 +105,52 @@ describe('live vendor announcement store', () => {
             descriptionOverride: 'Try the terminal wall.',
             featuredItems: 'ADM-3A\nVT100',
             announcements: ['Talk at 4 PM'],
-            clueText: 'Ask about the serial adapter.'
+            clueText: 'Ask about the serial adapter.',
+            topics: [{
+                id: 'portable_demo',
+                label: 'the portable demo',
+                response: 'Ask about the portable demo.',
+                verification: {
+                    prompt: 'Which phrase is posted beside it?',
+                    expectedPhrase: 'Luggable Legends',
+                    choices: ['Luggable Legends', 'Pocket Spreadsheet']
+                }
+            }]
         })).toMatchObject({
             vendorId: '100',
             descriptionOverride: 'Try the terminal wall.',
             featuredItems: ['ADM-3A', 'VT100'],
             announcements: ['Talk at 4 PM'],
             clueText: 'Ask about the serial adapter.',
-            moderationStatus: 'approved'
+            moderationStatus: 'approved',
+            topics: [{
+                id: 'portable_demo',
+                label: 'the portable demo',
+                response: 'Ask about the portable demo.',
+                verification: {
+                    id: 'Luggable Legends',
+                    prompt: 'Which phrase is posted beside it?',
+                    expectedPhrase: 'Luggable Legends',
+                    successText: 'Verification accepted: Luggable Legends.',
+                    failureText: 'That phrase does not match this stop.',
+                    choices: [
+                        { label: 'Luggable Legends', phrase: 'Luggable Legends' },
+                        { label: 'Pocket Spreadsheet', phrase: 'Pocket Spreadsheet' }
+                    ]
+                }
+            }]
         });
 
         expect(store.getContentForVendor('100')).toMatchObject({
             descriptionOverride: 'Try the terminal wall.',
             featuredItems: ['ADM-3A', 'VT100'],
             announcements: ['Talk at 4 PM'],
-            clueText: 'Ask about the serial adapter.'
+            clueText: 'Ask about the serial adapter.',
+            topics: [{
+                id: 'portable_demo',
+                label: 'the portable demo',
+                response: 'Ask about the portable demo.'
+            }]
         });
         expect(store.getAnnouncementsForVendor('100')).toEqual(['Talk at 4 PM']);
         expect(store.toJSON()).toEqual({
@@ -117,7 +160,23 @@ describe('live vendor announcement store', () => {
                 featuredItems: ['ADM-3A', 'VT100'],
                 announcements: ['Talk at 4 PM'],
                 clueText: 'Ask about the serial adapter.',
-                moderationStatus: 'approved'
+                moderationStatus: 'approved',
+                topics: [{
+                    id: 'portable_demo',
+                    label: 'the portable demo',
+                    response: 'Ask about the portable demo.',
+                    verification: {
+                        id: 'Luggable Legends',
+                        prompt: 'Which phrase is posted beside it?',
+                        expectedPhrase: 'Luggable Legends',
+                        successText: 'Verification accepted: Luggable Legends.',
+                        failureText: 'That phrase does not match this stop.',
+                        choices: [
+                            { label: 'Luggable Legends', phrase: 'Luggable Legends' },
+                            { label: 'Pocket Spreadsheet', phrase: 'Pocket Spreadsheet' }
+                        ]
+                    }
+                }]
             }],
             announcements: [{
                 vendorId: '100',

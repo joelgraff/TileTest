@@ -151,7 +151,19 @@ describe('ui dialog models', () => {
                         booth: 'A1',
                         clue: 'Find the repair bench.',
                         goal: 'Ask what needs fixing.',
-                        visited: true
+                        visited: true,
+                        completedTopics: [{
+                            topicId: 'portable_demo',
+                            topicLabel: 'the portable computer on the table',
+                            topicResponse: 'That is our portable IBM PC demo.',
+                            completionMarker: 'portable_demo',
+                            askedAt: 112,
+                            verification: {
+                                prompt: 'Which phrase is posted beside the portable demo?',
+                                selectedPhrase: 'Luggable Legends',
+                                verified: true
+                            }
+                        }]
                     }
                 ],
                 reward: {
@@ -173,6 +185,9 @@ describe('ui dialog models', () => {
         expect(dialog.text).toContain('1. Starter Trail ✓');
         expect(dialog.text).toContain('   Starter trail complete.');
         expect(dialog.text).toContain('   ✓ Vendor One (A1): Find the repair bench. Goal: Ask what needs fixing.');
+        expect(dialog.text).toContain('      Asked about: the portable computer on the table');
+        expect(dialog.text).toContain('      Learned: That is our portable IBM PC demo.');
+        expect(dialog.text).toContain('      Verified: Which phrase is posted beside the portable demo? -> Luggable Legends');
     });
 
     it('builds help and quest fallback dialogs from pure content helpers', () => {

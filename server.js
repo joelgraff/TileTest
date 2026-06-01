@@ -69,13 +69,14 @@ async function readVendors() {
     const vendorFile = await fs.readFile(path.join(repoRoot, 'vendors.json'), 'utf8');
     const vendors = JSON.parse(vendorFile);
 
-    return vendors.map(({ id, name, booth, description, featuredItems, announcements }) => ({
+    return vendors.map(({ id, name, booth, description, featuredItems, announcements, topics }) => ({
         id,
         name,
         booth,
         description,
         featuredItems,
-        announcements
+        announcements,
+        topics
     }));
 }
 

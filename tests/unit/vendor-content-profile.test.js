@@ -95,6 +95,50 @@ describe('vendor content profile', () => {
         ]);
     });
 
+    it('prefers live-authored topics and falls back to bundled topics when none are provided live', () => {
+        const bundledTopic = {
+            id: 'portable_demo',
+            label: 'the portable computer on the table',
+            response: 'Bundled response.',
+            completionMarker: 'portable_demo'
+        };
+        const liveTopic = {
+            id: 'portable_demo',
+            label: 'the handwritten placard',
+            response: 'Live response.',
+            completionMarker: 'portable_demo',
+            verification: {
+                prompt: 'Which phrase is on the placard?',
+                expectedPhrase: 'Portable Powerhouse',
+                choices: ['Portable Powerhouse', 'Pocket Spreadsheet']
+            }
+        };
+
+        const liveProfile = createVendorContentProfile({ topics: [bundledTopic] }, { topics: [liveTopic] });
+        const bundledProfile = createVendorContentProfile({ topics: [bundledTopic] }, { topics: null });
+
+        expect(liveProfile.topics).toEqual([
+            {
+                id: 'portable_demo',
+                label: 'the handwritten placard',
+                response: 'Live response.',
+                completionMarker: 'portable_demo',
+                verification: {
+                    id: 'Portable Powerhouse',
+                    prompt: 'Which phrase is on the placard?',
+                    expectedPhrase: 'Portable Powerhouse',
+                    successText: 'Verification accepted: Portable Powerhouse.',
+                    failureText: 'That phrase does not match this stop.',
+                    choices: [
+                        { label: 'Portable Powerhouse', phrase: 'Portable Powerhouse' },
+                        { label: 'Pocket Spreadsheet', phrase: 'Pocket Spreadsheet' }
+                    ]
+                }
+            }
+        ]);
+        expect(bundledProfile.topics).toEqual([bundledTopic]);
+    });
+
     it('provides safe display fallbacks for incomplete vendor content', () => {
         const profile = createVendorContentProfile({}, {
             domainName: '',

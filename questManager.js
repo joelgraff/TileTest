@@ -444,6 +444,7 @@ class QuestManager {
             booth: this.normalizeText(vendorData.booth, 'Unknown Booth'),
             clue,
             goal: this.normalizeText(trailStop.goalText, this.normalizeText(trailStop.goal)),
+            completionMarker: this.normalizeText(trailStop.completionMarker),
             visited: false,
             visitedAt: null
         };
@@ -619,6 +620,67 @@ class QuestManager {
         };
     }
 
+    createConversationTopicCompletion(topic, completionMarker, askedAt) {
+        if (!topic || typeof topic !== 'object') {
+            return null;
+        }
+
+        const topicId = this.normalizeText(topic.id, this.normalizeText(topic.topicId));
+        const topicLabel = this.normalizeText(topic.label, this.normalizeText(topic.topicLabel));
+        const topicResponse = this.normalizeText(topic.response, this.normalizeText(topic.topicResponse));
+        const resolvedCompletionMarker = this.normalizeText(topic.completionMarker, completionMarker);
+
+        if (!topicId && !topicLabel && !topicResponse && !resolvedCompletionMarker) {
+            return null;
+        }
+
+        return {
+            topicId,
+            topicLabel,
+            topicResponse,
+            completionMarker: resolvedCompletionMarker,
+            askedAt,
+            verification: this.createConversationVerificationCompletion(topic.verificationResult)
+        };
+    }
+
+    createConversationVerificationCompletion(verificationResult) {
+        if (!verificationResult || typeof verificationResult !== 'object') {
+            return null;
+        }
+
+        const selectedPhrase = this.normalizeText(verificationResult.selectedPhrase);
+        const prompt = this.normalizeText(verificationResult.prompt);
+        const expectedPhrase = this.normalizeText(verificationResult.expectedPhrase);
+        const verified = verificationResult.verified === true;
+
+        if (!selectedPhrase && !prompt && !expectedPhrase) {
+            return null;
+        }
+
+        return {
+            id: this.normalizeText(verificationResult.id),
+            prompt,
+            expectedPhrase,
+            selectedLabel: this.normalizeText(verificationResult.selectedLabel),
+            selectedPhrase,
+            verified,
+            message: this.normalizeText(verificationResult.message)
+        };
+    }
+
+    recordObjectiveConversationTopic(objective, topic, completionMarker, askedAt) {
+        const completion = this.createConversationTopicCompletion(topic, completionMarker, askedAt);
+        if (!completion) {
+            return;
+        }
+
+        objective.completedTopics = [
+            ...(Array.isArray(objective.completedTopics) ? objective.completedTopics : []),
+            completion
+        ];
+    }
+
     createVendorDiscoveryResult({ quest, objective, vendorId, visitedCount, totalCount, questCompleted, nextEncounter = null }) {
         const vendorName = this.normalizeText(objective?.vendorName, 'Unknown Vendor');
         const booth = this.normalizeText(objective?.booth);
@@ -626,6 +688,8 @@ class QuestManager {
         const nextEncounterText = !questCompleted && nextEncounter
             ? `\nNext encounter: ${this.createEncounterVendorLabel(nextEncounter)}.`
             : '';
+        const verificationText = this.createVerificationFeedbackText(objective);
+        const verificationPrefix = verificationText ? `${verificationText}\n` : '';
 
         return {
             updated: true,
@@ -643,8 +707,20 @@ class QuestManager {
             nextVendorId: this.normalizeText(nextEncounter?.vendorId),
             nextVendorName: this.normalizeText(nextEncounter?.vendorName),
             nextBooth: this.normalizeText(nextEncounter?.booth),
-            message: `Passport stamp earned: ${vendorName}${boothLabel}\n${quest.title} progress: ${visitedCount}/${totalCount} vendors visited.${nextEncounterText}`
+            message: `${verificationPrefix}Passport stamp earned: ${vendorName}${boothLabel}\n${quest.title} progress: ${visitedCount}/${totalCount} vendors visited.${nextEncounterText}`
         };
+    }
+
+    createVerificationFeedbackText(objective) {
+        const completedTopics = Array.isArray(objective?.completedTopics) ? objective.completedTopics : [];
+        const latestTopic = completedTopics[completedTopics.length - 1] ?? null;
+        const verification = latestTopic?.verification;
+
+        if (verification?.verified !== true) {
+            return '';
+        }
+
+        return this.normalizeText(verification.message, `Verification accepted: ${verification.selectedPhrase}.`);
     }
 
     checkVendorDiscoveryResult(vendorId, vendorData = {}) {
@@ -652,6 +728,8 @@ class QuestManager {
         if (!resolvedVendorId) {
             return this.createEmptyVendorDiscoveryResult();
         }
+
+        const requestedCompletionMarker = this.normalizeText(vendorData?.completionMarker);
 
         let questUpdated = false;
         let questCompleted = false;
@@ -679,6 +757,11 @@ class QuestManager {
                 return;
             }
 
+            const encounterCompletionMarker = this.normalizeText(encounter?.completionMarker);
+            if (encounterCompletionMarker !== requestedCompletionMarker) {
+                return;
+            }
+
             if (!encounter.available) {
                 return;
             }
@@ -688,8 +771,10 @@ class QuestManager {
                     return;
                 }
 
+                const visitedAt = Date.now();
+
                 objective.visited = true;
-                objective.visitedAt = Date.now();
+                objective.visitedAt = visitedAt;
                 objective.vendorName = this.normalizeText(vendorData.name, objective.vendorName);
                 objective.booth = this.normalizeText(vendorData.booth, objective.booth);
                 objective.clue = this.resolveDiscoveryClue({
@@ -698,6 +783,12 @@ class QuestManager {
                     name: this.normalizeText(vendorData.name, objective.vendorName),
                     booth: this.normalizeText(vendorData.booth, objective.booth)
                 });
+                this.recordObjectiveConversationTopic(
+                    objective,
+                    vendorData.conversationTopic,
+                    requestedCompletionMarker,
+                    visitedAt
+                );
                 questUpdated = true;
 
                 const allObjectivesComplete = quest.objectives.every(obj => obj.visited);

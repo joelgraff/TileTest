@@ -8,6 +8,7 @@
       {
         "id": "repairable-electronics",
         "vendorId": "100",
+        "completionMarker": "portable_demo",
         "clueText": "Start with assorted PCs, phones, and repairable electronics.",
         "goalText": "Ask what unusual portable or repairable find is on the table today."
       },

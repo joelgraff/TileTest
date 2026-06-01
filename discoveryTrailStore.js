@@ -26,11 +26,14 @@ function normalizeTrailStop(stop, index) {
         return null;
     }
 
+    const completionMarker = normalizeText(stop.completionMarker);
+
     return {
         id: normalizeText(stop.id, `stop-${index + 1}`),
         vendorId,
         clueText: normalizeText(stop.clueText ?? stop.clue),
-        goalText: normalizeText(stop.goalText ?? stop.goal)
+        goalText: normalizeText(stop.goalText ?? stop.goal),
+        ...(completionMarker ? { completionMarker } : {})
     };
 }
 

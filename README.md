@@ -142,7 +142,7 @@ As of 2026-05-25, the recovered baseline is frozen at:
 - `npx vitest run tests/unit/map-fixture-contracts.test.js` passing as the explicit collision fixture gate
 - `npx playwright test` passing with 13 browser tests, including smoke, visual regression, and desktop/mobile stabilization-gate coverage
 
-Release note: [Frozen Baseline 2026-05-25](Frozen%20Baseline%202026-05-25.md)
+Release note: [Frozen Baseline 2026-05-25](docs/archive/Frozen%20Baseline%202026-05-25.md)
 
 Re-establish this baseline before starting any new feature work.
 

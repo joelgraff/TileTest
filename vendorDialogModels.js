@@ -107,7 +107,7 @@ export function createVendorItemsDialogData(vendorData, imageKey, {
 
 export function createVendorResponseButtons(vendorData, { imageKey, originalDialogData, handleVendorResponse }) {
     return getVendorResponses(vendorData)
-        .filter(response => response.action !== 'end' && response.text !== 'Tell me about your booth')
+        .filter(response => response.action !== 'end' && response.action !== 'booth_info')
         .map(response => ({
             label: response.text,
             onClick: () => handleVendorResponse(response, vendorData, imageKey, originalDialogData)

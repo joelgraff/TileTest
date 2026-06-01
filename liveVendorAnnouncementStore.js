@@ -6,6 +6,8 @@ const MODERATION_STATUSES = new Set([
     'rejected'
 ]);
 
+import { normalizeVendorConversationTopics } from './vendorConversationTopics.js';
+
 function normalizeVendorId(value) {
     if (typeof value === 'number' && Number.isFinite(value)) {
         return String(value);
@@ -173,12 +175,17 @@ export function normalizeVendorAnnouncementSnapshot(snapshot) {
 }
 
 function normalizeVendorContentPayload(entry) {
+    const topics = hasOwn(entry, 'topics')
+        ? normalizeVendorConversationTopics(entry.topics)
+        : null;
+
     return {
         descriptionOverride: normalizeTextBlock(getEntryDescriptionOverride(entry)),
         featuredItems: normalizeAnnouncementLines(getEntryFeaturedItems(entry)),
         announcements: normalizeAnnouncementLines(getEntryAnnouncements(entry)),
         clueText: normalizeTextBlock(getEntryClueText(entry)),
-        moderationStatus: normalizeModerationStatus(entry.moderationStatus)
+        moderationStatus: normalizeModerationStatus(entry.moderationStatus),
+        topics
     };
 }
 
@@ -239,7 +246,8 @@ function createDefaultVendorContent() {
         featuredItems: [],
         announcements: [],
         clueText: '',
-        moderationStatus: DEFAULT_MODERATION_STATUS
+        moderationStatus: DEFAULT_MODERATION_STATUS,
+        topics: null
     };
 }
 
@@ -249,7 +257,10 @@ function cloneVendorContent(content) {
         featuredItems: [...content.featuredItems],
         announcements: [...content.announcements],
         clueText: content.clueText,
-        moderationStatus: content.moderationStatus
+        moderationStatus: content.moderationStatus,
+        topics: Array.isArray(content.topics)
+            ? content.topics.map(topic => JSON.parse(JSON.stringify(topic)))
+            : null
     };
 }
 
@@ -259,7 +270,8 @@ function hasVendorContent(content) {
         content.featuredItems.length > 0 ||
         content.announcements.length > 0 ||
         content.clueText ||
-        content.moderationStatus !== DEFAULT_MODERATION_STATUS
+        content.moderationStatus !== DEFAULT_MODERATION_STATUS ||
+        (Array.isArray(content.topics) && content.topics.length > 0)
     );
 }
 
@@ -277,7 +289,10 @@ function mergeVendorContent(currentContent, normalizedEntry) {
         clueText: normalizedEntry.clueText || currentContent.clueText,
         moderationStatus: normalizedEntry.moderationStatus !== DEFAULT_MODERATION_STATUS
             ? normalizedEntry.moderationStatus
-            : currentContent.moderationStatus
+            : currentContent.moderationStatus,
+        topics: normalizedEntry.topics !== null
+            ? normalizedEntry.topics.map(topic => JSON.parse(JSON.stringify(topic)))
+            : currentContent.topics
     };
 }
 
@@ -288,7 +303,8 @@ function toVendorContentJsonEntry(vendorId, content) {
         featuredItems: [...content.featuredItems],
         announcements: [...content.announcements],
         clueText: content.clueText,
-        moderationStatus: content.moderationStatus
+        moderationStatus: content.moderationStatus,
+        ...(Array.isArray(content.topics) ? { topics: content.topics.map(topic => JSON.parse(JSON.stringify(topic))) } : {})
     };
 }
 

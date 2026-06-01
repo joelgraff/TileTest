@@ -5,6 +5,7 @@ import {
     createVendorFactLines
 } from './vendorContentProfile.js';
 import { getVendorsForSessionVendorIds } from './sessionVendorRoster.js';
+import { createTopicVerificationResult } from './vendorConversationTopics.js';
 import {
     createVendorBoothInfoDialogData,
     createVendorContinueDialogData,
@@ -247,13 +248,158 @@ class VendorManager {
         });
     }
 
-    buildVendorTopicResponseDialogData(topic, originalDialogData) {
-        if (!topic) {
-            return this.buildVendorMessageDialogData('No topic response available at this time.', originalDialogData);
+    createConversationTopic(topic, completionMarker, verificationResult = null) {
+        if (!topic || typeof topic !== 'object') {
+            return null;
         }
 
+        return {
+            ...topic,
+            ...(completionMarker ? { completionMarker } : {}),
+            ...(verificationResult ? { verificationResult } : {})
+        };
+    }
+
+    createTopicCompletionVendorContent(resolvedVendorContent, completionMarker, conversationTopic) {
+        return {
+            ...resolvedVendorContent,
+            completionMarker,
+            ...(conversationTopic ? { conversationTopic } : {})
+        };
+    }
+
+    showTopicVerificationFailure(verificationResult, topic, vendorData, imageKey, originalDialogData, vendorContent) {
+        this.showDialog?.(this.buildVendorContinueDialogData(
+            verificationResult.message,
+            () => this.showDialog?.(this.buildVendorTopicResponseDialogData(
+                topic,
+                vendorData,
+                imageKey,
+                originalDialogData,
+                vendorContent
+            ))
+        ));
+    }
+
+    handleTopicCompletion(vendorData, imageKey, originalDialogData, resolvedVendorContent, completionMarker, conversationTopic) {
+        if (!completionMarker) {
+            this.showDialog?.(originalDialogData);
+            return;
+        }
+
+        const completionVendorContent = this.createTopicCompletionVendorContent(
+            resolvedVendorContent,
+            completionMarker,
+            conversationTopic
+        );
+        const discoveryResult = this.markVendorDiscovery(vendorData, completionVendorContent);
+        const feedbackText = this.buildVendorDiscoveryFeedbackText(discoveryResult);
+
+        if (feedbackText) {
+            this.showVendorDiscoveryFeedback(discoveryResult, {
+                vendorData,
+                imageKey,
+                vendorContent: completionVendorContent
+            });
+            return;
+        }
+
+        if (!discoveryResult?.questCompleted) {
+            this.showDialog?.(originalDialogData);
+        }
+    }
+
+    handleTopicVerificationChoice(choice, topic, vendorData, imageKey, originalDialogData, resolvedVendorContent, completionMarker) {
+        const verificationResult = createTopicVerificationResult(topic, choice);
+        if (!verificationResult) {
+            this.showDialog?.(originalDialogData);
+            return;
+        }
+
+        if (!verificationResult.verified) {
+            this.showTopicVerificationFailure(
+                verificationResult,
+                topic,
+                vendorData,
+                imageKey,
+                originalDialogData,
+                resolvedVendorContent
+            );
+            return;
+        }
+
+        this.handleTopicCompletion(
+            vendorData,
+            imageKey,
+            originalDialogData,
+            resolvedVendorContent,
+            completionMarker,
+            this.createConversationTopic(topic, completionMarker, verificationResult)
+        );
+    }
+
+    createTopicVerificationButtons(topic, vendorData, imageKey, originalDialogData, resolvedVendorContent, completionMarker) {
+        const choices = Array.isArray(topic?.verification?.choices) ? topic.verification.choices : [];
+
+        return choices
+            .map(choice => ({
+                label: typeof choice === 'string' ? choice.trim() : choice.label,
+                onClick: () => this.handleTopicVerificationChoice(
+                    choice,
+                    topic,
+                    vendorData,
+                    imageKey,
+                    originalDialogData,
+                    resolvedVendorContent,
+                    completionMarker
+                )
+            }))
+            .filter(button => button.label);
+    }
+
+    buildVendorTopicResponseDialogData(topic, vendorData, imageKey, originalDialogData, vendorContent = vendorData) {
+        const resolvedVendorContent = vendorContent ?? vendorData;
+        const completionMarker = typeof topic?.completionMarker === 'string'
+            ? topic.completionMarker.trim()
+            : '';
+        const verificationButtons = typeof this.createTopicVerificationButtons === 'function'
+            ? this.createTopicVerificationButtons(
+                topic,
+                vendorData,
+                imageKey,
+                originalDialogData,
+                resolvedVendorContent,
+                completionMarker
+            )
+            : [];
+        const requiresVerification = verificationButtons.length > 0;
+        const conversationTopic = typeof this.createConversationTopic === 'function'
+            ? this.createConversationTopic(topic, completionMarker)
+            : {
+                ...topic,
+                ...(completionMarker ? { completionMarker } : {})
+            };
+
         return createVendorTopicResponseDialogData(topic, {
-            returnButton: this.createReturnButton(originalDialogData)
+            verificationButtons,
+            returnButton: {
+                label: 'Back',
+                onClick: () => {
+                    if (completionMarker && !requiresVerification) {
+                        this.handleTopicCompletion(
+                            vendorData,
+                            imageKey,
+                            originalDialogData,
+                            resolvedVendorContent,
+                            completionMarker,
+                            conversationTopic
+                        );
+                        return;
+                    }
+
+                    this.showDialog?.(originalDialogData);
+                }
+            }
         });
     }
 
@@ -359,7 +505,7 @@ class VendorManager {
         });
     }
 
-    handleVendorResponse(response, vendorData, imageKey, originalDialogData) {
+    handleVendorResponse(response, vendorData, imageKey, originalDialogData, vendorContent = vendorData) {
         if (response.action === 'show_items') {
             this.showDialog?.(this.buildVendorItemsDialogData(vendorData, imageKey, originalDialogData));
             return;
@@ -376,7 +522,13 @@ class VendorManager {
         }
 
         if (response.action === 'ask_topic') {
-            this.showDialog?.(this.buildVendorTopicResponseDialogData(response.topic, originalDialogData));
+            this.showDialog?.(this.buildVendorTopicResponseDialogData(
+                response.topic,
+                vendorData,
+                imageKey,
+                originalDialogData,
+                vendorContent
+            ));
             return;
         }
 
@@ -388,7 +540,7 @@ class VendorManager {
             imageKey,
             originalDialogData,
             handleVendorResponse: (response, _dialogVendorData, dialogImageKey, dialogData) => {
-                this.handleVendorResponse(response, vendorData, dialogImageKey, dialogData);
+                this.handleVendorResponse(response, vendorData, dialogImageKey, dialogData, vendorContent);
             }
         });
     }
@@ -398,7 +550,7 @@ class VendorManager {
             imageKey,
             originalDialogData,
             handleVendorResponse: (response, _dialogVendorData, dialogImageKey, dialogData) => {
-                this.handleVendorResponse(response, vendorData, dialogImageKey, dialogData);
+                this.handleVendorResponse(response, vendorData, dialogImageKey, dialogData, vendorContent);
             }
         });
     }

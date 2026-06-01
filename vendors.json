@@ -16,7 +16,20 @@
       {
         "id": "portable_demo",
         "label": "the portable computer on the table",
-        "response": "That is our portable IBM PC demo. It is a favorite example of a compact system you can still carry around the show floor."
+        "completionMarker": "portable_demo",
+        "response": "That is our portable IBM PC demo. It is a favorite example of a compact system you can still carry around the show floor.",
+        "verification": {
+          "id": "portable_demo_phrase",
+          "prompt": "Which phrase is posted beside the portable demo?",
+          "expectedPhrase": "Luggable Legends",
+          "successText": "Verification accepted: Luggable Legends.",
+          "failureText": "That phrase does not match the portable demo placard.",
+          "choices": [
+            "Luggable Legends",
+            "Pocket Spreadsheet",
+            "Terminal Sunrise"
+          ]
+        }
       }
     ],
     "clueText": "Look for the booth with assorted PCs, phones, and repairable electronics.",

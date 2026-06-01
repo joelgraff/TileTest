@@ -1,3 +1,6 @@
+import { analyzeTopicLines, buildMarkerFlowPreview } from './adminConversationValidation.js';
+import { normalizeVendorConversationTopics } from './vendorConversationTopics.js';
+
 const NEW_TRAIL_VALUE = '';
 
 const pageMode = document.body?.dataset.dashboardMode ?? 'admin';
@@ -23,6 +26,14 @@ const trailForm = document.querySelector('#trail-form');
 const trailResetButton = document.querySelector('#trail-reset-button');
 const trailStatusElement = document.querySelector('#trail-status');
 const trailList = document.querySelector('#trail-list');
+const topicVendorSelect = document.querySelector('#topic-vendor-select');
+const topicInput = document.querySelector('#topic-input');
+const topicForm = document.querySelector('#topic-form');
+const topicResetButton = document.querySelector('#topic-reset-button');
+const topicStatusElement = document.querySelector('#topic-status');
+const topicList = document.querySelector('#topic-list');
+const authoringWarningList = document.querySelector('#authoring-warning-list');
+const markerPreviewList = document.querySelector('#marker-preview-list');
 const vendorReferenceList = document.querySelector('#vendor-reference-list');
 
 const state = {
@@ -80,13 +91,18 @@ function normalizeTextList(value) {
         : [];
 }
 
+function hasOwn(value, propertyName) {
+    return Boolean(value) && Object.prototype.hasOwnProperty.call(value, propertyName);
+}
+
 function createDefaultContent(vendor = {}) {
     return {
         descriptionOverride: typeof vendor.description === 'string' ? vendor.description : '',
         featuredItems: normalizeTextList(vendor.featuredItems),
         announcements: normalizeTextList(vendor.announcements),
         clueText: '',
-        moderationStatus: 'approved'
+        moderationStatus: 'approved',
+        topics: null
     };
 }
 
@@ -101,7 +117,8 @@ function normalizeVendorEntry(entry) {
         booth: typeof entry.booth === 'string' ? entry.booth.trim() : '',
         description: typeof entry.description === 'string' ? entry.description : '',
         featuredItems: normalizeTextList(entry.featuredItems),
-        announcements: normalizeTextList(entry.announcements)
+        announcements: normalizeTextList(entry.announcements),
+        topics: normalizeVendorConversationTopics(entry.topics)
     };
 }
 
@@ -126,7 +143,8 @@ function normalizeContentEntry(entry) {
         featuredItems: normalizeTextList(entry.featuredItems),
         announcements: normalizeTextList(entry.announcements),
         clueText: typeof entry.clueText === 'string' ? entry.clueText : '',
-        moderationStatus: typeof entry.moderationStatus === 'string' ? entry.moderationStatus : 'approved'
+        moderationStatus: typeof entry.moderationStatus === 'string' ? entry.moderationStatus : 'approved',
+        topics: hasOwn(entry, 'topics') ? normalizeVendorConversationTopics(entry.topics) : null
     };
 }
 
@@ -135,11 +153,14 @@ function normalizeTrailStop(stop) {
         return null;
     }
 
+    const completionMarker = typeof stop.completionMarker === 'string' ? stop.completionMarker.trim() : '';
+
     return {
         id: String(stop.id ?? stop.vendorId),
         vendorId: String(stop.vendorId),
         clueText: typeof stop.clueText === 'string' ? stop.clueText : '',
-        goalText: typeof stop.goalText === 'string' ? stop.goalText : ''
+        goalText: typeof stop.goalText === 'string' ? stop.goalText : '',
+        ...(completionMarker ? { completionMarker } : {})
     };
 }
 
@@ -269,6 +290,23 @@ function getSelectedContent() {
     return state.contentByVendorId.get(vendorId) ?? createDefaultContent(selectedVendor);
 }
 
+function getLiveContentEntry(vendorId) {
+    return state.contentByVendorId.get(vendorId) ?? null;
+}
+
+function getSelectedTopicVendorId() {
+    return topicVendorSelect?.value ?? '';
+}
+
+function getVendorTopics(vendorId) {
+    const liveTopics = getLiveContentEntry(vendorId)?.topics;
+    if (Array.isArray(liveTopics)) {
+        return liveTopics;
+    }
+
+    return state.vendors.find(vendor => vendor.id === vendorId)?.topics ?? [];
+}
+
 function getSelectedTrail() {
     return state.trailsById.get(getSelectedTrailId()) ?? null;
 }
@@ -284,8 +322,71 @@ function renderSelectedContent() {
     announcementInput.value = selectedContent.announcements.join('\n');
 }
 
+function renderTopicVendorOptions() {
+    if (!topicVendorSelect) {
+        return;
+    }
+
+    const selectedVendorId = getSelectedTopicVendorId();
+    const options = state.vendors.map((vendor) => createOption(vendor.id, getVendorLabel(vendor)));
+
+    if (options.length === 0) {
+        topicVendorSelect.replaceChildren(createOption('', 'No vendors available', { disabled: true }));
+        topicVendorSelect.value = '';
+        return;
+    }
+
+    topicVendorSelect.replaceChildren(...options);
+    topicVendorSelect.value = state.vendors.some(vendor => vendor.id === selectedVendorId)
+        ? selectedVendorId
+        : state.vendors[0].id;
+}
+
+function normalizeSingleLineText(value) {
+    return typeof value === 'string'
+        ? value.replace(/\s*\r?\n\s*/g, ' ').trim()
+        : '';
+}
+
+function createTopicLine(topic) {
+    const choicesText = Array.isArray(topic?.verification?.choices)
+        ? topic.verification.choices.map(choice => choice.label ?? choice.phrase).join('; ')
+        : '';
+    const parts = [
+        topic?.id ?? '',
+        topic?.label ?? '',
+        normalizeSingleLineText(topic?.response),
+        topic?.completionMarker ?? '',
+        normalizeSingleLineText(topic?.verification?.prompt),
+        topic?.verification?.expectedPhrase ?? '',
+        choicesText
+    ];
+
+    while (parts.length > 0 && !parts[parts.length - 1]) {
+        parts.pop();
+    }
+
+    return parts.join(' | ');
+}
+
+function renderSelectedTopics() {
+    if (!topicInput) {
+        return;
+    }
+
+    topicInput.value = getVendorTopics(getSelectedTopicVendorId())
+        .map(createTopicLine)
+        .join('\n');
+}
+
 function createStopLine(stop) {
-    return `${stop.vendorId} | ${stop.clueText} | ${stop.goalText}`;
+    const parts = [stop.vendorId, stop.clueText, stop.goalText];
+
+    if (stop.completionMarker) {
+        parts.push(stop.completionMarker);
+    }
+
+    return parts.join(' | ');
 }
 
 function renderSelectedTrail() {
@@ -419,6 +520,65 @@ function renderTrailList() {
     }));
 }
 
+function renderTopicList() {
+    if (!topicList) {
+        return;
+    }
+
+    const entries = state.vendors
+        .map(vendor => ({
+            vendor,
+            topics: getVendorTopics(vendor.id),
+            source: Array.isArray(getLiveContentEntry(vendor.id)?.topics) ? 'Live override' : 'Bundled fallback'
+        }))
+        .filter(entry => entry.topics.length > 0);
+
+    if (entries.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'content-empty';
+        emptyState.textContent = 'No conversation topics available.';
+        topicList.replaceChildren(emptyState);
+        return;
+    }
+
+    topicList.replaceChildren(...entries.map((entry) => {
+        const item = document.createElement('div');
+        const vendorName = document.createElement('span');
+        const meta = document.createElement('div');
+
+        item.className = 'content-item';
+        vendorName.className = 'content-vendor';
+        vendorName.textContent = getVendorLabel(entry.vendor);
+        meta.textContent = `${entry.source} / ${entry.topics.length} topic${entry.topics.length === 1 ? '' : 's'}`;
+        item.append(vendorName, meta, ...entry.topics.flatMap((topic) => {
+            const topicLines = [];
+            const labelLine = document.createElement('div');
+            labelLine.textContent = `Ask about ${topic.label}`;
+            topicLines.push(labelLine);
+
+            if (topic.completionMarker) {
+                const markerLine = document.createElement('div');
+                markerLine.textContent = `Marker: ${topic.completionMarker}`;
+                topicLines.push(markerLine);
+            }
+
+            if (topic.verification?.prompt) {
+                const verificationLine = document.createElement('div');
+                const choices = Array.isArray(topic.verification.choices)
+                    ? topic.verification.choices.map(choice => choice.label ?? choice.phrase).join(' / ')
+                    : '';
+                verificationLine.textContent = choices
+                    ? `Verify: ${topic.verification.prompt} [${choices}]`
+                    : `Verify: ${topic.verification.prompt}`;
+                topicLines.push(verificationLine);
+            }
+
+            return topicLines;
+        }));
+        return item;
+    }));
+}
+
 function renderVendorReferenceList() {
     if (!vendorReferenceList) {
         return;
@@ -446,14 +606,113 @@ function renderVendorReferenceList() {
     }));
 }
 
+function renderAuthoringWarnings(issues) {
+    if (!authoringWarningList) {
+        return;
+    }
+
+    if (issues.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'content-empty';
+        emptyState.textContent = 'No authoring warnings for the selected vendor and trail.';
+        authoringWarningList.replaceChildren(emptyState);
+        return;
+    }
+
+    authoringWarningList.replaceChildren(...issues.map((issue) => {
+        const item = document.createElement('div');
+        const label = document.createElement('span');
+        const message = document.createElement('span');
+
+        item.className = `validation-item validation-item-${issue.severity}`;
+        label.className = 'validation-label';
+        label.textContent = issue.severity === 'error' ? 'Error' : 'Warning';
+        message.textContent = issue.message;
+        item.append(label, message);
+        return item;
+    }));
+}
+
+function createMarkerFlowLine(label, value) {
+    const line = document.createElement('div');
+
+    line.className = 'preview-flow-line';
+    line.textContent = `${label}: ${value}`;
+    return line;
+}
+
+function renderMarkerPreview(preview) {
+    if (!markerPreviewList) {
+        return;
+    }
+
+    if (preview.markerStopCount === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'content-empty';
+        emptyState.textContent = 'No marker-gated stops for the selected vendor in the current trail.';
+        markerPreviewList.replaceChildren(emptyState);
+        return;
+    }
+
+    if (preview.previewItems.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'content-empty';
+        emptyState.textContent = 'No complete clue -> topic -> verification -> stamp flow yet. Resolve the warnings above to preview it.';
+        markerPreviewList.replaceChildren(emptyState);
+        return;
+    }
+
+    markerPreviewList.replaceChildren(...preview.previewItems.map((item) => {
+        const previewItem = document.createElement('div');
+        const title = document.createElement('span');
+
+        previewItem.className = 'content-item';
+        title.className = 'content-vendor';
+        title.textContent = `Stop ${item.stopIndex + 1}: ${item.clueText || item.goalText || item.completionMarker}`;
+        previewItem.append(
+            title,
+            createMarkerFlowLine('Clue', item.clueText || 'No clue text provided.'),
+            createMarkerFlowLine('Topic', `Ask about ${item.topicLabel}`),
+            createMarkerFlowLine(
+                'Verify',
+                item.verificationPrompt
+                    ? `${item.verificationPrompt}${item.expectedPhrase ? ` -> ${item.expectedPhrase}` : ''}`
+                    : 'No verification prompt'
+            ),
+            createMarkerFlowLine('Stamp', item.completionMarker)
+        );
+        return previewItem;
+    }));
+}
+
+function renderAuthoringInsights() {
+    if (!authoringWarningList && !markerPreviewList) {
+        return;
+    }
+
+    const topicAnalysis = analyzeTopicLines(topicInput?.value ?? '');
+    const preview = buildMarkerFlowPreview({
+        selectedVendorId: getSelectedTopicVendorId(),
+        trailStops: trailStopsInput ? parseTrailStops() : [],
+        topics: topicAnalysis.topics
+    });
+
+    renderAuthoringWarnings([...topicAnalysis.issues, ...preview.issues]);
+    renderMarkerPreview(preview);
+}
+
 function renderDashboard() {
     renderVendorOptions();
     renderTrailOptions();
+    renderTopicVendorOptions();
     renderSelectedContent();
     renderSelectedTrail();
+    renderSelectedTopics();
     renderContentList();
     renderTrailList();
+    renderTopicList();
     renderVendorReferenceList();
+    renderAuthoringInsights();
 }
 
 async function fetchJson(url, options) {
@@ -521,13 +780,14 @@ function parseTrailStops() {
         .map(line => line.trim())
         .filter(line => line.length > 0)
         .map((line, index) => {
-            const [vendorId = '', clueText = '', goalText = ''] = line.split('|').map(part => part.trim());
+            const [vendorId = '', clueText = '', goalText = '', completionMarker = ''] = line.split('|').map(part => part.trim());
 
             return {
                 id: createStopId(vendorId, index),
                 vendorId,
                 clueText,
-                goalText
+                goalText,
+                ...(completionMarker ? { completionMarker } : {})
             };
         })
         .filter(stop => stop.vendorId);
@@ -555,13 +815,38 @@ function getSaveErrorMessage(error) {
     return message;
 }
 
+function parseTopicLines() {
+    const analysis = analyzeTopicLines(topicInput?.value ?? '');
+    const blockingIssue = analysis.issues.find(issue => issue.severity === 'error');
+
+    if (blockingIssue) {
+        throw new Error(blockingIssue.message);
+    }
+
+    return analysis.topics;
+}
+
 vendorSelect?.addEventListener('change', () => {
     renderSelectedContent();
+});
+
+topicVendorSelect?.addEventListener('change', () => {
+    renderSelectedTopics();
+    renderAuthoringInsights();
+});
+
+topicInput?.addEventListener('input', () => {
+    renderAuthoringInsights();
 });
 
 trailSelect?.addEventListener('change', () => {
     state.isEditingNewTrail = trailSelect.value === NEW_TRAIL_VALUE;
     renderSelectedTrail();
+    renderAuthoringInsights();
+});
+
+trailStopsInput?.addEventListener('input', () => {
+    renderAuthoringInsights();
 });
 
 clearButton?.addEventListener('click', () => {
@@ -573,6 +858,7 @@ clearButton?.addEventListener('click', () => {
 
 trailNewButton?.addEventListener('click', () => {
     startNewTrail();
+    renderAuthoringInsights();
 });
 
 trailResetButton?.addEventListener('click', () => {
@@ -583,15 +869,26 @@ trailResetButton?.addEventListener('click', () => {
     }
 
     trailTitleInput?.focus();
+    renderAuthoringInsights();
+});
+
+topicResetButton?.addEventListener('click', () => {
+    renderSelectedTopics();
+    topicInput?.focus();
+    renderAuthoringInsights();
 });
 
 contentForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    if (!getSelectedVendorId()) {
+    const vendorId = getSelectedVendorId();
+
+    if (!vendorId) {
         setStatus('Choose a vendor before saving.', true);
         return;
     }
+
+    const liveContent = getLiveContentEntry(vendorId);
 
     setStatus('Saving...');
 
@@ -600,10 +897,13 @@ contentForm?.addEventListener('submit', async (event) => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                vendorId: getSelectedVendorId(),
+                vendorId,
                 descriptionOverride: descriptionInput.value.trim(),
                 featuredItems: splitTextInput(featuredInput),
-                announcements: splitTextInput(announcementInput)
+                announcements: splitTextInput(announcementInput),
+                ...(Array.isArray(liveContent?.topics) ? { topics: liveContent.topics } : {}),
+                ...(liveContent?.clueText ? { clueText: liveContent.clueText } : {}),
+                ...(liveContent?.moderationStatus ? { moderationStatus: liveContent.moderationStatus } : {})
             })
         });
 
@@ -612,6 +912,59 @@ contentForm?.addEventListener('submit', async (event) => {
         setStatus('Saved. Reopen that vendor dialog in the game to see the update.');
     } catch (error) {
         setStatus(getSaveErrorMessage(error), true);
+    }
+});
+
+topicForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const vendorId = getSelectedTopicVendorId();
+    if (!vendorId) {
+        setStatus('Choose a vendor before saving topics.', true, topicStatusElement);
+        return;
+    }
+
+    let topics;
+    try {
+        topics = parseTopicLines();
+    } catch (error) {
+        setStatus(getSaveErrorMessage(error), true, topicStatusElement);
+        return;
+    }
+
+    const liveContent = getLiveContentEntry(vendorId);
+    setStatus('Saving topics...', false, topicStatusElement);
+
+    try {
+        const payload = await fetchJson('/api/vendor-content', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                vendorId,
+                descriptionOverride: liveContent?.descriptionOverride ?? '',
+                featuredItems: liveContent?.featuredItems ?? [],
+                announcements: liveContent?.announcements ?? [],
+                clueText: liveContent?.clueText ?? '',
+                moderationStatus: liveContent?.moderationStatus ?? 'approved',
+                topics
+            })
+        });
+
+        applyContentSnapshot(payload);
+        renderDashboard();
+        if (topicVendorSelect) {
+            topicVendorSelect.value = vendorId;
+        }
+        renderSelectedTopics();
+        setStatus(
+            topics.length > 0
+                ? 'Topics saved. Open a new live game session to use the updated conversation.'
+                : 'Topics cleared. Open a new live game session to confirm the bundled fallback.',
+            false,
+            topicStatusElement
+        );
+    } catch (error) {
+        setStatus(getSaveErrorMessage(error), true, topicStatusElement);
     }
 });
 

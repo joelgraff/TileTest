@@ -32,7 +32,22 @@ describe('festival log model', () => {
                         clue: 'Ask about the disk bench.',
                         goal: 'Find the newest repair story.',
                         visited: true,
-                        visitedAt: 111
+                        visitedAt: 111,
+                        completedTopics: [{
+                            topicId: 'portable_demo',
+                            topicLabel: 'the portable computer on the table',
+                            topicResponse: 'That is our portable IBM PC demo.',
+                            completionMarker: 'portable_demo',
+                            askedAt: 112,
+                            verification: {
+                                id: 'portable_demo_phrase',
+                                prompt: 'Which phrase is posted beside the portable demo?',
+                                expectedPhrase: 'Luggable Legends',
+                                selectedPhrase: 'Luggable Legends',
+                                verified: true,
+                                message: 'Verification accepted: Luggable Legends.'
+                            }
+                        }]
                     },
                     {
                         trailStopId: 'stop-2',
@@ -79,7 +94,24 @@ describe('festival log model', () => {
             trailStatus: 'completed',
             trailStopId: 'stop-1',
             clue: 'Ask about the disk bench.',
-            goal: 'Find the newest repair story.'
+            goal: 'Find the newest repair story.',
+            conversationMoments: [{
+                topicId: 'portable_demo',
+                topicLabel: 'the portable computer on the table',
+                topicResponse: 'That is our portable IBM PC demo.',
+                completionMarker: 'portable_demo',
+                askedAt: 112,
+                verification: {
+                    id: 'portable_demo_phrase',
+                    prompt: 'Which phrase is posted beside the portable demo?',
+                    expectedPhrase: 'Luggable Legends',
+                    selectedPhrase: 'Luggable Legends',
+                    selectedLabel: '',
+                    verified: true,
+                    message: 'Verification accepted: Luggable Legends.'
+                },
+                order: 1
+            }]
         });
         expect(log.collectedItems[0]).toMatchObject({
             id: 'badge-1',

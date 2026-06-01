@@ -14,7 +14,7 @@ describe('discovery trail store', () => {
             description: ' Visit booths. ',
             ordered: 'true',
             objectives: [
-                { vendor_id: 100, clue: ' Ask about disks. ', goal: ' Find a demo. ' },
+                { vendor_id: 100, clue: ' Ask about disks. ', goal: ' Find a demo. ', completionMarker: ' portable_demo ' },
                 { vendorId: '101', clueText: 'Look for games.', goalText: 'Ask what is playable.' },
                 { vendorId: '101', clueText: 'Duplicate ignored.' }
             ],
@@ -31,7 +31,8 @@ describe('discovery trail store', () => {
                     id: 'stop-1',
                     vendorId: '100',
                     clueText: 'Ask about disks.',
-                    goalText: 'Find a demo.'
+                    goalText: 'Find a demo.',
+                    completionMarker: 'portable_demo'
                 },
                 {
                     id: 'stop-2',

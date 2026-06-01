@@ -609,4 +609,89 @@ describe('QuestManager completion flow', () => {
         expect(manager.activeQuests[0].objectives[0].visited).toBe(false);
         expect(manager.activeQuests[0].objectives[1].visited).toBe(true);
     });
+
+    it('requires a matching completion marker before stamping a marker-gated discovery stop', () => {
+        const manager = new QuestManager();
+        const saveSessionState = vi.spyOn(manager, 'saveSessionState').mockImplementation(() => {});
+
+        manager.activeQuests = [{
+            id: 'marker-discovery',
+            type: 'discovery',
+            title: 'Marker Discovery',
+            ordered: false,
+            objectives: [
+                {
+                    vendorId: 'vendor-1',
+                    vendorName: 'Vendor One',
+                    booth: 'A1',
+                    clue: 'Find the portable demo.',
+                    goal: 'Ask about the portable computer on the table.',
+                    completionMarker: 'portable_demo',
+                    visited: false,
+                    visitedAt: null
+                }
+            ],
+            reward: {
+                points: 15,
+                description: '15 points'
+            }
+        }];
+
+        expect(manager.checkVendorDiscoveryResult('vendor-1', { id: 'vendor-1' })).toMatchObject({
+            updated: false,
+            questCompleted: false,
+            message: ''
+        });
+        expect(manager.activeQuests[0].objectives[0].visited).toBe(false);
+        expect(saveSessionState).not.toHaveBeenCalled();
+
+        const result = manager.checkVendorDiscoveryResult('vendor-1', {
+            id: 'vendor-1',
+            completionMarker: 'portable_demo',
+            conversationTopic: {
+                id: 'portable_demo',
+                label: 'the portable computer on the table',
+                response: 'That is our portable IBM PC demo.',
+                completionMarker: 'portable_demo',
+                verificationResult: {
+                    id: 'portable_demo_phrase',
+                    prompt: 'Which phrase is posted beside the portable demo?',
+                    expectedPhrase: 'Luggable Legends',
+                    selectedLabel: 'Luggable Legends',
+                    selectedPhrase: 'Luggable Legends',
+                    verified: true,
+                    message: 'Verification accepted: Luggable Legends.'
+                }
+            },
+            name: 'Vendor One Live',
+            booth: 'B1'
+        });
+
+        expect(result).toMatchObject({
+            updated: true,
+            questCompleted: true,
+            vendorId: 'vendor-1',
+            vendorName: 'Vendor One Live',
+            booth: 'B1',
+            message: expect.stringContaining('Verification accepted: Luggable Legends.')
+        });
+        expect(manager.completedQuests).toHaveLength(1);
+        expect(manager.activeQuests).toHaveLength(0);
+        expect(manager.completedQuests[0].objectives[0].completedTopics).toEqual([
+            expect.objectContaining({
+                topicId: 'portable_demo',
+                topicLabel: 'the portable computer on the table',
+                topicResponse: 'That is our portable IBM PC demo.',
+                completionMarker: 'portable_demo',
+                askedAt: expect.any(Number),
+                verification: expect.objectContaining({
+                    prompt: 'Which phrase is posted beside the portable demo?',
+                    selectedPhrase: 'Luggable Legends',
+                    verified: true,
+                    message: 'Verification accepted: Luggable Legends.'
+                })
+            })
+        ]);
+        expect(saveSessionState).toHaveBeenCalled();
+    });
 });

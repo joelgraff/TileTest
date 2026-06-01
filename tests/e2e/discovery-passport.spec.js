@@ -123,3 +123,54 @@ test('discovery passport advances and completes by talking to required vendors',
     expect(pageErrors, `Page errors: ${pageErrors.join('\n')}`).toEqual([]);
     expect(unexpectedConsoleErrors, `Console errors: ${unexpectedConsoleErrors.join('\n')}`).toEqual([]);
 });
+
+test('conversation verification gates authored discovery trail progress', async ({ page }) => {
+    const { consoleErrors, pageErrors } = await gotoGame(page);
+    const unexpectedConsoleErrors = consoleErrors.filter(message => (
+        message !== 'Failed to load resource: the server responded with a status of 404 (Not Found)'
+    ));
+    const dialogSurface = page.locator('#ui-overlay-root [data-dialog-surface="dom"]');
+
+    await talkToVendor(page, 0);
+
+    const beforeTopic = await page.evaluate(() => window.__tileTest.testApi.getDiscoveryQuestSnapshot());
+    expect(beforeTopic.visitedCount).toBe(0);
+    await expect(dialogSurface).not.toContainText('Passport stamp earned:');
+
+    await page.getByRole('button', { name: 'Ask about the portable computer on the table' }).click();
+    await expect(dialogSurface).toContainText('Which phrase is posted beside the portable demo?');
+
+    await page.getByRole('button', { name: 'Pocket Spreadsheet' }).click();
+    await expect(dialogSurface).toContainText('That phrase does not match the portable demo placard.');
+
+    const failedAttempt = await page.evaluate(() => window.__tileTest.testApi.getDiscoveryQuestSnapshot());
+    expect(failedAttempt.visitedCount).toBe(0);
+
+    await page.getByRole('button', { name: 'Continue' }).click();
+    await page.getByRole('button', { name: 'Luggable Legends' }).click();
+
+    await expect(dialogSurface).toContainText('Verification accepted: Luggable Legends.');
+    await expect(dialogSurface).toContainText('Passport stamp earned:');
+
+    const verified = await page.evaluate(() => ({
+        discovery: window.__tileTest.testApi.getDiscoveryQuestSnapshot(),
+        festivalLog: window.__tileTest.testApi.getFestivalLogSnapshot()
+    }));
+
+    expect(verified.discovery.visitedCount).toBe(1);
+    expect(verified.discovery.objectives[0].visited).toBe(true);
+    expect(verified.festivalLog.stamps[0].conversationMoments[0]).toMatchObject({
+        topicId: 'portable_demo',
+        verification: {
+            prompt: 'Which phrase is posted beside the portable demo?',
+            selectedPhrase: 'Luggable Legends',
+            verified: true
+        }
+    });
+
+    const questDialog = await page.evaluate(() => window.__tileTest.testApi.openQuestDialog());
+    expect(questDialog.textItems).toContain('      Verified: Which phrase is posted beside the portable demo? -> Luggable Legends');
+
+    expect(pageErrors, `Page errors: ${pageErrors.join('\n')}`).toEqual([]);
+    expect(unexpectedConsoleErrors, `Console errors: ${unexpectedConsoleErrors.join('\n')}`).toEqual([]);
+});
