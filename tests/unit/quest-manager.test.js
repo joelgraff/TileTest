@@ -126,6 +126,18 @@ describe('QuestManager completion flow', () => {
         ]);
     });
 
+    it('preserves pre-seeded active vendor ids when loading session state', () => {
+        globalThis.document.cookie = 'vcf_quest_session={"sessionId":"session-123","activeVendorIds":["vendor-2"],"activeQuests":[{"id":"active-1"}],"completedQuests":[]}; path=/';
+
+        const manager = new QuestManager({ activeVendorIds: ['vendor-2', 'vendor-1', 'vendor-3'] });
+
+        manager.loadSessionState();
+
+        expect(manager.sessionId).toBe('session-123');
+        expect(manager.activeVendorIds).toEqual(['vendor-2', 'vendor-1', 'vendor-3']);
+        expect(manager.activeQuests).toEqual([{ id: 'active-1' }]);
+    });
+
     it('ignores invalid quest session cookies', () => {
         const manager = new QuestManager();
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});

@@ -171,9 +171,9 @@ describe('test mode api', () => {
         });
         expect(api.getPlayerSnapshot()).toEqual({
             x: 120,
-            y: 150,
+            y: 104,
             bodyX: 112,
-            bodyY: 138,
+            bodyY: 92,
             width: 16,
             height: 24,
             velocityX: 0,
@@ -181,12 +181,12 @@ describe('test mode api', () => {
         });
         expect(api.getPlayerScreenPosition()).toEqual({
             x: 110,
-            y: 130,
+            y: 84,
             gameWidth: 960,
             gameHeight: 640
         });
         expect(scene.player.x).toBe(120);
-        expect(scene.player.y).toBe(150);
+        expect(scene.player.y).toBe(104);
         expect(scene.inputManager.clearMovementState).toHaveBeenCalledTimes(1);
         expect(scene.vendorManager.update).toHaveBeenCalledTimes(1);
     });
@@ -222,6 +222,63 @@ describe('test mode api', () => {
         expect(scene.cameras.main.centerOn).toHaveBeenCalledWith(192, 196);
         expect(scene.inputManager.clearMovementState).toHaveBeenCalledTimes(1);
         expect(scene.vendorManager.update).toHaveBeenCalledTimes(1);
+    });
+
+    it('skips unusable top-edge collision bodies when selecting a probe target', () => {
+        const scene = createScene();
+        scene.customCollisionBodies = [
+            {
+                body: {
+                    x: 1728,
+                    y: 48,
+                    width: 24,
+                    height: 24
+                },
+                tileInfo: {
+                    id: 34,
+                    x: 72,
+                    y: 2
+                }
+            },
+            {
+                body: {
+                    x: 120,
+                    y: 168,
+                    width: 24,
+                    height: 24
+                },
+                tileInfo: {
+                    id: 37,
+                    x: 5,
+                    y: 7
+                }
+            }
+        ];
+        const api = createTestModeApi(() => scene);
+
+        const probe = api.positionPlayerForCollisionProbe(0, 20);
+
+        expect(probe.collision).toEqual({
+            x: 120,
+            y: 168,
+            width: 24,
+            height: 24,
+            tileInfo: {
+                id: 37,
+                x: 5,
+                y: 7
+            }
+        });
+        expect(probe.player).toEqual({
+            x: 92,
+            y: 180,
+            bodyX: 84,
+            bodyY: 168,
+            width: 16,
+            height: 24,
+            velocityX: 0,
+            velocityY: 0
+        });
     });
 
     it('supports high-level smoke setup for collection and panel flows', () => {

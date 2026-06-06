@@ -10,9 +10,9 @@ import PlayerManager from '../../playerManager.js';
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
-function loadFixtureMap() {
+function loadFixtureMap(fileName = 'collision-spawn-map.json') {
     return JSON.parse(
-        fs.readFileSync(path.resolve(currentDir, '../fixtures/collision-spawn-map.json'), 'utf8')
+        fs.readFileSync(path.resolve(currentDir, `../fixtures/${fileName}`), 'utf8')
     );
 }
 
@@ -67,6 +67,42 @@ describe('fixture map contracts', () => {
         ]);
         expect(CollisionManager.getTileCollisionObjects({ index: 3, tileset })).toEqual([
             { x: 0, y: 0, width: 32, height: 6 }
+        ]);
+    });
+
+    it('drives grouped npc spawn data from the nested npc_areas fixture', () => {
+        const map = loadFixtureMap('grouped-npc-spawn-map.json');
+        const scene = {
+            mapRuntimeProfile: {
+                npcAreaLayers: [
+                    {
+                        layer: map.layers.find(layer => layer.name === 'npc_areas').layers[0],
+                        spawnPoints: [
+                            { name: 'spawn_a', x: 48, y: 48, resolvedFacing: 'up' },
+                            { name: 'spawn_b', x: 72, y: 48, resolvedFacing: 'left' }
+                        ]
+                    }
+                ]
+            },
+            map: {
+                getObjectLayer: vi.fn(() => null)
+            }
+        };
+
+        expect(PlayerManager.getPlayerStartPosition({
+            map: {
+                getObjectLayer: vi.fn(layerName => map.layers.find(layer => layer.name === layerName) ?? null)
+            }
+        })).toEqual({ x: 72, y: 96 });
+
+        expect(NPCManager.getSpawnAreas(scene)).toEqual([
+            {
+                spawnPoints: [
+                    { name: 'spawn_a', x: 48, y: 48, resolvedFacing: 'up' },
+                    { name: 'spawn_b', x: 72, y: 48, resolvedFacing: 'left' }
+                ],
+                rect: undefined
+            }
         ]);
     });
 });

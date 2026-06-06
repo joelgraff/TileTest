@@ -1,5 +1,7 @@
 import { createFestivalLog } from './festivalLog.js';
 
+const DEFAULT_VENDOR_INTERACTION_OFFSET_Y = -36;
+
 function requireScene(getScene) {
     const scene = getScene?.();
 
@@ -24,7 +26,7 @@ function getVendorNpc(scene, index = 0) {
     return npc;
 }
 
-function positionPlayerNearVendor(scene, index = 0, offsetY = 10) {
+function positionPlayerNearVendor(scene, index = 0, offsetY = DEFAULT_VENDOR_INTERACTION_OFFSET_Y) {
     const npc = getVendorNpc(scene, index);
 
     scene.player.setPosition(npc.x, npc.y + offsetY);
@@ -96,6 +98,31 @@ function getCollisionBody(scene, index = 0) {
     return collisionBody;
 }
 
+function getCollisionProbeBody(scene, index = 0, gap = 64) {
+    const collisionBodies = scene.customCollisionBodies ?? [];
+    const playerBody = scene.player?.body ?? null;
+
+    if (!playerBody) {
+        throw new Error('Player body is not available.');
+    }
+
+    const minCollisionX = playerBody.width + gap;
+    const minCollisionY = playerBody.height * 4;
+    const probeCandidates = collisionBodies
+        .filter(collisionBody => collisionBody?.body)
+        .filter(collisionBody => collisionBody.body.x >= minCollisionX)
+        .filter(collisionBody => collisionBody.body.y > minCollisionY)
+        .sort((leftBody, rightBody) => {
+            if (leftBody.body.x !== rightBody.body.x) {
+                return leftBody.body.x - rightBody.body.x;
+            }
+
+            return leftBody.body.y - rightBody.body.y;
+        });
+
+    return probeCandidates[index] ?? probeCandidates[0] ?? getCollisionBody(scene, index);
+}
+
 function getCollisionBodySnapshot(collisionBody) {
     return {
         x: collisionBody.body.x,
@@ -107,7 +134,7 @@ function getCollisionBodySnapshot(collisionBody) {
 }
 
 function positionPlayerForCollisionProbe(scene, index = 0, gap = 64) {
-    const collisionBody = getCollisionBody(scene, index);
+    const collisionBody = getCollisionProbeBody(scene, index, gap);
     const playerBody = scene.player?.body ?? null;
 
     if (!playerBody) {
@@ -120,6 +147,7 @@ function positionPlayerForCollisionProbe(scene, index = 0, gap = 64) {
     const targetBodyY = collisionBody.body.y + (collisionBody.body.height - playerBody.height) / 2;
 
     scene.player.setPosition(targetBodyX + bodyOffsetX, targetBodyY + bodyOffsetY);
+    scene.player.body?.updateFromGameObject?.();
     scene.cameras.main.centerOn(scene.player.x, scene.player.y);
     scene.inputManager.clearMovementState();
     scene.vendorManager.update();
@@ -273,7 +301,7 @@ export function createTestModeApi(getScene) {
             return getProgressSnapshot(requireScene(getScene));
         },
 
-        positionPlayerNearVendor(index = 0, offsetY = 10) {
+        positionPlayerNearVendor(index = 0, offsetY = DEFAULT_VENDOR_INTERACTION_OFFSET_Y) {
             const scene = requireScene(getScene);
             const npc = positionPlayerNearVendor(scene, index, offsetY);
 
@@ -283,7 +311,7 @@ export function createTestModeApi(getScene) {
             };
         },
 
-        getVendorClickTarget(index = 0, offsetY = 10) {
+        getVendorClickTarget(index = 0, offsetY = DEFAULT_VENDOR_INTERACTION_OFFSET_Y) {
             const scene = requireScene(getScene);
             const npc = positionPlayerNearVendor(scene, index, offsetY);
 

@@ -189,11 +189,36 @@ describe('dom dialog surface', () => {
         expect(contentRow.className).toBe('dom-dialog-content');
         expect(imageElement.tagName).toBe('img');
         expect(imageElement.className).toBe('dom-dialog-image');
-        expect(imageElement.src).toBe(
-            `${CONFIG.PATHS.ASSETS}/${CONFIG.NPC.SPRITES[0]}${CONFIG.PATHS.IMAGE_EXTENSION}`
-        );
+        expect(imageElement.src).toBe(CONFIG.getAssetPath(CONFIG.NPC.SPRITES[0], CONFIG.PATHS.IMAGE_EXTENSION));
         expect(imageElement.alt).toBe('Vendor One portrait');
         expect(contentRow.children[1].textContent).toBe('Vintage systems and demos.');
+    });
+
+    it('uses the active scene asset package for dialog portraits when available', () => {
+        const { documentRef, overlayRoot } = createFakeDocument();
+        const manager = {
+            scene: {
+                assetPackageName: 'legacy'
+            },
+            getOverlayRoot: () => overlayRoot,
+            handleTextPagination: vi.fn(text => text),
+            handleButtonPagination: vi.fn(buttons => buttons),
+            handleBottomButtonPagination: vi.fn(buttons => buttons)
+        };
+
+        const dialogRoot = renderDomDialogSurface(manager, {
+            imageKey: 'npc_010',
+            title: 'Vendor Legacy',
+            text: 'Package-aware portrait path.'
+        }, { documentRef });
+
+        const dialogPanel = dialogRoot.children[0];
+        const contentRow = dialogPanel.children[1];
+        const imageElement = contentRow.children[0].children[0];
+
+        expect(imageElement.src).toBe(
+            CONFIG.getAssetPath('npc_010', CONFIG.PATHS.IMAGE_EXTENSION, 'legacy')
+        );
     });
 
     it('renders vendor item buttons in a dedicated grid above the action bar', () => {

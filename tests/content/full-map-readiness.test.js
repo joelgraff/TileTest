@@ -15,9 +15,13 @@ function loadAssetMap(mapName) {
     return loadJson(`${CONFIG.PATHS.ASSETS}/${mapName}${CONFIG.PATHS.JSON_EXTENSION}`);
 }
 
+function loadDefaultRuntimeMap() {
+    return loadJson(CONFIG.getAssetPath(CONFIG.ASSETS.MAP, CONFIG.PATHS.JSON_EXTENSION));
+}
+
 describe('full map readiness', () => {
     it('keeps the current default runtime map ready', () => {
-        const report = getMapReadinessReport(loadAssetMap(CONFIG.ASSETS.MAP));
+        const report = getMapReadinessReport(loadDefaultRuntimeMap());
 
         expect(report.ready).toBe(true);
         expect(report.blockingIssues).toEqual([]);
@@ -68,18 +72,8 @@ describe('full map readiness', () => {
             }),
             expect.objectContaining({
                 severity: MAP_READINESS_SEVERITY.BLOCKING,
-                code: MAP_READINESS_CODES.NPC_AREA_RECT_MISSING,
-                message: 'Missing NPC area rectangle: add exactly one object with type "rect" on layer "npc_area".'
-            }),
-            expect.objectContaining({
-                severity: MAP_READINESS_SEVERITY.BLOCKING,
                 code: MAP_READINESS_CODES.NPC_SPAWN_POINTS_MISSING,
                 message: 'Missing NPC spawn points: add one or more point objects on layer "npc_area".'
-            }),
-            expect.objectContaining({
-                severity: MAP_READINESS_SEVERITY.BLOCKING,
-                code: MAP_READINESS_CODES.TILESET_MISSING,
-                message: 'Missing required tileset "tiles"; MapManager calls addTilesetImage("tiles") for runtime maps.'
             }),
             expect.objectContaining({
                 severity: MAP_READINESS_SEVERITY.BLOCKING,
@@ -107,6 +101,95 @@ describe('full map readiness', () => {
                 message: 'Missing collision layer "tabletops"; collision bodies are built from layers: tables, tabletops.'
             })
         ]));
+    });
+
+    it('accepts grouped npc_areas placement in the 24px package as runtime-ready', () => {
+        const report = getMapReadinessReport(loadJson('assets/24px/map.json'));
+
+        expect(report.ready).toBe(true);
+        expect(report.blockingIssues).toEqual([]);
+        expect(report.infoIssues).toEqual([]);
+        expect(report.actionPlan).toEqual([]);
+        expect(report.blockingIssues).not.toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                code: MAP_READINESS_CODES.REQUIRED_LAYER_MISSING,
+                message: 'Missing required runtime layer "npc_area".'
+            }),
+            expect.objectContaining({
+                code: MAP_READINESS_CODES.NPC_AREA_RECT_MISSING
+            }),
+            expect.objectContaining({
+                code: MAP_READINESS_CODES.NPC_SPAWN_POINTS_MISSING
+            })
+        ]));
+        expect(report.layerMappingHints).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                runtimeLayer: 'npc_area',
+                status: MAP_LAYER_MAPPING_STATUS.MATCHED,
+                sourceLayer: 'npc_areas',
+                sourceLayerType: 'group'
+            })
+        ]));
+        expect(report.blockingIssues).not.toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                code: MAP_READINESS_CODES.EXTERNAL_TILESET_IMAGE
+            }),
+            expect.objectContaining({
+                code: MAP_READINESS_CODES.TILESET_MISSING
+            }),
+            expect.objectContaining({
+                code: MAP_READINESS_CODES.COLLISION_TILE_METADATA_MISSING
+            })
+        ]));
+    });
+
+    it('disables tabletop collision boxes when a map property is zero-sized', () => {
+        const map = structuredClone(loadJson('assets/24px/map.json'));
+        const tabletopCollisionHeight = map.properties.find(property => property.name === 'tabletopCollisionHeight');
+
+        tabletopCollisionHeight.value = 0;
+
+        const report = getMapReadinessReport(map);
+
+        expect(report.ready).toBe(true);
+        expect(report.blockingIssues).toEqual([]);
+    });
+
+    it('accepts table collision properties that use tile-size sentinels', () => {
+        const map = structuredClone(loadJson('assets/24px/map.json'));
+        const tableCollisionWidth = map.properties.find(property => property.name === 'tableCollisionWidth');
+        const tableCollisionHeight = map.properties.find(property => property.name === 'tableCollisionHeight');
+        const tableCollisionX = map.properties.find(property => property.name === 'tableCollisionX');
+        const tableCollisionY = map.properties.find(property => property.name === 'tableCollisionY');
+
+        if (tableCollisionWidth) {
+            tableCollisionWidth.value = -1;
+        } else {
+            map.properties.push({ name: 'tableCollisionWidth', value: -1 });
+        }
+
+        if (tableCollisionHeight) {
+            tableCollisionHeight.value = -1;
+        } else {
+            map.properties.push({ name: 'tableCollisionHeight', value: -1 });
+        }
+
+        if (tableCollisionX) {
+            tableCollisionX.value = -1;
+        } else {
+            map.properties.push({ name: 'tableCollisionX', value: -1 });
+        }
+
+        if (tableCollisionY) {
+            tableCollisionY.value = -1;
+        } else {
+            map.properties.push({ name: 'tableCollisionY', value: -1 });
+        }
+
+        const report = getMapReadinessReport(map);
+
+        expect(report.ready).toBe(true);
+        expect(report.blockingIssues).toEqual([]);
     });
 
     it('separates draft-map notes from blocking readiness failures', () => {
@@ -193,7 +276,6 @@ describe('full map readiness', () => {
             expect.objectContaining({
                 id: MAP_READINESS_ACTION_IDS.NPC_PLACEMENT,
                 issueCodes: expect.arrayContaining([
-                    MAP_READINESS_CODES.NPC_AREA_RECT_MISSING,
                     MAP_READINESS_CODES.NPC_SPAWN_POINTS_MISSING
                 ])
             })
@@ -228,7 +310,9 @@ describe('full map readiness', () => {
                 runtimeLayer: 'npc_area',
                 status: MAP_LAYER_MAPPING_STATUS.CANDIDATE,
                 sourceLayer: 'zones',
-                expectedType: 'objectgroup',
+                expectedType: ['objectgroup', 'group'],
+                sourceLayerType: 'objectgroup',
+                typeMatches: true,
                 summary: 'objectgroup, objects: 0, object types: none'
             }),
             expect.objectContaining({

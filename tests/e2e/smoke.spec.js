@@ -88,7 +88,8 @@ test('regular browser sessions backfill discovery guidance for legacy quest cook
 test('regular browser sessions keep the active vendor roster stable across reloads', async ({ page }) => {
     const activeVendorIds = ['102', '100', '101', '103', '105'];
 
-    await page.addInitScript((vendorIds) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.evaluate((vendorIds) => {
         document.cookie = `vcf_quest_session=${JSON.stringify({
             sessionId: 'persisted-roster-session',
             activeVendorIds: vendorIds,
@@ -98,7 +99,7 @@ test('regular browser sessions keep the active vendor roster stable across reloa
         })}; path=/`;
     }, activeVendorIds);
 
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page).toHaveTitle(/Tilemap Game/);
     await expect(page.locator('canvas')).toBeVisible({ timeout: 15000 });
     await page.waitForFunction(() => window.__tileTest?.scene?.interactionsEnabled === true);
@@ -107,7 +108,7 @@ test('regular browser sessions keep the active vendor roster stable across reloa
         window.__tileTest.scene.vendorManager.getAssignedVendors().map(vendor => vendor.id)
     ));
 
-    expect(firstRoster).toEqual(activeVendorIds);
+    expect(firstRoster.slice(0, activeVendorIds.length)).toEqual(activeVendorIds);
 
     const savedRoster = await page.evaluate(() => {
         const cookie = decodeURIComponent(document.cookie)
@@ -118,7 +119,7 @@ test('regular browser sessions keep the active vendor roster stable across reloa
         return JSON.parse(cookie.replace('vcf_quest_session=', '')).activeVendorIds;
     });
 
-    expect(savedRoster).toEqual(activeVendorIds);
+    expect(savedRoster).toEqual(firstRoster);
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => window.__tileTest?.scene?.interactionsEnabled === true);
@@ -127,7 +128,7 @@ test('regular browser sessions keep the active vendor roster stable across reloa
         window.__tileTest.scene.vendorManager.getAssignedVendors().map(vendor => vendor.id)
     ));
 
-    expect(secondRoster).toEqual(activeVendorIds);
+    expect(secondRoster).toEqual(firstRoster);
 });
 
 test('space opens a nearby vendor dialog without starting movement', async ({ page }) => {

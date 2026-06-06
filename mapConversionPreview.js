@@ -23,6 +23,14 @@ function getLayer(map, layerName) {
     return (map.layers ?? []).find(layer => layer.name === layerName);
 }
 
+function getExpectedLayerTypes(expectedType) {
+    return Array.isArray(expectedType) ? expectedType : [expectedType];
+}
+
+function matchesExpectedLayerType(layerType, expectedType) {
+    return getExpectedLayerTypes(expectedType).includes(layerType);
+}
+
 function getUsedTileCount(layer) {
     if (!Array.isArray(layer.data)) {
         return undefined;
@@ -32,6 +40,14 @@ function getUsedTileCount(layer) {
 }
 
 function getLayerKind(expectedType) {
+    if (Array.isArray(expectedType)) {
+        if (expectedType.includes('objectgroup')) {
+            return 'object layer';
+        }
+
+        return getLayerKind(expectedType[0]);
+    }
+
     if (expectedType === 'tilelayer') {
         return 'tile layer';
     }
@@ -96,18 +112,63 @@ function cloneLayerAsRuntimeLayer(sourceLayer, runtimeLayerName) {
     return layer;
 }
 
+function getPreviewLayerName(runtimeLayerName, sourceLayer, contract) {
+    if (
+        runtimeLayerName === contract.npcLayerName &&
+        sourceLayer?.type === 'group' &&
+        contract.npcGroupLayerName
+    ) {
+        return contract.npcGroupLayerName;
+    }
+
+    return runtimeLayerName;
+}
+
+function getPlaceholderLayerType(expectedType) {
+    const expectedTypes = getExpectedLayerTypes(expectedType);
+
+    if (expectedTypes.includes('objectgroup')) {
+        return 'objectgroup';
+    }
+
+    return expectedTypes[0];
+}
+
+function getSourceLayerForRuntimeLayer(draftMap, runtimeLayerName, expectedType, layerMap, contract) {
+    const exactLayer = getLayer(draftMap, runtimeLayerName);
+    if (matchesExpectedLayerType(exactLayer?.type, expectedType)) {
+        return exactLayer;
+    }
+
+    if (runtimeLayerName === contract.npcLayerName && contract.npcGroupLayerName) {
+        const groupedNpcLayer = getLayer(draftMap, contract.npcGroupLayerName);
+
+        if (matchesExpectedLayerType(groupedNpcLayer?.type, expectedType)) {
+            return groupedNpcLayer;
+        }
+    }
+
+    const mappedSourceLayer = getLayer(draftMap, layerMap[runtimeLayerName]);
+    if (matchesExpectedLayerType(mappedSourceLayer?.type, expectedType)) {
+        return mappedSourceLayer;
+    }
+
+    return undefined;
+}
+
 function createEmptyRuntimeLayer(map, runtimeLayerName, expectedType, layerId) {
+    const placeholderType = getPlaceholderLayerType(expectedType);
     const baseLayer = {
         id: layerId,
         name: runtimeLayerName,
         opacity: 1,
-        type: expectedType,
+        type: placeholderType,
         visible: true,
         x: 0,
         y: 0
     };
 
-    if (expectedType === 'tilelayer') {
+    if (placeholderType === 'tilelayer') {
         return {
             ...baseLayer,
             class: 'tileLayer',
@@ -117,7 +178,7 @@ function createEmptyRuntimeLayer(map, runtimeLayerName, expectedType, layerId) {
         };
     }
 
-    if (expectedType === 'objectgroup') {
+    if (placeholderType === 'objectgroup') {
         return {
             ...baseLayer,
             draworder: 'topdown',
@@ -155,20 +216,21 @@ export function createMapLayerConversionPreview(draftMap, {
 
     const runtimeLayers = contract.requiredLayers.map(runtimeLayerName => {
         const expectedType = contract.expectedLayerTypes[runtimeLayerName];
-        const exactLayer = getLayer(draftMap, runtimeLayerName);
-        const mappedSourceLayer = getLayer(draftMap, layerMap[runtimeLayerName]);
-        const sourceLayer = exactLayer?.type === expectedType
-            ? exactLayer
-            : mappedSourceLayer?.type === expectedType
-                ? mappedSourceLayer
-                : undefined;
+        const sourceLayer = getSourceLayerForRuntimeLayer(
+            draftMap,
+            runtimeLayerName,
+            expectedType,
+            layerMap,
+            contract
+        );
 
         if (sourceLayer) {
             usedSourceLayers.add(sourceLayer.name);
-            const status = sourceLayer.name === runtimeLayerName
+            const previewLayerName = getPreviewLayerName(runtimeLayerName, sourceLayer, contract);
+            const status = sourceLayer.name === runtimeLayerName || sourceLayer.name === previewLayerName
                 ? MAP_CONVERSION_PREVIEW_STATUS.MATCHED
                 : MAP_CONVERSION_PREVIEW_STATUS.COPIED;
-            const previewLayer = cloneLayerAsRuntimeLayer(sourceLayer, runtimeLayerName);
+            const previewLayer = cloneLayerAsRuntimeLayer(sourceLayer, previewLayerName);
 
             steps.push(createStep({
                 runtimeLayerName,

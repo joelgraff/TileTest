@@ -14,6 +14,10 @@ function loadAssetMap(mapName) {
     return loadJson(`${CONFIG.PATHS.ASSETS}/${mapName}${CONFIG.PATHS.JSON_EXTENSION}`);
 }
 
+function loadDefaultRuntimeMap() {
+    return loadJson(CONFIG.getAssetPath(CONFIG.ASSETS.MAP, CONFIG.PATHS.JSON_EXTENSION));
+}
+
 describe('map conversion preview', () => {
     it('creates a layer-only runtime preview without mutating the draft map', () => {
         const draftMap = loadAssetMap('vcf_map');
@@ -83,7 +87,6 @@ describe('map conversion preview', () => {
             MAP_READINESS_CODES.PLAYER_START_MISSING,
             MAP_READINESS_CODES.NPC_AREA_RECT_MISSING,
             MAP_READINESS_CODES.NPC_SPAWN_POINTS_MISSING,
-            MAP_READINESS_CODES.TILESET_MISSING,
             MAP_READINESS_CODES.EXTERNAL_TILESET_IMAGE,
             MAP_READINESS_CODES.EXTERNAL_TILESET_SOURCE,
             MAP_READINESS_CODES.COLLISION_LAYER_DEPTH_MISSING,
@@ -92,13 +95,13 @@ describe('map conversion preview', () => {
     });
 
     it('keeps the default runtime map ready when previewed', () => {
-        const report = createMapLayerConversionPreviewReport(loadAssetMap(CONFIG.ASSETS.MAP));
+        const report = createMapLayerConversionPreviewReport(loadDefaultRuntimeMap());
 
         expect(report.previewMap.layers.map(layer => layer.name)).toEqual([
             'floor',
             'tables',
             'player',
-            'npc_area',
+            'npc_areas',
             'tabletops'
         ]);
         expect(report.steps.every(step => step.status === MAP_CONVERSION_PREVIEW_STATUS.MATCHED)).toBe(true);

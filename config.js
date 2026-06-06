@@ -5,6 +5,7 @@ const CONFIG = {
         JSON_EXTENSION: '.json'
     },
     ASSETS: {
+        PACKAGE: '24px',
         TILES: 'tiles',
         PLAYER: 'player',
         MAP: 'map'
@@ -21,7 +22,21 @@ const CONFIG = {
         SPEED: 100
     },
     NPC: {
+        FRAME_WIDTH: 32,
+        FRAME_HEIGHT: 48,
+        SPRITE_PREFIX: 'npc_',
+        SPRITE_PADDING: 3,
         SPRITES: ['npc1', 'npc2'] // Add your NPC asset keys here (filenames without .png)
+    },
+    getPackageRoot(packageName) {
+        const resolvedPackage = packageName ?? this.ASSETS.PACKAGE;
+
+        return resolvedPackage
+            ? `${this.PATHS.ASSETS}/${resolvedPackage}`
+            : this.PATHS.ASSETS;
+    },
+    getAssetPath(assetKey, extension, packageName) {
+        return `${this.getPackageRoot(packageName)}/${assetKey}${extension}`;
     }
 };
 

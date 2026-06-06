@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import CONFIG from '../../config.js';
 import {
     getCachedTilemapData,
     validateLoadedMapBootContract,
@@ -91,7 +92,14 @@ describe('map boot guard', () => {
         expect(result.success).toBe(true);
         expect(result.blockingIssues).toEqual([]);
         expect(result.message).toBe('Map boot contract passed for "map".');
+        expect(result.runtimeProfile?.mapPath).toBe(
+            CONFIG.getAssetPath(CONFIG.ASSETS.MAP, CONFIG.PATHS.JSON_EXTENSION)
+        );
+        expect(result.runtimeProfile?.tilesets[0].packageImagePath).toBe(
+            CONFIG.getAssetPath(CONFIG.ASSETS.TILES, CONFIG.PATHS.IMAGE_EXTENSION)
+        );
         expect(scene.mapBootFailure).toBeUndefined();
+        expect(scene.mapRuntimeProfile).toBe(result.runtimeProfile);
     });
 
     it('records and renders a readable failure for an invalid map', () => {
@@ -162,9 +170,13 @@ describe('map boot guard', () => {
             }
         };
 
-        const result = validateLoadedMapBootContract(scene, { mapKey: 'map' });
+        const result = validateLoadedMapBootContract(scene, {
+            mapKey: 'map',
+            packageName: '24px'
+        });
 
         expect(result.success).toBe(true);
         expect(scene.cache.tilemap.get).toHaveBeenCalledWith('map');
+        expect(result.runtimeProfile?.packageRoot).toBe('assets/24px');
     });
 });

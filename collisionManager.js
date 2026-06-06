@@ -34,8 +34,8 @@ class CollisionManager {
         CollisionManager.addColliders(scene);
     }
 
-    static getTileCollisionObjects(tile) {
-        return getTileCollisionObjectsForTile(tile);
+    static getTileCollisionObjects(tile, tilemapLayer) {
+        return getTileCollisionObjectsForTile(tile, tilemapLayer);
     }
 
     static createTileCollisionBodies(scene, tilemapLayer) {

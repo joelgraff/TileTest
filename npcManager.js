@@ -1,35 +1,50 @@
 import CONFIG from './config.js';
 import { syncNPCInteractionState } from './npcInteractionState.js';
 import { createNPCGroup, resolveNPCTablesLayerDepth } from './npcSpawnFactory.js';
+import { getPlayerCollisionBox } from './playerManager.js';
 
 class NPCManager {
-    static preload(scene) {
-        CONFIG.NPC.SPRITES.forEach(spriteKey => {
+    static preload(scene, {
+        packageName = scene.assetPackageName ?? CONFIG.ASSETS.PACKAGE,
+        spriteKeys = CONFIG.NPC.SPRITES,
+        frameWidth = CONFIG.NPC.FRAME_WIDTH,
+        frameHeight = CONFIG.NPC.FRAME_HEIGHT
+    } = {}) {
+        scene.npcSpriteConfig = {
+            frameWidth,
+            frameHeight,
+            spriteKeys: [...spriteKeys]
+        };
+
+        spriteKeys.forEach(spriteKey => {
             scene.load.spritesheet(
                 spriteKey,
-                `${CONFIG.PATHS.ASSETS}/${spriteKey}${CONFIG.PATHS.IMAGE_EXTENSION}`,
-                { frameWidth: 32, frameHeight: 48 }
+                CONFIG.getAssetPath(spriteKey, CONFIG.PATHS.IMAGE_EXTENSION, packageName),
+                { frameWidth, frameHeight }
             );
         });
     }
 
     static create(scene) {
-        const npcAreaLayer = NPCManager.getNPCAreaLayer(scene);
-        if (!npcAreaLayer) return;
+        const spawnAreas = NPCManager.getSpawnAreas(scene);
+        const spawnPoints = spawnAreas.flatMap(area =>
+            area.spawnPoints.map(point => ({
+                ...point,
+                npcAreaRect: area.rect ?? null
+            }))
+        );
 
-        const spawnPoints = NPCManager.getSpawnPoints(npcAreaLayer);
         if (spawnPoints.length === 0) return;
 
-        const rect = NPCManager.getRectObject(npcAreaLayer);
-        if (!rect) return;
-
         const tablesLayerDepth = resolveNPCTablesLayerDepth(scene);
+        const npcCollisionBox = getPlayerCollisionBox(scene);
 
-        scene.npcGroup = createNPCGroup(scene, spawnPoints, rect, tablesLayerDepth, {
+        scene.npcGroup = createNPCGroup(scene, spawnPoints, null, tablesLayerDepth, {
             getNearestEdgeDirection: NPCManager.getNearestEdgeDirection,
             getFrameForDirection: NPCManager.getFrameForDirection,
-            getRandomSpriteKey: NPCManager.getRandomSpriteKey,
-            setNPCDepth: NPCManager.setNPCDepth
+            getRandomSpriteKey: () => NPCManager.getRandomSpriteKey(scene),
+            setNPCDepth: NPCManager.setNPCDepth,
+            setNPCCollisionBox: (npc) => NPCManager.setNPCCollisionBox(npc, npcCollisionBox)
         });
     }
 
@@ -53,8 +68,29 @@ class NPCManager {
         return layer;
     }
 
+    static getSpawnAreas(scene) {
+        const runtimeAreas = scene.mapRuntimeProfile?.npcAreaLayers;
+
+        if (Array.isArray(runtimeAreas) && runtimeAreas.length > 0) {
+            return runtimeAreas.map(area => ({
+                spawnPoints: area.spawnPoints ?? [],
+                rect: NPCManager.getRectObject({ objects: area.layer?.objects ?? [] })
+            }));
+        }
+
+        const npcAreaLayer = NPCManager.getNPCAreaLayer(scene);
+        if (!npcAreaLayer) {
+            return [];
+        }
+
+        return [{
+            spawnPoints: NPCManager.getSpawnPoints(npcAreaLayer),
+            rect: NPCManager.getRectObject(npcAreaLayer)
+        }];
+    }
+
     static getSpawnPoints(npcAreaLayer) {
-        return npcAreaLayer.objects.filter(obj => obj.type === 'point');
+        return npcAreaLayer.objects.filter(obj => obj.point === true || obj.type === 'point');
     }
 
     static getRectObject(npcAreaLayer) {
@@ -89,12 +125,20 @@ class NPCManager {
         }
     }
 
-    static getRandomSpriteKey() {
-        const sprites = CONFIG.NPC.SPRITES;
+    static getRandomSpriteKey(scene) {
+        const sprites = scene?.npcSpriteConfig?.spriteKeys?.length
+            ? scene.npcSpriteConfig.spriteKeys
+            : CONFIG.NPC.SPRITES;
         return sprites[Math.floor(Math.random() * sprites.length)];
     }
 
     static setNPCDepth(npc, npcAreaRect, tablesLayerDepth) {
+        if (!npcAreaRect) {
+            const npcDepth = Math.max(Math.floor(npc.y), Math.floor(tablesLayerDepth));
+            npc.setDepth(npcDepth);
+            return;
+        }
+
         // Calculate relative position in npcAreaRect
         const relY = Phaser.Math.Clamp(npc.y, npcAreaRect.y, npcAreaRect.y + npcAreaRect.height);
         // Reverse the gradient: 1 at top, 0 at bottom
@@ -107,6 +151,16 @@ class NPCManager {
         // Interpolate depth
         const npcDepth = Math.floor(Phaser.Math.Linear(minDepth, maxDepth, gradient));
         npc.setDepth(npcDepth);
+    }
+
+    static setNPCCollisionBox(npc, collisionBox) {
+        if (!npc || !collisionBox) {
+            return;
+        }
+
+        npc.setSize?.(collisionBox.width, collisionBox.height);
+        npc.setOffset?.(collisionBox.offsetX, collisionBox.offsetY);
+        npc.setCollideWorldBounds?.(true);
     }
 }
 

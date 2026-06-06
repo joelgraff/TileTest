@@ -44,6 +44,27 @@ describe('MapManager', () => {
         globalThis.Phaser = originalPhaser;
     });
 
+    it('loads map and tiles from the selected asset package during preload', () => {
+        const scene = {
+            load: {
+                tilemapTiledJSON: vi.fn(),
+                image: vi.fn()
+            }
+        };
+
+        MapManager.preload(scene, { packageName: '24px' });
+
+        expect(scene.assetPackageName).toBe('24px');
+        expect(scene.load.tilemapTiledJSON).toHaveBeenCalledWith(
+            CONFIG.ASSETS.MAP,
+            'assets/24px/map.json'
+        );
+        expect(scene.load.image).toHaveBeenCalledWith(
+            CONFIG.ASSETS.TILES,
+            'assets/24px/tiles.png'
+        );
+    });
+
     it('creates an explicit layer registry instead of exporting named layers on the scene', () => {
         globalThis.Phaser = {
             Math: {
@@ -97,6 +118,61 @@ describe('MapManager', () => {
         expect(tablesLayer.setDepth).toHaveBeenCalledWith(426);
         expect(tabletopsLayer.setDepth).toHaveBeenCalledWith(1280);
         expect(scene.tablesLayer).toBeUndefined();
+    });
+
+    it('attaches the discovered primary map tileset name to the preloaded texture key', () => {
+        globalThis.Phaser = {
+            Math: {
+                Clamp: vi.fn((value, min, max) => Math.min(Math.max(value, min), max))
+            }
+        };
+
+        const floorLayer = { setDepth: vi.fn(function () { return this; }) };
+        const map = {
+            heightInPixels: 640,
+            tileHeight: 24,
+            layers: [
+                { name: 'floor', properties: [{ name: 'depth', value: '0' }] }
+            ],
+            addTilesetImage: vi.fn(() => 'tileset'),
+            createLayer: vi.fn().mockReturnValue(floorLayer)
+        };
+        const scene = {
+            mapRuntimeProfile: {
+                primaryTileset: {
+                    name: 'table tiles 24'
+                }
+            },
+            make: {
+                tilemap: vi.fn(() => map)
+            }
+        };
+
+        const result = MapManager.create(scene, {
+            validateLoadedMapBootContractFn: vi.fn(() => ({
+                success: true,
+                runtimeProfile: scene.mapRuntimeProfile
+            }))
+        });
+
+        expect(result).toBe(scene.mapLayers);
+        expect(map.addTilesetImage).toHaveBeenCalledWith('table tiles 24', CONFIG.ASSETS.TILES);
+    });
+
+    it('passes the selected asset package into map boot validation during create', () => {
+        const validateLoadedMapBootContractFn = vi.fn(() => ({ success: false }));
+        const scene = {
+            assetPackageName: '24px'
+        };
+
+        const result = MapManager.create(scene, {
+            validateLoadedMapBootContractFn
+        });
+
+        expect(result).toBeNull();
+        expect(validateLoadedMapBootContractFn).toHaveBeenCalledWith(scene, {
+            packageName: '24px'
+        });
     });
 
     it('stops before creating Phaser layers when the cached map violates the runtime contract', () => {

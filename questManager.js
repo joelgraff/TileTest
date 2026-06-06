@@ -893,7 +893,7 @@ class QuestManager {
             this.sessionId = sessionData.sessionId;
             this.activeQuests = sessionData.activeQuests || [];
             this.completedQuests = sessionData.completedQuests || [];
-            if (Array.isArray(sessionData.activeVendorIds)) {
+            if (Array.isArray(sessionData.activeVendorIds) && this.activeVendorIds.length === 0) {
                 this.setSessionVendorIds(sessionData.activeVendorIds);
             }
             console.log('Loaded quest session:', this.sessionId);

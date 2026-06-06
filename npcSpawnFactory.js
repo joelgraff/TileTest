@@ -13,19 +13,24 @@ export function createNPCGroup(scene, spawnPoints, npcAreaRect, tablesLayerDepth
     getFrameForDirection,
     getRandomSpriteKey,
     setNPCDepth,
+    setNPCCollisionBox,
     groupFactory = () => scene.add.group(),
-    spriteFactory = (x, y, spriteKey, frame) => scene.add.sprite(x, y, spriteKey, frame)
+    spriteFactory = (x, y, spriteKey, frame) => scene.physics.add.sprite(x, y, spriteKey, frame)
 } = {}) {
     const npcGroup = groupFactory();
 
     spawnPoints.forEach(point => {
-        const direction = getNearestEdgeDirection(point, npcAreaRect);
+        const pointAreaRect = point.npcAreaRect ?? npcAreaRect ?? null;
+        const direction = point.resolvedFacing
+            ?? point.facing
+            ?? (pointAreaRect ? getNearestEdgeDirection(point, pointAreaRect) : 'down');
         const frame = getFrameForDirection(direction);
         const spriteKey = getRandomSpriteKey();
         const npc = spriteFactory(point.x, point.y, spriteKey, frame);
 
+        setNPCCollisionBox?.(npc, point);
         npcGroup.add(npc);
-        setNPCDepth(npc, npcAreaRect, tablesLayerDepth);
+        setNPCDepth(npc, pointAreaRect, tablesLayerDepth);
     });
 
     return npcGroup;

@@ -1,0 +1,125 @@
+{
+  "height": 4,
+  "width": 4,
+  "tileheight": 24,
+  "tilewidth": 24,
+  "layers": [
+    {
+      "name": "tables",
+      "type": "tilelayer",
+      "data": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "properties": [
+        {
+          "name": "depth",
+          "type": "int",
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "tabletops",
+      "type": "tilelayer",
+      "data": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "properties": [
+        {
+          "name": "depth",
+          "type": "int",
+          "value": 100
+        }
+      ]
+    },
+    {
+      "name": "player",
+      "type": "objectgroup",
+      "objects": [
+        {
+          "name": "start",
+          "x": 72,
+          "y": 96,
+          "point": true
+        }
+      ]
+    },
+    {
+      "name": "npc_areas",
+      "type": "group",
+      "layers": [
+        {
+          "name": "area_001",
+          "type": "objectgroup",
+          "properties": [
+            {
+              "name": "defaultFacing",
+              "type": "string",
+              "value": "left"
+            }
+          ],
+          "objects": [
+            {
+              "name": "spawn_a",
+              "x": 48,
+              "y": 48,
+              "point": true,
+              "properties": [
+                {
+                  "name": "facing",
+                  "type": "string",
+                  "value": "up"
+                }
+              ]
+            },
+            {
+              "name": "spawn_b",
+              "x": 72,
+              "y": 48,
+              "point": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "spriteFrameWidth",
+      "type": "int",
+      "value": 24
+    },
+    {
+      "name": "spriteFrameHeight",
+      "type": "int",
+      "value": 36
+    },
+    {
+      "name": "spriteFrameRate",
+      "type": "int",
+      "value": 8
+    },
+    {
+      "name": "spriteSpriteCount",
+      "type": "int",
+      "value": 16
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "tiles",
+      "tiles": [
+        {
+          "id": 0,
+          "objectgroup": {
+            "objects": [
+              {
+                "x": 0,
+                "y": 16,
+                "width": 24,
+                "height": 8
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

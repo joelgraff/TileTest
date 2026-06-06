@@ -8,14 +8,14 @@ function normalizeDialogText(displayText) {
     return displayText ?? '';
 }
 
-function resolveDialogImageSource(imageKey) {
+function resolveDialogImageSource(imageKey, packageName = CONFIG.ASSETS.PACKAGE) {
     if (!imageKey) {
         return null;
     }
 
     return imageKey.includes('/')
         ? imageKey
-        : `${CONFIG.PATHS.ASSETS}/${imageKey}${CONFIG.PATHS.IMAGE_EXTENSION}`;
+        : CONFIG.getAssetPath(imageKey, CONFIG.PATHS.IMAGE_EXTENSION, packageName);
 }
 
 function createDialogButton(documentRef, buttonData, className = 'dom-dialog-button') {
@@ -88,7 +88,10 @@ export function renderDomDialogSurface(
         manager.handleTextPagination?.(text, textPagination) ?? text
     );
 
-    const imageSource = resolveDialogImageSource(imageKey);
+    const imageSource = resolveDialogImageSource(
+        imageKey,
+        manager.scene?.assetPackageName ?? manager.scene?.mapRuntimeProfile?.packageName
+    );
 
     if (imageSource) {
         const contentRow = documentRef.createElement('div');

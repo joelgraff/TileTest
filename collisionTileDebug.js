@@ -17,7 +17,7 @@ export function renderTileCollisionDebug(scene, tilemapLayer, {
             return;
         }
 
-        const collisionObjects = getTileCollisionObjects(tile);
+        const collisionObjects = getTileCollisionObjects(tile, tilemapLayer);
         collisionObjects.forEach(collisionObject => {
             graphics.lineStyle(2, 0x00ff00, 1);
             if (collisionObject.width && collisionObject.height) {

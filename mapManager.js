@@ -2,14 +2,16 @@ import CONFIG from './config.js';
 import { recordMapBootFailure, validateLoadedMapBootContract } from './mapBootGuard.js';
 
 class MapManager {
-    static preload(scene) {
+    static preload(scene, { packageName } = {}) {
+        scene.assetPackageName = packageName ?? CONFIG.ASSETS.PACKAGE ?? null;
+
         scene.load.tilemapTiledJSON(
             CONFIG.ASSETS.MAP,
-            `${CONFIG.PATHS.ASSETS}/${CONFIG.ASSETS.MAP}${CONFIG.PATHS.JSON_EXTENSION}`
+            CONFIG.getAssetPath(CONFIG.ASSETS.MAP, CONFIG.PATHS.JSON_EXTENSION, scene.assetPackageName)
         );
         scene.load.image(
             CONFIG.ASSETS.TILES,
-            `${CONFIG.PATHS.ASSETS}/${CONFIG.ASSETS.TILES}${CONFIG.PATHS.IMAGE_EXTENSION}`
+            CONFIG.getAssetPath(CONFIG.ASSETS.TILES, CONFIG.PATHS.IMAGE_EXTENSION, scene.assetPackageName)
         );
     }
 
@@ -19,17 +21,24 @@ class MapManager {
     } = {}) {
         scene.mapLayers = {};
 
-        const mapValidation = validateLoadedMapBootContractFn(scene);
+        const mapValidation = validateLoadedMapBootContractFn(scene, {
+            packageName: scene.assetPackageName
+        });
         if (!mapValidation.success) {
             return null;
         }
 
         scene.map = scene.make.tilemap({ key: CONFIG.ASSETS.MAP });
-        const tileset = scene.map.addTilesetImage(CONFIG.ASSETS.TILES);
+        const tilesetBinding = MapManager.resolvePrimaryTilesetBinding(
+            mapValidation.runtimeProfile ?? scene.mapRuntimeProfile
+        );
+        const tileset = tilesetBinding.tilesetName === tilesetBinding.imageKey
+            ? scene.map.addTilesetImage(tilesetBinding.tilesetName)
+            : scene.map.addTilesetImage(tilesetBinding.tilesetName, tilesetBinding.imageKey);
         if (!tileset) {
             recordMapBootFailureFn(
                 scene,
-                `Map boot failed: tileset image "${CONFIG.ASSETS.TILES}" could not be attached to map "${CONFIG.ASSETS.MAP}".`
+                `Map boot failed: tileset image "${tilesetBinding.imageKey}" could not be attached to map tileset "${tilesetBinding.tilesetName}" for "${CONFIG.ASSETS.MAP}".`
             );
             return null;
         }
@@ -64,6 +73,13 @@ class MapManager {
         });
 
         return scene.mapLayers;
+    }
+
+    static resolvePrimaryTilesetBinding(runtimeProfile) {
+        return {
+            tilesetName: runtimeProfile?.primaryTileset?.name ?? CONFIG.ASSETS.TILES,
+            imageKey: CONFIG.ASSETS.TILES
+        };
     }
 }
 

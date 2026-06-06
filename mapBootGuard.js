@@ -1,5 +1,6 @@
 import CONFIG from './config.js';
 import { getMapReadinessReport } from './mapReadiness.js';
+import { buildMapRuntimeProfile } from './mapRuntimeProfile.js';
 
 const MAX_VISIBLE_ISSUES = 3;
 
@@ -19,17 +20,20 @@ export function getCachedTilemapData(scene, mapKey = CONFIG.ASSETS.MAP) {
 
 export function validateLoadedMapBootContract(scene, {
     mapKey = CONFIG.ASSETS.MAP,
-    documentRef = globalThis.document
+    documentRef = globalThis.document,
+    packageName
 } = {}) {
     return validateMapBootContract(scene, getCachedTilemapData(scene, mapKey), {
         mapName: mapKey,
-        documentRef
+        documentRef,
+        packageName
     });
 }
 
 export function validateMapBootContract(scene, mapData, {
     mapName = CONFIG.ASSETS.MAP,
-    documentRef = globalThis.document
+    documentRef = globalThis.document,
+    packageName
 } = {}) {
     if (!mapData) {
         const message = `Map boot failed: "${mapName}" was not found in the loaded tilemap cache.`;
@@ -39,10 +43,20 @@ export function validateMapBootContract(scene, mapData, {
 
     const report = getMapReadinessReport(mapData);
     if (report.ready) {
+        const runtimeProfile = buildMapRuntimeProfile(mapData, {
+            mapName,
+            packageName
+        });
+
+        if (scene) {
+            scene.mapRuntimeProfile = runtimeProfile;
+        }
+
         return {
             success: true,
             message: `Map boot contract passed for "${mapName}".`,
-            blockingIssues: []
+            blockingIssues: [],
+            runtimeProfile
         };
     }
 
@@ -79,6 +93,7 @@ export function recordMapBootFailure(scene, message, blockingIssues = [], {
 
     if (scene) {
         scene.mapBootFailure = failure;
+        scene.mapRuntimeProfile = null;
     }
 
     console.error(message);

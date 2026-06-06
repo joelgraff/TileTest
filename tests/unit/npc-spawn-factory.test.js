@@ -47,4 +47,32 @@ describe('NPC spawn factory', () => {
         expect(group.add).toHaveBeenCalledWith(sprite);
         expect(setNPCDepth).toHaveBeenCalledWith(sprite, { x: 0, y: 0, width: 100, height: 100 }, 300);
     });
+
+    it('prefers resolved spawn facing and point-level area context when provided', () => {
+        const group = { add: vi.fn() };
+        const sprite = { id: 'npc-1' };
+        const scene = {
+            add: {
+                group: vi.fn(() => group),
+                sprite: vi.fn(() => sprite)
+            }
+        };
+        const getNearestEdgeDirection = vi.fn(() => 'right');
+        const getFrameForDirection = vi.fn(() => 12);
+        const getRandomSpriteKey = vi.fn(() => 'npc_001');
+        const setNPCDepth = vi.fn();
+        const npcAreaRect = { x: 10, y: 20, width: 40, height: 50 };
+
+        createNPCGroup(scene, [{ x: 24, y: 48, resolvedFacing: 'up', npcAreaRect }], null, 300, {
+            getNearestEdgeDirection,
+            getFrameForDirection,
+            getRandomSpriteKey,
+            setNPCDepth
+        });
+
+        expect(getNearestEdgeDirection).not.toHaveBeenCalled();
+        expect(getFrameForDirection).toHaveBeenCalledWith('up');
+        expect(scene.add.sprite).toHaveBeenCalledWith(24, 48, 'npc_001', 12);
+        expect(setNPCDepth).toHaveBeenCalledWith(sprite, npcAreaRect, 300);
+    });
 });

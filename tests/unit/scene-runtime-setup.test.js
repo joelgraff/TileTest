@@ -8,6 +8,7 @@ describe('scene runtime setup', () => {
         const centerOn = vi.fn();
         const setBounds = vi.fn();
         const setZoom = vi.fn();
+        const setPhysicsBounds = vi.fn();
         const destroyGraphics = vi.fn();
         const preserveSprite = vi.fn();
         const setDebugToggleHandler = vi.fn();
@@ -21,6 +22,11 @@ describe('scene runtime setup', () => {
                     centerOn,
                     setBounds,
                     setZoom
+                }
+            },
+            physics: {
+                world: {
+                    setBounds: setPhysicsBounds
                 }
             },
             input: {
@@ -47,6 +53,7 @@ describe('scene runtime setup', () => {
 
         expect(recreateCollision).toHaveBeenCalledTimes(1);
         expect(recreateCollision).toHaveBeenCalledWith(scene);
+        expect(setPhysicsBounds).toHaveBeenCalledWith(0, 0, 640, 480);
         expect(startFollow).toHaveBeenCalledWith(scene.player);
         expect(centerOn).toHaveBeenCalledWith(10, 20);
         expect(setBounds).toHaveBeenCalledWith(0, 0, 640, 480);

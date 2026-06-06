@@ -1,43 +1,41 @@
 import { describe, expect, it } from 'vitest';
 
 import CONFIG from '../../config.js';
-import { getLayer, getPropertyValue, getTileset, loadJson } from './testUtils.js';
+import { buildMapRuntimeProfile } from '../../mapRuntimeProfile.js';
+import { getLayer, getPropertyValue, loadJson } from './testUtils.js';
 
-const TILE_FLIP_FLAGS_MASK = 0x1fffffff;
 const collisionLayerNames = ['tables', 'tabletops'];
-const runtimeTilesetName = CONFIG.ASSETS.TILES;
-
-function toLocalTileId(globalTileId) {
-    const unflippedTileId = globalTileId & TILE_FLIP_FLAGS_MASK;
-
-    return unflippedTileId > 0 ? unflippedTileId - 1 : -1;
-}
-
-function getEmbeddedTilesetCollisionObjects(map, tileId) {
-    const embeddedTileset = getTileset(map, runtimeTilesetName);
-    const tileDefinition = embeddedTileset?.tiles?.find(tile => tile.id === tileId);
-
-    return tileDefinition?.objectgroup?.objects ?? [];
-}
 
 describe('map validation', () => {
     const map = loadJson(
-        `${CONFIG.PATHS.ASSETS}/${CONFIG.ASSETS.MAP}${CONFIG.PATHS.JSON_EXTENSION}`
+        CONFIG.getAssetPath(CONFIG.ASSETS.MAP, CONFIG.PATHS.JSON_EXTENSION)
     );
+    const runtimeProfile = buildMapRuntimeProfile(map, {
+        packageName: CONFIG.ASSETS.PACKAGE,
+        mapName: CONFIG.ASSETS.MAP
+    });
 
     it('includes the required layers used by the runtime', () => {
-        const requiredLayers = ['floor', 'tables', 'player', 'npc_area', 'tabletops'];
+        const requiredLayers = ['floor', 'tables', 'player', 'tabletops'];
 
         for (const layerName of requiredLayers) {
             expect(getLayer(map, layerName), `Missing required layer: ${layerName}`).toBeTruthy();
         }
+
+        expect(
+            runtimeProfile.npcAreaGroup ?? getLayer(map, 'npc_area'),
+            'Missing required NPC placement layer: npc_area or npc_areas'
+        ).toBeTruthy();
     });
 
-    it('includes the tileset used by the runtime map renderer', () => {
+    it('discovers a primary tileset used by the runtime map renderer', () => {
         expect(
-            getTileset(map, runtimeTilesetName),
-            `Missing required tileset: ${runtimeTilesetName}`
+            runtimeProfile.primaryTileset,
+            'Missing primary tileset for runtime rendering'
         ).toBeTruthy();
+        expect(runtimeProfile.primaryTileset?.packageImagePath).toBe(
+            CONFIG.getAssetPath(CONFIG.ASSETS.TILES, CONFIG.PATHS.IMAGE_EXTENSION)
+        );
     });
 
     it('defines exactly one player start point marker', () => {
@@ -50,17 +48,31 @@ describe('map validation', () => {
         expect(startMarkers[0].point).toBe(true);
     });
 
-    it('defines exactly one npc area rectangle and one or more point spawns', () => {
-        const npcLayer = getLayer(map, 'npc_area');
-        const rectObjects = npcLayer.objects.filter(object => object.type === 'rect');
-        const pointObjects = npcLayer.objects.filter(object => object.type === 'point');
+    it('defines npc spawn points through the supported runtime placement contract', () => {
+        const legacyNpcLayer = getLayer(map, 'npc_area');
 
-        expect(npcLayer.type).toBe('objectgroup');
-        expect(Array.isArray(npcLayer.objects)).toBe(true);
-        expect(rectObjects).toHaveLength(1);
-        expect(pointObjects.length).toBeGreaterThan(0);
-        pointObjects.forEach(pointObject => {
-            expect(pointObject.point).toBe(true);
+        if (legacyNpcLayer) {
+            const rectObjects = legacyNpcLayer.objects.filter(object => object.type === 'rect');
+            const pointObjects = legacyNpcLayer.objects.filter(object => object.type === 'point');
+
+            expect(legacyNpcLayer.type).toBe('objectgroup');
+            expect(Array.isArray(legacyNpcLayer.objects)).toBe(true);
+            expect(rectObjects).toHaveLength(1);
+            expect(pointObjects.length).toBeGreaterThan(0);
+            pointObjects.forEach(pointObject => {
+                expect(pointObject.point).toBe(true);
+            });
+            return;
+        }
+
+        expect(runtimeProfile.npcAreaGroup?.name).toBe('npc_areas');
+        expect(runtimeProfile.npcAreaLayers.length).toBeGreaterThan(0);
+
+        const spawnPoints = runtimeProfile.npcAreaLayers.flatMap(layer => layer.spawnPoints);
+
+        expect(spawnPoints.length).toBeGreaterThan(0);
+        spawnPoints.forEach(point => {
+            expect(point.object?.point).toBe(true);
         });
     });
 
@@ -77,36 +89,25 @@ describe('map validation', () => {
         }
     });
 
-    it('defines collision rectangles for every tile used by collision layers', () => {
+    it('defines map-level tabletop collision override properties', () => {
+        expect(getPropertyValue(map, 'tabletopCollisionWidth')).toBeGreaterThan(0);
+        expect(getPropertyValue(map, 'tabletopCollisionHeight')).toBeGreaterThan(0);
+        expect(getPropertyValue(map, 'tabletopCollisionX')).toEqual(expect.any(Number));
+        expect(getPropertyValue(map, 'tabletopCollisionY')).toEqual(expect.any(Number));
+    });
+
+    it('provides collision-capable tile dimensions for every used collision layer', () => {
+        const tileWidth = runtimeProfile.primaryTileset?.tileWidth ?? map.tilewidth;
+        const tileHeight = runtimeProfile.primaryTileset?.tileHeight ?? map.tileheight;
+
+        expect(tileWidth).toBeGreaterThan(0);
+        expect(tileHeight).toBeGreaterThan(0);
+
         for (const layerName of collisionLayerNames) {
             const layer = getLayer(map, layerName);
-            const usedTileIds = new Set(
-                layer.data
-                    .filter(tileId => tileId > 0)
-                    .map(tileId => toLocalTileId(tileId))
-            );
+            const usedTileCount = layer.data.filter(tileId => tileId > 0).length;
 
-            expect(usedTileIds.size, `Collision layer ${layerName} has no tiles`).toBeGreaterThan(0);
-
-            for (const tileId of usedTileIds) {
-                const collisionObjects = getEmbeddedTilesetCollisionObjects(map, tileId);
-
-                expect(
-                    collisionObjects.length,
-                    `Tile ${tileId} used by ${layerName} is missing collision metadata`
-                ).toBeGreaterThan(0);
-
-                for (const collisionObject of collisionObjects) {
-                    expect(
-                        collisionObject.width,
-                        `Tile ${tileId} in ${layerName} has a collision object without width`
-                    ).toBeGreaterThan(0);
-                    expect(
-                        collisionObject.height,
-                        `Tile ${tileId} in ${layerName} has a collision object without height`
-                    ).toBeGreaterThan(0);
-                }
-            }
+            expect(usedTileCount, `Collision layer ${layerName} has no tiles`).toBeGreaterThan(0);
         }
     });
 });

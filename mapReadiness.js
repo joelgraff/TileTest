@@ -1,4 +1,11 @@
 import CONFIG from './config.js';
+import {
+    TABLE_COLLISION_PROPERTY_NAMES,
+    TABLETOP_COLLISION_PROPERTY_NAMES,
+    getCollisionMetadata,
+    getCollisionRect,
+    resolveCollisionBox
+} from './tabletopCollisionMetadata.js';
 
 const TILE_FLIP_FLAGS_MASK = 0x1fffffff;
 
@@ -60,11 +67,12 @@ export const RUNTIME_MAP_CONTRACT = {
         floor: 'tilelayer',
         tables: 'tilelayer',
         player: 'objectgroup',
-        npc_area: 'objectgroup',
+        npc_area: ['objectgroup', 'group'],
         tabletops: 'tilelayer'
     },
     collisionLayers: ['tables', 'tabletops'],
     npcLayerName: 'npc_area',
+    npcGroupLayerName: 'npc_areas',
     playerLayerName: 'player',
     playerStartName: 'start',
     tilesetImage: `${CONFIG.ASSETS.TILES}${CONFIG.PATHS.IMAGE_EXTENSION}`,
@@ -75,12 +83,48 @@ function createIssue(severity, code, message) {
     return { severity, code, message };
 }
 
-function getLayer(map, layerName) {
-    return (map.layers ?? []).find(layer => layer.name === layerName);
+function matchesExpectedLayerType(layerType, expectedType) {
+    if (!expectedType) {
+        return true;
+    }
+
+    return Array.isArray(expectedType)
+        ? expectedType.includes(layerType)
+        : layerType === expectedType;
+}
+
+function formatExpectedLayerType(expectedType) {
+    return Array.isArray(expectedType)
+        ? expectedType.join(' or ')
+        : expectedType;
+}
+
+function getLayer(map, layerName, contract = RUNTIME_MAP_CONTRACT) {
+    const exactLayer = (map.layers ?? []).find(layer => layer.name === layerName);
+
+    if (exactLayer) {
+        return exactLayer;
+    }
+
+    if (layerName === contract.npcLayerName && contract.npcGroupLayerName) {
+        return (map.layers ?? []).find(layer => layer.name === contract.npcGroupLayerName);
+    }
+
+    return undefined;
 }
 
 function getTileset(map, tilesetName) {
     return (map.tilesets ?? []).find(tileset => tileset.name === tilesetName);
+}
+
+function getRuntimeTileset(map, contract) {
+    const configuredTileset = getTileset(map, contract.tilesetName);
+
+    if (configuredTileset) {
+        return configuredTileset;
+    }
+
+    return (map.tilesets ?? []).find(tileset => typeof tileset?.name === 'string' && tileset.name.length > 0);
 }
 
 function getPropertyValue(entity, propertyName) {
@@ -138,9 +182,70 @@ function getEmbeddedTilesetCollisionObjects(tileset, tileId) {
     return tileDefinition?.objectgroup?.objects ?? [];
 }
 
+function getCollisionPropertyNamesForLayer(layerName) {
+    if (layerName === 'tables') {
+        return TABLE_COLLISION_PROPERTY_NAMES;
+    }
+
+    if (layerName === 'tabletops') {
+        return TABLETOP_COLLISION_PROPERTY_NAMES;
+    }
+
+    return null;
+}
+
+function getCollisionTileSize(map, tileset) {
+    return {
+        width: tileset?.tileWidth ?? tileset?.tilewidth ?? map.tilewidth ?? 0,
+        height: tileset?.tileHeight ?? tileset?.tileheight ?? map.tileheight ?? 0
+    };
+}
+
+function getLayerCollisionObjects(map, layerName, tileset, tileId) {
+    const embeddedCollisionObjects = getEmbeddedTilesetCollisionObjects(tileset, tileId);
+
+    if (embeddedCollisionObjects.length > 0) {
+        const tileSize = getCollisionTileSize(map, tileset);
+
+        return embeddedCollisionObjects
+            .map(collisionObject => resolveCollisionBox(collisionObject, {
+                tileWidth: tileSize.width,
+                tileHeight: tileSize.height
+            }))
+            .filter(Boolean);
+    }
+
+    const collisionPropertyNames = getCollisionPropertyNamesForLayer(layerName);
+
+    if (!collisionPropertyNames) {
+        return [];
+    }
+
+    const collisionMetadata = getCollisionMetadata(map, collisionPropertyNames);
+
+    if (!collisionMetadata.hasAny) {
+        return [];
+    }
+
+    if (collisionMetadata.isDisabled) {
+        return [];
+    }
+
+    const collisionObject = getCollisionRect(map, collisionPropertyNames, getCollisionTileSize(map, tileset));
+
+    return collisionObject ? [collisionObject] : null;
+}
+
+function isValidCollisionObject(collisionObject) {
+    return Number.isFinite(collisionObject.x)
+        && Number.isFinite(collisionObject.y)
+        && collisionObject.width > 0
+        && collisionObject.height > 0;
+}
+
 function validateRequiredLayers(map, contract, issues) {
     for (const layerName of contract.requiredLayers) {
-        const layer = getLayer(map, layerName);
+        const layer = getLayer(map, layerName, contract);
 
         if (!layer) {
             issues.push(createIssue(
@@ -152,18 +257,18 @@ function validateRequiredLayers(map, contract, issues) {
         }
 
         const expectedType = contract.expectedLayerTypes[layerName];
-        if (expectedType && layer.type !== expectedType) {
+        if (expectedType && !matchesExpectedLayerType(layer.type, expectedType)) {
             issues.push(createIssue(
                 MAP_READINESS_SEVERITY.BLOCKING,
                 MAP_READINESS_CODES.LAYER_TYPE_INVALID,
-                `Layer "${layerName}" must be a ${expectedType}, but it is ${layer.type}.`
+                `Layer "${layer.name}" must be a ${formatExpectedLayerType(expectedType)}, but it is ${layer.type}.`
             ));
         }
     }
 }
 
 function validatePlayerStart(map, contract, issues) {
-    const playerLayer = getLayer(map, contract.playerLayerName);
+    const playerLayer = getLayer(map, contract.playerLayerName, contract);
     const playerObjects = Array.isArray(playerLayer?.objects) ? playerLayer.objects : [];
     const startMarkers = playerObjects.filter(object => object.name === contract.playerStartName);
 
@@ -194,31 +299,65 @@ function validatePlayerStart(map, contract, issues) {
     }
 }
 
-function validateNpcObjects(map, contract, issues) {
-    const npcLayer = getLayer(map, contract.npcLayerName);
-    const npcObjects = Array.isArray(npcLayer?.objects) ? npcLayer.objects : [];
-    const areaRects = npcObjects.filter(object => object.type === 'rect');
-    const spawnPoints = npcObjects.filter(object => object.type === 'point');
+function getNpcPlacementLayerInfo(map, contract) {
+    const flatNpcLayer = (map.layers ?? []).find(layer => layer.name === contract.npcLayerName);
 
-    if (areaRects.length === 0) {
-        issues.push(createIssue(
-            MAP_READINESS_SEVERITY.BLOCKING,
-            MAP_READINESS_CODES.NPC_AREA_RECT_MISSING,
-            `Missing NPC area rectangle: add exactly one object with type "rect" on layer "${contract.npcLayerName}".`
-        ));
-    } else if (areaRects.length !== 1) {
-        issues.push(createIssue(
-            MAP_READINESS_SEVERITY.BLOCKING,
-            MAP_READINESS_CODES.NPC_AREA_RECT_COUNT_INVALID,
-            `Layer "${contract.npcLayerName}" must define exactly one NPC area rectangle; found ${areaRects.length}.`
-        ));
+    if (flatNpcLayer?.type === 'objectgroup') {
+        return {
+            mode: 'flat',
+            layers: [flatNpcLayer],
+            label: contract.npcLayerName
+        };
+    }
+
+    const npcGroupLayer = contract.npcGroupLayerName
+        ? (map.layers ?? []).find(layer => layer.name === contract.npcGroupLayerName)
+        : null;
+
+    if (npcGroupLayer?.type === 'group') {
+        return {
+            mode: 'group',
+            layers: (npcGroupLayer.layers ?? []).filter(layer => layer.type === 'objectgroup'),
+            label: contract.npcGroupLayerName
+        };
+    }
+
+    return {
+        mode: 'missing',
+        layers: [],
+        label: contract.npcLayerName
+    };
+}
+
+function validateNpcObjects(map, contract, issues) {
+    const npcLayerInfo = getNpcPlacementLayerInfo(map, contract);
+    const npcObjects = npcLayerInfo.layers.flatMap(layer => Array.isArray(layer?.objects) ? layer.objects : []);
+    const areaRects = npcObjects.filter(object => object.type === 'rect');
+    const spawnPoints = npcObjects.filter(object => object.point === true || object.type === 'point');
+
+    if (npcLayerInfo.mode === 'flat') {
+        if (areaRects.length === 0) {
+            issues.push(createIssue(
+                MAP_READINESS_SEVERITY.BLOCKING,
+                MAP_READINESS_CODES.NPC_AREA_RECT_MISSING,
+                `Missing NPC area rectangle: add exactly one object with type "rect" on layer "${contract.npcLayerName}".`
+            ));
+        } else if (areaRects.length !== 1) {
+            issues.push(createIssue(
+                MAP_READINESS_SEVERITY.BLOCKING,
+                MAP_READINESS_CODES.NPC_AREA_RECT_COUNT_INVALID,
+                `Layer "${contract.npcLayerName}" must define exactly one NPC area rectangle; found ${areaRects.length}.`
+            ));
+        }
     }
 
     if (spawnPoints.length === 0) {
         issues.push(createIssue(
             MAP_READINESS_SEVERITY.BLOCKING,
             MAP_READINESS_CODES.NPC_SPAWN_POINTS_MISSING,
-            `Missing NPC spawn points: add one or more point objects on layer "${contract.npcLayerName}".`
+            npcLayerInfo.mode === 'group'
+                ? `Missing NPC spawn points: add one or more point objects inside the "${contract.npcGroupLayerName}" group layers.`
+                : `Missing NPC spawn points: add one or more point objects on layer "${contract.npcLayerName}".`
         ));
         return;
     }
@@ -228,34 +367,28 @@ function validateNpcObjects(map, contract, issues) {
         issues.push(createIssue(
             MAP_READINESS_SEVERITY.BLOCKING,
             MAP_READINESS_CODES.NPC_SPAWN_POINT_INVALID,
-            `NPC spawn objects on layer "${contract.npcLayerName}" must be point objects.`
+            npcLayerInfo.mode === 'group'
+                ? `NPC spawn objects inside "${contract.npcGroupLayerName}" must be point objects.`
+                : `NPC spawn objects on layer "${contract.npcLayerName}" must be point objects.`
         ));
     }
 }
 
 function validateTilesets(map, contract, issues) {
-    const runtimeTileset = getTileset(map, contract.tilesetName);
+    const runtimeTileset = getRuntimeTileset(map, contract);
 
     if (!runtimeTileset) {
         issues.push(createIssue(
             MAP_READINESS_SEVERITY.BLOCKING,
             MAP_READINESS_CODES.TILESET_MISSING,
-            `Missing required tileset "${contract.tilesetName}"; MapManager calls addTilesetImage("${contract.tilesetName}") for runtime maps.`
+            `Missing a named runtime tileset; MapManager needs one named embedded tileset to attach at boot.`
         ));
     } else {
         if (runtimeTileset.source) {
             issues.push(createIssue(
                 MAP_READINESS_SEVERITY.BLOCKING,
                 MAP_READINESS_CODES.TILESET_NOT_EMBEDDED,
-                `Tileset "${contract.tilesetName}" references source "${runtimeTileset.source}"; embed tileset data in the map JSON before switching maps.`
-            ));
-        }
-
-        if (runtimeTileset.image && runtimeTileset.image !== contract.tilesetImage) {
-            issues.push(createIssue(
-                MAP_READINESS_SEVERITY.BLOCKING,
-                MAP_READINESS_CODES.TILESET_IMAGE_MISMATCH,
-                `Tileset "${contract.tilesetName}" must reference image "${contract.tilesetImage}", but it references "${runtimeTileset.image}".`
+                `Tileset "${runtimeTileset.name}" references source "${runtimeTileset.source}"; embed tileset data in the map JSON before switching maps.`
             ));
         }
     }
@@ -304,10 +437,10 @@ function validateImageLayers(map, issues) {
 }
 
 function validateCollisionLayers(map, contract, issues) {
-    const runtimeTileset = getTileset(map, contract.tilesetName);
+    const runtimeTileset = getRuntimeTileset(map, contract);
 
     for (const layerName of contract.collisionLayers) {
-        const layer = getLayer(map, layerName);
+        const layer = getLayer(map, layerName, contract);
 
         if (!layer) {
             issues.push(createIssue(
@@ -356,29 +489,26 @@ function validateCollisionLayers(map, contract, issues) {
                 .filter(tileId => tileId !== undefined)
         );
 
-        const missingCollisionTileIds = [];
         const invalidCollisionTileIds = [];
 
         for (const tileId of usedTileIds) {
-            const collisionObjects = getEmbeddedTilesetCollisionObjects(runtimeTileset, tileId);
+            const collisionObjects = getLayerCollisionObjects(map, layerName, runtimeTileset, tileId);
 
-            if (collisionObjects.length === 0) {
-                missingCollisionTileIds.push(tileId);
+            if (collisionObjects === null) {
+                if (invalidCollisionTileIds.length === 0) {
+                    invalidCollisionTileIds.push(tileId);
+                }
                 continue;
             }
 
-            const invalidCollisionObject = collisionObjects.find(object => !(object.width > 0 && object.height > 0));
+            if (collisionObjects.length === 0) {
+                continue;
+            }
+
+            const invalidCollisionObject = collisionObjects.find(object => !isValidCollisionObject(object));
             if (invalidCollisionObject) {
                 invalidCollisionTileIds.push(tileId);
             }
-        }
-
-        if (missingCollisionTileIds.length > 0) {
-            issues.push(createIssue(
-                MAP_READINESS_SEVERITY.BLOCKING,
-                MAP_READINESS_CODES.COLLISION_TILE_METADATA_MISSING,
-                `Collision layer "${layerName}" uses tiles without embedded collision objects: ${missingCollisionTileIds.join(', ')}.`
-            ));
         }
 
         if (invalidCollisionTileIds.length > 0) {
@@ -396,6 +526,10 @@ function addDraftLayerNotes(map, contract, issues) {
         ...contract.requiredLayers,
         ...contract.collisionLayers
     ]);
+
+    if (contract.npcGroupLayerName) {
+        runtimeLayerNames.add(contract.npcGroupLayerName);
+    }
 
     for (const layer of map.layers ?? []) {
         if (runtimeLayerNames.has(layer.name)) {
@@ -483,7 +617,7 @@ function findDraftLayerCandidate(map, runtimeLayerName, expectedType, draftLayer
 
     return aliases
         .map(alias => getLayer(map, alias))
-        .find(layer => layer && (!expectedType || layer.type === expectedType));
+        .find(layer => layer && matchesExpectedLayerType(layer.type, expectedType));
 }
 
 function createMatchedLayerHint(runtimeLayerName, expectedType, layer) {
@@ -493,19 +627,27 @@ function createMatchedLayerHint(runtimeLayerName, expectedType, layer) {
         status: MAP_LAYER_MAPPING_STATUS.MATCHED,
         sourceLayer: layer.name,
         sourceLayerType: layer.type,
-        typeMatches: !expectedType || layer.type === expectedType,
+        typeMatches: matchesExpectedLayerType(layer.type, expectedType),
         summary: describeLayerShape(layer),
         message: `Matched runtime layer "${runtimeLayerName}" [${describeLayerShape(layer)}].`
     };
 }
 
 function formatExpectedLayerKind(expectedType) {
+    if (Array.isArray(expectedType)) {
+        return expectedType.map(formatExpectedLayerKind).join(' or ');
+    }
+
     if (expectedType === 'tilelayer') {
         return 'tile layer';
     }
 
     if (expectedType === 'objectgroup') {
         return 'object layer';
+    }
+
+    if (expectedType === 'group') {
+        return 'group layer';
     }
 
     return `${expectedType} layer`;
@@ -518,7 +660,7 @@ function createCandidateLayerHint(runtimeLayerName, expectedType, layer) {
         status: MAP_LAYER_MAPPING_STATUS.CANDIDATE,
         sourceLayer: layer.name,
         sourceLayerType: layer.type,
-        typeMatches: !expectedType || layer.type === expectedType,
+        typeMatches: matchesExpectedLayerType(layer.type, expectedType),
         summary: describeLayerShape(layer),
         message: `Runtime layer "${runtimeLayerName}" is missing; candidate draft layer "${layer.name}" matches the expected ${formatExpectedLayerKind(expectedType)} shape [${describeLayerShape(layer)}]. Rename or copy it intentionally if this is the right role.`
     };
@@ -583,7 +725,7 @@ const MAP_READINESS_ACTIONS = [
             MAP_READINESS_CODES.NPC_SPAWN_POINTS_MISSING,
             MAP_READINESS_CODES.NPC_SPAWN_POINT_INVALID
         ],
-        getDetail: contract => `Add exactly one rectangle with type "rect" plus one or more point spawn markers on the "${contract.npcLayerName}" object layer.`
+        getDetail: contract => `Either keep the legacy "${contract.npcLayerName}" object layer with one rectangle plus one or more point spawn markers, or author grouped spawn layers under "${contract.npcGroupLayerName}" with point objects in each child object layer.`
     },
     {
         id: MAP_READINESS_ACTION_IDS.COLLISION_AUTHORING,
@@ -596,7 +738,7 @@ const MAP_READINESS_ACTIONS = [
             MAP_READINESS_CODES.COLLISION_TILE_METADATA_MISSING,
             MAP_READINESS_CODES.COLLISION_TILE_METADATA_INVALID
         ],
-        getDetail: contract => `Provide collision tile layers ${contract.collisionLayers.join(', ')} with numeric depth properties and embedded collision rectangles on every used collision tile.`
+        getDetail: contract => `Provide collision tile layers ${contract.collisionLayers.join(', ')} with numeric depth properties and valid collision rectangles, either embedded on used collision tiles or supplied through the map-level tableCollision* properties for tables tiles and tabletopCollision* properties for tabletop tiles.`
     },
     {
         id: MAP_READINESS_ACTION_IDS.IMAGE_LAYERS,
@@ -647,7 +789,7 @@ export function getMapLayerMappingHints(map, contract = RUNTIME_MAP_CONTRACT) {
 
     return contract.requiredLayers.map(runtimeLayerName => {
         const expectedType = contract.expectedLayerTypes[runtimeLayerName];
-        const exactLayer = getLayer(map, runtimeLayerName);
+        const exactLayer = getLayer(map, runtimeLayerName, contract);
 
         if (exactLayer) {
             return createMatchedLayerHint(runtimeLayerName, expectedType, exactLayer);

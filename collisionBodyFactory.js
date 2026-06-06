@@ -1,4 +1,67 @@
-export function getTileCollisionObjects(tile) {
+import {
+    TABLE_COLLISION_PROPERTY_NAMES,
+    TABLETOP_COLLISION_PROPERTY_NAMES,
+    getCollisionMetadata,
+    getCollisionRect,
+    resolveCollisionBox
+} from './tabletopCollisionMetadata.js';
+
+function getResolvedTilemapLayer(tile, tilemapLayer) {
+    return tilemapLayer ?? tile?.tilemapLayer ?? null;
+}
+
+function getLayerName(tilemapLayer) {
+    return tilemapLayer?.layer?.name ?? tilemapLayer?.name ?? null;
+}
+
+function getCollisionPropertyNamesForLayer(layerName) {
+    if (layerName === 'tables') {
+        return TABLE_COLLISION_PROPERTY_NAMES;
+    }
+
+    if (layerName === 'tabletops') {
+        return TABLETOP_COLLISION_PROPERTY_NAMES;
+    }
+
+    return null;
+}
+
+function getTileSize(tile) {
+    return {
+        width: tile.width ?? tile.tileset?.tileWidth ?? tile.tileset?.tilewidth ?? 0,
+        height: tile.height ?? tile.tileset?.tileHeight ?? tile.tileset?.tileheight ?? 0
+    };
+}
+
+function getLayerCollisionObjects(tile, tilemapLayer) {
+    const resolvedTilemapLayer = getResolvedTilemapLayer(tile, tilemapLayer);
+    const layerName = getLayerName(resolvedTilemapLayer);
+    const collisionPropertyNames = getCollisionPropertyNamesForLayer(layerName);
+
+    if (!collisionPropertyNames) {
+        return null;
+    }
+
+    const collisionMetadata = getCollisionMetadata(resolvedTilemapLayer?.tilemap, collisionPropertyNames);
+
+    if (!collisionMetadata.hasAny) {
+        return null;
+    }
+
+    if (collisionMetadata.isDisabled) {
+        return [];
+    }
+
+    const collisionRect = getCollisionRect(
+        resolvedTilemapLayer?.tilemap,
+        collisionPropertyNames,
+        getTileSize(tile)
+    );
+
+    return collisionRect ? [collisionRect] : null;
+}
+
+export function getTileCollisionObjects(tile, tilemapLayer) {
     const tileset = tile.tileset;
     if (!tileset || !tileset.tileData) return [];
 
@@ -14,7 +77,27 @@ export function getTileCollisionObjects(tile) {
         Array.isArray(tileData.objectgroup.objects) &&
         tileData.objectgroup.objects.length > 0
     ) {
-        return tileData.objectgroup.objects;
+        const tileSize = getTileSize(tile);
+
+        return tileData.objectgroup.objects
+            .map(collisionObject => resolveCollisionBox(collisionObject, {
+                tileWidth: tileSize.width,
+                tileHeight: tileSize.height
+            }))
+            .filter(Boolean);
+    }
+
+    const fallbackWidth = tile.width ?? tileset.tileWidth ?? tileset.tilewidth ?? 0;
+    const fallbackHeight = tile.height ?? tileset.tileHeight ?? tileset.tileheight ?? 0;
+
+    if (fallbackWidth > 0 && fallbackHeight > 0) {
+        const layerCollisionObjects = getLayerCollisionObjects(tile, tilemapLayer);
+
+        if (layerCollisionObjects !== null) {
+            return layerCollisionObjects;
+        }
+
+        return [{ x: 0, y: 0, width: fallbackWidth, height: fallbackHeight }];
     }
 
     return [];
@@ -23,7 +106,12 @@ export function getTileCollisionObjects(tile) {
 export function createCollisionBodyForObject(scene, tile, tilemapLayer, collisionObject, {
     staticSpriteFactory = (x, y) => scene.physics.add.staticSprite(x, y, null)
 } = {}) {
-    if (!collisionObject.width || !collisionObject.height) {
+    if (
+        !Number.isFinite(collisionObject.x)
+        || !Number.isFinite(collisionObject.y)
+        || !(collisionObject.width > 0)
+        || !(collisionObject.height > 0)
+    ) {
         return null;
     }
 
@@ -55,7 +143,7 @@ export function createTileCollisionBodiesForLayer(scene, tilemapLayer, {
             return;
         }
 
-        const collisionObjects = resolveTileCollisionObjects(tile);
+        const collisionObjects = resolveTileCollisionObjects(tile, tilemapLayer);
         collisionObjects.forEach(collisionObject => {
             const body = createCollisionBody(scene, tile, tilemapLayer, collisionObject);
             if (body) {

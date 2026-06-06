@@ -148,17 +148,17 @@ Re-establish this baseline before starting any new feature work.
 
 ## Collision Authoring Convention
 
-Collision is authored through embedded tileset object metadata in `assets/map.json`.
-The runtime reads collision rectangles from every non-empty tile used by the `tables` and `tabletops` layers.
-If a tile is added to either collision layer, its tileset entry must define at least one rectangle with positive `width` and `height`.
-Those layers should also keep an explicit `depth` property so rendering order remains data-driven.
+Collision is resolved from the selected asset package, currently `assets/24px/map.json`.
+The runtime still uses tile-authored rectangles when they are present on tiles used by the `tables` and `tabletops` layers, but it now falls back to full-tile collision bodies when those tiles have valid dimensions and no embedded metadata.
+Irregular collision shapes should still be authored explicitly, and the `tables` plus `tabletops` layers should keep an explicit `depth` property so rendering order remains data-driven.
 
 ## Map Runtime Contracts
 
-The runtime expects a tileset named `tiles` in `assets/map.json`.
+Runtime maps are loaded from the selected asset package under `assets/<package>/`.
+The runtime discovers the primary tileset from the map data and binds its image through the package-local asset path instead of requiring a literal tileset name.
 Runtime maps must define the default layer set: `floor`, `tables`, `player`, `npc_area`, and `tabletops`.
 The `player` object layer must contain exactly one `start` point marker.
-The `npc_area` object layer must contain exactly one `rect` object plus one or more `point` spawn markers.
+NPC placement may use the legacy flat `npc_area` object layer with one `rect` object plus one or more `point` spawns, or grouped child object layers under `npc_areas` with point objects in each child layer.
 
 ## Collision Debug Verification
 
