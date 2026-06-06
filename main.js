@@ -32,7 +32,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: false // Toggle with backtick key in-game
+            debug: false
         }
     },
     scene: {
@@ -80,7 +80,6 @@ function update(time, delta) {
     PlayerManager.update?.(scene, time, delta);
     NPCManager.update?.(scene, time, delta);
     scene.vendorManager?.update();
-    CollisionManager.update?.(scene, time, delta);
     MapManager.update?.(scene, time, delta);
     scene.inputManager?.update?.(scene, time, delta);
 }

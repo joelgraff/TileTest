@@ -22,9 +22,9 @@ describe('InteractionCoordinator', () => {
         expect(keyboardOn).toHaveBeenCalledWith('keydown', expect.any(Function));
     });
 
-    it('routes UI and debug keyboard shortcuts through the injected collaborators', () => {
+    it('routes UI and FPS keyboard shortcuts through the injected collaborators', () => {
         const handleInput = vi.fn();
-        const debugToggleHandler = vi.fn();
+        const fpsToggleHandler = vi.fn();
         const preventDefault = vi.fn();
         const coordinator = new InteractionCoordinator({
             input: {
@@ -35,17 +35,17 @@ describe('InteractionCoordinator', () => {
             handleUiInput: handleInput
         });
 
-        coordinator.setDebugToggleHandler(debugToggleHandler);
+        coordinator.setFpsToggleHandler(fpsToggleHandler);
 
         expect(coordinator.handleKeyDown({ code: 'KeyI', preventDefault })).toBe(true);
         expect(coordinator.handleKeyDown({ code: 'KeyQ', preventDefault })).toBe(true);
         expect(coordinator.handleKeyDown({ code: 'Escape', preventDefault })).toBe(true);
-        expect(coordinator.handleKeyDown({ code: 'Backquote', preventDefault })).toBe(true);
+        expect(coordinator.handleKeyDown({ code: 'F2', preventDefault })).toBe(true);
 
         expect(handleInput).toHaveBeenNthCalledWith(1, 'I');
         expect(handleInput).toHaveBeenNthCalledWith(2, 'Q');
         expect(handleInput).toHaveBeenNthCalledWith(3, 'ESCAPE');
-        expect(debugToggleHandler).toHaveBeenCalledTimes(1);
+        expect(fpsToggleHandler).toHaveBeenCalledTimes(1);
         expect(preventDefault).toHaveBeenCalledTimes(4);
     });
 

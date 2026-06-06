@@ -262,7 +262,7 @@ export function createHelpDialogData({ onClose }) {
             + 'Mouse Click: Interact with NPCs\n'
             + 'Spacebar: Interact with nearby vendor\n'
             + 'ESC: Close dialogs\n'
-            + 'Backtick (`): Toggle debug mode\n\n'
+            + 'F2: Toggle FPS display\n\n'
             + 'Gameplay:\n'
             + 'Talk to vendors to collect items and complete quests.\n'
             + 'Check your inventory and quests using the buttons.\n'

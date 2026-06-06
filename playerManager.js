@@ -140,7 +140,6 @@ class PlayerManager {
         PlayerManager.handlePlayerMovement(scene, direction);
         PlayerManager.handlePlayerAnimation(scene, direction);
         PlayerManager.updatePlayerDepth(scene); // Keep the player above tables and below tabletops
-        PlayerManager.drawPlayerDebug(scene, direction);
     }
 
     // --- Helper Functions ---
@@ -242,39 +241,6 @@ class PlayerManager {
 
     static updatePlayerDepth(scene) {
         scene.player.setDepth(resolvePlayerDepth(scene));
-    }
-
-    static drawPlayerDebug(scene, direction = scene.inputManager.getDirection()) {
-        if (scene.debugEnabled) {
-            if (!scene.playerDebugGraphics) {
-                scene.playerDebugGraphics = scene.add.graphics().setDepth(999);
-            }
-            scene.playerDebugGraphics.clear();
-            // Draw direction vector
-            scene.playerDebugGraphics.lineStyle(2, 0xff0000, 1);
-            scene.playerDebugGraphics.strokeLineShape(
-                new Phaser.Geom.Line(
-                    scene.player.x,
-                    scene.player.y,
-                    scene.player.x + direction.x * 32,
-                    scene.player.y + direction.y * 32
-                )
-            );
-            // Draw custom collision box
-            const body = scene.player.body;
-            if (body) {
-                scene.playerDebugGraphics.lineStyle(2, 0x00ff00, 1);
-                scene.playerDebugGraphics.strokeRect(
-                    body.x,
-                    body.y,
-                    body.width,
-                    body.height
-                );
-            }
-        } else if (scene.playerDebugGraphics) {
-            scene.playerDebugGraphics.destroy();
-            scene.playerDebugGraphics = null;
-        }
     }
 }
 

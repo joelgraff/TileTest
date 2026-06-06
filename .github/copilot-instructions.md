@@ -33,7 +33,6 @@ TileTest is a browser-based 2D tilemap game built with Phaser.js featuring proce
   - Manager reviews the developer report, validates key claims, updates ticket status, and decides the next ticket.
   - Keep tickets small enough to finish in one agent session; prefer focused vertical slices over broad rewrites.
 - **Debugging:**
-  - Toggle debug mode with the backtick (`) key
   - Camera follows player and respects map bounds
   - Asset caching is disabled for easier development
   - Console logging for quest system events and domain loading

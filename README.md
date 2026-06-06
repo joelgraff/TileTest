@@ -160,7 +160,7 @@ Runtime maps must define the default layer set: `floor`, `tables`, `player`, `np
 The `player` object layer must contain exactly one `start` point marker.
 NPC placement may use the legacy flat `npc_area` object layer with one `rect` object plus one or more `point` spawns, or grouped child object layers under `npc_areas` with point objects in each child layer.
 
-## Collision Debug Verification
+## Collision Verification
 
-The existing backquote debug toggle is the collision verification mode for runtime checks.
-When enabled, it recreates collision state and draws tile-authored collision shapes plus instantiated collision bodies so collision authoring mismatches are visible during manual inspection.
+Collision authoring is verified through the collision fixture tests and the stabilization gate.
+Those checks cover tile-authored collision shapes and instantiated collision bodies without relying on an in-game debug toggle.

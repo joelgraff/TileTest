@@ -24,7 +24,6 @@ describe('PlayerManager movement ownership', () => {
         const movementSpy = vi.spyOn(PlayerManager, 'handlePlayerMovement').mockImplementation(() => {});
         const animationSpy = vi.spyOn(PlayerManager, 'handlePlayerAnimation').mockImplementation(() => {});
         const depthSpy = vi.spyOn(PlayerManager, 'updatePlayerDepth').mockImplementation(() => {});
-        const debugSpy = vi.spyOn(PlayerManager, 'drawPlayerDebug').mockImplementation(() => {});
 
         PlayerManager.update(scene, 0, 16);
 
@@ -32,7 +31,6 @@ describe('PlayerManager movement ownership', () => {
         expect(movementSpy).toHaveBeenCalledWith(scene, direction);
         expect(animationSpy).toHaveBeenCalledWith(scene, direction);
         expect(depthSpy).toHaveBeenCalledWith(scene);
-        expect(debugSpy).toHaveBeenCalledWith(scene, direction);
     });
 
     it('sets the initial player depth after creation', () => {

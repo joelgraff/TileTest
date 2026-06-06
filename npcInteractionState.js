@@ -23,6 +23,12 @@ export function clearNPCExclamation(npc) {
 }
 
 export function syncNPCInteractionState(scene, npc, player) {
+    if (npc?.body?.enable === false || npc?.npcActivityState === 'sleeping') {
+        npc.interactable = false;
+        clearNPCExclamation(npc);
+        return false;
+    }
+
     const dy = Math.abs(npc.y - player.y);
 
     if (dy < INTERACTION_VERTICAL_THRESHOLD) {

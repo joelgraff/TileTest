@@ -12,13 +12,13 @@ class InteractionCoordinator {
         this.suppressPointerUntilRelease = suppressPointerUntilRelease
             ?? inputManager?.suppressPointerUntilRelease?.bind(inputManager)
             ?? null;
-        this.debugToggleHandler = null;
+        this.fpsToggleHandler = null;
 
         this.bindInteractionInputs();
     }
 
-    setDebugToggleHandler(debugToggleHandler) {
-        this.debugToggleHandler = debugToggleHandler;
+    setFpsToggleHandler(fpsToggleHandler) {
+        this.fpsToggleHandler = fpsToggleHandler;
         return this;
     }
 
@@ -63,10 +63,10 @@ class InteractionCoordinator {
             return true;
         }
 
-        if (code === 'Backquote' || key === '`') {
+        if (code === 'F2' || key === 'F2') {
             event.preventDefault?.();
-            this.debugToggleHandler?.();
-            return Boolean(this.debugToggleHandler);
+            this.fpsToggleHandler?.();
+            return Boolean(this.fpsToggleHandler);
         }
 
         return false;

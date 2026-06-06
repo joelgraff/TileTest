@@ -57,6 +57,9 @@ describe('VendorManager collaborators', () => {
             npcGroup: { getChildren: () => [farVendor, nearVendor] },
             player: { x: 100, y: 100 },
             camera: { scrollX: 10, scrollY: 15 },
+            scene: {
+                activeNpcSprites: [farVendor, nearVendor]
+            },
             isInteractionAvailable: () => true
         };
 
@@ -69,5 +72,65 @@ describe('VendorManager collaborators', () => {
         expect(interactionPrompt.x).toBe(110);
         expect(interactionPrompt.y).toBe(75);
         expect(interactionPrompt.setVisible).toHaveBeenLastCalledWith(true);
+    });
+
+    it('skips sleeping vendors when the active NPC list excludes them', () => {
+        DomainManager.domains = [];
+        globalThis.Phaser = {
+            Math: {
+                Distance: {
+                    Between: (x1, y1, x2, y2) => Math.hypot(x2 - x1, y2 - y1)
+                }
+            }
+        };
+
+        const sleepingGlow = { setVisible: vi.fn() };
+        const activeGlow = {
+            setVisible: vi.fn(),
+            clear: vi.fn(),
+            fillStyle: vi.fn(function () { return this; }),
+            fillCircle: vi.fn(function () { return this; })
+        };
+        const sleepingVendor = {
+            x: 110,
+            y: 110,
+            body: { enable: false },
+            vendorData: { id: 'vendor-sleeping' },
+            glowGraphic: sleepingGlow,
+            displayWidth: 32
+        };
+        const activeVendor = {
+            x: 180,
+            y: 180,
+            body: { enable: true },
+            vendorData: { id: 'vendor-active' },
+            glowGraphic: activeGlow,
+            displayWidth: 32
+        };
+        const interactionPrompt = {
+            x: 0,
+            y: 0,
+            setVisible: vi.fn(function () { return this; })
+        };
+        const context = {
+            assignVendorsToNPCs: vi.fn(),
+            getNPCSprites: () => [sleepingVendor, activeVendor],
+            interactionRange: 120,
+            nearbyVendor: null,
+            interactionPrompt,
+            npcGroup: { getChildren: () => [sleepingVendor, activeVendor] },
+            player: { x: 100, y: 100 },
+            camera: { scrollX: 0, scrollY: 0 },
+            scene: {
+                activeNpcSprites: [activeVendor]
+            },
+            isInteractionAvailable: () => true
+        };
+
+        VendorManager.prototype.update.call(context);
+
+        expect(context.nearbyVendor).toBe(activeVendor);
+        expect(sleepingGlow.setVisible).not.toHaveBeenCalled();
+        expect(activeGlow.setVisible).toHaveBeenCalledWith(true);
     });
 });

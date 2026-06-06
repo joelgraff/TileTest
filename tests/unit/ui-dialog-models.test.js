@@ -208,6 +208,7 @@ describe('ui dialog models', () => {
         expect(helpDialog.title).toBe('Help');
         expect(helpDialog.renderMode).toBe('dom');
         expect(helpDialog.text).toContain('Spacebar: Interact with nearby vendor');
+        expect(helpDialog.text).toContain('F2: Toggle FPS display');
         expect(unavailableDialog).toEqual({
             renderMode: 'dom',
             title: 'Quests',

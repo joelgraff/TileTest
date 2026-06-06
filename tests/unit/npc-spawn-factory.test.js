@@ -22,8 +22,12 @@ describe('NPC spawn factory', () => {
         const sprite = { id: 'npc-1' };
         const scene = {
             add: {
-                group: vi.fn(() => group),
-                sprite: vi.fn(() => sprite)
+                group: vi.fn(() => group)
+            },
+            physics: {
+                add: {
+                    sprite: vi.fn(() => sprite)
+                }
             }
         };
         const getNearestEdgeDirection = vi.fn(() => 'right');
@@ -43,7 +47,7 @@ describe('NPC spawn factory', () => {
         expect(getNearestEdgeDirection).toHaveBeenCalledWith({ x: 10, y: 20 }, { x: 0, y: 0, width: 100, height: 100 });
         expect(getFrameForDirection).toHaveBeenCalledWith('right');
         expect(getRandomSpriteKey).toHaveBeenCalledTimes(1);
-        expect(scene.add.sprite).toHaveBeenCalledWith(10, 20, 'npc2', 8);
+        expect(scene.physics.add.sprite).toHaveBeenCalledWith(10, 20, 'npc2', 8);
         expect(group.add).toHaveBeenCalledWith(sprite);
         expect(setNPCDepth).toHaveBeenCalledWith(sprite, { x: 0, y: 0, width: 100, height: 100 }, 300);
     });
@@ -53,8 +57,12 @@ describe('NPC spawn factory', () => {
         const sprite = { id: 'npc-1' };
         const scene = {
             add: {
-                group: vi.fn(() => group),
-                sprite: vi.fn(() => sprite)
+                group: vi.fn(() => group)
+            },
+            physics: {
+                add: {
+                    sprite: vi.fn(() => sprite)
+                }
             }
         };
         const getNearestEdgeDirection = vi.fn(() => 'right');
@@ -72,7 +80,7 @@ describe('NPC spawn factory', () => {
 
         expect(getNearestEdgeDirection).not.toHaveBeenCalled();
         expect(getFrameForDirection).toHaveBeenCalledWith('up');
-        expect(scene.add.sprite).toHaveBeenCalledWith(24, 48, 'npc_001', 12);
+        expect(scene.physics.add.sprite).toHaveBeenCalledWith(24, 48, 'npc_001', 12);
         expect(setNPCDepth).toHaveBeenCalledWith(sprite, npcAreaRect, 300);
     });
 });

@@ -679,8 +679,12 @@ class VendorManager {
 
         this.nearbyVendor = null;
 
+        const npcSprites = Array.isArray(this.scene?.activeNpcSprites)
+            ? this.scene.activeNpcSprites
+            : this.getNPCSprites().filter(npc => npc.body?.enable !== false && npc.npcActivityState !== 'sleeping');
+
         // Clear all effects
-        this.getNPCSprites().forEach(npcSprite => {
+        npcSprites.forEach(npcSprite => {
             if (npcSprite.glowGraphic) npcSprite.glowGraphic.setVisible(false);
         });
 
@@ -688,7 +692,7 @@ class VendorManager {
         let closestVendor = null;
         let closestDistance = this.interactionRange;
 
-        this.getNPCSprites().forEach(npcSprite => {
+        npcSprites.forEach(npcSprite => {
             if (!npcSprite.vendorData) return;
 
             const distance = Phaser.Math.Distance.Between(

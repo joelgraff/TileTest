@@ -59,7 +59,11 @@ describe('NPCManager interaction state', () => {
     });
 
     it('creates grouped NPC sprites from spawn points and applies depth through the spawn path', () => {
-        const group = { add: vi.fn() };
+        const groupChildren = [];
+        const group = {
+            add: vi.fn(sprite => groupChildren.push(sprite)),
+            getChildren: vi.fn(() => groupChildren)
+        };
         const sprite = {
             id: 'npc-1',
             setSize: vi.fn(function () { return this; }),
@@ -118,7 +122,11 @@ describe('NPCManager interaction state', () => {
     });
 
     it('creates NPC sprites from grouped runtime-profile spawn areas without requiring a rect', () => {
-        const group = { add: vi.fn() };
+        const groupChildren = [];
+        const group = {
+            add: vi.fn(sprite => groupChildren.push(sprite)),
+            getChildren: vi.fn(() => groupChildren)
+        };
         const sprite = {
             id: 'npc-1',
             setSize: vi.fn(function () { return this; }),
@@ -173,6 +181,91 @@ describe('NPCManager interaction state', () => {
 
         getRandomSpriteKey.mockRestore();
         setNPCDepth.mockRestore();
+    });
+
+    it('reuses the cached active NPC list when the player stays in the same tile cell', () => {
+        const getChildren = vi.fn(() => [{ id: 'npc-1' }]);
+        const activeNpcSprites = [{ id: 'npc-1', x: 24, y: 24 }];
+        const scene = {
+            player: { x: 24, y: 24 },
+            map: {
+                tileWidth: 24,
+                tileHeight: 24
+            },
+            npcGroup: {
+                getChildren
+            },
+            npcActivityPrimed: true,
+            npcActivityCellKey: '1,1',
+            activeNpcSprites,
+            gameState: {
+                isDialogOpen: true
+            }
+        };
+
+        NPCManager.update(scene, 0, 16);
+
+        expect(scene.activeNpcSprites).toBe(activeNpcSprites);
+        expect(getChildren).not.toHaveBeenCalled();
+    });
+
+    it('sleeps distant NPCs and wakes nearby NPCs using tile-distance thresholds', () => {
+        const sleepingExclamationDestroy = vi.fn();
+        const awakeNpc = {
+            x: 20,
+            y: 20,
+            body: {
+                enable: true,
+                stop: vi.fn(),
+                updateFromGameObject: vi.fn()
+            },
+            setVelocity: vi.fn(),
+            glowGraphic: {
+                setVisible: vi.fn()
+            },
+            exclamation: {
+                destroy: vi.fn()
+            }
+        };
+        const sleepingNpc = {
+            x: 400,
+            y: 400,
+            body: {
+                enable: true,
+                stop: vi.fn(),
+                updateFromGameObject: vi.fn()
+            },
+            setVelocity: vi.fn(),
+            glowGraphic: {
+                setVisible: vi.fn()
+            },
+            exclamation: {
+                destroy: sleepingExclamationDestroy
+            }
+        };
+        const scene = {
+            player: { x: 24, y: 24 },
+            map: {
+                tileWidth: 24,
+                tileHeight: 24
+            },
+            npcActivityPrimed: false,
+            npcGroup: {
+                getChildren: () => [awakeNpc, sleepingNpc]
+            }
+        };
+
+        const activeNpcSprites = NPCManager.refreshNPCActivity(scene);
+
+        expect(activeNpcSprites).toEqual([awakeNpc]);
+        expect(awakeNpc.body.enable).toBe(true);
+        expect(awakeNpc.body.updateFromGameObject).toHaveBeenCalledTimes(1);
+        expect(sleepingNpc.body.enable).toBe(false);
+        expect(sleepingNpc.body.stop).toHaveBeenCalledTimes(1);
+        expect(sleepingNpc.setVelocity).toHaveBeenCalledWith(0, 0);
+        expect(sleepingNpc.glowGraphic.setVisible).toHaveBeenCalledWith(false);
+        expect(sleepingExclamationDestroy).toHaveBeenCalledTimes(1);
+        expect(scene.activeNpcSprites).toBe(activeNpcSprites);
     });
 
     it('falls back to y-based depth when no npc area rect is available', () => {

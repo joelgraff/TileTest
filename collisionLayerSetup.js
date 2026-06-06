@@ -1,6 +1,5 @@
 export function setupCollisionLayers(scene, layerNames, {
-    createTileCollisionBodies,
-    drawTileCollisionDebug
+    createTileCollisionBodies
 } = {}) {
     scene.customCollisionBodies = [];
 
@@ -11,7 +10,6 @@ export function setupCollisionLayers(scene, layerNames, {
         }
 
         createTileCollisionBodies(scene, layer.tilemapLayer);
-        drawTileCollisionDebug(scene, layer.tilemapLayer);
     });
 
     return scene.customCollisionBodies;

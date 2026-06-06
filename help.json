@@ -181,40 +181,6 @@
         "• Consistent button placement",
         "• High contrast color scheme"
       ]
-    },
-    "debug": {
-      "title": "Debug Features",
-      "content": [
-        "DEBUG MODE",
-        "",
-        "Debug features are available for development and testing purposes.",
-        "",
-        "ACCESSING DEBUG MODE",
-        "",
-        "• Press the backtick (`) key to toggle debug mode",
-        "• Debug information appears in browser console",
-        "",
-        "DEBUG FEATURES",
-        "",
-        "• Asset caching disabled for easier development",
-        "• Console logging for quest system events",
-        "• Domain loading status messages",
-        "• Collision boundary visualization",
-        "",
-        "DEVELOPMENT NOTES",
-        "",
-        "• Local development server: python -m http.server 5000",
-        "• Files served from project root directory",
-        "• Hot reloading for asset changes",
-        "• Console errors indicate loading issues",
-        "",
-        "PERFORMANCE",
-        "",
-        "• Optimized for browser-based gameplay",
-        "• Efficient asset loading and caching",
-        "• Smooth movement and interaction",
-        "• Minimal memory footprint"
-      ]
     }
   }
 }

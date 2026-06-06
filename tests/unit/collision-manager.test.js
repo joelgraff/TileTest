@@ -16,7 +16,6 @@ describe('CollisionManager setup', () => {
         };
         const scene = { map };
         const createTileCollisionBodies = vi.spyOn(CollisionManager, 'createTileCollisionBodies').mockImplementation(() => {});
-        const drawTileCollisionDebug = vi.spyOn(CollisionManager, 'drawTileCollisionDebug').mockImplementation(() => {});
         const addColliders = vi.spyOn(CollisionManager, 'addColliders').mockImplementation(() => {});
 
         CollisionManager.setupCollisions(scene);
@@ -26,12 +25,9 @@ describe('CollisionManager setup', () => {
         expect(map.getLayer).toHaveBeenCalledWith('tabletops');
         expect(createTileCollisionBodies).toHaveBeenCalledTimes(1);
         expect(createTileCollisionBodies).toHaveBeenCalledWith(scene, tablesTilemapLayer);
-        expect(drawTileCollisionDebug).toHaveBeenCalledTimes(1);
-        expect(drawTileCollisionDebug).toHaveBeenCalledWith(scene, tablesTilemapLayer);
         expect(addColliders).toHaveBeenCalledWith(scene);
 
         createTileCollisionBodies.mockRestore();
-        drawTileCollisionDebug.mockRestore();
         addColliders.mockRestore();
     });
 
