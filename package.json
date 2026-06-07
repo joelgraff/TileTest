@@ -3,8 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "node server.js",
     "serve": "python -m http.server 5000",
     "serve:live": "node server.js",
+    "deploy:hostiso": "python3 scripts/package_hostiso.py --mode both",
+    "deploy:hostiso:static": "python3 scripts/package_hostiso.py --mode static",
+    "deploy:hostiso:live": "python3 scripts/package_hostiso.py --mode live",
+    "deploy:hostiso:verify": "npm exec vitest run tests/unit/hostiso-deploy.test.js && npm run deploy:hostiso",
     "lint": "eslint . --ext .js",
     "test:content": "vitest run tests/content",
     "test:unit": "vitest run tests/unit",
@@ -12,6 +17,9 @@
     "test:e2e:install": "playwright install chromium",
     "check": "npm run lint && npm run test:content && npm run test:unit",
     "test": "npm run check && npm run test:e2e"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.3.0",

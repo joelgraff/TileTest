@@ -29,6 +29,39 @@ See:
 
 If Playwright browsers are not installed yet, run the browser install step after `npm install`.
 
+## HostISO Deployment
+
+The repo includes a packaging helper for HostISO-friendly uploads:
+
+```bash
+npm run deploy:hostiso:verify
+```
+
+That command runs the deployment packaging regression test and then builds the final artifacts. If you already trust the packaging contract, use:
+
+```bash
+npm run deploy:hostiso
+```
+
+Use `npm run deploy:hostiso:static` or `npm run deploy:hostiso:live` if you only need one bundle.
+
+That command creates a clean deployment set under `dist/hostiso/` with two options:
+
+- `static/` for the plain file-hosted game
+- `live/` for the optional Node.js dashboard/API deployment
+
+Each bundle also gets a zip archive beside it so cPanel uploads can be a single archive if you prefer that route.
+
+Use the static bundle when HostISO is only serving files. Upload the contents of `dist/hostiso/static/` into `public_html` or the chosen subdirectory, and keep the game on the document root so the existing root-relative URLs continue to work.
+
+If you prefer a single archive, upload `dist/hostiso/static.zip` and extract it into the target directory in cPanel File Manager.
+
+Use the live bundle only if the HostISO account exposes cPanel's Node.js App feature. Upload `dist/hostiso/live/` into the app directory, pick Node 18 or newer if the panel asks, run the host's install step if prompted, and start it with `npm start`. The generated live package includes a slim deployment manifest instead of the repository's development-only dependencies.
+
+If you prefer a single archive for the live app, upload `dist/hostiso/live.zip`, extract it into the app directory, and then run `npm start`.
+
+If Node.js App support is unavailable, stop at the static bundle. The game still boots and plays from bundled JSON and local assets without the backend.
+
 ## Phase 0 Commands
 
 Install dependencies:
