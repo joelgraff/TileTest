@@ -754,9 +754,9 @@ async function loadDashboardData() {
     state.fallbackSources = [];
 
     const [vendorPayload, contentPayload, trailPayload] = await Promise.all([
-        loadJsonWithFallback('/api/vendors', '/vendors.json', { vendors: [] }, 'vendors'),
-        loadJsonWithFallback('/api/vendor-content', null, { vendors: [], announcements: [] }, 'live content'),
-        loadJsonWithFallback('/api/discovery-trails', '/discovery_trails.json', { trails: [] }, 'discovery trails')
+        loadJsonWithFallback('api/vendors', 'vendors.json', { vendors: [] }, 'vendors'),
+        loadJsonWithFallback('api/vendor-content', null, { vendors: [], announcements: [] }, 'live content'),
+        loadJsonWithFallback('api/discovery-trails', 'discovery_trails.json', { trails: [] }, 'discovery trails')
     ]);
 
     state.vendors = normalizeVendorPayload(vendorPayload);
@@ -893,7 +893,7 @@ contentForm?.addEventListener('submit', async (event) => {
     setStatus('Saving...');
 
     try {
-        const payload = await fetchJson('/api/vendor-content', {
+        const payload = await fetchJson('api/vendor-content', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -936,7 +936,7 @@ topicForm?.addEventListener('submit', async (event) => {
     setStatus('Saving topics...', false, topicStatusElement);
 
     try {
-        const payload = await fetchJson('/api/vendor-content', {
+        const payload = await fetchJson('api/vendor-content', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -986,7 +986,7 @@ trailForm?.addEventListener('submit', async (event) => {
     }
 
     try {
-        const payload = await fetchJson('/api/discovery-trails', {
+        const payload = await fetchJson('api/discovery-trails', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

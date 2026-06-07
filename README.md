@@ -52,7 +52,7 @@ That command creates a clean deployment set under `dist/hostiso/` with two optio
 
 Each bundle also gets a zip archive beside it so cPanel uploads can be a single archive if you prefer that route.
 
-Use the static bundle when HostISO is only serving files. Upload the contents of `dist/hostiso/static/` into `public_html` or the chosen subdirectory, and keep the game on the document root so the existing root-relative URLs continue to work.
+Use the static bundle when HostISO is only serving files. Upload the contents of `dist/hostiso/static/` into `public_html` or the chosen subdirectory. The dashboard pages now use relative paths, so they work from `/vcf-quest-2025` as well as the site root.
 
 If you prefer a single archive, upload `dist/hostiso/static.zip` and extract it into the target directory in cPanel File Manager.
 

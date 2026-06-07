@@ -6,7 +6,7 @@
     <title>TileTest Admin Dashboard</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <script>
-        const target = window.location.pathname.endsWith('/dashboard.html') ? 'admin.html' : '/admin';
+        const target = window.location.pathname.endsWith('/dashboard.html') ? 'admin.html' : './admin.html';
         window.location.replace(`${target}${window.location.search}${window.location.hash}`);
     </script>
 </head>

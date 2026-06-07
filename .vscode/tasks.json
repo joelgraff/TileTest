@@ -1,0 +1,51 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "validate-dashboard-paths",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"exec",
+				"vitest",
+				"run",
+				"tests/content/dashboard-paths.test.js"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "test"
+		},
+		{
+			"label": "validate-dashboard-paths",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"exec",
+				"vitest",
+				"run",
+				"tests/content/dashboard-paths.test.js"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "test"
+		},
+		{
+			"label": "verify-hostiso-package",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"deploy:hostiso:verify"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "test"
+		}
+	]
+}
