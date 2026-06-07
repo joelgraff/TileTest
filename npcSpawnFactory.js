@@ -14,6 +14,22 @@ function getFiniteNumber(value, defaultValue = 0) {
     return Number.isFinite(numericValue) ? numericValue : defaultValue;
 }
 
+function getStringPropertyValue(point, propertyName) {
+    const directValue = point?.[propertyName];
+
+    if (typeof directValue === 'string' && directValue.length > 0) {
+        return directValue;
+    }
+
+    const property = point?.properties?.find(entry => entry?.name === propertyName);
+
+    if (typeof property?.value === 'string' && property.value.length > 0) {
+        return property.value;
+    }
+
+    return null;
+}
+
 function getVendorSpawnOffsets(scene) {
     const runtimeProfile = scene?.mapRuntimeProfile ?? {};
     const properties = runtimeProfile?.properties ?? {};
@@ -91,6 +107,10 @@ function resolveVendorSpawnPosition(point, direction, vendorOffsets, npcAreaRect
     }
 }
 
+function getNPCInteractionCue(point) {
+    return getStringPropertyValue(point, 'interactionCue');
+}
+
 export function createNPCGroup(scene, spawnPoints, npcAreaRect, tablesLayerDepth, {
     getNearestEdgeDirection,
     getFrameForDirection,
@@ -116,6 +136,7 @@ export function createNPCGroup(scene, spawnPoints, npcAreaRect, tablesLayerDepth
         const spawnPosition = resolveVendorSpawnPosition(point, direction, vendorOffsets, pointAreaRect, tileWidth, tileHeight);
         const npc = spriteFactory(spawnPosition.x, spawnPosition.y, spriteKey, frame);
 
+        npc.interactionCue = getNPCInteractionCue(point);
         setNPCCollisionBox?.(npc, point);
         npcGroup.add(npc);
         setNPCDepth(npc, pointAreaRect, tablesLayerDepth);

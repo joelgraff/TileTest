@@ -1,5 +1,6 @@
 export function bindCollisionBodies(scene, collisionBodies, {
-    colliderFactory = (firstObject, secondObject) => scene.physics.add.collider(firstObject, secondObject)
+    colliderFactory = (firstObject, secondObject) => scene.physics.add.collider(firstObject, secondObject),
+    includeNpcBodies = true
 } = {}) {
     if (scene.player) {
         collisionBodies.forEach(body => {
@@ -7,7 +8,7 @@ export function bindCollisionBodies(scene, collisionBodies, {
         });
     }
 
-    if (scene.npcGroup) {
+    if (includeNpcBodies && scene.npcGroup) {
         scene.npcGroup.getChildren().forEach(npc => {
             collisionBodies.forEach(body => {
                 colliderFactory(npc, body);

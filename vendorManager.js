@@ -51,8 +51,9 @@ class VendorManager {
         this.gameObjectFactory = gameObjectFactory ?? scene.add ?? null;
         this.liveContentService = liveContentService ?? scene.liveVendorContentService ?? null;
         this.testMode = testMode ?? scene.testMode ?? false;
-        this.interactionRange = 60;
+        this.interactionRange = 96;
         this.nearbyVendor = null;
+        this.interactionPrompt = null;
         this.vendorAssignmentDone = false;
         this.collectedVendorItemKeysByVendorId = new Map();
         this.randomVendorOrder = null;
@@ -96,16 +97,6 @@ class VendorManager {
 
         this.getNPCSprites().forEach((npcSprite, index) => {
             npcSprite.vendorData = this.getAssignedVendor(index);
-
-            // Pulsing glow effect
-            if (npcSprite.glowGraphic) {
-                npcSprite.glowGraphic.destroy();
-            }
-            const glow = this.gameObjectFactory.graphics();
-            glow.setDepth(npcSprite.depth ? npcSprite.depth - 1 : 0);
-            glow.setVisible(false);
-            npcSprite.glowGraphic = glow;
-            npcSprite.glowPulse = 0;
         });
         this.vendorAssignmentDone = true;
     }
@@ -144,17 +135,34 @@ class VendorManager {
     }
 
     createInteractionPrompt() {
-        this.interactionPrompt = this.gameObjectFactory.text(400, 100, 'PRESS SPACE TO TALK', {
+        if (!this.gameObjectFactory?.text) {
+            this.interactionPrompt = null;
+            return;
+        }
+
+        this.interactionPrompt = this.gameObjectFactory.text(400, 100, '', {
             fontFamily: 'Courier New, monospace',
             fontSize: '12px',
-            fill: '#FFFFFF',
-            backgroundColor: '#000080',
+            fill: '#F7F3D0',
+            backgroundColor: '#111111',
             padding: { x: 8, y: 4 }
         })
         .setOrigin(0.5)
         .setScrollFactor(0)
         .setDepth(150)
         .setVisible(false);
+    }
+
+    updateInteractionPrompt(vendorData) {
+        if (!this.interactionPrompt) {
+            return;
+        }
+
+        const vendorName = vendorData?.name ?? 'Vendor';
+        const vendorBooth = vendorData?.booth ? `Booth ${vendorData.booth}` : '';
+        const promptText = vendorBooth ? `${vendorName}\n${vendorBooth}` : vendorName;
+
+        this.interactionPrompt.setText(promptText);
     }
 
     interactWithVendorSprite(npcSprite = null) {
@@ -639,7 +647,7 @@ class VendorManager {
             return false;
         }
 
-        this.interactionPrompt.setVisible(false);
+        this.interactionPrompt?.setVisible(false);
 
         const imageKey = this.getVendorImageKey(vendorData, npcSprite);
         const vendorContent = this.getVendorContentProfile?.(vendorData) ?? createVendorContentProfile(vendorData, {
@@ -673,69 +681,47 @@ class VendorManager {
 
         if (!DomainManager.isLoaded()) {
             this.nearbyVendor = null;
-            this.interactionPrompt.setVisible(false);
+            this.interactionPrompt?.setVisible(false);
             return;
         }
-
-        this.nearbyVendor = null;
 
         const npcSprites = Array.isArray(this.scene?.activeNpcSprites)
             ? this.scene.activeNpcSprites
             : this.getNPCSprites().filter(npc => npc.body?.enable !== false && npc.npcActivityState !== 'sleeping');
 
-        // Clear all effects
-        npcSprites.forEach(npcSprite => {
-            if (npcSprite.glowGraphic) npcSprite.glowGraphic.setVisible(false);
-        });
-
         // Find the closest vendor in range
         let closestVendor = null;
-        let closestDistance = this.interactionRange;
+        const interactionRangeSquared = this.interactionRange * this.interactionRange;
+        let closestDistanceSquared = interactionRangeSquared;
 
         npcSprites.forEach(npcSprite => {
             if (!npcSprite.vendorData) return;
 
-            const distance = Phaser.Math.Distance.Between(
-                this.player.x,
-                this.player.y,
-                npcSprite.x,
-                npcSprite.y
-            );
+            const dx = this.player.x - npcSprite.x;
+            const dy = this.player.y - npcSprite.y;
+            const distanceSquared = (dx * dx) + (dy * dy);
 
-            if (distance < closestDistance) {
-                closestDistance = distance;
+            if (distanceSquared < closestDistanceSquared) {
+                closestDistanceSquared = distanceSquared;
                 closestVendor = npcSprite;
             }
         });
 
-        // Apply effect to the closest one
-        if (closestVendor) {
-            this.nearbyVendor = closestVendor;
+        this.nearbyVendor = closestVendor;
+
+        if (!closestVendor || !this.isInteractionAvailable()) {
+            this.interactionPrompt?.setVisible(false);
+            return;
+        }
+
+        this.updateInteractionPrompt(closestVendor.vendorData);
+
+        if (this.interactionPrompt) {
             this.interactionPrompt.x = closestVendor.x - this.camera.scrollX;
             this.interactionPrompt.y = closestVendor.y - this.camera.scrollY - 40;
-
-            // Pulsing circular glow effect
-            if (closestVendor.glowGraphic) {
-                closestVendor.glowPulse = (closestVendor.glowPulse || 0) + 0.08;
-                const pulse = 0.7 + 0.3 * Math.sin(closestVendor.glowPulse);
-                closestVendor.glowGraphic.clear();
-                closestVendor.glowGraphic.fillStyle(0x00FFFF, 0.25 + 0.25 * pulse);
-                closestVendor.glowGraphic.fillCircle(
-                    closestVendor.x,
-                    closestVendor.y,
-                    (closestVendor.displayWidth * 0.7) + (closestVendor.displayWidth * 0.3 * pulse)
-                );
-                closestVendor.glowGraphic.setVisible(true);
-            }
-        } else {
-            this.nearbyVendor = null;
         }
 
-        if (this.nearbyVendor && this.isInteractionAvailable()) {
-            this.interactionPrompt.setVisible(true);
-        } else {
-            this.interactionPrompt.setVisible(false);
-        }
+        this.interactionPrompt?.setVisible(true);
     }
 }
 

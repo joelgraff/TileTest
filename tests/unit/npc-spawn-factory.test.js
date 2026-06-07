@@ -77,7 +77,7 @@ describe('NPC spawn factory', () => {
         const setNPCDepth = vi.fn();
         const npcAreaRect = { x: 10, y: 20, width: 40, height: 50 };
 
-        createNPCGroup(scene, [{ x: 24, y: 48, resolvedFacing: 'up', npcAreaRect }], null, 300, {
+        createNPCGroup(scene, [{ x: 24, y: 48, resolvedFacing: 'up', npcAreaRect, interactionCue: 'exclamation' }], null, 300, {
             getNearestEdgeDirection,
             getFrameForDirection,
             getRandomSpriteKey,
@@ -87,6 +87,7 @@ describe('NPC spawn factory', () => {
         expect(getNearestEdgeDirection).not.toHaveBeenCalled();
         expect(getFrameForDirection).toHaveBeenCalledWith('up');
         expect(scene.physics.add.sprite).toHaveBeenCalledWith(24, 2, 'npc_001', 12);
+        expect(sprite.interactionCue).toBe('exclamation');
         expect(setNPCDepth).toHaveBeenCalledWith(sprite, npcAreaRect, 300);
     });
 

@@ -278,7 +278,6 @@ describe('VendorManager dialog models', () => {
         const context = {
             showDialog,
             closeDialog: vi.fn(),
-            interactionPrompt: { setVisible: vi.fn() },
             getVendorImageKey: VendorManager.prototype.getVendorImageKey,
             getVendorContentProfile: vi.fn(() => vendorContent),
             buildVendorRootDialogData: VendorManager.prototype.buildVendorRootDialogData,

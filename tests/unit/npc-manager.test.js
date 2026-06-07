@@ -293,14 +293,43 @@ describe('NPCManager interaction state', () => {
         expect(npc.setDepth).toHaveBeenCalledWith(128);
     });
 
-    it('marks nearby NPCs interactable and creates one exclamation indicator', () => {
-        const indicator = createTextIndicator();
+    it('does not create an exclamation indicator for ordinary NPCs', () => {
         const npc = {
-            x: 120,
-            y: 110,
+            x: 160,
+            y: 100,
             depth: 7,
             interactable: false,
             exclamation: null
+        };
+        const scene = {
+            player: { x: 100, y: 100 },
+            gameState: {
+                isDialogOpen: false
+            },
+            add: {
+                text: vi.fn()
+            },
+            npcGroup: {
+                getChildren: () => [npc]
+            }
+        };
+
+        NPCManager.update(scene, 0, 16);
+
+        expect(npc.interactable).toBe(false);
+        expect(scene.add.text).not.toHaveBeenCalled();
+        expect(npc.exclamation).toBe(null);
+    });
+
+    it('creates an exclamation indicator only for opt-in NPCs', () => {
+        const indicator = createTextIndicator();
+        const npc = {
+            x: 160,
+            y: 100,
+            depth: 7,
+            interactable: false,
+            exclamation: null,
+            interactionCue: 'exclamation'
         };
         const scene = {
             player: { x: 100, y: 100 },
@@ -318,7 +347,7 @@ describe('NPCManager interaction state', () => {
         NPCManager.update(scene, 0, 16);
 
         expect(npc.interactable).toBe(true);
-        expect(scene.add.text).toHaveBeenCalledWith(120, 78, '!', {
+        expect(scene.add.text).toHaveBeenCalledWith(160, 68, '!', {
             fontFamily: 'Arial',
             fontSize: '32px',
             fill: '#FF0000',

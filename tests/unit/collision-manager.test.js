@@ -31,17 +31,15 @@ describe('CollisionManager setup', () => {
         addColliders.mockRestore();
     });
 
-    it('registers collision bodies for the player and each NPC sprite', () => {
+    it('registers collision bodies for the player only', () => {
         const collider = vi.fn();
         const body1 = { id: 'body-1' };
         const body2 = { id: 'body-2' };
-        const npc1 = { id: 'npc-1' };
-        const npc2 = { id: 'npc-2' };
         const scene = {
             player: { id: 'player-1' },
             customCollisionBodies: [body1, body2],
             npcGroup: {
-                getChildren: () => [npc1, npc2]
+                getChildren: () => []
             },
             physics: {
                 add: {
@@ -52,12 +50,8 @@ describe('CollisionManager setup', () => {
 
         CollisionManager.addColliders(scene);
 
-        expect(collider).toHaveBeenCalledTimes(6);
+        expect(collider).toHaveBeenCalledTimes(2);
         expect(collider).toHaveBeenNthCalledWith(1, scene.player, body1);
         expect(collider).toHaveBeenNthCalledWith(2, scene.player, body2);
-        expect(collider).toHaveBeenNthCalledWith(3, npc1, body1);
-        expect(collider).toHaveBeenNthCalledWith(4, npc1, body2);
-        expect(collider).toHaveBeenNthCalledWith(5, npc2, body1);
-        expect(collider).toHaveBeenNthCalledWith(6, npc2, body2);
     });
 });

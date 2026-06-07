@@ -1,6 +1,10 @@
-const INTERACTION_VERTICAL_THRESHOLD = 96;
-const INTERACTION_DISTANCE_THRESHOLD = 96;
+const INTERACTION_VERTICAL_THRESHOLD = 120;
+const INTERACTION_DISTANCE_THRESHOLD = 120;
 const EXCLAMATION_Y_OFFSET = 32;
+
+function shouldShowExclamation(npc) {
+    return npc?.interactionCue === 'exclamation';
+}
 
 export function createNPCExclamation(scene, npc) {
     return scene.add.text(npc.x, npc.y - EXCLAMATION_Y_OFFSET, '!', {
@@ -23,6 +27,12 @@ export function clearNPCExclamation(npc) {
 }
 
 export function syncNPCInteractionState(scene, npc, player) {
+    if (!shouldShowExclamation(npc)) {
+        npc.interactable = false;
+        clearNPCExclamation(npc);
+        return false;
+    }
+
     if (npc?.body?.enable === false || npc?.npcActivityState === 'sleeping') {
         npc.interactable = false;
         clearNPCExclamation(npc);

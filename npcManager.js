@@ -3,8 +3,8 @@ import { clearNPCExclamation, syncNPCInteractionState } from './npcInteractionSt
 import { createNPCGroup, resolveNPCTablesLayerDepth } from './npcSpawnFactory.js';
 import { getPlayerCollisionBox } from './playerManager.js';
 
-const NPC_WAKE_DISTANCE_TILES = 1;
-const NPC_SLEEP_DISTANCE_TILES = 1.5;
+const NPC_WAKE_DISTANCE_TILES = 2;
+const NPC_SLEEP_DISTANCE_TILES = 2.5;
 const NPC_ACTIVITY_CELL_RADIUS = Math.ceil(NPC_SLEEP_DISTANCE_TILES);
 
 function getNpcTileDistance(scene) {
@@ -27,6 +27,10 @@ function getNpcSpatialCellKey(scene, x, y) {
     const { cellX, cellY } = getNpcSpatialCellCoordinates(scene, x, y);
 
     return `${cellX},${cellY}`;
+}
+
+function shouldSyncNPCInteractionState(npc) {
+    return npc?.interactionCue === 'exclamation';
 }
 
 function getNpcSpatialIndex(scene) {
@@ -199,7 +203,9 @@ class NPCManager {
             if (scene.gameState?.isDialogOpen) return;
 
             scene.activeNpcSprites.forEach(npc => {
-                syncNPCInteractionState(scene, npc, scene.player);
+                if (shouldSyncNPCInteractionState(npc)) {
+                    syncNPCInteractionState(scene, npc, scene.player);
+                }
             });
 
             return;
@@ -210,7 +216,9 @@ class NPCManager {
         if (scene.gameState?.isDialogOpen) return; // Don't update NPCs when dialog is open
 
         activeNpcSprites.forEach(npc => {
-            syncNPCInteractionState(scene, npc, scene.player);
+            if (shouldSyncNPCInteractionState(npc)) {
+                syncNPCInteractionState(scene, npc, scene.player);
+            }
         });
     }
 

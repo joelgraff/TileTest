@@ -34,7 +34,7 @@ class CollisionManager {
     }
 
     static addColliders(scene) {
-        bindCollisionBodies(scene, scene.customCollisionBodies);
+        bindCollisionBodies(scene, scene.customCollisionBodies, { includeNpcBodies: false });
     }
 }
 
