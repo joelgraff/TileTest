@@ -25,6 +25,7 @@ function createFakeDocument() {
             this.className = '';
             this.textContent = '';
             this.type = undefined;
+            this.hidden = false;
         }
 
         append(...children) {
@@ -82,12 +83,14 @@ function createFakeDocument() {
 function createUiManager() {
     return {
         score: 42,
+        isPassportHintCollapsed: true,
         inputManager: {
             prepareUiInteraction: vi.fn()
         },
         toggleInventory: vi.fn(),
         toggleQuests: vi.fn(),
-        toggleHelp: vi.fn()
+        toggleHelp: vi.fn(),
+        togglePassportHint: vi.fn()
     };
 }
 
@@ -118,6 +121,7 @@ describe('dom hud surface', () => {
         expect(uiManager.scoreBackground.dataset.hudScore).toBe('true');
         expect(uiManager.passportHint.dataset.hudPassport).toBe('true');
         expect(uiManager.passportHint.hidden).toBe(true);
+        expect(uiManager.passportHintToggle.dataset.hudPassportToggle).toBe('true');
     });
 
     it('updates the score label through the stable scoreText adapter', () => {
@@ -177,8 +181,37 @@ describe('dom hud surface', () => {
 
         expect(hint.hidden).toBe(false);
         expect(hint.dataset.passportStatus).toBe('active');
+        expect(hint.dataset.passportCollapsed).toBe('true');
         expect(uiManager.passportHintLabel.textContent).toBe('Passport Lead');
         expect(uiManager.passportHintTitle.textContent).toBe('Find a Passport Clue');
+        expect(uiManager.passportHintToggle.textContent).toBe('Show');
+        expect(uiManager.passportHintBody.hidden).toBe(true);
         expect(uiManager.passportHintDetail.textContent).toBe('0/1 stamps - Ask what needs fixing.');
+    });
+
+    it('routes the passport toggle button through the collapse contract', () => {
+        const { documentRef } = createFakeDocument();
+        const uiManager = createUiManager();
+
+        globalThis.document = documentRef;
+
+        createDomPassportHintHud(uiManager);
+        updateDomPassportHintHud(uiManager, {
+            activeQuests: [{
+                type: 'discovery',
+                title: 'Starter Trail',
+                objectives: [{
+                    vendorName: 'Vendor One',
+                    booth: 'A1',
+                    clue: 'Find the repair bench.',
+                    goal: 'Ask what needs fixing.',
+                    visited: false
+                }]
+            }]
+        });
+
+        uiManager.passportHintToggle.emit('click');
+
+        expect(uiManager.togglePassportHint).toHaveBeenCalledTimes(1);
     });
 });

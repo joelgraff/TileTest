@@ -44,7 +44,11 @@ function createGroupedMapData() {
             { name: 'spriteFrameWidth', value: 24 },
             { name: 'spriteFrameHeight', value: 36 },
             { name: 'spriteFrameRate', value: 8 },
-            { name: 'spriteSpriteCount', value: 16 }
+            { name: 'spriteSpriteCount', value: 16 },
+            { name: 'vendorUpOffset', value: -18 },
+            { name: 'vendorDownOffset', value: 6 },
+            { name: 'vendorLeftOffset', value: -6 },
+            { name: 'vendorRightOffset', value: 6 }
         ],
         tilesets: [
             {
@@ -86,6 +90,10 @@ describe('mapRuntimeProfile', () => {
         expect(profile.npcAreaLayers[0].spawnPoints.map(point => point.resolvedFacing)).toEqual(['up', 'left']);
         expect(profile.sprite.count).toBe(16);
         expect(profile.sprite.countProperty).toBe('spriteSpriteCount');
+        expect(profile.vendorUpOffset).toBe(-18);
+        expect(profile.vendorDownOffset).toBe(6);
+        expect(profile.vendorLeftOffset).toBe(-6);
+        expect(profile.vendorRightOffset).toBe(6);
         expect(profile.compatibility.usedLegacySpriteCountProperty).toBe(true);
         expect(profile.tilesets[0].imageFileName).toBe('table_tiles-24.png');
         expect(profile.tilesets[0].packageImagePath).toBe('assets/24px/table_tiles-24.png');

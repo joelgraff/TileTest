@@ -13,6 +13,7 @@ describe('UIManager contracts', () => {
         expect(typeof UIManager.prototype.collectVendorItem).toBe('function');
         expect(typeof UIManager.prototype.handleQuestCompletion).toBe('function');
         expect(typeof UIManager.prototype.setInputManager).toBe('function');
+        expect(typeof UIManager.prototype.togglePassportHint).toBe('function');
     });
 
     it('exposes dialog state through a UIManager accessor', () => {
@@ -94,6 +95,20 @@ describe('UIManager contracts', () => {
 
         expect(dialogContext.isDialogOpen).toBe(false);
         expect(state.isDialogOpen).toBe(false);
+    });
+
+    it('can bind passport hint collapse state through shared gameplay state', () => {
+        const state = new GameState();
+        const uiContext = {};
+
+        UIManager.prototype.setState.call(uiContext, state);
+
+        expect(uiContext.isPassportHintCollapsed).toBe(true);
+
+        uiContext.isPassportHintCollapsed = false;
+
+        expect(state.isPassportHintCollapsed).toBe(false);
+        expect(uiContext.isPassportHintCollapsed).toBe(false);
     });
 
     it('can bind a scene readiness flag directly to shared gameplay state', () => {

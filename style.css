@@ -117,13 +117,39 @@ body {
 
 .dom-hud-passport {
     justify-self: end;
+    width: fit-content;
     max-width: min(430px, 100%);
     padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     overflow-wrap: anywhere;
     background: rgba(0, 64, 72, 0.94);
 }
 
 .dom-hud-passport[hidden] {
+    display: none;
+}
+
+.dom-hud-passport-header {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.dom-hud-passport-body {
+    display: block;
+}
+
+.dom-hud-passport-toggle {
+    min-width: 62px;
+    padding: 4px 8px;
+    font-size: 0.72rem;
+    pointer-events: auto;
+}
+
+.dom-hud-passport[data-passport-collapsed='true'] .dom-hud-passport-body {
     display: none;
 }
 
@@ -134,12 +160,12 @@ body {
 }
 
 .dom-hud-passport-title {
-    margin-top: 3px;
-    font-size: 0.92rem;
+    min-width: 0;
+    font-size: 0.88rem;
 }
 
 .dom-hud-passport-detail {
-    margin-top: 2px;
+    margin-top: 0;
     color: #d8ffff;
     font-size: 0.76rem;
     line-height: 1.25;

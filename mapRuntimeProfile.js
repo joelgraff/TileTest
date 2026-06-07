@@ -55,6 +55,24 @@ function getCompatibleProperty(properties, propertyNames) {
     };
 }
 
+function getNumericPropertyValue(properties, propertyName, defaultValue = 0) {
+    const value = Number(properties?.[propertyName]);
+
+    return Number.isFinite(value) ? value : defaultValue;
+}
+
+function getNumericPropertyValueFromAny(properties, propertyNames, defaultValue = 0) {
+    for (const propertyName of propertyNames) {
+        const value = getNumericPropertyValue(properties, propertyName, Number.NaN);
+
+        if (Number.isFinite(value)) {
+            return value;
+        }
+    }
+
+    return defaultValue;
+}
+
 function isExternalReference(reference) {
     return (
         typeof reference === 'string' &&
@@ -125,10 +143,6 @@ function getPrimaryTileset(mapData) {
         ?? null;
 }
 
-function formatNpcSpriteNumber(index, padding) {
-    return String(index).padStart(padding, '0');
-}
-
 export function getNPCSpriteKeys(runtimeProfile, {
     fallbackSpriteKeys = CONFIG.NPC.SPRITES,
     defaultPrefix = DEFAULT_NPC_SPRITE_PREFIX,
@@ -146,7 +160,7 @@ export function getNPCSpriteKeys(runtimeProfile, {
         ? spriteConfig.padding
         : defaultPadding;
 
-    return Array.from({ length: spriteCount }, (_, index) => `${prefix}${formatNpcSpriteNumber(index + 1, padding)}`);
+    return Array.from({ length: spriteCount }, (_, index) => `${prefix}${String(index + 1).padStart(padding, '0')}`);
 }
 
 export async function loadMapRuntimeProfile({
@@ -186,6 +200,10 @@ export function buildMapRuntimeProfile(mapData, {
             .map(buildNpcAreaLayerProfile)
         : [];
     const spriteCount = getCompatibleProperty(properties, SPRITE_COUNT_PROPERTY_NAMES);
+    const vendorUpOffset = getNumericPropertyValueFromAny(properties, ['vendorUpOffset', 'vendorVerticalOffset'], 0);
+    const vendorDownOffset = getNumericPropertyValueFromAny(properties, ['vendorDownOffset', 'vendorVerticalOffset'], 0);
+    const vendorLeftOffset = getNumericPropertyValueFromAny(properties, ['vendorLeftOffset', 'vendorHorizontalOffset'], 0);
+    const vendorRightOffset = getNumericPropertyValueFromAny(properties, ['vendorRightOffset', 'vendorHorizontalOffset'], 0);
 
     const primaryTileset = getPrimaryTileset(mapData);
 
@@ -206,6 +224,10 @@ export function buildMapRuntimeProfile(mapData, {
             }
             : null,
         npcAreaLayers,
+        vendorUpOffset,
+        vendorDownOffset,
+        vendorLeftOffset,
+        vendorRightOffset,
         sprite: {
             prefix: properties.spritePrefix ?? null,
             count: spriteCount.value,

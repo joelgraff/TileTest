@@ -61,10 +61,10 @@ function ensureHudRoot(uiManager, documentRef = globalThis.document) {
     return hudRoot;
 }
 
-function createHudButtonElement(documentRef, label, { controlName, onClick, preparesUiInteraction, uiManager }) {
+function createHudButtonElement(documentRef, label, { controlName, onClick, preparesUiInteraction, uiManager, className = 'dom-hud-button' }) {
     const button = documentRef.createElement('button');
     button.type = 'button';
-    button.className = 'dom-hud-button';
+    button.className = className;
     button.dataset.hudControl = controlName;
     button.textContent = label;
     button.addEventListener('click', event => {
@@ -112,18 +112,37 @@ function ensureDomPassportHintHud(uiManager, documentRef) {
     const passportHint = documentRef.createElement('div');
     passportHint.className = 'dom-hud-passport';
     passportHint.dataset.hudPassport = 'true';
+    passportHint.dataset.passportCollapsed = 'true';
     passportHint.hidden = true;
+
+    const header = documentRef.createElement('div');
+    header.className = 'dom-hud-passport-header';
 
     const label = createHudTextElement(documentRef, 'dom-hud-passport-label');
     const title = createHudTextElement(documentRef, 'dom-hud-passport-title');
+    const toggle = createHudButtonElement(documentRef, 'Show', {
+        controlName: 'passport',
+        onClick: () => uiManager.togglePassportHint?.(),
+        preparesUiInteraction: false,
+        uiManager,
+        className: 'dom-hud-passport-toggle'
+    });
+    toggle.dataset.hudPassportToggle = 'true';
+    const body = documentRef.createElement('div');
+    body.className = 'dom-hud-passport-body';
     const detail = createHudTextElement(documentRef, 'dom-hud-passport-detail');
 
-    passportHint.append(label, title, detail);
+    header.append(label, title, toggle);
+    body.append(detail);
+    passportHint.append(header, body);
     uiManager.domHudBottomBar.append(passportHint);
 
     uiManager.passportHint = passportHint;
+    uiManager.passportHintHeader = header;
     uiManager.passportHintLabel = label;
     uiManager.passportHintTitle = title;
+    uiManager.passportHintToggle = toggle;
+    uiManager.passportHintBody = body;
     uiManager.passportHintDetail = detail;
 
     return passportHint;
@@ -244,9 +263,14 @@ export function updateDomPassportHintHud(uiManager, {
         inventory: inventory ?? currentQuestState.inventory,
         score: score ?? currentQuestState.score
     });
+    const isCollapsed = uiManager.isPassportHintCollapsed !== false;
 
     passportHint.hidden = !model.visible;
     passportHint.dataset.passportStatus = model.status;
+    passportHint.dataset.passportCollapsed = String(isCollapsed);
+    uiManager.passportHintToggle.textContent = isCollapsed ? 'Show' : 'Hide';
+    uiManager.passportHintToggle.dataset.passportCollapsed = String(isCollapsed);
+    uiManager.passportHintBody.hidden = isCollapsed || !model.visible;
     uiManager.passportHintLabel.textContent = model.label;
     uiManager.passportHintTitle.textContent = model.title;
     uiManager.passportHintDetail.textContent = model.detail;
@@ -257,8 +281,11 @@ export function updateDomPassportHintHud(uiManager, {
 export function createDomPassportHintHud(uiManager, { documentRef = globalThis.document } = {}) {
     removeExistingElement(uiManager.passportHint);
     uiManager.passportHint = null;
+    uiManager.passportHintHeader = null;
     uiManager.passportHintLabel = null;
     uiManager.passportHintTitle = null;
+    uiManager.passportHintToggle = null;
+    uiManager.passportHintBody = null;
     uiManager.passportHintDetail = null;
 
     return updateDomPassportHintHud(uiManager, { documentRef });

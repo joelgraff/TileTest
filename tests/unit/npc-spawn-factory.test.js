@@ -47,7 +47,7 @@ describe('NPC spawn factory', () => {
         expect(getNearestEdgeDirection).toHaveBeenCalledWith({ x: 10, y: 20 }, { x: 0, y: 0, width: 100, height: 100 });
         expect(getFrameForDirection).toHaveBeenCalledWith('right');
         expect(getRandomSpriteKey).toHaveBeenCalledTimes(1);
-        expect(scene.physics.add.sprite).toHaveBeenCalledWith(10, 20, 'npc2', 8);
+        expect(scene.physics.add.sprite).toHaveBeenCalledWith(100, 20, 'npc2', 8);
         expect(group.add).toHaveBeenCalledWith(sprite);
         expect(setNPCDepth).toHaveBeenCalledWith(sprite, { x: 0, y: 0, width: 100, height: 100 }, 300);
     });
@@ -56,6 +56,12 @@ describe('NPC spawn factory', () => {
         const group = { add: vi.fn() };
         const sprite = { id: 'npc-1' };
         const scene = {
+            mapRuntimeProfile: {
+                vendorUpOffset: -18,
+                vendorDownOffset: 6,
+                vendorLeftOffset: -6,
+                vendorRightOffset: 6
+            },
             add: {
                 group: vi.fn(() => group)
             },
@@ -80,7 +86,60 @@ describe('NPC spawn factory', () => {
 
         expect(getNearestEdgeDirection).not.toHaveBeenCalled();
         expect(getFrameForDirection).toHaveBeenCalledWith('up');
-        expect(scene.physics.add.sprite).toHaveBeenCalledWith(24, 48, 'npc_001', 12);
+        expect(scene.physics.add.sprite).toHaveBeenCalledWith(24, 2, 'npc_001', 12);
         expect(setNPCDepth).toHaveBeenCalledWith(sprite, npcAreaRect, 300);
+    });
+
+    it('anchors spawn positions to the facing tile boundary using directional vendor offsets', () => {
+        const groupChildren = [];
+        const group = {
+            add: vi.fn(sprite => groupChildren.push(sprite)),
+            getChildren: vi.fn(() => groupChildren)
+        };
+        const sprite = { id: 'npc-1' };
+        const scene = {
+            mapRuntimeProfile: {
+                tileWidth: 24,
+                tileHeight: 24,
+                vendorUpOffset: -18,
+                vendorDownOffset: 6,
+                vendorLeftOffset: -6,
+                vendorRightOffset: 6
+            },
+            add: {
+                group: vi.fn(() => group)
+            },
+            physics: {
+                add: {
+                    sprite: vi.fn(() => sprite)
+                }
+            }
+        };
+        const getFrameForDirection = vi.fn(direction => ({
+            up: 12,
+            down: 0,
+            left: 4,
+            right: 8
+        })[direction] ?? 0);
+        const getRandomSpriteKey = vi.fn(() => 'npc2');
+        const setNPCDepth = vi.fn();
+
+        const result = createNPCGroup(scene, [
+            { x: 100, y: 100, resolvedFacing: 'up' },
+            { x: 100, y: 100, resolvedFacing: 'down' },
+            { x: 100, y: 100, resolvedFacing: 'left' },
+            { x: 100, y: 100, resolvedFacing: 'right' }
+        ], null, 300, {
+            getFrameForDirection,
+            getRandomSpriteKey,
+            setNPCDepth
+        });
+
+        expect(result).toBe(group);
+        expect(scene.physics.add.sprite).toHaveBeenNthCalledWith(1, 100, 78, 'npc2', 12);
+        expect(scene.physics.add.sprite).toHaveBeenNthCalledWith(3, 90, 100, 'npc2', 4);
+        expect(scene.physics.add.sprite).toHaveBeenNthCalledWith(4, 114, 100, 'npc2', 8);
+        expect(group.add).toHaveBeenCalledTimes(4);
+        expect(setNPCDepth).toHaveBeenCalledTimes(4);
     });
 });

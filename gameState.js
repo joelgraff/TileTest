@@ -8,7 +8,8 @@ class GameState {
         isDialogOpen = false,
         isInventoryOpen = false,
         isQuestsOpen = false,
-        isHelpOpen = false
+        isHelpOpen = false,
+        isPassportHintCollapsed = true
     } = {}) {
         this.score = Number.isFinite(score) ? score : 0;
         this.inventory = Array.isArray(inventory) ? inventory : [];
@@ -19,6 +20,7 @@ class GameState {
         this.isInventoryOpen = Boolean(isInventoryOpen);
         this.isQuestsOpen = Boolean(isQuestsOpen);
         this.isHelpOpen = Boolean(isHelpOpen);
+        this.isPassportHintCollapsed = Boolean(isPassportHintCollapsed);
     }
 }
 

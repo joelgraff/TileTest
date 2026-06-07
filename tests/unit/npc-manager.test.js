@@ -68,6 +68,8 @@ describe('NPCManager interaction state', () => {
             id: 'npc-1',
             setSize: vi.fn(function () { return this; }),
             setOffset: vi.fn(function () { return this; }),
+            setImmovable: vi.fn(function () { return this; }),
+            setPushable: vi.fn(function () { return this; }),
             setCollideWorldBounds: vi.fn(function () { return this; })
         };
         const setNPCDepth = vi.spyOn(NPCManager, 'setNPCDepth').mockImplementation(() => {});
@@ -113,6 +115,8 @@ describe('NPCManager interaction state', () => {
         expect(group.add).toHaveBeenCalledWith(sprite);
         expect(sprite.setSize).toHaveBeenCalledWith(20, 10);
         expect(sprite.setOffset).toHaveBeenCalledWith(2, 24);
+        expect(sprite.setImmovable).toHaveBeenCalledWith(true);
+        expect(sprite.setPushable).toHaveBeenCalledWith(false);
         expect(sprite.setCollideWorldBounds).toHaveBeenCalledWith(true);
         expect(setNPCDepth).toHaveBeenCalledWith(sprite, { type: 'rect', x: 0, y: 0, width: 100, height: 100 }, 350);
         expect(scene.npcGroup).toBe(group);
@@ -131,6 +135,8 @@ describe('NPCManager interaction state', () => {
             id: 'npc-1',
             setSize: vi.fn(function () { return this; }),
             setOffset: vi.fn(function () { return this; }),
+            setImmovable: vi.fn(function () { return this; }),
+            setPushable: vi.fn(function () { return this; }),
             setCollideWorldBounds: vi.fn(function () { return this; })
         };
         const setNPCDepth = vi.spyOn(NPCManager, 'setNPCDepth').mockImplementation(() => {});
@@ -174,6 +180,8 @@ describe('NPCManager interaction state', () => {
         expect(group.add).toHaveBeenCalledTimes(2);
         expect(sprite.setSize).toHaveBeenCalledWith(24, 10);
         expect(sprite.setOffset).toHaveBeenCalledWith(0, 30);
+        expect(sprite.setImmovable).toHaveBeenCalledWith(true);
+        expect(sprite.setPushable).toHaveBeenCalledWith(false);
         expect(sprite.setCollideWorldBounds).toHaveBeenCalledWith(true);
         expect(setNPCDepth).toHaveBeenNthCalledWith(1, sprite, null, 350);
         expect(setNPCDepth).toHaveBeenNthCalledWith(2, sprite, null, 350);
@@ -216,9 +224,12 @@ describe('NPCManager interaction state', () => {
             y: 20,
             body: {
                 enable: true,
+                moves: true,
                 stop: vi.fn(),
                 updateFromGameObject: vi.fn()
             },
+            setImmovable: vi.fn(function () { return this; }),
+            setPushable: vi.fn(function () { return this; }),
             setVelocity: vi.fn(),
             glowGraphic: {
                 setVisible: vi.fn()
@@ -260,6 +271,9 @@ describe('NPCManager interaction state', () => {
         expect(activeNpcSprites).toEqual([awakeNpc]);
         expect(awakeNpc.body.enable).toBe(true);
         expect(awakeNpc.body.updateFromGameObject).toHaveBeenCalledTimes(1);
+        expect(awakeNpc.body.moves).toBe(false);
+        expect(awakeNpc.setImmovable).toHaveBeenCalledWith(true);
+        expect(awakeNpc.setPushable).toHaveBeenCalledWith(false);
         expect(sleepingNpc.body.enable).toBe(false);
         expect(sleepingNpc.body.stop).toHaveBeenCalledTimes(1);
         expect(sleepingNpc.setVelocity).toHaveBeenCalledWith(0, 0);

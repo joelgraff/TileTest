@@ -32,6 +32,7 @@ class UIManager {
         this.isInventoryOpen = false;
         this.isQuestsOpen = false; // Track quest panel visibility
         this.isHelpOpen = false; // Track help dialog visibility
+        this.isPassportHintCollapsed = true;
 
         // Sierra-style EGA color palette
         this.colors = {
@@ -107,6 +108,12 @@ class UIManager {
         return updatePassportHintHud(this);
     }
 
+    togglePassportHint() {
+        this.isPassportHintCollapsed = !(this.isPassportHintCollapsed ?? true);
+        this.updatePassportHint?.();
+        return this.isPassportHintCollapsed;
+    }
+
     setState(state) {
         const nextState = state ?? this.state ?? {
             score: 0,
@@ -116,7 +123,8 @@ class UIManager {
             isDialogOpen: false,
             isInventoryOpen: false,
             isQuestsOpen: false,
-            isHelpOpen: false
+            isHelpOpen: false,
+            isPassportHintCollapsed: true
         };
 
         nextState.score = Number.isFinite(nextState.score) ? nextState.score : 0;
@@ -127,6 +135,7 @@ class UIManager {
         nextState.isInventoryOpen = Boolean(nextState.isInventoryOpen);
         nextState.isQuestsOpen = Boolean(nextState.isQuestsOpen);
         nextState.isHelpOpen = Boolean(nextState.isHelpOpen);
+        nextState.isPassportHintCollapsed = Boolean(nextState.isPassportHintCollapsed);
 
         this.state = nextState;
 
@@ -173,6 +182,15 @@ class UIManager {
             get: () => this.state.isHelpOpen,
             set: (isHelpOpen) => {
                 this.state.isHelpOpen = Boolean(isHelpOpen);
+            }
+        });
+
+        Object.defineProperty(this, 'isPassportHintCollapsed', {
+            configurable: true,
+            enumerable: true,
+            get: () => this.state.isPassportHintCollapsed,
+            set: (isPassportHintCollapsed) => {
+                this.state.isPassportHintCollapsed = Boolean(isPassportHintCollapsed);
             }
         });
 

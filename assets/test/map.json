@@ -111,18 +111,6 @@
          "y":0
         }, 
         {
-         "id":7,
-         "image":"..\/..\/VCF-Quest\/tiled\/vcfmw20_floorplan_A_tilemap.png",
-         "imageheight":2040,
-         "imagewidth":1789,
-         "name":"Image Layer 1",
-         "opacity":1,
-         "type":"imagelayer",
-         "visible":false,
-         "x":0,
-         "y":0
-        }, 
-        {
          "class":"tileLayer",
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -247,7 +235,7 @@
                 {
                  "name":"depth",
                  "type":"int",
-                 "value":2
+                 "value":1
                 }],
          "type":"objectgroup",
          "visible":true,
@@ -569,7 +557,7 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":874,
+                         "x":870,
                          "y":264
                         }, 
                         {
@@ -605,7 +593,7 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":951,
+                         "x":954,
                          "y":401
                         }, 
                         {
@@ -862,7 +850,7 @@
                          "visible":true,
                          "width":0,
                          "x":1265,
-                         "y":945
+                         "y":947
                         }, 
                         {
                          "height":0,
@@ -879,8 +867,8 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1326,
-                         "y":899
+                         "x":1327.27272727273,
+                         "y":880.454545454545
                         }, 
                         {
                          "height":0,
@@ -993,7 +981,7 @@
                          "visible":true,
                          "width":0,
                          "x":1229,
-                         "y":1423
+                         "y":1422
                         }, 
                         {
                          "height":0,
@@ -1153,7 +1141,7 @@
                         {
                          "height":0,
                          "id":59,
-                         "name":"",
+                         "name":"007_059",
                          "point":true,
                          "properties":[
                                 {
@@ -1171,7 +1159,7 @@
                         {
                          "height":0,
                          "id":60,
-                         "name":"",
+                         "name":"007_060",
                          "point":true,
                          "properties":[
                                 {
@@ -1294,7 +1282,7 @@
                 {
                  "name":"depth",
                  "type":"int",
-                 "value":1
+                 "value":2
                 }],
          "type":"tilelayer",
          "visible":true,
@@ -1309,22 +1297,22 @@
         {
          "name":"spriteCollisionHeight",
          "type":"int",
-         "value":0
+         "value":11
         }, 
         {
          "name":"spriteCollisionLeft",
          "type":"int",
-         "value":0
+         "value":5
         }, 
         {
          "name":"spriteCollisionTop",
          "type":"int",
-         "value":0
+         "value":25
         }, 
         {
          "name":"spriteCollisionWidth",
          "type":"int",
-         "value":0
+         "value":14
         }, 
         {
          "name":"spriteFrameHeight",
@@ -1345,14 +1333,73 @@
          "name":"spriteSpriteCount",
          "type":"int",
          "value":16
+        }, 
+        {
+         "name":"tableCollisionHeight",
+         "type":"int",
+         "value":24
+        }, 
+        {
+         "name":"tableCollisionWidth",
+         "type":"int",
+         "value":24
+        }, 
+        {
+         "name":"tableCollisionX",
+         "type":"int",
+         "value":0
+        }, 
+        {
+         "name":"tableCollisionY",
+         "type":"int",
+         "value":0
+        }, 
+        {
+         "name":"tabletopCollisionHeight",
+         "type":"int",
+         "value":0
+        }, 
+        {
+         "name":"tabletopCollisionWidth",
+         "type":"int",
+         "value":0
+        }, 
+        {
+         "name":"tabletopCollisionX",
+         "type":"int",
+         "value":0
+        }, 
+        {
+         "name":"tabletopCollisionY",
+         "type":"int",
+         "value":0
+        }, 
+        {
+         "name":"venderHorizontalOffset",
+         "type":"int",
+         "value":6
+        }, 
+        {
+         "name":"venderVerticalOffset",
+         "type":"int",
+         "value":18
         }],
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
  "tileheight":24,
  "tilesets":[
         {
+         "columns":16,
          "firstgid":1,
-         "source":"..\/..\/..\/Documents\/VCF Tilesets\/tilesets\/table tiles 24.tsx"
+         "image":"24px\/tiles.png",
+         "imageheight":384,
+         "imagewidth":384,
+         "margin":0,
+         "name":"table tiles 24",
+         "spacing":0,
+         "tilecount":256,
+         "tileheight":24,
+         "tilewidth":24
         }],
  "tilewidth":24,
  "type":"map",

@@ -319,8 +319,8 @@
                          "type":"point",
                          "visible":true,
                          "width":0,
-                         "x":349.213735916327,
-                         "y":661.246602732979
+                         "x":347.963735916327,
+                         "y":675.996602732979
                         }, 
                         {
                          "height":0,
@@ -355,8 +355,8 @@
                          "type":"point",
                          "visible":true,
                          "width":0,
-                         "x":619.333333333333,
-                         "y":657
+                         "x":618,
+                         "y":678
                         }],
                  "opacity":1,
                  "type":"objectgroup",
@@ -867,8 +867,8 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1324.77272727273,
-                         "y":898.454545454545
+                         "x":1327.27272727273,
+                         "y":880.454545454545
                         }, 
                         {
                          "height":0,
@@ -893,12 +893,6 @@
                          "id":44,
                          "name":"",
                          "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
                          "rotation":0,
                          "type":"",
                          "visible":true,
@@ -1178,7 +1172,7 @@
                          "visible":true,
                          "width":0,
                          "x":1624,
-                         "y":1850.33333333333
+                         "y":1858
                         }],
                  "opacity":1,
                  "type":"objectgroup",
@@ -1383,7 +1377,7 @@
         {
          "name":"vendorDownOffset",
          "type":"int",
-         "value":18
+         "value":6
         }, 
         {
          "name":"vendorLeftOffset",
@@ -1398,7 +1392,7 @@
         {
          "name":"vendorUpOffset",
          "type":"int",
-         "value":-8
+         "value":18
         }],
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
@@ -1407,7 +1401,7 @@
         {
          "columns":16,
          "firstgid":1,
-         "image":"tiles.png",
+         "image":"24px\/tiles.png",
          "imageheight":384,
          "imagewidth":384,
          "margin":0,

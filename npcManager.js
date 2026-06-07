@@ -63,6 +63,19 @@ function getDistanceSquared(left, right) {
     return (dx * dx) + (dy * dy);
 }
 
+function lockNpcPhysics(npc) {
+    if (!npc) {
+        return;
+    }
+
+    npc.setImmovable?.(true);
+    npc.setPushable?.(false);
+
+    if (npc.body) {
+        npc.body.moves = false;
+    }
+}
+
 function setNpcPhysicsEnabled(npc, isEnabled) {
     if (!npc?.body) {
         return;
@@ -72,6 +85,7 @@ function setNpcPhysicsEnabled(npc, isEnabled) {
 
     if (isEnabled) {
         npc.body.updateFromGameObject?.();
+        lockNpcPhysics(npc);
     } else {
         npc.body.stop?.();
         npc.setVelocity?.(0, 0);
@@ -423,6 +437,7 @@ class NPCManager {
 
         npc.setSize?.(collisionBox.width, collisionBox.height);
         npc.setOffset?.(collisionBox.offsetX, collisionBox.offsetY);
+        lockNpcPhysics(npc);
         npc.setCollideWorldBounds?.(true);
     }
 }

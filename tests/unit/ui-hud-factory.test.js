@@ -73,12 +73,14 @@ function createFakeDocument() {
 function createUiManager() {
     const uiManager = {
         score: 42,
+        isPassportHintCollapsed: true,
         inputManager: {
             prepareUiInteraction: vi.fn()
         },
         toggleInventory: vi.fn(),
         toggleQuests: vi.fn(),
-        toggleHelp: vi.fn()
+        toggleHelp: vi.fn(),
+        togglePassportHint: vi.fn()
     };
 
     return { uiManager };
@@ -107,6 +109,7 @@ describe('UI HUD factory', () => {
         expect(uiManager.versionText.textContent).toBe('Version 1.6');
         expect(uiManager.passportHint.dataset.hudPassport).toBe('true');
         expect(uiManager.passportHint.hidden).toBe(true);
+        expect(uiManager.passportHintToggle.dataset.hudPassportToggle).toBe('true');
     });
 
     it('preserves inventory and quest button click contracts', () => {
@@ -180,5 +183,10 @@ describe('UI HUD factory', () => {
 
         expect(uiManager.passportHint.hidden).toBe(false);
         expect(uiManager.passportHintTitle.textContent).toBe('Find a Passport Clue');
+        expect(uiManager.passportHintToggle.textContent).toBe('Show');
+
+        uiManager.passportHintToggle.emit('click');
+
+        expect(uiManager.togglePassportHint).toHaveBeenCalledTimes(1);
     });
 });

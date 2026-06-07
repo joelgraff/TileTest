@@ -79,9 +79,12 @@ test('regular browser sessions backfill discovery guidance for legacy quest cook
     await page.waitForFunction(() => window.__tileTest?.scene?.interactionsEnabled === true);
 
     const passportHint = page.locator('[data-hud-passport]');
+    const passportToggle = page.locator('[data-hud-passport-toggle]');
 
     await expect(passportHint).toBeVisible();
     await expect(passportHint).toContainText('Passport Lead');
+    await expect(passportToggle).toBeVisible();
+    await passportToggle.click();
     await expect(passportHint).toContainText(/stamps/);
 });
 
