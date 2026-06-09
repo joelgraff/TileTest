@@ -60,6 +60,8 @@ Use the live bundle only if the HostISO account exposes cPanel's Node.js App fea
 
 If you prefer a single archive for the live app, upload `dist/hostiso/live.zip`, extract it into the app directory, and then run `npm start`.
 
+HostISO is currently mounting the app under `/tiletest`, and the server strips that base path automatically so the dashboards and API still load. If the account is mounted somewhere else, set `PASSENGER_BASE_URI`, `BASE_PATH`, or `SCRIPT_NAME` to match the deployed subdirectory.
+
 If Node.js App support is unavailable, stop at the static bundle. The game still boots and plays from bundled JSON and local assets without the backend.
 
 ## Phase 0 Commands

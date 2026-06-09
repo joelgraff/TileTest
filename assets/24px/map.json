@@ -248,116 +248,8 @@
                 {
                  "draworder":"topdown",
                  "id":6,
-                 "name":"area_001",
+                 "name":"C",
                  "objects":[
-                        {
-                         "height":0,
-                         "id":5,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"left"
-                                }],
-                         "rotation":0,
-                         "type":"point",
-                         "visible":true,
-                         "width":0,
-                         "x":163.695872930814,
-                         "y":693.401368178745
-                        }, 
-                        {
-                         "height":0,
-                         "id":6,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"point",
-                         "visible":true,
-                         "width":0,
-                         "x":261.353616780183,
-                         "y":729.008516347393
-                        }, 
-                        {
-                         "height":0,
-                         "id":7,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"point",
-                         "visible":true,
-                         "width":0,
-                         "x":705.142321154813,
-                         "y":729.737682394384
-                        }, 
-                        {
-                         "height":0,
-                         "id":8,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"point",
-                         "visible":true,
-                         "width":0,
-                         "x":349.213735916327,
-                         "y":661.246602732979
-                        }, 
-                        {
-                         "height":0,
-                         "id":9,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"point",
-                         "visible":true,
-                         "width":0,
-                         "x":543.669104478921,
-                         "y":730.996602732979
-                        }, 
-                        {
-                         "height":0,
-                         "id":11,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"point",
-                         "visible":true,
-                         "width":0,
-                         "x":619.333333333333,
-                         "y":657
-                        }, 
                         {
                          "height":0,
                          "id":150,
@@ -411,6 +303,78 @@
                          "width":0,
                          "x":390,
                          "y":463
+                        }, 
+                        {
+                         "height":0,
+                         "id":153,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":732,
+                         "y":474
+                        }, 
+                        {
+                         "height":0,
+                         "id":154,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":585,
+                         "y":512
+                        }, 
+                        {
+                         "height":0,
+                         "id":155,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":368,
+                         "y":516
+                        }, 
+                        {
+                         "height":0,
+                         "id":157,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"left"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":202,
+                         "y":475
                         }],
                  "opacity":1,
                  "type":"objectgroup",
@@ -421,7 +385,7 @@
                 {
                  "draworder":"topdown",
                  "id":10,
-                 "name":"area_002",
+                 "name":"B",
                  "objects":[
                         {
                          "height":0,
@@ -576,11 +540,83 @@
                 {
                  "draworder":"topdown",
                  "id":11,
-                 "name":"area_003",
+                 "name":"H",
                  "objects":[
                         {
                          "height":0,
-                         "id":22,
+                         "id":191,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":277,
+                         "y":1666
+                        }, 
+                        {
+                         "height":0,
+                         "id":192,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":280,
+                         "y":1811
+                        }, 
+                        {
+                         "height":0,
+                         "id":193,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"left"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":159,
+                         "y":1659
+                        }, 
+                        {
+                         "height":0,
+                         "id":194,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"left"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":159,
+                         "y":1803
+                        }, 
+                        {
+                         "height":0,
+                         "id":195,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -593,84 +629,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":937,
-                         "y":220
+                         "x":208,
+                         "y":1591
                         }, 
                         {
                          "height":0,
-                         "id":23,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"left"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":870,
-                         "y":264
-                        }, 
-                        {
-                         "height":0,
-                         "id":24,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"left"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":875,
-                         "y":412
-                        }, 
-                        {
-                         "height":0,
-                         "id":25,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":954,
-                         "y":401
-                        }, 
-                        {
-                         "height":0,
-                         "id":26,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":944,
-                         "y":598
-                        }, 
-                        {
-                         "height":0,
-                         "id":27,
+                         "id":196,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -683,12 +647,41 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":937,
-                         "y":722
+                         "x":209,
+                         "y":1858
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":17,
+                 "name":"I",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":197,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":938,
+                         "y":225
                         }, 
                         {
                          "height":0,
-                         "id":28,
+                         "id":198,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -701,12 +694,30 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":878,
-                         "y":652
+                         "x":871,
+                         "y":269
                         }, 
                         {
                          "height":0,
-                         "id":102,
+                         "id":199,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"left"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":876,
+                         "y":417
+                        }, 
+                        {
+                         "height":0,
+                         "id":200,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -719,12 +730,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":946,
-                         "y":897
+                         "x":955,
+                         "y":406
                         }, 
                         {
                          "height":0,
-                         "id":103,
+                         "id":201,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -737,44 +748,44 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":951,
-                         "y":1045
+                         "x":945,
+                         "y":603
                         }, 
                         {
                          "height":0,
-                         "id":104,
+                         "id":202,
                          "name":"",
                          "point":true,
                          "properties":[
                                 {
                                  "name":"facing",
                                  "type":"string",
-                                 "value":"right"
+                                 "value":"down"
                                 }],
                          "rotation":0,
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":950,
-                         "y":1193
+                         "x":938,
+                         "y":727
                         }, 
                         {
                          "height":0,
-                         "id":105,
+                         "id":203,
                          "name":"",
                          "point":true,
                          "properties":[
                                 {
                                  "name":"facing",
                                  "type":"string",
-                                 "value":"right"
+                                 "value":"left"
                                 }],
                          "rotation":0,
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":949,
-                         "y":1326
+                         "x":879,
+                         "y":657
                         }],
                  "opacity":1,
                  "type":"objectgroup",
@@ -785,11 +796,47 @@
                 {
                  "draworder":"topdown",
                  "id":12,
-                 "name":"area_004",
+                 "name":"G",
                  "objects":[
                         {
                          "height":0,
-                         "id":30,
+                         "id":183,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":688,
+                         "y":1378
+                        }, 
+                        {
+                         "height":0,
+                         "id":184,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"left"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":158,
+                         "y":1382
+                        }, 
+                        {
+                         "height":0,
+                         "id":185,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -802,12 +849,66 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1099,
-                         "y":439
+                         "x":631,
+                         "y":1335
                         }, 
                         {
                          "height":0,
-                         "id":31,
+                         "id":186,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":508,
+                         "y":1380
+                        }, 
+                        {
+                         "height":0,
+                         "id":187,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":336,
+                         "y":1378
+                        }, 
+                        {
+                         "height":0,
+                         "id":188,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":225,
+                         "y":1329
+                        }, 
+                        {
+                         "height":0,
+                         "id":189,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -820,12 +921,113 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1144,
+                         "x":301,
+                         "y":1428
+                        }, 
+                        {
+                         "height":0,
+                         "id":190,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":525,
+                         "y":1432
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":21,
+                 "name":"M",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":228,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1100,
+                         "y":442
+                        }, 
+                        {
+                         "height":0,
+                         "id":229,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1145,
+                         "y":498
+                        }, 
+                        {
+                         "height":0,
+                         "id":230,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1269,
+                         "y":497
+                        }, 
+                        {
+                         "height":0,
+                         "id":231,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1434,
                          "y":495
                         }, 
                         {
                          "height":0,
-                         "id":32,
+                         "id":232,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -838,48 +1040,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1268,
-                         "y":494
+                         "x":1660,
+                         "y":495
                         }, 
                         {
                          "height":0,
-                         "id":33,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1433,
-                         "y":492
-                        }, 
-                        {
-                         "height":0,
-                         "id":34,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1659,
-                         "y":492
-                        }, 
-                        {
-                         "height":0,
-                         "id":35,
+                         "id":233,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -892,12 +1058,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1603,
-                         "y":434
+                         "x":1604,
+                         "y":437
                         }, 
                         {
                          "height":0,
-                         "id":36,
+                         "id":234,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -910,12 +1076,59 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1317,
-                         "y":436
+                         "x":1318,
+                         "y":439
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":22,
+                 "name":"N",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":235,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1247,
+                         "y":630
                         }, 
                         {
                          "height":0,
-                         "id":92,
+                         "id":236,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1472,
+                         "y":631
+                        }, 
+                        {
+                         "height":0,
+                         "id":237,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -928,12 +1141,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1168,
-                         "y":294
+                         "x":1164,
+                         "y":756
                         }, 
                         {
                          "height":0,
-                         "id":93,
+                         "id":238,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -946,12 +1159,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1290,
-                         "y":245
+                         "x":1305,
+                         "y":703
                         }, 
                         {
                          "height":0,
-                         "id":94,
+                         "id":239,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -964,12 +1177,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1427,
-                         "y":249
+                         "x":1428,
+                         "y":704
                         }, 
                         {
                          "height":0,
-                         "id":95,
+                         "id":240,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -982,8 +1195,44 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1545,
-                         "y":294
+                         "x":1572,
+                         "y":756
+                        }, 
+                        {
+                         "height":0,
+                         "id":241,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1625,
+                         "y":686
+                        }, 
+                        {
+                         "height":0,
+                         "id":242,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"left"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1093,
+                         "y":680
                         }],
                  "opacity":1,
                  "type":"objectgroup",
@@ -994,368 +1243,8 @@
                 {
                  "draworder":"topdown",
                  "id":13,
-                 "name":"area_005",
+                 "name":"E",
                  "objects":[
-                        {
-                         "height":0,
-                         "id":39,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1096,
-                         "y":893
-                        }, 
-                        {
-                         "height":0,
-                         "id":40,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1140,
-                         "y":943
-                        }, 
-                        {
-                         "height":0,
-                         "id":41,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1265,
-                         "y":947
-                        }, 
-                        {
-                         "height":0,
-                         "id":42,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1324.77272727273,
-                         "y":898.454545454545
-                        }, 
-                        {
-                         "height":0,
-                         "id":43,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1526,
-                         "y":896
-                        }, 
-                        {
-                         "height":0,
-                         "id":44,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1633,
-                         "y":928
-                        }, 
-                        {
-                         "height":0,
-                         "id":45,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1497,
-                         "y":950
-                        }, 
-                        {
-                         "height":0,
-                         "id":86,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1245,
-                         "y":630
-                        }, 
-                        {
-                         "height":0,
-                         "id":87,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1470,
-                         "y":631
-                        }, 
-                        {
-                         "height":0,
-                         "id":88,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1202,
-                         "y":177
-                        }, 
-                        {
-                         "height":0,
-                         "id":89,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1439,
-                         "y":179
-                        }, 
-                        {
-                         "height":0,
-                         "id":101,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":854,
-                         "y":966
-                        }, 
-                        {
-                         "height":0,
-                         "id":106,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":949,
-                         "y":1832
-                        }, 
-                        {
-                         "height":0,
-                         "id":107,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":951,
-                         "y":1690
-                        }, 
-                        {
-                         "height":0,
-                         "id":113,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":683,
-                         "y":1595
-                        }, 
-                        {
-                         "height":0,
-                         "id":116,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":500,
-                         "y":1614
-                        }, 
-                        {
-                         "height":0,
-                         "id":120,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":276,
-                         "y":1667
-                        }, 
-                        {
-                         "height":0,
-                         "id":121,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":279,
-                         "y":1812
-                        }, 
-                        {
-                         "height":0,
-                         "id":125,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":685,
-                         "y":1372
-                        }, 
-                        {
-                         "height":0,
-                         "id":138,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":725,
-                         "y":1167
-                        }, 
                         {
                          "height":0,
                          "id":139,
@@ -1376,360 +1265,7 @@
                         }, 
                         {
                          "height":0,
-                         "id":149,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":731,
-                         "y":468
-                        }],
-                 "opacity":1,
-                 "type":"objectgroup",
-                 "visible":true,
-                 "x":0,
-                 "y":0
-                }, 
-                {
-                 "draworder":"topdown",
-                 "id":14,
-                 "name":"area_006",
-                 "objects":[
-                        {
-                         "height":0,
-                         "id":47,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1105,
-                         "y":1354
-                        }, 
-                        {
-                         "height":0,
-                         "id":48,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1098,
-                         "y":1419
-                        }, 
-                        {
-                         "height":0,
-                         "id":49,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1229,
-                         "y":1422
-                        }, 
-                        {
-                         "height":0,
-                         "id":50,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1423,
-                         "y":1426
-                        }, 
-                        {
-                         "height":0,
-                         "id":51,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1662,
-                         "y":1426
-                        }, 
-                        {
-                         "height":0,
-                         "id":52,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1582,
-                         "y":1352
-                        }, 
-                        {
-                         "height":0,
-                         "id":53,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1334,
-                         "y":1355
-                        }, 
-                        {
-                         "height":0,
-                         "id":67,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"right"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1627,
-                         "y":1602
-                        }, 
-                        {
-                         "height":0,
-                         "id":68,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1541,
-                         "y":1662
-                        }, 
-                        {
-                         "height":0,
-                         "id":69,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1431,
-                         "y":1616
-                        }, 
-                        {
-                         "height":0,
-                         "id":70,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1306,
-                         "y":1621
-                        }, 
-                        {
-                         "height":0,
-                         "id":71,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1162,
-                         "y":1668
-                        }, 
-                        {
-                         "height":0,
-                         "id":72,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1170,
-                         "y":1214
-                        }, 
-                        {
-                         "height":0,
-                         "id":73,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1280,
-                         "y":1158
-                        }, 
-                        {
-                         "height":0,
-                         "id":74,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1423,
-                         "y":1159
-                        }, 
-                        {
-                         "height":0,
-                         "id":75,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1551,
-                         "y":1208
-                        }, 
-                        {
-                         "height":0,
-                         "id":76,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1477,
-                         "y":1109
-                        }, 
-                        {
-                         "height":0,
-                         "id":77,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1231,
-                         "y":1109
-                        }, 
-                        {
-                         "height":0,
-                         "id":78,
+                         "id":170,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -1742,12 +1278,113 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1090,
-                         "y":1165
+                         "x":171,
+                         "y":925
                         }, 
                         {
                          "height":0,
-                         "id":79,
+                         "id":171,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":370,
+                         "y":923
+                        }, 
+                        {
+                         "height":0,
+                         "id":172,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":532,
+                         "y":927
+                        }, 
+                        {
+                         "height":0,
+                         "id":173,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":641,
+                         "y":880
+                        }, 
+                        {
+                         "height":0,
+                         "id":174,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":320,
+                         "y":972
+                        }, 
+                        {
+                         "height":0,
+                         "id":175,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":550,
+                         "y":972
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":28,
+                 "name":"W",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":279,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -1760,12 +1397,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1624,
-                         "y":1161
+                         "x":496,
+                         "y":1620
                         }, 
                         {
                          "height":0,
-                         "id":80,
+                         "id":280,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -1778,12 +1415,77 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1162,
-                         "y":756
+                         "x":445,
+                         "y":1646
                         }, 
                         {
                          "height":0,
-                         "id":81,
+                         "id":281,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":442,
+                         "y":1573
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":29,
+                 "name":"V",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":282,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":686,
+                         "y":1594
+                        }, 
+                        {
+                         "height":0,
+                         "id":283,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"left"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":636,
+                         "y":1596
+                        }, 
+                        {
+                         "height":0,
+                         "id":284,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -1796,12 +1498,41 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1303,
-                         "y":703
+                         "x":665,
+                         "y":1645
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":23,
+                 "name":"P",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":243,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1107,
+                         "y":894
                         }, 
                         {
                          "height":0,
-                         "id":82,
+                         "id":244,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -1814,12 +1545,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1426,
-                         "y":704
+                         "x":1151,
+                         "y":944
                         }, 
                         {
                          "height":0,
-                         "id":83,
+                         "id":245,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -1832,12 +1563,369 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1570,
-                         "y":756
+                         "x":1276,
+                         "y":948
                         }, 
                         {
                          "height":0,
-                         "id":84,
+                         "id":246,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1335.77,
+                         "y":899.455
+                        }, 
+                        {
+                         "height":0,
+                         "id":247,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1537,
+                         "y":897
+                        }, 
+                        {
+                         "height":0,
+                         "id":248,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1644,
+                         "y":929
+                        }, 
+                        {
+                         "height":0,
+                         "id":249,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1508,
+                         "y":951
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":14,
+                 "name":"F",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":176,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":729,
+                         "y":1173
+                        }, 
+                        {
+                         "height":0,
+                         "id":177,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":597,
+                         "y":1188
+                        }, 
+                        {
+                         "height":0,
+                         "id":178,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":439,
+                         "y":1189
+                        }, 
+                        {
+                         "height":0,
+                         "id":179,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":232,
+                         "y":1192
+                        }, 
+                        {
+                         "height":0,
+                         "id":180,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":188,
+                         "y":1117
+                        }, 
+                        {
+                         "height":0,
+                         "id":181,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":709,
+                         "y":1118
+                        }, 
+                        {
+                         "height":0,
+                         "id":182,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":432,
+                         "y":1119
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":25,
+                 "name":"S",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":258,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1109,
+                         "y":1356
+                        }, 
+                        {
+                         "height":0,
+                         "id":259,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1102,
+                         "y":1421
+                        }, 
+                        {
+                         "height":0,
+                         "id":260,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1233,
+                         "y":1424
+                        }, 
+                        {
+                         "height":0,
+                         "id":261,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1427,
+                         "y":1428
+                        }, 
+                        {
+                         "height":0,
+                         "id":262,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1666,
+                         "y":1428
+                        }, 
+                        {
+                         "height":0,
+                         "id":263,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1586,
+                         "y":1354
+                        }, 
+                        {
+                         "height":0,
+                         "id":264,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1338,
+                         "y":1357
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":26,
+                 "name":"T",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":265,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -1851,11 +1939,83 @@
                          "visible":true,
                          "width":0,
                          "x":1623,
-                         "y":686
+                         "y":1608
                         }, 
                         {
                          "height":0,
-                         "id":85,
+                         "id":266,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1537,
+                         "y":1668
+                        }, 
+                        {
+                         "height":0,
+                         "id":267,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1427,
+                         "y":1622
+                        }, 
+                        {
+                         "height":0,
+                         "id":268,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1302,
+                         "y":1627
+                        }, 
+                        {
+                         "height":0,
+                         "id":269,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1158,
+                         "y":1674
+                        }, 
+                        {
+                         "height":0,
+                         "id":270,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -1868,12 +2028,185 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1091,
-                         "y":680
+                         "x":1092,
+                         "y":1608
                         }, 
                         {
                          "height":0,
-                         "id":90,
+                         "id":271,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1262,
+                         "y":1580
+                        }, 
+                        {
+                         "height":0,
+                         "id":272,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1458,
+                         "y":1572
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":24,
+                 "name":"R",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":250,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1168,
+                         "y":1214
+                        }, 
+                        {
+                         "height":0,
+                         "id":251,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1278,
+                         "y":1158
+                        }, 
+                        {
+                         "height":0,
+                         "id":252,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1421,
+                         "y":1159
+                        }, 
+                        {
+                         "height":0,
+                         "id":253,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1549,
+                         "y":1208
+                        }, 
+                        {
+                         "height":0,
+                         "id":254,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1475,
+                         "y":1109
+                        }, 
+                        {
+                         "height":0,
+                         "id":255,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1229,
+                         "y":1109
+                        }, 
+                        {
+                         "height":0,
+                         "id":256,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"left"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":1088,
+                         "y":1165
+                        }, 
+                        {
+                         "height":0,
+                         "id":257,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -1886,12 +2219,113 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1626,
-                         "y":227
+                         "x":1622,
+                         "y":1161
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":18,
+                 "name":"J",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":204,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":945,
+                         "y":903
                         }, 
                         {
                          "height":0,
-                         "id":91,
+                         "id":205,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":950,
+                         "y":1051
+                        }, 
+                        {
+                         "height":0,
+                         "id":206,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":949,
+                         "y":1199
+                        }, 
+                        {
+                         "height":0,
+                         "id":207,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":948,
+                         "y":1332
+                        }, 
+                        {
+                         "height":0,
+                         "id":208,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":853,
+                         "y":972
+                        }, 
+                        {
+                         "height":0,
+                         "id":209,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -1904,12 +2338,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1094,
-                         "y":237
+                         "x":896,
+                         "y":1046
                         }, 
                         {
                          "height":0,
-                         "id":96,
+                         "id":210,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -1923,101 +2357,11 @@
                          "visible":true,
                          "width":0,
                          "x":897,
-                         "y":1040
+                         "y":1196
                         }, 
                         {
                          "height":0,
-                         "id":97,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"left"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":898,
-                         "y":1190
-                        }, 
-                        {
-                         "height":0,
-                         "id":98,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"left"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":828,
-                         "y":1330
-                        }, 
-                        {
-                         "height":0,
-                         "id":99,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":896,
-                         "y":1378
-                        }, 
-                        {
-                         "height":0,
-                         "id":100,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":882,
-                         "y":873
-                        }, 
-                        {
-                         "height":0,
-                         "id":109,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":875,
-                         "y":1856
-                        }, 
-                        {
-                         "height":0,
-                         "id":110,
+                         "id":211,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2031,133 +2375,43 @@
                          "visible":true,
                          "width":0,
                          "x":827,
-                         "y":1591
+                         "y":1336
                         }, 
                         {
                          "height":0,
-                         "id":111,
+                         "id":212,
                          "name":"",
                          "point":true,
                          "properties":[
                                 {
                                  "name":"facing",
                                  "type":"string",
-                                 "value":"left"
+                                 "value":"down"
                                 }],
                          "rotation":0,
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":826,
-                         "y":1758
+                         "x":895,
+                         "y":1384
                         }, 
                         {
                          "height":0,
-                         "id":112,
+                         "id":213,
                          "name":"",
                          "point":true,
                          "properties":[
                                 {
                                  "name":"facing",
                                  "type":"string",
-                                 "value":"left"
+                                 "value":"down"
                                 }],
                          "rotation":0,
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":633,
-                         "y":1597
-                        }, 
-                        {
-                         "height":0,
-                         "id":122,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"left"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":158,
-                         "y":1660
-                        }, 
-                        {
-                         "height":0,
-                         "id":123,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"left"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":158,
-                         "y":1804
-                        }, 
-                        {
-                         "height":0,
-                         "id":124,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"left"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":155,
-                         "y":1376
-                        }, 
-                        {
-                         "height":0,
-                         "id":140,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"left"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":151,
-                         "y":919
-                        }, 
-                        {
-                         "height":0,
-                         "id":148,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"left"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":208,
-                         "y":460
+                         "x":881,
+                         "y":879
                         }],
                  "opacity":1,
                  "type":"objectgroup",
@@ -2168,11 +2422,130 @@
                 {
                  "draworder":"topdown",
                  "id":15,
-                 "name":"area_007",
+                 "name":"D",
                  "objects":[
                         {
                          "height":0,
-                         "id":55,
+                         "id":164,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"left"
+                                }],
+                         "rotation":0,
+                         "type":"point",
+                         "visible":true,
+                         "width":0,
+                         "x":182.363,
+                         "y":698.401
+                        }, 
+                        {
+                         "height":0,
+                         "id":165,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"point",
+                         "visible":true,
+                         "width":0,
+                         "x":280.021,
+                         "y":734.009
+                        }, 
+                        {
+                         "height":0,
+                         "id":166,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"point",
+                         "visible":true,
+                         "width":0,
+                         "x":723.809,
+                         "y":734.738
+                        }, 
+                        {
+                         "height":0,
+                         "id":167,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"point",
+                         "visible":true,
+                         "width":0,
+                         "x":367.881,
+                         "y":666.247
+                        }, 
+                        {
+                         "height":0,
+                         "id":168,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"point",
+                         "visible":true,
+                         "width":0,
+                         "x":562.336,
+                         "y":735.997
+                        }, 
+                        {
+                         "height":0,
+                         "id":169,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"up"
+                                }],
+                         "rotation":0,
+                         "type":"point",
+                         "visible":true,
+                         "width":0,
+                         "x":638,
+                         "y":662
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":27,
+                 "name":"U",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":273,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2185,12 +2558,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1270,
-                         "y":1803
+                         "x":1264,
+                         "y":1803.67
                         }, 
                         {
                          "height":0,
-                         "id":56,
+                         "id":274,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2203,12 +2576,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1096,
-                         "y":1810
+                         "x":1090,
+                         "y":1810.67
                         }, 
                         {
                          "height":0,
-                         "id":57,
+                         "id":275,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2221,12 +2594,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1196,
-                         "y":1856
+                         "x":1190,
+                         "y":1856.67
                         }, 
                         {
                          "height":0,
-                         "id":58,
+                         "id":276,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2239,12 +2612,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1418,
-                         "y":1859
+                         "x":1412,
+                         "y":1859.67
                         }, 
                         {
                          "height":0,
-                         "id":59,
+                         "id":277,
                          "name":"007_059",
                          "point":true,
                          "properties":[
@@ -2257,12 +2630,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1519,
-                         "y":1810
+                         "x":1513,
+                         "y":1810.67
                         }, 
                         {
                          "height":0,
-                         "id":60,
+                         "id":278,
                          "name":"007_060",
                          "point":true,
                          "properties":[
@@ -2275,12 +2648,77 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1624,
-                         "y":1850.33333333333
+                         "x":1618,
+                         "y":1851
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":19,
+                 "name":"K",
+                 "objects":[
+                        {
+                         "height":0,
+                         "id":291,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":945,
+                         "y":1837
                         }, 
                         {
                          "height":0,
-                         "id":64,
+                         "id":292,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"right"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":947,
+                         "y":1695
+                        }, 
+                        {
+                         "height":0,
+                         "id":293,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"down"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":871,
+                         "y":1861
+                        }, 
+                        {
+                         "height":0,
+                         "id":294,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2293,12 +2731,30 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1096,
-                         "y":1602
+                         "x":823,
+                         "y":1596
                         }, 
                         {
                          "height":0,
-                         "id":65,
+                         "id":295,
+                         "name":"",
+                         "point":true,
+                         "properties":[
+                                {
+                                 "name":"facing",
+                                 "type":"string",
+                                 "value":"left"
+                                }],
+                         "rotation":0,
+                         "type":"",
+                         "visible":true,
+                         "width":0,
+                         "x":822,
+                         "y":1763
+                        }, 
+                        {
+                         "height":0,
+                         "id":296,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2311,48 +2767,34 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":1266,
-                         "y":1574
-                        }, 
+                         "x":880,
+                         "y":1526
+                        }],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":30,
+                 "name":"X",
+                 "objects":[],
+                 "opacity":1,
+                 "type":"objectgroup",
+                 "visible":true,
+                 "x":0,
+                 "y":0
+                }, 
+                {
+                 "draworder":"topdown",
+                 "id":20,
+                 "name":"L",
+                 "objects":[
                         {
                          "height":0,
-                         "id":66,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":1462,
-                         "y":1566
-                        }, 
-                        {
-                         "height":0,
-                         "id":108,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":884,
-                         "y":1521
-                        }, 
-                        {
-                         "height":0,
-                         "id":114,
+                         "id":220,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2365,12 +2807,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":662,
-                         "y":1646
+                         "x":1169,
+                         "y":298
                         }, 
                         {
                          "height":0,
-                         "id":115,
+                         "id":221,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2383,48 +2825,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":449,
-                         "y":1640
+                         "x":1291,
+                         "y":249
                         }, 
                         {
                          "height":0,
-                         "id":117,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":446,
-                         "y":1567
-                        }, 
-                        {
-                         "height":0,
-                         "id":118,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":206,
-                         "y":1587
-                        }, 
-                        {
-                         "height":0,
-                         "id":119,
+                         "id":222,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2437,84 +2843,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":208,
-                         "y":1859
+                         "x":1428,
+                         "y":253
                         }, 
                         {
                          "height":0,
-                         "id":126,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":628,
-                         "y":1329
-                        }, 
-                        {
-                         "height":0,
-                         "id":127,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":505,
-                         "y":1374
-                        }, 
-                        {
-                         "height":0,
-                         "id":128,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":333,
-                         "y":1372
-                        }, 
-                        {
-                         "height":0,
-                         "id":129,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":222,
-                         "y":1323
-                        }, 
-                        {
-                         "height":0,
-                         "id":130,
+                         "id":223,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2527,84 +2861,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":298,
-                         "y":1422
+                         "x":1546,
+                         "y":298
                         }, 
                         {
                          "height":0,
-                         "id":131,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":522,
-                         "y":1426
-                        }, 
-                        {
-                         "height":0,
-                         "id":132,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":593,
-                         "y":1182
-                        }, 
-                        {
-                         "height":0,
-                         "id":133,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":435,
-                         "y":1183
-                        }, 
-                        {
-                         "height":0,
-                         "id":134,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":228,
-                         "y":1186
-                        }, 
-                        {
-                         "height":0,
-                         "id":135,
+                         "id":224,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2617,12 +2879,12 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":184,
-                         "y":1111
+                         "x":1203,
+                         "y":181
                         }, 
                         {
                          "height":0,
-                         "id":136,
+                         "id":225,
                          "name":"",
                          "point":true,
                          "properties":[
@@ -2635,152 +2897,44 @@
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":705,
-                         "y":1112
+                         "x":1440,
+                         "y":183
                         }, 
                         {
                          "height":0,
-                         "id":137,
+                         "id":226,
                          "name":"",
                          "point":true,
                          "properties":[
                                 {
                                  "name":"facing",
                                  "type":"string",
-                                 "value":"up"
+                                 "value":"right"
                                 }],
                          "rotation":0,
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":428,
-                         "y":1113
+                         "x":1627,
+                         "y":231
                         }, 
                         {
                          "height":0,
-                         "id":141,
+                         "id":227,
                          "name":"",
                          "point":true,
                          "properties":[
                                 {
                                  "name":"facing",
                                  "type":"string",
-                                 "value":"up"
+                                 "value":"left"
                                 }],
                          "rotation":0,
                          "type":"",
                          "visible":true,
                          "width":0,
-                         "x":350,
-                         "y":917
-                        }, 
-                        {
-                         "height":0,
-                         "id":142,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":512,
-                         "y":921
-                        }, 
-                        {
-                         "height":0,
-                         "id":143,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"up"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":621,
-                         "y":874
-                        }, 
-                        {
-                         "height":0,
-                         "id":144,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":300,
-                         "y":966
-                        }, 
-                        {
-                         "height":0,
-                         "id":145,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":530,
-                         "y":966
-                        }, 
-                        {
-                         "height":0,
-                         "id":146,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":578,
-                         "y":510
-                        }, 
-                        {
-                         "height":0,
-                         "id":147,
-                         "name":"",
-                         "point":true,
-                         "properties":[
-                                {
-                                 "name":"facing",
-                                 "type":"string",
-                                 "value":"down"
-                                }],
-                         "rotation":0,
-                         "type":"",
-                         "visible":true,
-                         "width":0,
-                         "x":351,
-                         "y":516
+                         "x":1095,
+                         "y":241
                         }],
                  "opacity":1,
                  "type":"objectgroup",
@@ -2898,8 +3052,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":17,
- "nextobjectid":153,
+ "nextlayerid":31,
+ "nextobjectid":297,
  "orientation":"orthogonal",
  "properties":[
         {

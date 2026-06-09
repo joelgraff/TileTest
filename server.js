@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,8 +11,57 @@ const repoRoot = path.dirname(fileURLToPath(import.meta.url));
 const host = process.env.HOST ?? '0.0.0.0';
 const port = Number.parseInt(process.env.PORT ?? '5000', 10);
 const vendorContentStore = new VendorContentStore();
-const bundledDiscoveryTrails = JSON.parse(await fs.readFile(path.join(repoRoot, 'discovery_trails.json'), 'utf8').catch(() => '[]'));
+let bundledDiscoveryTrails = [];
+
+try {
+    bundledDiscoveryTrails = JSON.parse(readFileSync(path.join(repoRoot, 'discovery_trails.json'), 'utf8'));
+} catch {
+    bundledDiscoveryTrails = [];
+}
+
 const discoveryTrailStore = new DiscoveryTrailStore(bundledDiscoveryTrails);
+
+function normalizeBasePath(value) {
+    if (typeof value !== 'string') {
+        return '/';
+    }
+
+    const trimmedValue = value.trim();
+    if (trimmedValue.length === 0 || trimmedValue === '/') {
+        return '/';
+    }
+
+    const prefixedValue = trimmedValue.startsWith('/') ? trimmedValue : `/${trimmedValue}`;
+    return prefixedValue.endsWith('/') ? prefixedValue.slice(0, -1) : prefixedValue;
+}
+
+const deploymentBasePath = normalizeBasePath(
+    process.env.PASSENGER_BASE_URI ?? process.env.BASE_PATH ?? process.env.SCRIPT_NAME ?? '/tiletest'
+);
+
+function getMountedPathname(pathname) {
+    if (deploymentBasePath === '/') {
+        return pathname;
+    }
+
+    if (pathname === deploymentBasePath) {
+        return '/';
+    }
+
+    if (pathname.startsWith(`${deploymentBasePath}/`)) {
+        return pathname.slice(deploymentBasePath.length) || '/';
+    }
+
+    return pathname;
+}
+
+function getRedirectLocation(pathname, search = '') {
+    if (deploymentBasePath === '/' || pathname !== deploymentBasePath) {
+        return null;
+    }
+
+    return `${deploymentBasePath}/${search}`;
+}
 
 const contentTypes = new Map([
     ['.css', 'text/css; charset=utf-8'],
@@ -80,8 +130,8 @@ async function readVendors() {
     }));
 }
 
-async function handleApiRequest(request, response, requestUrl) {
-    if (requestUrl.pathname === '/api/discovery-trails') {
+async function handleApiRequest(request, response, requestPathname) {
+    if (requestPathname === '/api/discovery-trails') {
         if (request.method === 'GET') {
             sendJson(response, 200, discoveryTrailStore.toJSON());
             return true;
@@ -110,7 +160,7 @@ async function handleApiRequest(request, response, requestUrl) {
         return true;
     }
 
-    if (requestUrl.pathname === '/api/vendor-content') {
+    if (requestPathname === '/api/vendor-content') {
         if (request.method === 'GET') {
             sendJson(response, 200, vendorContentStore.toJSON());
             return true;
@@ -139,7 +189,7 @@ async function handleApiRequest(request, response, requestUrl) {
         return true;
     }
 
-    if (requestUrl.pathname === '/api/vendor-announcements') {
+    if (requestPathname === '/api/vendor-announcements') {
         if (request.method === 'GET') {
             sendJson(response, 200, {
                 announcements: vendorContentStore.toJSON().announcements
@@ -170,7 +220,7 @@ async function handleApiRequest(request, response, requestUrl) {
         return true;
     }
 
-    if (requestUrl.pathname === '/api/vendors') {
+    if (requestPathname === '/api/vendors') {
         if (request.method !== 'GET') {
             sendMethodNotAllowed(response);
             return true;
@@ -217,7 +267,7 @@ function getStaticFilePath(pathname) {
     return filePath;
 }
 
-async function serveStaticFile(request, response, requestUrl) {
+async function serveStaticFile(request, response, requestPathname) {
     if (request.method !== 'GET' && request.method !== 'HEAD') {
         sendMethodNotAllowed(response);
         return;
@@ -225,7 +275,7 @@ async function serveStaticFile(request, response, requestUrl) {
 
     let filePath;
     try {
-        filePath = getStaticFilePath(requestUrl.pathname);
+        filePath = getStaticFilePath(requestPathname);
     } catch {
         sendJson(response, 400, { error: 'Invalid path' });
         return;
@@ -256,10 +306,22 @@ async function serveStaticFile(request, response, requestUrl) {
 
 const server = http.createServer((request, response) => {
     const requestUrl = new URL(request.url ?? '/', `http://${request.headers.host ?? 'localhost'}`);
+    const redirectLocation = getRedirectLocation(requestUrl.pathname, requestUrl.search);
 
-    void handleApiRequest(request, response, requestUrl).then((handled) => {
+    if (redirectLocation && (request.method === 'GET' || request.method === 'HEAD')) {
+        response.writeHead(302, {
+            Location: redirectLocation,
+            'Cache-Control': 'no-store'
+        });
+        response.end();
+        return;
+    }
+
+    const requestPathname = getMountedPathname(requestUrl.pathname);
+
+    void handleApiRequest(request, response, requestPathname).then((handled) => {
         if (!handled) {
-            void serveStaticFile(request, response, requestUrl);
+            void serveStaticFile(request, response, requestPathname);
         }
     });
 });
