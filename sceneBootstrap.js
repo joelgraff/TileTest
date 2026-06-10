@@ -22,6 +22,7 @@ export function initializeSceneBootstrap(
         initializeInteractionReadinessFn = initializeInteractionReadiness,
         initializeSceneRuntimeFn = initializeSceneRuntime,
         bindSceneBooleanFlagFn = bindSceneBooleanFlag,
+        resolveSessionVendorIdsFn = resolveSessionVendorIds,
         createLiveVendorContentServiceFn = createLiveVendorContentService,
         recreateCollision = CollisionManager.create
     } = {}
@@ -51,9 +52,10 @@ export function initializeSceneBootstrap(
         };
     }
 
-    const activeVendorIds = resolveSessionVendorIds({
+    const activeVendorIds = resolveSessionVendorIdsFn({
         vendors: scene.vendors,
         npcCount: scene.npcGroup?.getChildren?.().length ?? 0,
+        zoneRequirements: scene.mapRuntimeProfile?.npcAreaLayers ?? [],
         savedVendorIds: isTestMode ? [] : getSavedActiveVendorIds(),
         testMode: isTestMode
     });

@@ -95,6 +95,12 @@ function getPathBasename(pathValue) {
     return pathValue.split(/[\\/]/).pop() ?? null;
 }
 
+function getZoneLayerName(value) {
+    return typeof value === 'string' && /^[A-Za-z]$/.test(value.trim())
+        ? value.trim().toUpperCase()
+        : null;
+}
+
 function buildNpcAreaLayerProfile(layerEntry) {
     const defaultFacing = getEntityPropertyValue(layerEntry.layer, 'defaultFacing') ?? null;
     const spawnPoints = (layerEntry.layer?.objects ?? [])
@@ -115,6 +121,7 @@ function buildNpcAreaLayerProfile(layerEntry) {
     return {
         layer: layerEntry.layer,
         name: layerEntry.name,
+        zone: getZoneLayerName(layerEntry.name),
         path: layerEntry.path,
         defaultFacing,
         spawnPoints

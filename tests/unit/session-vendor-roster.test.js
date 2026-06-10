@@ -31,6 +31,54 @@ describe('session vendor roster', () => {
         })).toEqual(['vendor-3', 'vendor-1', 'vendor-2']);
     });
 
+    it('selects vendors zone by zone and leaves underfilled slots empty', () => {
+        const zoneVendors = [
+            { id: 'vendor-a-1', booth: 'A01' },
+            { id: 'vendor-b-1', booth: 'B01' },
+            { id: 'vendor-b-2', booth: 'B02' },
+            { id: 'vendor-b-3', booth: 'B03' }
+        ];
+
+        expect(resolveSessionVendorIds({
+            vendors: zoneVendors,
+            zoneRequirements: [
+                { zone: 'A', spawnPoints: [{}, {}] },
+                { zone: 'B', spawnPoints: [{}, {}] }
+            ],
+            testMode: true
+        })).toEqual([
+            'vendor-a-1',
+            'vendor-b-1',
+            'vendor-b-2'
+        ]);
+    });
+
+    it('keeps saved ids inside their matching zone before filling the remaining slots', () => {
+        const zoneVendors = [
+            { id: 'vendor-a-1', booth: 'A01' },
+            { id: 'vendor-b-1', booth: 'B01' },
+            { id: 'vendor-a-2', booth: 'A02' },
+            { id: 'vendor-b-2', booth: 'B02' },
+            { id: 'vendor-b-3', booth: 'B03' }
+        ];
+
+        expect(resolveSessionVendorIds({
+            vendors: zoneVendors,
+            zoneRequirements: [
+                { zone: 'A', spawnPoints: [{}, {}] },
+                { zone: 'B', spawnPoints: [{}, {}, {}] }
+            ],
+            savedVendorIds: ['vendor-b-3', 'vendor-a-2', 'vendor-b-1'],
+            testMode: true
+        })).toEqual([
+            'vendor-a-2',
+            'vendor-a-1',
+            'vendor-b-3',
+            'vendor-b-1',
+            'vendor-b-2'
+        ]);
+    });
+
     it('limits normal mode rosters to unique vendors for available NPC slots', () => {
         const roster = resolveSessionVendorIds({
             vendors,

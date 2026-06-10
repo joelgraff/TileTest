@@ -20,6 +20,41 @@ import {
     createVendorTopicResponseDialogData
 } from './vendorDialogModels.js';
 
+function getZoneLetter(value) {
+    const textValue = typeof value === 'string' ? value : '';
+    const match = textValue.match(/[A-Za-z]/);
+
+    return match ? match[0].toUpperCase() : null;
+}
+
+function getVendorBoothZone(vendorData) {
+    return getZoneLetter(vendorData?.booth);
+}
+
+function getNpcSpawnZone(npcSprite) {
+    return getZoneLetter(npcSprite?.spawnZone ?? npcSprite?.zone ?? npcSprite?.boothZone);
+}
+
+function groupVendorsByZone(vendors = []) {
+    const vendorsByZone = new Map();
+
+    vendors.forEach(vendorData => {
+        const zone = getVendorBoothZone(vendorData);
+
+        if (!zone) {
+            return;
+        }
+
+        if (!vendorsByZone.has(zone)) {
+            vendorsByZone.set(zone, []);
+        }
+
+        vendorsByZone.get(zone).push(vendorData);
+    });
+
+    return vendorsByZone;
+}
+
 class VendorManager {
     constructor(scene, {
         uiManager = null,
@@ -95,9 +130,47 @@ class VendorManager {
         if (this.vendorAssignmentDone) return;
         if (!this.npcGroup || !this.vendors.length || !this.gameObjectFactory) return;
 
-        this.getNPCSprites().forEach((npcSprite, index) => {
-            npcSprite.vendorData = this.getAssignedVendor(index);
+        const npcSprites = this.getNPCSprites();
+        if (npcSprites.length === 0) {
+            return;
+        }
+
+        const npcSpritesByZone = new Map();
+
+        npcSprites.forEach(npcSprite => {
+            const zone = getNpcSpawnZone(npcSprite);
+            npcSprite.vendorData = null;
+
+            if (!zone) {
+                return;
+            }
+
+            if (!npcSpritesByZone.has(zone)) {
+                npcSpritesByZone.set(zone, []);
+            }
+
+            npcSpritesByZone.get(zone).push(npcSprite);
         });
+
+
+        if (npcSpritesByZone.size === 0) {
+            npcSprites.forEach((npcSprite, index) => {
+                npcSprite.vendorData = this.getAssignedVendor(index);
+            });
+
+            this.vendorAssignmentDone = true;
+            return;
+        }
+        const sessionVendorsByZone = groupVendorsByZone(this.sessionVendors ?? []);
+
+        npcSpritesByZone.forEach((zoneNpcSprites, zone) => {
+            const zoneVendors = sessionVendorsByZone.get(zone) ?? [];
+
+            zoneNpcSprites.forEach((npcSprite, index) => {
+                npcSprite.vendorData = zoneVendors[index] ?? null;
+            });
+        });
+
         this.vendorAssignmentDone = true;
     }
 

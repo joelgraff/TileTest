@@ -1,4 +1,5 @@
 import CONFIG from './config.js';
+import { flattenLayerTree } from './mapRuntimeProfile.js';
 import {
     TABLE_COLLISION_PROPERTY_NAMES,
     TABLETOP_COLLISION_PROPERTY_NAMES,
@@ -37,7 +38,8 @@ export const MAP_READINESS_CODES = {
     REQUIRED_LAYER_MISSING: 'REQUIRED_LAYER_MISSING',
     TILESET_IMAGE_MISMATCH: 'TILESET_IMAGE_MISMATCH',
     TILESET_MISSING: 'TILESET_MISSING',
-    TILESET_NOT_EMBEDDED: 'TILESET_NOT_EMBEDDED'
+    TILESET_NOT_EMBEDDED: 'TILESET_NOT_EMBEDDED',
+    VENDOR_BOOTH_ZONE_MISSING: 'VENDOR_BOOTH_ZONE_MISSING'
 };
 
 export const MAP_READINESS_ACTION_IDS = {
@@ -133,6 +135,27 @@ function getPropertyValue(entity, propertyName) {
     }
 
     return entity.properties.find(property => property.name === propertyName)?.value;
+}
+
+function getZoneLetter(value) {
+    const textValue = typeof value === 'string' ? value : '';
+    const match = textValue.match(/[A-Za-z]/);
+
+    return match ? match[0].toUpperCase() : null;
+}
+
+function getNpcZoneLayerNames(map, contract) {
+    return flattenLayerTree(map?.layers ?? [])
+        .filter(layer => layer.type === 'objectgroup')
+        .filter(layer => layer.path?.[0] === contract.npcGroupLayerName)
+        .map(layer => getZoneLetter(layer.name))
+        .filter(Boolean);
+}
+
+function getVendorBoothZones(vendors = []) {
+    return vendors
+        .map(vendor => getZoneLetter(vendor?.booth))
+        .filter(Boolean);
 }
 
 function getReferenceLabel(entity, fallback) {
@@ -521,6 +544,32 @@ function validateCollisionLayers(map, contract, issues) {
     }
 }
 
+function validateVendorZoneCoverage(map, contract, vendors, issues) {
+    if (!Array.isArray(vendors) || vendors.length === 0) {
+        return;
+    }
+
+    const npcZones = new Set(getNpcZoneLayerNames(map, contract));
+
+    if (npcZones.size === 0) {
+        return;
+    }
+
+    const missingZones = [...new Set(getVendorBoothZones(vendors))]
+        .filter(zone => !npcZones.has(zone))
+        .sort();
+
+    if (missingZones.length === 0) {
+        return;
+    }
+
+    issues.push(createIssue(
+        MAP_READINESS_SEVERITY.INFO,
+        MAP_READINESS_CODES.VENDOR_BOOTH_ZONE_MISSING,
+        `Vendor booth zones without matching spawn layers: ${missingZones.join(', ')}. Add single-letter object layers under "${contract.npcGroupLayerName}" to populate those vendors.`
+    ));
+}
+
 function addDraftLayerNotes(map, contract, issues) {
     const runtimeLayerNames = new Set([
         ...contract.requiredLayers,
@@ -824,7 +873,7 @@ export function getMapReadinessActionPlan(readinessInput, contract = RUNTIME_MAP
         }));
 }
 
-export function getMapReadinessIssues(map, contract = RUNTIME_MAP_CONTRACT) {
+export function getMapReadinessIssues(map, contract = RUNTIME_MAP_CONTRACT, options = {}) {
     const issues = [];
 
     validateRequiredLayers(map, contract, issues);
@@ -833,13 +882,14 @@ export function getMapReadinessIssues(map, contract = RUNTIME_MAP_CONTRACT) {
     validateTilesets(map, contract, issues);
     validateImageLayers(map, issues);
     validateCollisionLayers(map, contract, issues);
+    validateVendorZoneCoverage(map, contract, options.vendors, issues);
     addDraftLayerNotes(map, contract, issues);
 
     return issues;
 }
 
-export function getMapReadinessReport(map, contract = RUNTIME_MAP_CONTRACT) {
-    const issues = getMapReadinessIssues(map, contract);
+export function getMapReadinessReport(map, contract = RUNTIME_MAP_CONTRACT, options = {}) {
+    const issues = getMapReadinessIssues(map, contract, options);
     const blockingIssues = issues.filter(issue => issue.severity === MAP_READINESS_SEVERITY.BLOCKING);
     const infoIssues = issues.filter(issue => issue.severity === MAP_READINESS_SEVERITY.INFO);
     const issueSummary = {

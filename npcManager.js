@@ -172,7 +172,8 @@ class NPCManager {
         const spawnPoints = spawnAreas.flatMap(area =>
             area.spawnPoints.map(point => ({
                 ...point,
-                npcAreaRect: area.rect ?? null
+                npcAreaRect: area.rect ?? null,
+                spawnZone: area.zone ?? null
             }))
         );
 
@@ -238,7 +239,8 @@ class NPCManager {
         if (Array.isArray(runtimeAreas) && runtimeAreas.length > 0) {
             return runtimeAreas.map(area => ({
                 spawnPoints: area.spawnPoints ?? [],
-                rect: NPCManager.getRectObject({ objects: area.layer?.objects ?? [] })
+                rect: NPCManager.getRectObject({ objects: area.layer?.objects ?? [] }) ?? null,
+                zone: area.zone ?? null
             }));
         }
 

@@ -6,6 +6,10 @@ describe('scene bootstrap', () => {
     it('creates state, starts readiness work, and initializes world, managers, and runtime in order', () => {
         const vendors = [{ id: 'vendor-1' }];
         const discoveryTrails = [{ id: 'trail-1' }];
+        const zoneRequirements = [
+            { zone: 'A', spawnPoints: [{}, {}] },
+            { zone: 'B', spawnPoints: [{}] }
+        ];
         const readinessPromise = Promise.resolve(true);
         const callOrder = [];
         const recreateCollision = vi.fn();
@@ -31,7 +35,23 @@ describe('scene bootstrap', () => {
         };
         const initializeSceneWorldFn = vi.fn((sceneArg) => {
             callOrder.push('world');
+            sceneArg.mapRuntimeProfile = { npcAreaLayers: zoneRequirements };
+            sceneArg.npcGroup = {
+                getChildren: () => [{}, {}, {}]
+            };
             return true;
+        });
+        const resolveSessionVendorIdsFn = vi.fn((options) => {
+            callOrder.push('resolve');
+            expect(options).toEqual({
+                vendors,
+                npcCount: 3,
+                zoneRequirements,
+                savedVendorIds: [],
+                testMode: true
+            });
+
+            return ['vendor-a-1', 'vendor-b-1'];
         });
         const initializeSceneManagersFn = vi.fn((sceneArg, options) => {
             callOrder.push('managers');
@@ -55,6 +75,7 @@ describe('scene bootstrap', () => {
             initializeSceneManagersFn,
             initializeInteractionReadinessFn,
             initializeSceneRuntimeFn,
+            resolveSessionVendorIdsFn,
             recreateCollision
         });
 
@@ -68,10 +89,11 @@ describe('scene bootstrap', () => {
         expect(scene.vendors).toBe(vendors);
         expect(scene.discoveryTrails).toBe(discoveryTrails);
         expect(initializeSceneWorldFn).toHaveBeenCalledWith(scene);
+        expect(resolveSessionVendorIdsFn).toHaveBeenCalledTimes(1);
         expect(initializeSceneManagersFn).toHaveBeenCalledWith(scene, {
             state: scene.gameState,
             discoveryTrails,
-            activeVendorIds: []
+            activeVendorIds: ['vendor-a-1', 'vendor-b-1']
         });
         expect(initializeInteractionReadinessFn).toHaveBeenCalledWith({
             questManager,
@@ -91,6 +113,7 @@ describe('scene bootstrap', () => {
             'json:vendors',
             'json:discovery_trails',
             'world',
+            'resolve',
             'managers',
             'readiness',
             'runtime'

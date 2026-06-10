@@ -12,12 +12,14 @@ import {
 import { loadJson } from './testUtils.js';
 
 function loadAssetMap(mapName) {
-    return loadJson(`${CONFIG.PATHS.ASSETS}/${mapName}${CONFIG.PATHS.JSON_EXTENSION}`);
+    return loadJson(`tests/fixtures/${mapName}${CONFIG.PATHS.JSON_EXTENSION}`);
 }
 
 function loadDefaultRuntimeMap() {
     return loadJson(CONFIG.getAssetPath(CONFIG.ASSETS.MAP, CONFIG.PATHS.JSON_EXTENSION));
 }
+
+const vendors = loadJson('vendors.json');
 
 describe('full map readiness', () => {
     it('keeps the current default runtime map ready', () => {
@@ -141,6 +143,20 @@ describe('full map readiness', () => {
                 code: MAP_READINESS_CODES.COLLISION_TILE_METADATA_MISSING
             })
         ]));
+    });
+
+    it('warns when vendor booth zones are missing matching spawn layers', () => {
+        const report = getMapReadinessReport(loadJson('assets/24px/map.json'), undefined, { vendors });
+
+        expect(report.ready).toBe(true);
+        expect(report.infoIssues).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                severity: MAP_READINESS_SEVERITY.INFO,
+                code: MAP_READINESS_CODES.VENDOR_BOOTH_ZONE_MISSING,
+                message: 'Vendor booth zones without matching spawn layers: A, Y, Z. Add single-letter object layers under "npc_areas" to populate those vendors.'
+            })
+        ]));
+        expect(formatMapReadinessReport('assets/24px/map.json', report)).toContain('Vendor booth zones without matching spawn layers: A, Y, Z.');
     });
 
     it('disables tabletop collision boxes when a map property is zero-sized', () => {
@@ -326,7 +342,7 @@ describe('full map readiness', () => {
 
     it('formats inventory and next actions in the CLI report', () => {
         const reportText = formatMapReadinessReport(
-            'assets/vcf_map.json',
+            'tests/fixtures/vcf_map.json',
             getMapReadinessReport(loadAssetMap('vcf_map'))
         );
 

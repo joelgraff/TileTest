@@ -11,7 +11,7 @@ import { MAP_READINESS_CODES } from './mapReadiness.js';
 import { getLayer, loadJson } from './testUtils.js';
 
 function loadAssetMap(mapName) {
-    return loadJson(`${CONFIG.PATHS.ASSETS}/${mapName}${CONFIG.PATHS.JSON_EXTENSION}`);
+    return loadJson(`tests/fixtures/${mapName}${CONFIG.PATHS.JSON_EXTENSION}`);
 }
 
 function loadDefaultRuntimeMap() {
@@ -112,11 +112,11 @@ describe('map conversion preview', () => {
 
     it('formats a preview report that is explicit about being in-memory only', () => {
         const reportText = formatMapLayerConversionPreviewReport(
-            'assets/vcf_map.json',
+            'tests/fixtures/vcf_map.json',
             createMapLayerConversionPreviewReport(loadAssetMap('vcf_map'))
         );
 
-        expect(reportText).toContain('Map layer conversion preview: assets/vcf_map.json');
+        expect(reportText).toContain('Map layer conversion preview: tests/fixtures/vcf_map.json');
         expect(reportText).toContain('Mode: in-memory only; no map files were changed.');
         expect(reportText).toContain('Preview layers: floor, tables, player, npc_area, tabletops');
         expect(reportText).toContain('- floor: copied tile layer from "Tile Layer 1" as "floor" [tile layer, 60x65, used tiles: 3900].');

@@ -18,7 +18,7 @@ function createGroupedMapData() {
                 type: 'group',
                 layers: [
                     {
-                        name: 'area_001',
+                        name: 'A',
                         type: 'objectgroup',
                         properties: [{ name: 'defaultFacing', value: 'left' }],
                         objects: [
@@ -69,7 +69,7 @@ describe('mapRuntimeProfile', () => {
         expect(layers.map(layer => layer.path.join('/'))).toEqual([
             'floor',
             'npc_areas',
-            'npc_areas/area_001'
+            'npc_areas/A'
         ]);
     });
 
@@ -85,7 +85,8 @@ describe('mapRuntimeProfile', () => {
         expect(profile.tileHeight).toBe(24);
         expect(profile.npcAreaGroup?.name).toBe('npc_areas');
         expect(profile.npcAreaLayers).toHaveLength(1);
-        expect(profile.npcAreaLayers[0].path).toEqual(['npc_areas', 'area_001']);
+        expect(profile.npcAreaLayers[0].path).toEqual(['npc_areas', 'A']);
+        expect(profile.npcAreaLayers[0].zone).toBe('A');
         expect(profile.npcAreaLayers[0].defaultFacing).toBe('left');
         expect(profile.npcAreaLayers[0].spawnPoints.map(point => point.resolvedFacing)).toEqual(['up', 'left']);
         expect(profile.sprite.count).toBe(16);

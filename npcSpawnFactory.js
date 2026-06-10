@@ -111,6 +111,14 @@ function getNPCInteractionCue(point) {
     return getStringPropertyValue(point, 'interactionCue');
 }
 
+function getSpawnZone(point) {
+    const zoneValue = point?.spawnZone ?? point?.zone ?? point?.layerZone ?? point?.zoneLetter ?? null;
+
+    return typeof zoneValue === 'string' && /^[A-Za-z]$/.test(zoneValue.trim())
+        ? zoneValue.trim().toUpperCase()
+        : null;
+}
+
 export function createNPCGroup(scene, spawnPoints, npcAreaRect, tablesLayerDepth, {
     getNearestEdgeDirection,
     getFrameForDirection,
@@ -136,6 +144,7 @@ export function createNPCGroup(scene, spawnPoints, npcAreaRect, tablesLayerDepth
         const spawnPosition = resolveVendorSpawnPosition(point, direction, vendorOffsets, pointAreaRect, tileWidth, tileHeight);
         const npc = spriteFactory(spawnPosition.x, spawnPosition.y, spriteKey, frame);
 
+        npc.spawnZone = getSpawnZone(point);
         npc.interactionCue = getNPCInteractionCue(point);
         setNPCCollisionBox?.(npc, point);
         npcGroup.add(npc);

@@ -191,6 +191,30 @@ describe('NPCManager interaction state', () => {
         setNPCDepth.mockRestore();
     });
 
+    it('preserves zone metadata from grouped runtime-profile spawn areas', () => {
+        const scene = {
+            mapRuntimeProfile: {
+                npcAreaLayers: [
+                    {
+                        zone: 'A',
+                        spawnPoints: [{ x: 120, y: 180 }],
+                        layer: {
+                            objects: []
+                        }
+                    }
+                ]
+            }
+        };
+
+        expect(NPCManager.getSpawnAreas(scene)).toEqual([
+            {
+                spawnPoints: [{ x: 120, y: 180 }],
+                rect: null,
+                zone: 'A'
+            }
+        ]);
+    });
+
     it('reuses the cached active NPC list when the player stays in the same tile cell', () => {
         const getChildren = vi.fn(() => [{ id: 'npc-1' }]);
         const activeNpcSprites = [{ id: 'npc-1', x: 24, y: 24 }];

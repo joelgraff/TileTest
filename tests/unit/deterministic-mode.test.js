@@ -80,6 +80,42 @@ describe('deterministic test mode', () => {
         expect(VendorManager.prototype.getAssignedVendor.call(context, 2)).toBe(vendors[2]);
     });
 
+    it('leaves zone-tagged scenes underfilled in test mode instead of backfilling from the full vendor list', () => {
+        const vendors = [
+            { id: 'vendor-a-1', name: 'Vendor A1', booth: 'A01' },
+            { id: 'vendor-a-2', name: 'Vendor A2', booth: 'A02' },
+            { id: 'vendor-b-1', name: 'Vendor B1', booth: 'B01' },
+            { id: 'vendor-b-2', name: 'Vendor B2', booth: 'B02' }
+        ];
+        const zoneASprites = [{ spawnZone: 'A' }, { spawnZone: 'A' }];
+        const zoneBSprites = [{ spawnZone: 'B' }, { spawnZone: 'B' }];
+        const context = {
+            npcGroup: {
+                getChildren: () => [...zoneASprites, ...zoneBSprites]
+            },
+            gameObjectFactory: {
+                graphics: () => ({
+                    setDepth() {
+                        return this;
+                    },
+                    setVisible() {
+                        return this;
+                    }
+                })
+            },
+            testMode: true,
+            vendors,
+            sessionVendors: [vendors[0], vendors[2]],
+            vendorAssignmentDone: false,
+            getNPCSprites: VendorManager.prototype.getNPCSprites
+        };
+
+        VendorManager.prototype.assignVendorsToNPCs.call(context);
+
+        expect(zoneASprites.map(sprite => sprite.vendorData?.id ?? null)).toEqual(['vendor-a-1', null]);
+        expect(zoneBSprites.map(sprite => sprite.vendorData?.id ?? null)).toEqual(['vendor-b-1', null]);
+    });
+
     it('generates a stable first quest in test mode', () => {
         DomainManager.domains = [
             {

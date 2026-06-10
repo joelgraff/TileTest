@@ -4,7 +4,7 @@ import { loadJson } from './testUtils.js';
 
 function resolveMapPath(mapArgument) {
     if (!mapArgument) {
-        return `${CONFIG.PATHS.ASSETS}/vcf_map${CONFIG.PATHS.JSON_EXTENSION}`;
+        return `tests/fixtures/vcf_map${CONFIG.PATHS.JSON_EXTENSION}`;
     }
 
     if (mapArgument.endsWith(CONFIG.PATHS.JSON_EXTENSION)) {
@@ -19,7 +19,8 @@ const failOnBlocking = args.includes('--fail-on-blocking');
 const mapArgument = args.find(arg => !arg.startsWith('--'));
 const mapPath = resolveMapPath(mapArgument);
 const map = loadJson(mapPath);
-const report = getMapReadinessReport(map);
+const vendors = loadJson(`${CONFIG.CONTENT.VENDORS}${CONFIG.PATHS.JSON_EXTENSION}`);
+const report = getMapReadinessReport(map, undefined, { vendors });
 
 console.log(formatMapReadinessReport(mapPath, report));
 
